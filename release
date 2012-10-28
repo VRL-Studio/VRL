@@ -1,0 +1,61 @@
+#!/bin/bash
+
+PRJ="VRL"
+DIR="tmp"
+
+if [ "$1" == "" ]
+then
+	echo ">> ERROR: no command specified!"
+	echo ">> possible commands are: ar, push."
+	exit 1
+fi
+
+case "$1" in
+	push)	echo ">> pushing archives to server"
+		if [ -d "$DIR" ]
+		then
+			scp tmp/* miho@mihosoft.eu:/git/releases/"$PRJ"
+			rm -rf "$DIR"
+		else
+			echo ">> ERROR: nothing to push!"
+		fi
+		;;
+	ar)
+		if [ "$2" == "" ]
+		then
+			echo ">> ERROR: tag not specified."
+			echo ">> Example: release ar v1.4.0"
+			exit 1
+		else
+			CWD="$(pwd)"
+			cd "$PRJ"
+			ant clean > /dev/null
+			cd "$CWD"
+			BASE="$PRJ"-"$2"-src
+			DOC="$PRJ"-"$2"-API-doc
+			echo ">> creating $BASE archive..."
+			mkdir -p "$DIR"	
+			git archive --format=tar --prefix="$BASE"/ "$2" "$PRJ" | gzip > "$DIR/$BASE".tar.gz
+			
+			echo ">> building documentation.."
+
+			cd "$DIR"
+			echo ">>> unpacking archive..."
+			tar xvzf "$BASE".tar.gz > /dev/null
+			
+			cd "$BASE/$PRJ"
+			echo ">>> running ant task..."
+			ant javadoc > /dev/null
+			mv dist/javadoc "$CWD/$DIR/$DOC"
+	
+			echo ">>> compress javadoc folder..."
+			cd "$CWD/$DIR"
+			zip -r "$DOC".zip "$DOC" > /dev/null
+			
+			echo ">> cleanup..."
+			rm -rf "$DOC"
+			rm -rf "$BASE"
+
+		fi
+		;;
+esac

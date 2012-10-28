@@ -1,0 +1,80 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package reflection;
+
+/** \mainpage VRL: Visual Reflection Library
+ * \author Michael Hoffer (info@michaelhoffer.de)
+ * \date 2008
+ *
+ * \section intro_sec Introduction
+ * <p>
+ * VRL is a flexible swing based library for automatic and interactive object visualization.
+ * 
+ * The project was started as a job for student assistants at <a href="http://www.iwr.uni-heidelberg.de/">IWR, University of Heidelberg</a>  (supervision: A. Heusel).<br>
+ * </p>
+ * \subsection why_sec Why VRL?
+ * <p>
+ * <a href="http://129.206.120.227/~ug/">UG</a>, the simulation system of the <b>Simulation in Technology Center of Prof. Wittum</b> needs a plattform independent client that 
+ * extends UG with an interactive graphical user interface. VRL will provide an object based visual programming interface. 
+ * </p>
+ * <p>
+ * The aims of VRL are:
+ * <ul>
+ * 	<li> flexibility and plattform independence
+ * 	<li> automated and interactive visualization of Java objects
+ * 	<li> visual programming interface
+ * </ul>
+ * </p>
+ * 
+ * \subsection dev_status Development status
+ * <p>
+ * In it's current state VRL is able to generate user interfaces from any local Java object. Some simple scenarios such as solving a two body problem will demonstrate the
+ * possibilities of VRL in it's current state. As the XML based network interface for UG by Leo Reich is still in development only future version will have UG support.
+ * </p>
+ * <p>
+ * That is, the current version is not usable for writing UG frontents yet. It is more a kind of design study. Nevertheless it is possible by now to write functional Java based 
+ * interfaces.
+ * </p>
+ *
+ * \section use_sec Using VRL
+ * <p>
+ * Using VRL is straightforward. In combination with a modern IDE such as Netbeans 6.0 or higher the following example can be implemented very easily.
+ * </p>
+ * \subsection req_sec Requirements
+ * <p>
+ * For the following examples you need at least:
+ * <ul>
+ * 	<li> Java 5
+ * 	<li> Netbeans 6.0
+ * 	<li> VisualReflectionLibrary 0.1
+ * </ul>
+ * <p>
+ * You can get the VisualReflectionLibrary and example projects from <a href="www.mihosoft.eu/vrl.html"> www.mihosoft.eu/vrl.html</a>
+ * </p>
+ * \subsection tut_seq Basic Example
+ * <p>
+ * After downloading VRL start NetBeans and open the VRL project folder:
+ * </p>
+ * [image01]
+ * <p>
+ * Now create a new project (deselect "Create Main Class"):
+ * [image02]
+ * </p>
+ * <p>
+ * Add a new <code> JFrame Form </code> and call it <code>MainFrame</code>:
+ * </p>
+ * <p>
+ * In the Swing palette right-click and select "Create New Category"; call it VRL.
+ * [image03]
+ * </p>
+ * <p>
+ * Now right-click again, select "Palette Manager" and click on "Add from Project". There you have to select the VRL project folder. After clicking "Next" you can choose
+ * which components to add. Select "ObjectTree" and "VisualCanvas". Then click "Next" and select the "VRL" category before clicking "Finish".
+ * [image04-06]
+ * </p>
+ * <p>
+ * After following the previous steps you should see "VisualCavas" and "ObjectTree" in the Swing Palette. Drag them to the
+ * </p>
+ */

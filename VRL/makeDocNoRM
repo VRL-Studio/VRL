@@ -1,0 +1,33 @@
+#!/bin/bash
+
+#echo ">> clean doc filders..."
+
+#rm -rf ./doc/html ./doc/latex
+
+echo ">> update project..."
+
+git pull origin master
+
+echo ">> generate documentation ..."
+
+doxygen Doxyfile
+
+#DIR = $(pwd)
+
+cp Makefile-with-Replace ./doc/latex/Makefile
+
+cd ./doc/latex
+
+echo ">> generate pdf..."
+
+make
+
+play ../../alarm.wav
+echo ">> copy refman.pdf to target computer:"
+
+echo ">> press enter to proceed:"
+read
+
+scp refman.pdf dhcpsit9.iwr.uni-heidelberg.de:Desktop
+
+#cd $DIR

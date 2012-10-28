@@ -1,0 +1,7 @@
+// comment 1
+/* comment 2
+   still in comment2 */
+String s = "Classname";
+/* comment 2
+   still in comment2 */hello
+char c = 'A';

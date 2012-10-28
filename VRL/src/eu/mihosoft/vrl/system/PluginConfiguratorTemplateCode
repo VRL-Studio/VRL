@@ -1,0 +1,72 @@
+package eu.mihosoft.vrl.user;
+
+import eu.mihosoft.vrl.system.*;
+
+@ComponentInfo(name="PluginConfig", category="Custom/Plugin")
+public class PluginConfigurator extends VPluginConfigurator {
+
+    public PluginConfigurator() {
+
+        //specify the plugin name and version
+        setIdentifier(new PluginIdentifier(/*<VRL_PLUGIN_NAME>*/""/*</VRL_PLUGIN_NAME>*/, /*<VRL_PLUGIN_VERSION>*/"0.1"/*</VRL_PLUGIN_VERSION>*/));
+
+        // optionally allow other plugins to use the api of this plugin
+        // you can specify packages that shall be
+        // exported by using the exportPackage() method:
+        // 
+        // exportPackage("com.your.package");
+        
+        /*<VRL_PLUGIN_EXPORTS>*//*</VRL_PLUGIN_EXPORTS>*/
+
+        // describe the plugin
+        setDescription(/*<VRL_PLUGIN_DESC>*/""/*</VRL_PLUGIN_DESC>*/);
+
+        // copyright info
+        setCopyrightInfo(/*<VRL_PLUGIN_NAME>*/""/*</VRL_PLUGIN_NAME>*/,
+                "(c) Your Name",
+                "www.you.com", "License Name", "License Text...");
+        
+        // specify dependencies
+        // addDependency(new PluginDependency("VRL", "0.4.0", "0.4.0"));
+
+        /*<VRL_PLUGIN_DEPS>*//*</VRL_PLUGIN_DEPS>*/
+    }
+
+    @Override
+    public void register(PluginAPI api) {
+
+        // register plugin with canvas
+        if (api instanceof VPluginAPI) {
+            VPluginAPI vapi = (VPluginAPI) api;
+
+            // Register visual components:
+            //
+            // Here you can add additional components,
+            // type representations, styles etc.
+            //
+            // ** NOTE **
+            //
+            // To be sure to stay compatible with future versions of VRL,
+            // you should only use the vapi or api object for registration.
+            // If you directly use the canvas or its properties, please make
+            // sure that you specify the VRL versions you are compatible with
+            // in the constructor of this plugin configurator because the
+            // internal api is likely to change.
+            //
+            // examples:
+            //
+            // vapi.addComponent(MyComponent.class);
+            // vapi.addTypeRepresentation(MyType.class);
+        }
+    }
+
+    @Override
+    public void unregister(PluginAPI api) {
+        // nothing to unregister
+    }
+
+    @Override
+    public void init(InitPluginAPI iApi) {
+        // nothing to init
+    }
+}

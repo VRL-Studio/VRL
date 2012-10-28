@@ -1,0 +1,45 @@
+
+<project name="VRL Project" default="compile" basedir=".">
+    <target name="info">
+        <echo message="VRL-${vrl.version}" />
+        <echo message="-- We are in directory ${basedir}" />
+        <echo message="-- We use ${ant.version}" />
+        <echo message="-- We use Java ${ant.java.version}" />
+    </target>
+	
+    <description>
+        VRL template build file
+    </description>
+    
+    <!-- COMPILE TASK -->
+    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc"/>
+    
+  <!-- set global properties for this build -->
+    <property name="src" location="."/>
+    <property name="build" location="."/>
+    <property name="dist"  location="."/>
+
+    <target name="init">
+    <!-- Create the time stamp -->
+        <tstamp/>
+    <!-- Create the build directory structure used by compile -->
+        <mkdir dir="${build}"/>
+    </target>
+  
+    <target name="compile" depends="info,init"
+        description="compile the source " >
+        
+        <groovyc srcdir="${src}" destdir="${build}"
+        fork="no" failonerror="true" classpath=".:${vrl.project-classpath}">
+        </groovyc>
+        
+    </target>
+  
+    <target name="clean"
+        description="clean up" >
+        <delete> 
+            <fileset dir="." includes="**/*.class"/>
+        </delete>
+    </target>
+
+</project> 
