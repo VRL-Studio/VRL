@@ -55,15 +55,9 @@ package eu.mihosoft.vrl.io.vrlx;
 import eu.mihosoft.vrl.dialogs.RecompileClassDialog;
 import eu.mihosoft.vrl.lang.InstanceCreator;
 import eu.mihosoft.vrl.lang.groovy.GroovyCompiler;
-import eu.mihosoft.vrl.lang.visual.SessionClassUtils;
-import eu.mihosoft.vrl.reflection.ReferenceTask;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
-import eu.mihosoft.vrl.reflection.VisualObject;
 import eu.mihosoft.vrl.visual.Canvas;
 import eu.mihosoft.vrl.visual.CanvasWindow;
-import eu.mihosoft.vrl.visual.Connection;
-import eu.mihosoft.vrl.visual.MessageType;
-import eu.mihosoft.vrl.visual.WindowGroups;
 import java.util.Collection;
 
 /**
