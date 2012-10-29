@@ -3,6 +3,10 @@ VRL (Visual Reflection Library)
 
 Webpage: http://vrl.mihosoft.eu
 
+Latest Builds: http://vrl.mihosoft.eu/builds/latest
+
+Latest API-Doc: http://vrl.mihosoft.eu/api-doc/latest
+
 # Dependencies
 
 - Java >= 1.6 
