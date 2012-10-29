@@ -74,6 +74,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
+dkn
+
 /**
  * Creates uncompressed video files (mov) from image files.
  * @author Michael Hoffer <info@michaelhoffer.de>
