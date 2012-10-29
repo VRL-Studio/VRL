@@ -59,7 +59,7 @@ import eu.mihosoft.vrl.reflection.VisualObjects;
 import eu.mihosoft.vrl.visual.Canvas;
 import eu.mihosoft.vrl.visual.Connection;
 import eu.mihosoft.vrl.visual.WindowGroups;
-ldjnv;
+
 /**
  * Format definition for the VRL reflection package.
  * @author Michael Hoffer <info@michaelhoffer.de>
