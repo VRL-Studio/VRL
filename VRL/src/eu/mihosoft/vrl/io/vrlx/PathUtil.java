@@ -70,7 +70,7 @@ public class PathUtil {
     public static String formatPath(String path) {
         String result = path;
 
-        result.replaceAll("//", "/");
+        result = result.replaceAll("//", "/");
 
         if (result.startsWith("/")) {
             result = result.substring(1);
