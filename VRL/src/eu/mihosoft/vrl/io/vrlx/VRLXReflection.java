@@ -52,33 +52,14 @@
 
 package eu.mihosoft.vrl.io.vrlx;
 
-import eu.mihosoft.vrl.io.IOUtil;
-import eu.mihosoft.vrl.lang.ClassEntry;
-import eu.mihosoft.vrl.lang.VCompiler;
-import eu.mihosoft.vrl.lang.java.ClassEntryClassLoader;
 import eu.mihosoft.vrl.reflection.CallOptionsEvaluator;
-import eu.mihosoft.vrl.reflection.DefaultObjectRepresentation;
-import eu.mihosoft.vrl.reflection.ObjectDescription;
 import eu.mihosoft.vrl.reflection.ReferenceTask;
-import eu.mihosoft.vrl.system.VClassLoader;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
-import eu.mihosoft.vrl.reflection.VisualObject;
 import eu.mihosoft.vrl.reflection.VisualObjects;
-import eu.mihosoft.vrl.types.VCanvas3D;
 import eu.mihosoft.vrl.visual.Canvas;
-import eu.mihosoft.vrl.visual.CanvasWindow;
 import eu.mihosoft.vrl.visual.Connection;
-import eu.mihosoft.vrl.visual.MessageType;
 import eu.mihosoft.vrl.visual.WindowGroups;
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.tools.ant.taskdefs.Jar;
-
+ldjnv;
 /**
  * Format definition for the VRL reflection package.
  * @author Michael Hoffer <info@michaelhoffer.de>
