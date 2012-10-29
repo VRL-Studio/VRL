@@ -12,7 +12,7 @@ Webpage: http://vrl.mihosoft.eu
 
 - Open the *VRL* project with NetBeans and build it
 
-> **NOTE:** Alternatively you can build VRL from the command line by using `Ant` >= 1.8 
+> **NOTE:** Alternatively you can build VRL from the command line by using `Ant >= 1.8` 
 
 # Nice, But What Can I Do With It?
 
