@@ -225,4 +225,9 @@ public class GroovyFunction3DType extends TypeRepresentationBase {
         }
     }
     
+    @Override
+    public String getValueAsCode() {
+        return "new GroovyFunction3D(\"" + input.getText() + "\", \"" + xVarName + "\", \"" + yVarName + "\", \"" + zVarName + "\")";
+    }
+    
 }

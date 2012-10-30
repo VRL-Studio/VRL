@@ -95,10 +95,22 @@ public class GroovyFunction2D implements Serializable, Function2D {
 
     /**
      * Constructor.
-     * @param expression the expression that defines the function.
+     * @param expression the expression that defines the function
      */
     public GroovyFunction2D(String expression) {
         setExpression(expression);
+    }
+    
+    /**
+     * Constructor.
+     * @param expression expression the expression that defines the function
+     * @param xVarName custom name of the x variable
+     * @param yVarName custom name of the y variable
+     */
+    public GroovyFunction2D(String expression, String xVarName, String yVarName) {
+        setExpression(expression);
+        setXVarName(xVarName);
+        setYVarName(yVarName);
     }
 
     /**

@@ -200,4 +200,10 @@ public class GroovyFunction1DType extends TypeRepresentationBase {
         }
     }
     
+    
+    @Override
+    public String getValueAsCode() {
+        return "new GroovyFunction1D(\"" + input.getText() + "\", \"" + xVarName + "\")";
+    }
+    
 }
