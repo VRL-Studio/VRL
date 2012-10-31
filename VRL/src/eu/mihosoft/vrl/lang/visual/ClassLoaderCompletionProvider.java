@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.lang.visual;
 
 import eu.mihosoft.vrl.lang.VLangUtils;
@@ -60,11 +59,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.text.JTextComponent;
 import org.fife.ui.autocomplete.Completion;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
@@ -143,15 +138,22 @@ public class ClassLoaderCompletionProvider extends DefaultCompletionProvider {
 
     private Class<?> getInstanceClass(String instance, String fullText) {
 
-        String[] text = fullText.split("(\\s+|\\n)");
+        String filteredFullText = VLangUtils.removeCommentsAndStringsFromCode(fullText);
+
+        filteredFullText = filteredFullText.replace('(', ' ');
+        filteredFullText = filteredFullText.replace(')', ' ');
+        filteredFullText = filteredFullText.replace(',', ' ');
+        filteredFullText = filteredFullText.replace(';', ' ');
+        filteredFullText = filteredFullText.replace('=', ' ');
+
+        String[] text = filteredFullText.split("(\\s+|\\n)");
 
         for (int i = 0; i < text.length; i++) {
-            String s = text[i].replace(";", "");
-            s = s.replace("=", "");
-//            System.out.println(" --> s: " + s);
+            String s = text[i];
+            // System.out.println(" --> s: " + s);
             if (s.equals(instance) && i > 0) {
-//                System.out.println("  -> found " + s + " !");
-                return getMatchingClass(text[i - 1], fullText);
+                // System.out.println("  -> found possible type of " + s + ": " + text[i - 1].trim());
+                return getMatchingClass(text[i - 1].trim(), fullText);
 
             }
         }
@@ -208,6 +210,17 @@ public class ClassLoaderCompletionProvider extends DefaultCompletionProvider {
             }
         }
 
+        for (String clsName : CompletionUtil.getCompletionList().getClassNames()) {
+
+            if (clsName.toLowerCase().contains(text.toLowerCase())) {
+
+                result.add(
+                        new VBasicCompletion(
+                        this, clsName,
+                        clsName, CompletionType.CLASS));
+            }
+        }
+
         return result;
     }
 
@@ -229,7 +242,8 @@ public class ClassLoaderCompletionProvider extends DefaultCompletionProvider {
         for (Method m : cls.getMethods()) {
 
             // filter methods (never used)
-            if (m.getName().equals("__$swapInit")) {
+            if (m.getName().equals("__$swapInit")
+                    || m.getName().contains("super$1$")) {
                 continue;
             }
 

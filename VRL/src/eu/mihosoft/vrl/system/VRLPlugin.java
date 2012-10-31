@@ -53,13 +53,12 @@
 package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.g4j.lang.G4J;
-import eu.mihosoft.vrl.annotation.ParamGroupInfo;
-import eu.mihosoft.vrl.annotation.TypeInfo;
 import eu.mihosoft.vrl.devel.LibraryMerger;
 import eu.mihosoft.vrl.devel.LibraryPluginCreator;
 import eu.mihosoft.vrl.devel.NativePluginCreator;
 import eu.mihosoft.vrl.devel.PluginContentAdder;
 import eu.mihosoft.vrl.io.IOUtil;
+import eu.mihosoft.vrl.io.VJarUtil;
 import eu.mihosoft.vrl.lang.CompilerProvider;
 import eu.mihosoft.vrl.lang.Keywords;
 import eu.mihosoft.vrl.lang.groovy.GroovyCodeEditorComponent;
@@ -75,8 +74,6 @@ import eu.mihosoft.vrl.reflection.VisualCanvas;
 import eu.mihosoft.vrl.visual.*;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -85,14 +82,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import org.fife.ui.autocomplete.BasicCompletion;
 import org.fife.ui.autocomplete.CompletionProvider;
 import org.fife.ui.autocomplete.DefaultCompletionProvider;
-import org.fife.ui.autocomplete.ShorthandCompletion;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
@@ -296,6 +291,11 @@ public class VRLPlugin extends VPluginConfigurator {
 
 
         initTemplateProject(iApi);
+        
+        
+        
+        // completion init       
+        CompletionUtil.registerClassesFromJar(VJarUtil.getClassLocation(VRL.class));
     }
     
     private String readLicense() {

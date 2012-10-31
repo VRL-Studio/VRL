@@ -49,11 +49,14 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.lang.visual;
 
+import eu.mihosoft.vrl.lang.CompilerProvider;
 import eu.mihosoft.vrl.lang.Patterns;
 import eu.mihosoft.vrl.lang.VLangUtils;
+import eu.mihosoft.vrl.lang.groovy.GroovyCompiler;
+import eu.mihosoft.vrl.system.VRL;
+import java.util.ArrayList;
 import java.util.List;
 import org.fife.ui.autocomplete.Completion;
 
@@ -65,20 +68,29 @@ public class AddImportReplacementRule implements ReplacementRule {
 
     @Override
     public String replace(String text, Completion c) {
-        
+
         CompletionType type = CompletionType.UNDEFINED;
-        
+
         if (c instanceof VCompletion) {
-            type = ((VCompletion)c).getType();
+            type = ((VCompletion) c).getType();
         }
 
         List<String> imports = VLangUtils.importsFromCode(text);
+
+        // imports from groovy compiler
+        GroovyCompiler gC = new GroovyCompiler();
+
+        for (String importCmd : gC.getImports()) {
+            String s = importCmd.replace("import", "").
+                    replace(";", "").trim();
+            imports.add(s);
+        }
 
         // we assume this is a class name
         String replacement = c.getReplacementText();
 
         String fullClassNameFromReplacement = replacement;
-        
+
         boolean classImported = false;
 
         // we try to get the class name from the relacement text
@@ -106,10 +118,10 @@ public class AddImportReplacementRule implements ReplacementRule {
 
         // if we are not a class completion and cannot extract class name
         // from string we do not replace text
-        if (!classImported && type!=CompletionType.CLASS) {
+        if (!classImported && type != CompletionType.CLASS) {
             return text;
         }
-        
+
         //line-by-line replacement of full classnames by short classnames
         String[] lines = text.split("\n");
         text = "";
@@ -129,9 +141,9 @@ public class AddImportReplacementRule implements ReplacementRule {
             }
         }
 
-
         // add import if not already defined
-        if (!imports.contains(fullClassNameFromReplacement)) {
+        if (!imports.contains(fullClassNameFromReplacement)
+                && !fullClassNameFromReplacement.startsWith("java.lang.")) {
             if (VLangUtils.packageDefinedInCode(text)) {
                 text = text.replaceAll(
                         "package\\s+"
