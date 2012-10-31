@@ -88,7 +88,7 @@ public class GroovyFunction1D implements Serializable, Function1D {
      * Constructor.
      */
     public GroovyFunction1D() {
-
+        //
     }
 
     /**
@@ -97,6 +97,16 @@ public class GroovyFunction1D implements Serializable, Function1D {
      */
     public GroovyFunction1D(String expression) {
         setExpression(expression);
+    }
+    
+    /**
+     * Constructor.
+     * @param expression the expression that defines the function.
+     * @param xVarName custom name of the x variable
+     */
+    public GroovyFunction1D(String expression, String xVarName) {
+        setExpression(expression);
+        setXVarName(xVarName);
     }
 
     /**

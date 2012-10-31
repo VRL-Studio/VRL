@@ -72,6 +72,7 @@
 
     -->
     
+    <property file="jars/ant/ant-build.properties"/>
     <property file="build.properties"/>
     
     <condition property="createTimeStamp">

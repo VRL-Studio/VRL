@@ -213,4 +213,10 @@ public class GroovyFunction2DType extends TypeRepresentationBase {
         }
     }
     
+    
+    @Override
+    public String getValueAsCode() {
+        return "new GroovyFunction2D(\"" + input.getText() + "\", \"" + xVarName + "\", \"" + yVarName + "\")";
+    }
+    
 }

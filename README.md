@@ -18,3 +18,7 @@ Webpage: http://vrl.mihosoft.eu
 
 To see what is possible with VRL check out [VRL-Studio](http://vrl-studio.mihosoft.eu). It is a VRL based IDE that allows to write programs at runtime! Each object you instantiate can be visualized and manipulated through an automatically created user interface.
 
+# API Doc & Builds
+
+- Latest Builds: http://vrl.mihosoft.eu/builds/latest
+- Latest API-Doc: http://vrl.mihosoft.eu/api-doc/latest

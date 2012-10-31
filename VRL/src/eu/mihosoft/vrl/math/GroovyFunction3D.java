@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.math;
 
 import groovy.lang.GroovyShell;
@@ -58,24 +57,19 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 /**
- * <p>
- * A function defined by a groovy string. It can be used to define functions
- * at runtime. The performance will be significantly worse than native
- * java code. But it is much more flexible.
- * </p>
- * <p>
- * The function must consist of an expression that does not use other variables
- * than <code>x</code> and <code>y</code> and <code>z</code>. All functions from
- * <code>java.lang.Math</code> can be used.
- * </p>
- * <p>
- * Example:
+ * <p> A function defined by a groovy string. It can be used to define functions
+ * at runtime. The performance will be significantly worse than native java
+ * code. But it is much more flexible. </p> <p> The function must consist of an
+ * expression that does not use other variables than
+ * <code>x</code> and
+ * <code>y</code> and
+ * <code>z</code>. All functions from
+ * <code>java.lang.Math</code> can be used. </p> <p> Example:
  * <pre>
  * <code>
- * </code>
- * sin(sqrt(x*x+y*y+z*z))
- * </code>
- * </p>
+ * </code> sin(sqrt(x*x+y*y+z*z))
+ * </code> </p>
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class GroovyFunction3D implements Serializable, Function3D {
@@ -91,11 +85,11 @@ public class GroovyFunction3D implements Serializable, Function3D {
      * Constructor.
      */
     public GroovyFunction3D() {
-
     }
 
     /**
      * Constructor.
+     *
      * @param expression the expression that defines the function.
      */
     public GroovyFunction3D(String expression) {
@@ -103,7 +97,24 @@ public class GroovyFunction3D implements Serializable, Function3D {
     }
 
     /**
+     * Constructor.
+     *
+     * @param expression expression the expression that defines the function
+     * @param xVarName custom name of the x variable
+     * @param yVarName custom name of the y variable
+     * @param zVarName custom name of the z variable
+     */
+    public GroovyFunction3D(String expression,
+            String xVarName, String yVarName, String zVarName) {
+        setExpression(expression);
+        setXVarName(xVarName);
+        setYVarName(yVarName);
+        setZVarName(zVarName);
+    }
+
+    /**
      * Returns the expression of the function
+     *
      * @return the expression of the function
      */
     public String getExpression() {
@@ -112,13 +123,14 @@ public class GroovyFunction3D implements Serializable, Function3D {
 
     /**
      * Defines the expression of the function.
+     *
      * @param expression the expression to set
      */
     public void setExpression(String expression) {
         this.expression = expression;
         GroovyShell shell = new GroovyShell();
-        script = shell.parse("import static java.lang.Math.*; result = (" +
-                expression + ") as Double");
+        script = shell.parse("import static java.lang.Math.*; result = ("
+                + expression + ") as Double");
     }
 
     @Override
@@ -134,6 +146,7 @@ public class GroovyFunction3D implements Serializable, Function3D {
 
     /**
      * Returns the groovy script that is used to evaluate the expression.
+     *
      * @return the groovy script that is used to evaluate the expression
      */
     public Script getScript() {
@@ -167,7 +180,7 @@ public class GroovyFunction3D implements Serializable, Function3D {
     public void setYVarName(String yValueName) {
         this.yVarName = yValueName;
     }
-    
+
     /**
      * @return the yValueName
      */
