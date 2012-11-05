@@ -76,7 +76,7 @@ public class CompletionUtil {
     static {
         String[] bootPaths = System.getProperty("sun.boot.class.path").split(":");
         for (String path : bootPaths) {
-            if (path.endsWith("rt.jar")) {
+            if (path.endsWith("rt.jar") || path.endsWith("classes.jar")) {
                 registerClassesFromJar(new File(path));
             }
         }
