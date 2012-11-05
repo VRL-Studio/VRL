@@ -74,12 +74,12 @@ public class Constants {
      */
     public static final String VERSION_BASE = VERSION_MAJOR + ".5";
     
-    // apend -HEAD or -unstable etc.
-    public static final String VERSION_SUFFIX = "";
+    // "HEAD" or "unstable" etc.
+    public static final String VERSION_SUFFIX = "HEAD";
     
     // full version (base+suffix+date)
     public static final String VERSION =
-            VERSION_BASE + VERSION_SUFFIX
+            VERSION_BASE + "-" +VERSION_SUFFIX
             + ", build: " +/*<VRL_COMPILE_DATE>*/""/*</VRL_COMPILE_DATE>*/;
     
     /**
