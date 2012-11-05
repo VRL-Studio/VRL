@@ -49,10 +49,10 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.types;
 
 import eu.mihosoft.vrl.annotation.TypeInfo;
+import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.math.GroovyFunction3D;
 import eu.mihosoft.vrl.reflection.RepresentationType;
 import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
@@ -63,19 +63,16 @@ import eu.mihosoft.vrl.visual.VTextField;
 import groovy.lang.Script;
 import java.awt.Dimension;
 
-
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-@TypeInfo(type=GroovyFunction3D.class, input = true, output = false, style="default")
+@TypeInfo(type = GroovyFunction3D.class, input = true, output = false, style = "default")
 public class GroovyFunction3DType extends TypeRepresentationBase {
+
     private static final long serialVersionUID = -2138540530752923286L;
-
     private VTextField input;
-
     private Message evaluationError;
-    
     private String xVarName;
     private String yVarName;
     private String zVarName;
@@ -136,7 +133,7 @@ public class GroovyFunction3DType extends TypeRepresentationBase {
             f.setXVarName(xVarName);
             f.setYVarName(yVarName);
             f.setZVarName(zVarName);
-            
+
             input.setText(f.getExpression());
         } else {
             input.setText("");
@@ -151,7 +148,7 @@ public class GroovyFunction3DType extends TypeRepresentationBase {
 
             GroovyFunction3D function =
                     (GroovyFunction3D) getType().newInstance();
-            
+
             function.setXVarName(xVarName);
             function.setYVarName(yVarName);
             function.setZVarName(zVarName);
@@ -165,8 +162,8 @@ public class GroovyFunction3DType extends TypeRepresentationBase {
             String message = ex.getMessage();
 
             evaluationError = new Message("Can't evaluate expression:",
-                    "TypeRepresentation&lt;" + getType().toString() +
-                    "&gt;.getValue():<br>" + message,
+                    "TypeRepresentation&lt;" + getType().toString()
+                    + "&gt;.getValue():<br>" + message,
                     MessageType.ERROR);
 
             invalidateValue();
@@ -187,12 +184,12 @@ public class GroovyFunction3DType extends TypeRepresentationBase {
 
         return result;
     }
-    
+
     @Override
     protected void evaluationRequest(Script script) {
 
         Object property = null;
-        
+
         if (getValueOptions() != null) {
 
             if (getValueOptions().contains("xVarName")) {
@@ -200,34 +197,69 @@ public class GroovyFunction3DType extends TypeRepresentationBase {
             }
 
             if (property != null) {
-                xVarName = (String) property;
+                setxVarName((String) property);
             }
-            
+
             property = null;
-            
+
             if (getValueOptions().contains("yVarName")) {
                 property = script.getProperty("yVarName");
             }
 
             if (property != null) {
-                yVarName = (String) property;
+                setyVarName((String) property);
             }
-            
+
             property = null;
-            
+
             if (getValueOptions().contains("zVarName")) {
                 property = script.getProperty("zVarName");
             }
 
             if (property != null) {
-                zVarName = (String) property;
+                setzVarName((String) property);
             }
         }
     }
-    
+
     @Override
     public String getValueAsCode() {
         return "new GroovyFunction3D(\"" + input.getText() + "\", \"" + xVarName + "\", \"" + yVarName + "\", \"" + zVarName + "\")";
     }
-    
+
+    /**
+     * @param xVarName the xVarName to set
+     */
+    public void setxVarName(String xVarName) {
+
+        if (!VLangUtils.isVariableNameValid(xVarName)) {
+            throw new IllegalArgumentException("The name \"" + xVarName + "\" isn't a valid variable name!");
+        }
+
+        this.xVarName = xVarName;
+    }
+
+    /**
+     * @param yVarName the yVarName to set
+     */
+    public void setyVarName(String yVarName) {
+
+        if (!VLangUtils.isVariableNameValid(yVarName)) {
+            throw new IllegalArgumentException("The name \"" + yVarName + "\" isn't a valid variable name!");
+        }
+
+        this.yVarName = yVarName;
+    }
+
+    /**
+     * @param zVarName the zVarName to set
+     */
+    public void setzVarName(String zVarName) {
+        
+        if (!VLangUtils.isVariableNameValid(zVarName)) {
+            throw new IllegalArgumentException("The name \"" + zVarName + "\" isn't a valid variable name!");
+        }
+        
+        this.zVarName = zVarName;
+    }
 }

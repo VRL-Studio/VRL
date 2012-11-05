@@ -53,6 +53,7 @@
 package eu.mihosoft.vrl.types;
 
 import eu.mihosoft.vrl.annotation.TypeInfo;
+import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.math.GroovyFunction1D;
 import eu.mihosoft.vrl.reflection.RepresentationType;
 import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
@@ -194,16 +195,30 @@ public class GroovyFunction1DType extends TypeRepresentationBase {
             }
 
             if (property != null) {
-                xVarName = (String) property;
+                setxVarName((String) property);
             }
             
         }
     }
     
     
+    
+    
     @Override
     public String getValueAsCode() {
         return "new GroovyFunction1D(\"" + input.getText() + "\", \"" + xVarName + "\")";
+    }
+
+     /**
+     * @param xVarName the xVarName to set
+     */
+    public void setxVarName(String xVarName) {
+        
+        if (!VLangUtils.isVariableNameValid(xVarName)) {
+            throw new IllegalArgumentException("The name \"" + xVarName + "\" isn't a valid variable name!");
+        }
+
+        this.xVarName = xVarName;
     }
     
 }

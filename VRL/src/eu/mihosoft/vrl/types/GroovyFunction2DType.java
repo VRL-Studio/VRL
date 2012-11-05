@@ -53,6 +53,7 @@
 package eu.mihosoft.vrl.types;
 
 import eu.mihosoft.vrl.annotation.TypeInfo;
+import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.math.GroovyFunction2D;
 import eu.mihosoft.vrl.reflection.RepresentationType;
 import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
@@ -198,7 +199,7 @@ public class GroovyFunction2DType extends TypeRepresentationBase {
             }
 
             if (property != null) {
-                xVarName = (String) property;
+                setxVarName((String) property);
             }
             
             property = null;
@@ -208,7 +209,7 @@ public class GroovyFunction2DType extends TypeRepresentationBase {
             }
 
             if (property != null) {
-                yVarName = (String) property;
+                setyVarName((String) property);
             }
         }
     }
@@ -217,6 +218,30 @@ public class GroovyFunction2DType extends TypeRepresentationBase {
     @Override
     public String getValueAsCode() {
         return "new GroovyFunction2D(\"" + input.getText() + "\", \"" + xVarName + "\", \"" + yVarName + "\")";
+    }
+
+    /**
+     * @param xVarName the xVarName to set
+     */
+    public void setxVarName(String xVarName) {
+        
+        if (!VLangUtils.isVariableNameValid(xVarName)) {
+            throw new IllegalArgumentException("The name \"" + xVarName + "\" isn't a valid variable name!");
+        }
+
+        this.xVarName = xVarName;
+    }
+
+    /**
+     * @param yVarName the yVarName to set
+     */
+    public void setyVarName(String yVarName) {
+        
+        if (!VLangUtils.isVariableNameValid(yVarName)) {
+            throw new IllegalArgumentException("The name \"" + yVarName + "\" isn't a valid variable name!");
+        }
+        
+        this.yVarName = yVarName;
     }
     
 }
