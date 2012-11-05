@@ -33,20 +33,26 @@ case "$1" in
 			cd "$CWD"
 			BASE="$PRJ"-"$2"-src
 			DOC="$PRJ"-"$2"-API-doc
+			BIN="$PRJ"-"$2.jar"
 			echo ">> creating $BASE archive..."
 			mkdir -p "$DIR"	
-			git archive --format=tar --prefix="$BASE"/ "$2" "$PRJ" | gzip > "$DIR/$BASE".tar.gz
+			git archive --format=zip --prefix="$BASE"/ "$2" "$PRJ" --output "$DIR/$BASE".zip
 			
-			echo ">> building documentation.."
+			echo ">> building..."
 
 			cd "$DIR"
 			echo ">>> unpacking archive..."
-			tar xvzf "$BASE".tar.gz > /dev/null
+			unzip "$BASE".zip > /dev/null
 			
 			cd "$BASE/$PRJ"
-			echo ">>> running ant task..."
+			
+			echo ">>> running doc-ant task..."
 			ant javadoc > /dev/null
 			mv dist/javadoc "$CWD/$DIR/$DOC"
+	
+			echo ">>> running jar-ant task..."
+			ant jar > /dev/null
+			mv dist/VRL.jar "$CWD/$DIR/$BIN"
 	
 			echo ">>> compress javadoc folder..."
 			cd "$CWD/$DIR"
