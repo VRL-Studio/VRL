@@ -54,7 +54,6 @@ package eu.mihosoft.vrl.asm;
 
 import eu.mihosoft.vrl.lang.VLangUtils;
 import groovyjarjarasm.asm.*;
-import groovyjarjarasm.asm.commons.EmptyVisitor;
 import groovyjarjarasm.asm.commons.Remapper;
 import groovyjarjarasm.asm.commons.RemappingClassAdapter;
 import java.io.*;

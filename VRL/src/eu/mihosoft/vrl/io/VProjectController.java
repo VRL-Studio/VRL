@@ -52,12 +52,11 @@
 
 package eu.mihosoft.vrl.io;
 
-import eu.mihosoft.vrl.dialogs.NewComponentDialog;
-import eu.mihosoft.vrl.io.vrlx.*;
 import eu.mihosoft.vrl.asm.ByteCodeUtil;
 import eu.mihosoft.vrl.asm.ClassFileDependency;
 import eu.mihosoft.vrl.asm.CompilationUnit;
-import eu.mihosoft.vrl.lang.InstanceCreator;
+import eu.mihosoft.vrl.dialogs.NewComponentDialog;
+import eu.mihosoft.vrl.io.vrlx.*;
 import eu.mihosoft.vrl.lang.ProjectBuilder;
 import eu.mihosoft.vrl.lang.VBuildResult;
 import eu.mihosoft.vrl.lang.VLangUtils;
@@ -68,8 +67,8 @@ import eu.mihosoft.vrl.lang.visual.StartObject;
 import eu.mihosoft.vrl.lang.visual.StopObject;
 import eu.mihosoft.vrl.reflection.*;
 import eu.mihosoft.vrl.system.*;
-import eu.mihosoft.vrl.visual.VDialog.DialogType;
 import eu.mihosoft.vrl.visual.*;
+import eu.mihosoft.vrl.visual.VDialog.DialogType;
 import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Point;
