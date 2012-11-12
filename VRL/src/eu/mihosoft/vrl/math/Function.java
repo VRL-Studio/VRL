@@ -67,7 +67,7 @@ public interface Function extends Serializable{
      * @param params the input vector
      * @return the function output
      */
-    public DVector run(DVector params);
+    public Double[] run(Double[] params);
     
     //public Integer getParamSize();
     //public Integer getNumberOfParams();
