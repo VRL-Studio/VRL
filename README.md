@@ -20,5 +20,7 @@ To see what is possible with VRL check out [VRL-Studio](http://vrl-studio.mihoso
 
 # API Doc & Builds
 
+- Release Builds: http://vrl.mihosoft.eu/builds/releases/
 - Latest Builds: http://vrl.mihosoft.eu/builds/latest
 - Latest API-Doc: http://vrl.mihosoft.eu/api-doc/latest
+
