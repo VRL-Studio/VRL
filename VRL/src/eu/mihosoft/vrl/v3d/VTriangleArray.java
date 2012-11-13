@@ -52,6 +52,7 @@
 
 package eu.mihosoft.vrl.v3d;
 
+import eu.mihosoft.vrl.annotation.ObjectInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -78,6 +79,7 @@ import javax.vecmath.Vector3f;
  * @see Shape3DArray
  *
  */
+@ObjectInfo(serializeParam=false)
 public class VTriangleArray extends ArrayList<Triangle> {
 
     private static final long serialVersionUID = 1L;
