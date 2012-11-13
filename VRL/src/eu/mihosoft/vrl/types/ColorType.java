@@ -49,29 +49,27 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.types;
 
 import eu.mihosoft.vrl.annotation.TypeInfo;
 import eu.mihosoft.vrl.reflection.RepresentationType;
 import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
 import eu.mihosoft.vrl.visual.VBoxLayout;
+import groovy.lang.Script;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import javax.swing.Box;
 
-
 /**
- * TypeRepresentation for <code>java.awt.Color</code>.
- * <p>Sample:</p>
- * <br/>
- * <img src="doc-files/color-default-01.png"/>
- * <br/>
+ * TypeRepresentation for
+ * <code>java.awt.Color</code>. <p>Sample:</p> <br/> <img
+ * src="doc-files/color-default-01.png"/> <br/>
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-@TypeInfo(type=Color.class, input = true, output = true, style="default")
+@TypeInfo(type = Color.class, input = true, output = true, style = "default")
 public class ColorType extends TypeRepresentationBase {
 
     private static final long serialVersionUID = -1432892124007526692L;
@@ -163,5 +161,23 @@ public class ColorType extends TypeRepresentationBase {
     public void setValueName(String name) {
         super.setValueName(name);
         setPlotPaneSize(plotPaneSize);
+    }
+
+    @Override
+    protected void evaluationRequest(Script script) {
+        Object property = null;
+
+        if (getValueOptions() != null) {
+
+            if (getValueOptions().contains("value")) {
+                property = script.getProperty("value");
+            }
+
+            if (property != null && !getMainCanvas().isLoadingSession()) {
+
+                setViewValue((Color) property);
+
+            }
+        }
     }
 }
