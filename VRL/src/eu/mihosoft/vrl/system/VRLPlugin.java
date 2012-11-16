@@ -183,6 +183,8 @@ public class VRLPlugin extends VPluginConfigurator {
                 "BSD License",
                 "http://www.opensource.org/licenses/bsd-license.php");
 
+        setCopyrightInfoAsPlainText(VERSION_KEY);
+        
     }
 
     @Override

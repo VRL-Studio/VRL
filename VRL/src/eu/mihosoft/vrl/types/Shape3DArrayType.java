@@ -313,7 +313,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
                 if (!shapes.isEmpty() && !isForceBranchGroup()) {
                     Appearance app = shapes.get(0).getAppearance();
-                    if (app != null) {
+                    if (app != null && app.getTransparencyAttributes()!=null) {
                         TransparencyAttributes tA = app.getTransparencyAttributes();
                         if (tA.getTransparency() > 0) {
                             childGroup = new OrderedGroup();
@@ -348,7 +348,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
                 if (!shapes.isEmpty() && !isForceBranchGroup()) {
                     Appearance app = shapes.get(0).getAppearance();
-                    if (app != null) {
+                    if (app != null && app.getTransparencyAttributes()!=null) {
                         TransparencyAttributes tA = app.getTransparencyAttributes();
                         if (tA.getTransparency() > 0) {
                             childGroup = new OrderedGroup();
