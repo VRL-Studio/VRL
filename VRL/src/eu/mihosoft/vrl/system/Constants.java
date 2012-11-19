@@ -73,8 +73,8 @@ public class Constants {
      * VRL version number that indicates major and minor changes.
      */
     public static final String VERSION_BASE = VERSION_MAJOR + ".6";
-    // "HEAD" or "unstable" etc.
-    public static final String VERSION_SUFFIX = "";
+    // "-HEAD" or "-unstable" etc.
+    public static final String VERSION_SUFFIX = "-HEAD";
     // full version (base+suffix+date)
     public static final String VERSION =
             VERSION_BASE + VERSION_SUFFIX
