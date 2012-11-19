@@ -91,6 +91,7 @@ public class VURLClassLoader extends URLClassLoader {
         super(urls, parent, factory);
     }
 
+    @Override
     public void close() {
         setJarFileNames2Close.clear();
         closeClassLoader(this);

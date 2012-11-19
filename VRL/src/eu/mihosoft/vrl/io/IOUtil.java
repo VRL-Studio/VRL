@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io;
 
 import eu.mihosoft.vrl.system.VParamUtil;
@@ -140,7 +139,7 @@ public class IOUtil {
      * specific issue that cannot be solved (tested with Windows XP SP3 and
      * Windows 7 SP 1). Thus, this method does only have an effect if running on
      * MS Windows.
-     * 
+     *
      * <p><b>Note:</b> do not change the default behavior if you don't encounter
      * problems with file locking and the shutdown hook.</p>
      *
@@ -183,6 +182,20 @@ public class IOUtil {
     // no instanciation allowed
     private IOUtil() {
         throw new AssertionError(); // not in this class either!
+    }
+
+    /**
+     * Converts a stream to a string. This method can be used to easily read
+     * text files via <code>Class.getResourceAsStream(...)</code>
+     * 
+     * @see http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
+     * 
+     * @param is
+     * @return stream as String
+     */
+    public static String convertStreamToString(java.io.InputStream is) {
+        java.util.Scanner s = new java.util.Scanner(is).useDelimiter("\\A");
+        return s.hasNext() ? s.next() : "";
     }
 
     /**
@@ -459,7 +472,7 @@ public class IOUtil {
         out.close();
         return result;
     }
-    
+
     /**
      * Writes the specified data to the given file.
      *

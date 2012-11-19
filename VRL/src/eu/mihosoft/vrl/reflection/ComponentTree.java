@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.io.TextLoader;
@@ -149,7 +148,6 @@ public class ComponentTree extends JTree {
             JMenuItem deleteComponent = new JMenuItem("Delete");
 
             deleteComponent.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     ComponentUtil.requestRemoval(
@@ -167,7 +165,6 @@ public class ComponentTree extends JTree {
             JMenuItem openComponent = new JMenuItem("Open");
 
             openComponent.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
@@ -186,7 +183,6 @@ public class ComponentTree extends JTree {
             JMenuItem copyComponent = new JMenuItem("Copy");
 
             copyComponent.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
@@ -205,7 +201,6 @@ public class ComponentTree extends JTree {
             JMenuItem deleteComponent = new JMenuItem("Delete");
 
             deleteComponent.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     ComponentUtil.requestRemoval(
@@ -223,7 +218,6 @@ public class ComponentTree extends JTree {
             JMenuItem openComponent = new JMenuItem("Open");
 
             openComponent.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
 
@@ -242,7 +236,7 @@ public class ComponentTree extends JTree {
 
                         CanvasWindow w =
                                 tree.canvas.addObject(editWindow, menuLocation);
-                        
+
 //                        String title = "Groovy Code: " 
 //                                +tree.canvas.getProjectController().
 //                                getProject().
@@ -263,7 +257,6 @@ public class ComponentTree extends JTree {
             JMenuItem copyComponent = new JMenuItem("Copy");
 
             copyComponent.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
 //                    try {
@@ -284,7 +277,6 @@ public class ComponentTree extends JTree {
             JMenuItem deleteComponent = new JMenuItem("Delete");
 
             deleteComponent.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     ComponentUtil.requestRemoval(
@@ -338,6 +330,7 @@ public class ComponentTree extends JTree {
                         component.getName())) != null) {
                     groovyComponentMenu.show(e.getComponent(), p.x, p.y);
                 }
+
             } else if (SwingUtilities.isLeftMouseButton(e)
                     && e.getClickCount() == 2) {
 
@@ -367,7 +360,7 @@ public class ComponentTree extends JTree {
 
                         CanvasWindow w =
                                 tree.canvas.addObject(editWindow, menuLocation);
-                        
+
 //                        String title = "Groovy Code: " 
 //                                +tree.canvas.getProjectController().
 //                                getProject().
@@ -381,6 +374,16 @@ public class ComponentTree extends JTree {
                                 ComponentCellRenderer.class.getName()).
                                 log(Level.SEVERE, null, ex);
                     }
+                } else if (ComponentUtil.isComponent(component)
+                        && ComponentUtil.getComponentCode(component)!=null) {
+                    
+                    GroovyCodeEditorComponent editor = 
+                            new GroovyCodeEditorComponent(
+                            ComponentUtil.getComponentCode(component));
+                    
+                    editor.setViewOnly(true);
+                    
+                    tree.canvas.addObject(editor, p);
                 }
             }
         }
@@ -419,7 +422,6 @@ class ComponentCellRenderer implements TreeCellRenderer {
         this.canvas = canvas;
 
         renderer = new JPanel() {
-
             @Override
             public Dimension getPreferredSize() {
                 // prevents too large/small cell height
@@ -444,8 +446,6 @@ class ComponentCellRenderer implements TreeCellRenderer {
                         + insetLeftRight, iconHeight + insetTopBottom);
             }
         };
-
-
 
         if (!UIManager.getLookAndFeel().getName().contains("Nimbus")) {
             renderer.setBackground(backgroundNonSelectionColor);
