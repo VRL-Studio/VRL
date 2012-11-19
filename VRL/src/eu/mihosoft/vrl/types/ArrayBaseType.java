@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.types;
 
 import eu.mihosoft.vrl.animation.AnimatedLayout;
@@ -433,7 +432,7 @@ public class ArrayBaseType extends TypeRepresentationBase {
                         if (Array.get(array, i) == null) {
                             continue;
                         }
-
+                        
                         type = typeFactory.getInputInstance(
                                 Array.get(array, i).getClass(), elementInputInfo);
 
@@ -592,7 +591,7 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
                 getTypeContainers().remove(tC);
                 valuePanel.remove(tC);
-                
+
                 mRep.getConnectors().remove(
                         tC.getTypeRepresentation().getConnector());
 
@@ -612,10 +611,10 @@ public class ArrayBaseType extends TypeRepresentationBase {
             setElementViewValues(array);
         }
     }
-    
+
     protected void setElementViewValues(Object array) {
         // store array values in type representations
-        if (array!=null && array.getClass().equals(getType())) {
+        if (array != null && array.getClass().equals(getType())) {
 
             for (int i = 0; i < Array.getLength(array); i++) {
                 Object elementValue = Array.get(array, i);
@@ -627,10 +626,10 @@ public class ArrayBaseType extends TypeRepresentationBase {
                             getType();
 
                     if (elemType.isAssignableFrom(elementValue.getClass())) {
-                        
+
                         getTypeContainers().get(i).getTypeRepresentation().
                                 setViewValue(elementValue);
-                        
+
                     } else {
 
                         getMainCanvas().getMessageBox().addMessage(
@@ -655,10 +654,10 @@ public class ArrayBaseType extends TypeRepresentationBase {
             }
         }
     }
-    
+
     protected void setElementValues(Object array) {
         // store array values in type representations
-        if (array!=null && array.getClass().equals(getType())) {
+        if (array != null && array.getClass().equals(getType())) {
 
             for (int i = 0; i < Array.getLength(array); i++) {
                 Object elementValue = Array.get(array, i);
@@ -670,10 +669,10 @@ public class ArrayBaseType extends TypeRepresentationBase {
                             getType();
 
                     if (elemType.isAssignableFrom(elementValue.getClass())) {
-                        
+
                         getTypeContainers().get(i).getTypeRepresentation().
                                 setValue(elementValue);
-                        
+
                     } else {
 
                         getMainCanvas().getMessageBox().addMessage(
@@ -727,7 +726,7 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
     @Override
     public void setViewValue(Object o) {
-        
+
         try {
             super.setViewValue(o);
         } catch (Exception ex) {
@@ -737,10 +736,10 @@ public class ArrayBaseType extends TypeRepresentationBase {
         if (o.getClass().equals(getType())) {
             updateView(getParentMethod(), o, true);
         }
-        
+
         setElementViewValues(o);
     }
-    
+
     @Override
     public void setValue(Object o) {
         super.setValue(o);
@@ -955,9 +954,82 @@ public class ArrayBaseType extends TypeRepresentationBase {
     @Override
     public void evaluationRequest(Script script) {
 
-        super.evaluationRequest(script);
+        // parse elementOptions
+
+        final String newName;
+        final String newStyle;
+        final String newOptions;
+        final Boolean newNullIsValid;
+        final String newTypeName;
 
         Object property = null;
+
+        if (getValueOptions().contains("elemName")) {
+            property = getOptionEvaluator().getProperty("elemName");
+        }
+
+        if (property != null) {
+            newName = (String) property;
+        } else {
+            newName = null;
+        }
+
+        property = null;
+
+        if (getValueOptions().contains("elemStyle")) {
+            property = getOptionEvaluator().getProperty("elemStyle");
+        }
+
+        if (property != null) {
+            newStyle = (String) property;
+        } else {
+            newStyle = null;
+        }
+
+        property = null;
+
+        if (getValueOptions().contains("elemOptions")) {
+            property = getOptionEvaluator().getProperty("elemOptions");
+        }
+
+        if (property != null) {
+            newOptions = (String) property;
+        } else {
+            newOptions = null;
+        }
+
+        property = null;
+
+        if (getValueOptions().contains("elemNullIsValid")) {
+            property = getOptionEvaluator().getProperty("elemNullIsValid");
+        }
+
+        if (property != null) {
+            newNullIsValid = (Boolean) property;
+        } else {
+            newNullIsValid = null;
+        }
+
+        property = null;
+
+        if (getValueOptions().contains("elemTypeName")) {
+            property = getOptionEvaluator().getProperty("elemTypeName");
+        }
+
+        if (property != null) {
+            newTypeName = (String) property;
+        } else {
+            newTypeName = null;
+        }
+
+        property = null;
+
+        setElementInputInfo(
+                newName, newStyle, newOptions, newNullIsValid, newTypeName);
+
+        //----------------
+
+        super.evaluationRequest(script);
 
         if (getValueOptions().contains("minArraySize")) {
             property = getOptionEvaluator().getProperty("minArraySize");
@@ -991,6 +1063,83 @@ public class ArrayBaseType extends TypeRepresentationBase {
             }
 
         }
+
+    }
+
+    private void setElementInputInfo(
+            final String name, final String style,
+            final String options, final Boolean nullIsValid,
+            final String typeName) {
+
+        final String newName;
+        final String newStyle;
+        final String newOptions;
+        final Boolean newNullIsValid;
+        final String newTypeName;
+
+        if (name != null) {
+            newName = name;
+        } else {
+            newName = "";
+        }
+
+        if (style != null) {
+            newStyle = style;
+        } else {
+            newStyle = "default";//getElementInputInfo().style();
+        }
+
+        if (options != null) {
+            newOptions = options;
+        } else {
+            newOptions = "";//getElementInputInfo().options();
+        }
+
+        if (nullIsValid != null) {
+            newNullIsValid = nullIsValid;
+        } else {
+            newNullIsValid = false;//getElementInputInfo().nullIsValid();
+        }
+
+        if (typeName != null) {
+            newTypeName = typeName;
+        } else {
+            newTypeName = "";//;getElementInputInfo().typeName();
+        }
+
+        ParamInfo newParamInfo = new ParamInfo() {
+            @Override
+            public String name() {
+                return newName;
+            }
+
+            @Override
+            public String style() {
+                return newStyle;
+            }
+
+            @Override
+            public boolean nullIsValid() {
+                return newNullIsValid;
+            }
+
+            @Override
+            public String options() {
+                return newOptions;
+            }
+
+            @Override
+            public String typeName() {
+                return newTypeName;
+            }
+
+            @Override
+            public Class<? extends Annotation> annotationType() {
+                return null;
+            }
+        };
+
+        setElementInputInfo(newParamInfo);
     }
 
     @Override

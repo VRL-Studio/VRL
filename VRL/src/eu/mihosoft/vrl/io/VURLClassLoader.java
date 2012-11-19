@@ -91,6 +91,7 @@ public class VURLClassLoader extends URLClassLoader {
         super(urls, parent, factory);
     }
 
+    // @Override don't use override for as long as we support java 6
     public void close() {
         setJarFileNames2Close.clear();
         closeClassLoader(this);

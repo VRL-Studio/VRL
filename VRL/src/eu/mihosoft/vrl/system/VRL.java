@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.io.*;
@@ -285,6 +284,14 @@ public class VRL {
         }
 
         return result;
+    }
+
+    public static String getVersionIdentifier() {
+        return Constants.VERSION;
+    }
+
+    public static String getVersionBaseIdentifier() {
+        return Constants.VERSION_BASE;
     }
 
     /**
@@ -775,7 +782,7 @@ public class VRL {
                     " --> installing content \"" + contentName + "\"");
 
             String finalResourceName = "/eu/mihosoft/vrl/plugin/content/" + contentName + "/";
-            
+
             // special case for VRL:
             //
             // (paths must be different, otherwise classloader delegation will
@@ -784,7 +791,7 @@ public class VRL {
                     VRL.getVRLPlugin().getIdentifier().getName())) {
                 finalResourceName = "/eu/mihosoft/vrl/rootplugin/content/" + contentName + "/";
             }
-            
+
 
             if (platformSpecific) {
                 finalResourceName += VSysUtil.getPlatformSpecificPath() + "/" + archiveName;
@@ -1492,12 +1499,12 @@ public class VRL {
      * resource; <code>false</code> otherwise
      */
     public static boolean providesContent(String contentName, File f) {
-        
+
         String contentFolderPath = "eu/mihosoft/vrl/plugin/content/" + contentName + "/";
         String rootPluginFolderPath = "eu/mihosoft/vrl/rootplugin/content/" + contentName + "/";
-       
+
         boolean contains = VJarUtil.containsEntry(f, contentFolderPath);
-        
+
         // maybe we are a root plugin (usually only VRL)
         // this is due to classloader delegation
         // (root content is available for all plugins)

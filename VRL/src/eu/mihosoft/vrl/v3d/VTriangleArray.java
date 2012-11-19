@@ -52,6 +52,7 @@
 
 package eu.mihosoft.vrl.v3d;
 
+import eu.mihosoft.vrl.annotation.ObjectInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
@@ -60,6 +61,7 @@ import javax.media.j3d.Material;
 import javax.media.j3d.TriangleArray;
 import javax.vecmath.Color3f;
 import javax.vecmath.Point3f;
+import javax.vecmath.Vector3f;
 
 /**
  * A triangle array. For loading triangle arrays from file see
@@ -77,11 +79,14 @@ import javax.vecmath.Point3f;
  * @see Shape3DArray
  *
  */
+@ObjectInfo(serializeParam=false)
 public class VTriangleArray extends ArrayList<Triangle> {
 
     private static final long serialVersionUID = 1L;
     private transient TriangleArray triangleArray;
     private boolean triangleArrayOutdated;
+    private float scaleFactor;
+    private Vector3f offset;
 
     public VTriangleArray() {
     }
@@ -287,5 +292,29 @@ public class VTriangleArray extends ArrayList<Triangle> {
         }
 
         nodes.centerNodes();
+        
+        scaleFactor = nodes.getScaleFactor();
+        offset = nodes.getOffset();
+    }
+    
+    public float getScaleFactor() {
+        
+        if (scaleFactor==0) {
+            scaleFactor = 1.f;
+        }
+        
+        return scaleFactor;
+    }
+
+    /**
+     * @return the offset
+     */
+    public Vector3f getOffset() {
+        
+        if (offset==null) {
+            offset = new Vector3f();
+        }
+        
+        return offset;
     }
 }

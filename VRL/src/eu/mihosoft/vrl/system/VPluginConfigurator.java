@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.lang.VLangUtils;
@@ -64,9 +63,8 @@ import java.util.ArrayList;
  * <code>VPluginConfigurator</code>. The VRL run-time system can detect the
  * class and recognizes the Java library as plugins and performs the
  * registration as specified in the plugin configurator implementation. The code
- * below shows a possible implementation. </p>
- * <p><b>Sample Code:</b></p>
- * 
+ * below shows a possible implementation. </p> <p><b>Sample Code:</b></p>
+ *
  * <pre><code>
  * import eu.mihosoft.vrl.system.*;
  *
@@ -80,7 +78,7 @@ import java.util.ArrayList;
  *       // optionally allow other plugins to use the api of this plugin
  *       // you can specify packages that shall be
  *       // exported by using the exportPackage() method:
- *       // 
+ *       //
  *       // exportPackage("com.your.package");
  *
  *       // describe the plugin
@@ -90,7 +88,7 @@ import java.util.ArrayList;
  *       setCopyrightInfo("Sample-Plugin",
  *               "(c) Your Name",
  *               "www.you.com", "License Name", "License Text...");
- *       
+ *
  *       // specify dependencies
  *       // addDependency(new PluginDependency("VRL", "0.4.0", "0.4.0"));
  *
@@ -325,16 +323,37 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
         return copyrightInfo;
     }
 
+    /**
+     * Defines the copyright info as plain text.
+     *
+     * @param plainText copyright & license text
+     */
     public void setCopyrightInfoAsPlainText(String plainText) {
+        this.copyrightInfo.setPlainText(plainText);
+        this.copyrightInfo.setCopyrightStatement(" ");
+    }
+
+    /**
+     * Defines the copyright info as plain text.
+     *
+     * @param shortStatement short copyright statement, such as (c) 2012
+     * YourCompany
+     * @param plainText copyright & license text
+     */
+    public void setCopyrightInfoAsPlainText(String shortStatement, String plainText) {
+        this.copyrightInfo.setCopyrightStatement(shortStatement);
         this.copyrightInfo.setPlainText(plainText);
     }
 
     /**
+     * Defines a copyright info for this plugin.
      *
-     * @param projectName
-     * @param copyrightStatement
-     * @param licenseName
-     * @param licenseText
+     * @param projectName the name of the project
+     * @param copyrightStatement short copyright statement, such as (c) 2012
+     * @param projectPage url
+     * YourCompany
+     * @param licenseName name of the license, e.g., BSD, LGPL etc.
+     * @param licenseText license text
      */
     public void setCopyrightInfo(
             String projectName,
@@ -348,6 +367,17 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
         this.copyrightInfo.setLicense(licenseName, licenseText);
     }
 
+    /**
+     * Adds a third-party copyright information to the copyright information of
+     * this plugin.
+     * @param projectName the name of the project
+     * @param copyrightStatement short copyright statement, such as (c) 2012
+     * TheirCompany
+     * @param projectPage url
+     * @param licenseName name of the license, e.g., BSD, LGPL etc.
+     * @param licenseText license text
+     * @return this plugin configurator
+     */
     public VPluginConfigurator addThirdPartyCopyrightInfo(
             String projectName,
             String copyrightStatement,

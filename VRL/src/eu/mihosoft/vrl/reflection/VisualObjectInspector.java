@@ -49,10 +49,10 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.lang.InstanceCreator;
+import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.lang.VWorkflowException;
 import eu.mihosoft.vrl.lang.visual.ClassInfoObject;
 import eu.mihosoft.vrl.lang.visual.InputObject;
@@ -853,18 +853,27 @@ public class VisualObjectInspector extends ObjectInspector {
     }
 
     @Override
-    public void generateErrorMessage(String message, String methodName) {
+    public void generateErrorMessage(String message, MethodDescription mDesc) {
+
+        ObjectDescription oDesc = getObjectDescription(getObject(mDesc.getObjectID()));
+        String methodName = VLangUtils.shortNameFromFullClassName(oDesc.getName())
+                + "." + mDesc.getMethodName() + "()";
+
         MessageBox mBox = getMainCanvas().getMessageBox();
-        mBox.addUniqueMessage("Method \"" + methodName + "\"can't be invoked:",
+        mBox.addUniqueMessage("Method \"" + methodName + "\" can't be invoked:",
                 message,
                 null, MessageType.ERROR);
 
     }
 
     @Override
-    public void generateErrorMessage(String methodName, Throwable ex) {
-        MessageBox mBox = getMainCanvas().getMessageBox();
+    public void generateErrorMessage(MethodDescription mDesc, Throwable ex) {
 
+        ObjectDescription oDesc = getObjectDescription(getObject(mDesc.getObjectID()));
+        String methodName = VLangUtils.shortNameFromFullClassName(oDesc.getName())
+                + "." + mDesc.getMethodName() + "()";
+
+        MessageBox mBox = getMainCanvas().getMessageBox();
 
         if (ex instanceof VWorkflowException) {
 
@@ -873,7 +882,7 @@ public class VisualObjectInspector extends ObjectInspector {
             mBox.addMessage(vex.getTitle(), vex.getMessage(), MessageType.ERROR);
         } else {
 
-            mBox.addUniqueMessage("Method \"" + methodName + "\"can't be invoked:",
+            mBox.addUniqueMessage("Method \"" + methodName + "\" can't be invoked:",
                     ex.toString(),
                     null, MessageType.ERROR);
         }

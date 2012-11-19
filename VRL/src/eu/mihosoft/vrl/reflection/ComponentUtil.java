@@ -55,6 +55,8 @@ package eu.mihosoft.vrl.reflection;
 import eu.mihosoft.vrl.annotation.ComponentInfo;
 import eu.mihosoft.vrl.annotation.ObjectInfo;
 import eu.mihosoft.vrl.dialogs.RemoveComponentDialog;
+import eu.mihosoft.vrl.io.IOUtil;
+import eu.mihosoft.vrl.io.VJarUtil;
 import eu.mihosoft.vrl.io.vrlx.AbstractCode;
 import eu.mihosoft.vrl.lang.InstanceCreator;
 import eu.mihosoft.vrl.lang.ProjectBuilder;
@@ -67,6 +69,7 @@ import eu.mihosoft.vrl.visual.MessageType;
 import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.net.URL;
 import java.util.Collection;
@@ -513,4 +516,21 @@ public class ComponentUtil {
             return true;
         }
     }
+    
+    public static String getComponentCode(Class<?> c) {
+        
+        String packageName = VLangUtils.dotToSlash(VLangUtils.packageNameFromFullClassName(c.getName()));
+        String classCodeName = VLangUtils.shortNameFromFullClassName(c.getName())+".groovy";
+        
+        String resourceName = "/" + packageName + "/" + classCodeName;
+        InputStream in = c.getResourceAsStream(resourceName);
+        
+        if (in==null) {
+            return null;
+        }
+        
+        return IOUtil.convertStreamToString(in);
+    }
+    
+ 
 }

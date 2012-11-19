@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.types;
 
 import eu.mihosoft.vrl.annotation.TypeInfo;
@@ -65,38 +64,37 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Group;
+import javax.media.j3d.OrderedGroup;
 import javax.media.j3d.Shape3D;
 import javax.media.j3d.Switch;
 import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransparencyAttributes;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 
 /**
- * TypeRepresentation for <code>eu.mihosoft.vrl.v3d.Shape3DArray</code>.
- * The easiest
- * way to create 3D shapes is to use {@link eu.mihosoft.vrl.v3d.VTriangleArray}
- * or {@link eu.mihosoft.vrl.v3d.TxT2Geometry}. This type representation works
- * just like {@link Shape3DType} but can visualize several Shape3D objects
- * at once.
- * 
- * For simple scenarios, Instead
- * of directly using Java3D objects (Shape3D) it is suggested to use
- * {@link eu.mihosoft.vrl.v3d.VGeometry3D} objects and the corresponding type
- * representation.
- * 
- * <p>Sample:</p>
- * <br/>
- * <img src="doc-files/shape3d-default-01.png"/>
- * <br/>
+ * TypeRepresentation for
+ * <code>eu.mihosoft.vrl.v3d.Shape3DArray</code>. The easiest way to create 3D
+ * shapes is to use {@link eu.mihosoft.vrl.v3d.VTriangleArray} or
+ * {@link eu.mihosoft.vrl.v3d.TxT2Geometry}. This type representation works just
+ * like {@link Shape3DType} but can visualize several Shape3D objects at once.
+ *
+ * For simple scenarios, Instead of directly using Java3D objects (Shape3D) it
+ * is suggested to use {@link eu.mihosoft.vrl.v3d.VGeometry3D} objects and the
+ * corresponding type representation.
+ *
+ * <p>Sample:</p> <br/> <img src="doc-files/shape3d-default-01.png"/> <br/>
  *
  * @see eu.mihosoft.vrl.v3d.VTriangleArray
  * @see eu.mihosoft.vrl.v3d.Shape3DArray
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-@TypeInfo(type=Shape3DArray.class, input = false, output = true, style="default")
+@TypeInfo(type = Shape3DArray.class, input = false, output = true, style = "default")
 public class Shape3DArrayType extends TypeRepresentationBase {
 
     private static final long serialVersionUID = -4516600302355830671L;
@@ -111,9 +109,14 @@ public class Shape3DArrayType extends TypeRepresentationBase {
     private Dimension previousVCanvas3DSize;
     protected Dimension minimumVCanvas3DSize;
     public static String ORIENTATION_KEY = "orientation";
+    /**
+     * Defines whether to force branch group in favour of ordered group.
+     */
+    private boolean forceBranchGroup = false;
 
     /**
      * Constructor.
+     *
      * @param canvas the 3D canvas
      * @param universeCreator the universe creator
      */
@@ -153,6 +156,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
     /**
      * Initializes the 3D view of this type representation.
+     *
      * @param canvas the 3D canvas
      * @param universeCreator the universe creator
      */
@@ -232,7 +236,6 @@ public class Shape3DArrayType extends TypeRepresentationBase {
         JMenuItem item = new JMenuItem("Reset View");
 
         item.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 Transform3D t3d = new Transform3D();
@@ -246,13 +249,11 @@ public class Shape3DArrayType extends TypeRepresentationBase {
         item = new JMenuItem("Save as Image");
 
         item.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
 
                 int w = 4096;
                 int h = (int) (((double) canvas.getHeight() / (double) canvas.getWidth()) * w);
-
 
                 BufferedImage img = getOffscreenCanvas().doRender(w, h);
 
@@ -261,32 +262,30 @@ public class Shape3DArrayType extends TypeRepresentationBase {
         });
 
         canvas.getMenu().add(item);
-        
+
         canvas.getMenu().addSeparator();
-        
+
         item = new JMenuItem("Increase Zoom Speed");
 
         item.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
 
                 getUniverseCreator().setZoomFactor(
-                        getUniverseCreator().getZoomFactor()+0.5);
+                        getUniverseCreator().getZoomFactor() + 0.5);
             }
         });
 
         canvas.getMenu().add(item);
-        
+
         item = new JMenuItem("Decrease Zoom Speed");
 
         item.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
 
                 getUniverseCreator().setZoomFactor(
-                        getUniverseCreator().getZoomFactor()-0.5);
+                        getUniverseCreator().getZoomFactor() - 0.5);
             }
         });
 
@@ -310,9 +309,25 @@ public class Shape3DArrayType extends TypeRepresentationBase {
                 shapeParents[1].setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
                 shapeParents[1].setCapability(BranchGroup.ALLOW_DETACH);
 
-                for (Shape3D s : shapes) {
-                    shapeParents[1].addChild(s);
+                Group childGroup = null;
+
+                if (!shapes.isEmpty() && !isForceBranchGroup()) {
+                    Appearance app = shapes.get(0).getAppearance();
+                    if (app != null && app.getTransparencyAttributes()!=null) {
+                        TransparencyAttributes tA = app.getTransparencyAttributes();
+                        if (tA.getTransparency() > 0) {
+                            childGroup = new OrderedGroup();
+                        }
+                    }
                 }
+                if (childGroup == null) {
+                    childGroup = new BranchGroup();
+                }
+                for (Shape3D s : shapes) {
+                    childGroup.addChild(s);
+                }
+
+                shapeParents[1].addChild(childGroup);
 
                 shapeGroups[1].addChild(shapeParents[1]);
                 visibleNodes.set(1, true);
@@ -329,9 +344,26 @@ public class Shape3DArrayType extends TypeRepresentationBase {
                 shapeParents[0].setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
                 shapeParents[0].setCapability(BranchGroup.ALLOW_DETACH);
 
-                for (Shape3D s : shapes) {
-                    shapeParents[0].addChild(s);
+                Group childGroup = null;
+
+                if (!shapes.isEmpty() && !isForceBranchGroup()) {
+                    Appearance app = shapes.get(0).getAppearance();
+                    if (app != null && app.getTransparencyAttributes()!=null) {
+                        TransparencyAttributes tA = app.getTransparencyAttributes();
+                        if (tA.getTransparency() > 0) {
+                            childGroup = new OrderedGroup();
+                        }
+                    }
                 }
+                if (childGroup == null) {
+                    childGroup = new BranchGroup();
+                }
+                for (Shape3D s : shapes) {
+                    childGroup.addChild(s);
+                }
+
+                shapeParents[0].addChild(childGroup);
+
                 shapeGroups[0].addChild(shapeParents[0]);
                 visibleNodes.set(0, true);
                 visibleNodes.set(1, false);
@@ -376,6 +408,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
     /**
      * Defines the Vcanvas3D size by evaluating a groovy script.
+     *
      * @param script the script to evaluate
      */
     private void setVCanvas3DSizeFromValueOptions(Script script) {
@@ -407,6 +440,16 @@ public class Shape3DArrayType extends TypeRepresentationBase {
             if (property != null) {
                 h = (Integer) property;
             }
+            
+            property = null;
+
+            if (getValueOptions().contains("forceBranchGroup")) {
+                property = script.getProperty("forceBranchGroup");
+            }
+
+            if (property != null) {
+                setForceBranchGroup((Boolean) property);
+            }
         }
 
         if (w != null && h != null && getCanvas() != null) {
@@ -421,6 +464,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
     /**
      * Defines render options by evaluating a groovy script.
+     *
      * @param script the script to evaluate
      */
     private void setRenderOptionsFromValueOptions(Script script) {
@@ -558,6 +602,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
     /**
      * Returns the canvas used for rendering
+     *
      * @return the canvas used for rendering
      */
     public VCanvas3D getCanvas() {
@@ -566,6 +611,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
     /**
      * Returns the canvas used for offscreen rendering
+     *
      * @return the canvas used for offscreen rendering
      */
     public VOffscreenCanvas3D getOffscreenCanvas() {
@@ -574,8 +620,9 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
     /**
      * Indicates whether to empty view of the type representation.
-     * @return <code>true</code> if the view will be emptied;
-     *         <code>false</code> otherwise
+     *
+     * @return <code>true</code> if the view will be emptied; <code>false</code>
+     * otherwise
      */
     public boolean isDoEmpty() {
         return doEmpty;
@@ -583,6 +630,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
     /**
      * Returns the universe creator.
+     *
      * @return the universe creator
      */
     public UniverseCreator getUniverseCreator() {
@@ -669,10 +717,28 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 //        setValueOptions("width=" + canvas3DSize.width + ";"
 //                + "height=" + canvas3DSize.height);
 //    }
-    
+
     @Override
     public boolean noSerialization() {
         // we cannot serialize shape3d objects
         return true;
+    }
+
+    /**
+     * Indicates whether to force branch group in favour of ordered group.
+     *
+     * @return the state
+     */
+    public boolean isForceBranchGroup() {
+        return forceBranchGroup;
+    }
+
+    /**
+     * Defines whether to force branch group in favour of ordered group.
+     *
+     * @param forceBranchGroup the state to set
+     */
+    public void setForceBranchGroup(boolean forceBranchGroup) {
+        this.forceBranchGroup = forceBranchGroup;
     }
 }

@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.lang.groovy;
 
 import eu.mihosoft.vrl.annotation.AskIfCloseMethodInfo;
@@ -133,6 +132,7 @@ public class GroovyCodeEditorComponent implements Serializable {
     private transient VisualCanvas canvas;
     private transient VButton createInstanceBtn;
     private transient DefaultMethodRepresentation mRep;
+    private boolean viewOnly;
 
     public GroovyCodeEditorComponent() {
     }
@@ -219,6 +219,10 @@ public class GroovyCodeEditorComponent implements Serializable {
 
     @AskIfCloseMethodInfo
     private boolean askIfClose() {
+        
+        if (isViewOnly()) {
+            return false;
+        }
 
         updateMrep();
 
@@ -304,6 +308,10 @@ public class GroovyCodeEditorComponent implements Serializable {
         updateEditorTitle(tRep.getEditor().getEditor().getText(), false);
         updateCodeEditorsOfSameClass();
         checkIfEditorRepresentsNewestVersion();
+
+        if (isViewOnly()) {
+            mRep.getInvokeButtonContainer().setVisible(false);
+        }
     }
 
     private void updateEditorTitle(String code, boolean representsCurrent) {
@@ -459,52 +467,54 @@ public class GroovyCodeEditorComponent implements Serializable {
                     }
                 });
 
-        tRep.getEditor().getEditor().addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent arg0) {
-                //throw new UnsupportedOperationException("Not supported yet.");
-                if (arg0.isShiftDown()
-                        && arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+        if (!isViewOnly()) {
+            tRep.getEditor().getEditor().addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent arg0) {
+                    //throw new UnsupportedOperationException("Not supported yet.");
+                    if (arg0.isShiftDown()
+                            && arg0.getKeyCode() == KeyEvent.VK_ENTER) {
 
-                    Thread th = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            compileAndAddToCanvas();
-                        }
-                    });
+                        Thread th = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                compileAndAddToCanvas();
+                            }
+                        });
 
-                    th.start();
+                        th.start();
 
-                    arg0.consume();
+                        arg0.consume();
+                    }
                 }
-            }
 
-            @Override
-            public void keyReleased(KeyEvent arg0) {
+                @Override
+                public void keyReleased(KeyEvent arg0) {
 //                if (!code.equals(getCurrentCodeFromView())) {
 //                    removeCreateInstanceBtn();
 //                }
-            }
-        });
-
-        vObj.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent arg0) {
-                if (arg0.isShiftDown()
-                        && arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-                    Thread th = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            compileAndAddToCanvas();
-                        }
-                    });
-
-                    th.start();
-
-                    arg0.consume();
                 }
-            }
-        });
+            });
+
+            vObj.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent arg0) {
+                    if (arg0.isShiftDown()
+                            && arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+                        Thread th = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                compileAndAddToCanvas();
+                            }
+                        });
+
+                        th.start();
+
+                        arg0.consume();
+                    }
+                }
+            });
+        } // end if (!isViewOnly)
 
         vObj.addActionListener(new CanvasActionListener() {
             @Override
@@ -1079,11 +1089,12 @@ public class GroovyCodeEditorComponent implements Serializable {
     }
 
     /**
-     * Checks whether all code editors on the specified canvas show the
-     * newest version of the code and updates their ui accordingly.
+     * Checks whether all code editors on the specified canvas show the newest
+     * version of the code and updates their ui accordingly.
+     *
      * @param canvas canvas to update
      */
-    @MethodInfo(noGUI=true)
+    @MethodInfo(noGUI = true)
     public static void updateAllCodeEditorsOnCanvas(VisualCanvas canvas) {
         Collection<Object> editorInstances =
                 canvas.getInspector().getObjectsByClassName(
@@ -1311,5 +1322,21 @@ public class GroovyCodeEditorComponent implements Serializable {
 
         replaceVisualComponents = false;
         return true;
+    }
+
+    /**
+     * @return the viewOnly
+     */
+    @MethodInfo(noGUI=true)
+    public boolean isViewOnly() {
+        return viewOnly;
+    }
+
+    /**
+     * @param viewOnly the viewOnly to set
+     */
+    @MethodInfo(noGUI=true)
+    public void setViewOnly(boolean viewOnly) {
+        this.viewOnly = viewOnly;
     }
 }

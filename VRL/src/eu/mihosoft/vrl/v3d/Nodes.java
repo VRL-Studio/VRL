@@ -73,6 +73,9 @@ public class Nodes {
     private float xDimension;
     private float yDimension;
     private float zDimension;
+    
+    private float scaleFactor;
+    private Vector3f offset;
 
     /**
      * Adds a node to this collection.
@@ -120,14 +123,12 @@ public class Nodes {
      * Centers the nodes.
      */
     public void centerNodes() {
-        Vector3f offset = getCenterOffset();
-
-
+        offset = getCenterOffset();
 
         float maxDimension = Math.max(xDimension, yDimension);
         maxDimension = Math.max(maxDimension, zDimension);
 
-        float scaleFactor = 10 / maxDimension;
+        scaleFactor = 10 / maxDimension;
 
         for (Object o : nodes.keySet()) {
             Node n = nodes.get(o);
@@ -147,5 +148,16 @@ public class Nodes {
 
             n.setLocation(location);
         }
+    }
+
+    /**
+     * @return the scaleFactor
+     */
+    public float getScaleFactor() {
+        return scaleFactor;
+    }
+    
+    public Vector3f getOffset() {
+        return offset;
     }
 }

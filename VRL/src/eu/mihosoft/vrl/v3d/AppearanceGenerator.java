@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.v3d;
 
 import eu.mihosoft.vrl.annotation.ParamInfo;
@@ -82,18 +81,22 @@ public class AppearanceGenerator implements Serializable {
      * OpenGL FAQ</a>
      */
     public Appearance getColoredAppearance(Color color, Float polygonOffset, int vertexColoringType, boolean volumeRendering) {
-        Appearance a = new Appearance();
-        PolygonAttributes pa = new PolygonAttributes();
-        pa.setCullFace(PolygonAttributes.CULL_NONE);  // see both sides of shape
-        pa.setPolygonMode(PolygonAttributes.POLYGON_FILL);
-        // push back in z-buffer to prevent drawing bugs when combine solid
-        // with wireframe
-        // reference:
-        //   http://www.opengl.org/resources/faq/technical/polygonoffset.htm
-        pa.setBackFaceNormalFlip(true);
-        pa.setPolygonOffset(polygonOffset);
-        pa.setPolygonOffsetFactor(polygonOffset);
-        a.setPolygonAttributes(pa);
+        Appearance appearance = new Appearance();
+
+        if (!volumeRendering) {
+
+            PolygonAttributes pa = new PolygonAttributes();
+            pa.setCullFace(PolygonAttributes.CULL_NONE);  // see both sides of shape
+            pa.setPolygonMode(PolygonAttributes.POLYGON_FILL);
+            // push back in z-buffer to prevent drawing bugs when combine solid
+            // with wireframe
+            // reference:
+            //   http://www.opengl.org/resources/faq/technical/polygonoffset.htm
+            pa.setBackFaceNormalFlip(true);
+            pa.setPolygonOffset(polygonOffset);
+            pa.setPolygonOffsetFactor(polygonOffset);
+            appearance.setPolygonAttributes(pa);
+        }
 
 //        LineAttributes la = new LineAttributes();
 //        la.setLineAntialiasingEnable(true);
@@ -106,29 +109,43 @@ public class AppearanceGenerator implements Serializable {
         float r = color.getRed() / 255.f;
         float g = color.getGreen() / 255.f;
         float b = color.getBlue() / 255.f;
+        float a = color.getAlpha() / 255.f;
 
-        mat.setDiffuseColor(r, g, b);
-//        mat.setDiffuseColor(1.f, 0.4f, 0.1f);
+       
+//        if (volumeRendering) {
+//            mat.setCapability(Material.ALLOW_COMPONENT_WRITE);
+//            mat.setAmbientColor(r, g, b);
+//            mat.setEmissiveColor(r, g, b);
+//            mat.setSpecularColor(r, g, b);
+//        }
+//        else {
+//            mat.setSpecularColor(1.f, 1.f, 1.f);
+//        }
+        
+//        mat.setAmbientColor(r, g, b);
+        
+        
         mat.setSpecularColor(1.f, 1.f, 1.f);
+        mat.setDiffuseColor(r, g, b); 
+        
         mat.setShininess(20.f);
 
-        if (!volumeRendering) {
+//        if (!volumeRendering) {
             mat.setLightingEnable(true);
-        }
+//        }
 
         mat.setColorTarget(vertexColoringType);
 
         if (volumeRendering) {
-            float alpha = 0.5f;
             TransparencyAttributes ta = new TransparencyAttributes();
-            ta.setTransparencyMode(TransparencyAttributes.BLENDED);
-            ta.setTransparency(alpha);
-            a.setTransparencyAttributes(ta);
+            ta.setTransparencyMode(TransparencyAttributes.BLEND_ZERO);
+            ta.setTransparency(1.f - a);
+            appearance.setTransparencyAttributes(ta);
         }
 
-        a.setMaterial(mat);
+        appearance.setMaterial(mat);
 
-        return a;
+        return appearance;
     }
 
     /**

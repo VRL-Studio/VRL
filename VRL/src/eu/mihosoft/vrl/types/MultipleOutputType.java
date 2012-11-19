@@ -53,10 +53,7 @@
 package eu.mihosoft.vrl.types;
 
 import eu.mihosoft.vrl.annotation.TypeInfo;
-import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
 import eu.mihosoft.vrl.reflection.TypeRepresentationContainer;
-import eu.mihosoft.vrl.reflection.VisualCanvas;
-import eu.mihosoft.vrl.visual.DataProcessingMode;
 import groovy.lang.Script;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -193,5 +190,10 @@ public class MultipleOutputType extends ArrayBaseType {
                 updateMinimizeState();
             }
         }
+    }
+    
+    @Override
+    public boolean noSerialization() {
+        return true;
     }
 }

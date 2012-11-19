@@ -57,16 +57,10 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.LineNumberReader;
 import java.io.Serializable;
-import java.io.StreamTokenizer;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.StringTokenizer;
 import javax.media.j3d.Geometry;
-import javax.media.j3d.TriangleArray;
 import javax.vecmath.Point3f;
-import javax.vecmath.Vector3f;
 
 /**
  * <p>Converts simple text files to java 3d geometries.</p>
@@ -151,7 +145,7 @@ public class TxT2Geometry implements Serializable {
             nodes.addNode(n.getIndex(), n);
         }
 
-        nodes.centerNodes();
+//        nodes.centerNodes();
         
         for (int i = 0; i < numberOfTriangles; i++) {
             stringTokenizer = new StringTokenizer(reader.readLine());
@@ -170,6 +164,8 @@ public class TxT2Geometry implements Serializable {
             // add triangle to triangle array
             triangleArray.addTriangle(t);
         }
+        
+        triangleArray.centerNodes();
 
         return triangleArray;
     }
