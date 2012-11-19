@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.annotation.*;
@@ -78,7 +77,7 @@ import javax.naming.spi.DirStateFactory.Result;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public class ObjectInspector  {
+public class ObjectInspector {
 
     /**
      * the inspector's object descriptions
@@ -89,7 +88,6 @@ public class ObjectInspector  {
      */
     private IDArrayList<ObjectEntry> objects;
 
-
     /**
      * Constructor.
      *
@@ -98,16 +96,19 @@ public class ObjectInspector  {
         objects = new IDArrayList<ObjectEntry>();
         objectDescriptions = new HashSet<ObjectDescription>();
     }
-    
-    
+
     /**
      * Generates a new error message based on the excpetion message.
      *
      * @param message the rror message
      */
-    public void generateErrorMessage(String message, String methodName) {
+    public void generateErrorMessage(String message, MethodDescription mDesc) {
+
+        ObjectDescription oDesc = getObjectDescription(getObject(mDesc.getObjectID()));
+        String methodName = oDesc.getName() + "." + mDesc.getMethodName() + "()";
+
         System.out.println("Method \""
-                + methodName + "\"can't be invoked:" + message);
+                + methodName + "\" can't be invoked:" + message);
     }
 
     /**
@@ -115,10 +116,14 @@ public class ObjectInspector  {
      *
      * @param message the rror message
      */
-    public void generateErrorMessage(String methodName,
+    public void generateErrorMessage(MethodDescription mDesc,
             Throwable ex) {
+
+        ObjectDescription oDesc = getObjectDescription(getObject(mDesc.getObjectID()));
+        String methodName = oDesc.getName() + "." + mDesc.getMethodName() + "()";
+
         System.out.println("Method \""
-                + methodName + "\"can't be invoked:" + ex.toString());
+                + methodName + "\" can't be invoked:" + ex.toString());
     }
 
     /**
@@ -133,6 +138,8 @@ public class ObjectInspector  {
         VParamUtil.throwIfNull(methodDescription);
 
         Object o = getObject(methodDescription.getObjectID());
+
+        ObjectDescription oDesc = getObjectDescription(o);
 
         if (o == null) {
             throw new IllegalStateException("Object must not be null!");
@@ -163,7 +170,7 @@ public class ObjectInspector  {
                         ">> ProxyObject: wrong type of return value!");
                 generateErrorMessage(">> ProxyObject:"
                         + " wrong type of return value!",
-                        methodDescription.getMethodName());
+                        methodDescription);
             }
         } else if (methodDescription.getMethodType() == MethodType.DEFAULT
                 || methodDescription.getMethodType() == MethodType.CUSTOM_REFERENCE) {
@@ -186,14 +193,14 @@ public class ObjectInspector  {
                         log(Level.SEVERE, null, ex);
                 generateErrorMessage(methodDescription.getMethodName()
                         + "(): " + ex.toString(),
-                        methodDescription.getMethodName());
+                        methodDescription);
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(ObjectInspector.class.getName()).
                         log(Level.SEVERE, null, ex);
                 generateErrorMessage(
                         methodDescription.getMethodName()
                         + "(): " + ex.toString(),
-                        methodDescription.getMethodName());
+                        methodDescription);
             } catch (IllegalArgumentException ex) {
                 System.out.println(">> ObjectInspector:"
                         + " invoked method with wrong arguments!");
@@ -229,13 +236,12 @@ public class ObjectInspector  {
 
                 generateErrorMessage(methodDescription.getMethodName()
                         + "(): method invoked with wrong arguments!",
-                        methodDescription.getMethodName());
+                        methodDescription);
 
             } catch (InvocationTargetException ex) {
                 Logger.getLogger(ObjectInspector.class.getName()).
                         log(Level.SEVERE, null, ex);
-                generateErrorMessage(methodDescription.getMethodName()
-                        + "(): ", ex.getCause());
+                generateErrorMessage(methodDescription, ex.getCause());
                 throw ex;
 
             } catch (SecurityException ex) {
@@ -244,7 +250,7 @@ public class ObjectInspector  {
                 generateErrorMessage(methodDescription.getMethodName()
                         + "(): "
                         + ex.toString(),
-                        methodDescription.getMethodName());
+                        methodDescription);
             }
         }// end else if (o instanceof ProxyObject)
     }
@@ -593,7 +599,7 @@ public class ObjectInspector  {
                 // Method Annotations
                 Annotation[] annotations = theMethods[i].getAnnotations();
                 MethodInfo methodInfo = null;
-                
+
                 OutputInfo outputInfo = null;
 
                 boolean interactive = true;
@@ -610,10 +616,10 @@ public class ObjectInspector  {
 
                         methodInfo = n;
                     }
-                    
-                     if (a.annotationType().equals(OutputInfo.class)) {
-                         outputInfo = (OutputInfo) a;
-                     }
+
+                    if (a.annotationType().equals(OutputInfo.class)) {
+                        outputInfo = (OutputInfo) a;
+                    }
                 }
 
                 if (theMethods[i].getAnnotation(ReferenceMethodInfo.class) != null) {
