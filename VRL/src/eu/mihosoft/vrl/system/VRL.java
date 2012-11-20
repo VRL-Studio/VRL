@@ -2069,6 +2069,15 @@ public class VRL {
                     getPropertyFolderManager().getPluginFolder(),
                     f.getName());
 
+            // delete previous cache:
+            File cacheFile = new File(destination.getAbsolutePath() + ".xml");
+            System.out.print(" --> deleting cachefile: " + cacheFile.getName() + " ");
+            if (!IOUtil.deleteDirectory(cacheFile)) {
+               System.out.println("[failed]");
+            } else {
+                System.out.println("[ok]");
+            }
+
             if (!IOUtil.move(f, destination)) {
 
                 IOException ex = new IIOException(
