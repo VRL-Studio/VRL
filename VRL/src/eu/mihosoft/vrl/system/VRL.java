@@ -1977,6 +1977,13 @@ public class VRL {
         return actionDelegator;
     }
 
+    /**
+     * Installs the specified plugin.
+     *
+     * @param f plugin to install
+     * @param installAction install action (usually a dialog based
+     * implementation)
+     */
     public static void installPlugin(File f, InstallPluginAction installAction) {
 
         if (installAction != null) {
@@ -2015,6 +2022,26 @@ public class VRL {
                 return;
             }
         }
+
+        // copy cachefile to updates folder
+        File cacheFileSrc = new File(
+                getPropertyFolderManager().getPluginFolder().
+                getAbsoluteFile(),
+                f.getName() + ".xml");
+
+        File cacheFileDst = new File(
+                getPropertyFolderManager().getPluginUpdatesFolder().
+                getAbsoluteFile(),
+                f.getName() + ".xml");
+        try {
+            IOUtil.copyFile(cacheFileSrc, cacheFileDst);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(VRL.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VRL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
 
         if (installAction != null) {
             installAction.analyzeStop(f);
@@ -2069,14 +2096,21 @@ public class VRL {
                     getPropertyFolderManager().getPluginFolder(),
                     f.getName());
 
-            // delete previous cache:
-            File cacheFile = new File(destination.getAbsolutePath() + ".xml");
-            System.out.print(" --> deleting cachefile: " + cacheFile.getName() + " ");
-            if (!IOUtil.deleteDirectory(cacheFile)) {
-               System.out.println("[failed]");
+
+
+            // delete previous cache if it does not provide chache file:
+            File cacheFileDst = new File(destination.getAbsolutePath() + ".xml");
+            System.out.print(" --> deleting cachefile: " + cacheFileDst.getName() + " ");
+            if (!IOUtil.deleteDirectory(cacheFileDst)) {
+                System.out.println("[failed]");
             } else {
                 System.out.println("[ok]");
             }
+
+            File cacheFileSrc = new File(
+                    getPropertyFolderManager().getPluginUpdatesFolder().
+                    getAbsoluteFile(),
+                    f.getName() + ".xml");
 
             if (!IOUtil.move(f, destination)) {
 
@@ -2088,6 +2122,21 @@ public class VRL {
                 } else {
                     Logger.getLogger(VRL.class.getName()).
                             log(Level.SEVERE, null, ex);
+                }
+            }
+
+            if (cacheFileSrc.exists()) {
+                if (!IOUtil.move(cacheFileSrc, cacheFileDst)) {
+
+                    IOException ex = new IIOException(
+                            "Cannot move file: " + cacheFileSrc + " to plugin folder!");
+
+                    if (action != null) {
+                        action.updateFailed(ex);
+                    } else {
+                        Logger.getLogger(VRL.class.getName()).
+                                log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }
