@@ -66,7 +66,7 @@ import java.util.logging.Logger;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-class VisualInvocationObject {
+public class VisualInvocationObject {
 
     private VisualCanvas canvas;
     private Collection<DefaultMethodRepresentation> methods;
@@ -94,6 +94,8 @@ class VisualInvocationObject {
 
     public synchronized void invoke() {
         final MessageBox mBox = canvas.getMessageBox();
+        
+        running = true;
 
         if (thread == null) {
             thread = new VThread() {
@@ -148,6 +150,9 @@ class VisualInvocationObject {
                                 VisualInvocationObject.class.getName()).
                                 log(Level.SEVERE, null, ex);
                     }
+                    
+                    System.out.println("--- DONE ---");
+                    
                     thread = null;
                     running = false;
                 }
