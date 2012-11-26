@@ -289,7 +289,7 @@ public class Patterns {
     /**
      * Creates a pattern to match opening and closing vrl tags with the
      * specified tag name. All characters between the tags is captured into the
-     * first backreference. Backreferences are accesspible in the replacement
+     * first backreference. Backreferences are accessible in the replacement
      * text via
      * <code>$1, $2, $3 etc.</code>.
      *

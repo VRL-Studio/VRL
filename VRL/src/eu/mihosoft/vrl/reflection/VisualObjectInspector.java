@@ -51,6 +51,7 @@
  */
 package eu.mihosoft.vrl.reflection;
 
+import eu.mihosoft.vrl.asm.CompilationUnit;
 import eu.mihosoft.vrl.lang.InstanceCreator;
 import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.lang.VWorkflowException;
@@ -60,6 +61,7 @@ import eu.mihosoft.vrl.lang.visual.OutputObject;
 import eu.mihosoft.vrl.lang.visual.StartObject;
 import eu.mihosoft.vrl.lang.visual.StopObject;
 import eu.mihosoft.vrl.system.VParamUtil;
+import eu.mihosoft.vrl.system.VRL;
 import eu.mihosoft.vrl.visual.CanvasWindow;
 import eu.mihosoft.vrl.visual.Connector;
 import eu.mihosoft.vrl.visual.IDArrayList;
@@ -855,6 +857,8 @@ public class VisualObjectInspector extends ObjectInspector {
     @Override
     public void generateErrorMessage(String message, MethodDescription mDesc) {
 
+        super.generateErrorMessage(message, mDesc);
+
         ObjectDescription oDesc = getObjectDescription(getObject(mDesc.getObjectID()));
         String methodName = VLangUtils.shortNameFromFullClassName(oDesc.getName())
                 + "." + mDesc.getMethodName() + "()";
@@ -868,6 +872,8 @@ public class VisualObjectInspector extends ObjectInspector {
 
     @Override
     public void generateErrorMessage(MethodDescription mDesc, Throwable ex) {
+
+        super.generateErrorMessage(mDesc, ex);
 
         ObjectDescription oDesc = getObjectDescription(getObject(mDesc.getObjectID()));
         String methodName = VLangUtils.shortNameFromFullClassName(oDesc.getName())
@@ -885,6 +891,38 @@ public class VisualObjectInspector extends ObjectInspector {
             mBox.addUniqueMessage("Method \"" + methodName + "\" can't be invoked:",
                     ex.toString(),
                     null, MessageType.ERROR);
+        }
+
+        System.err.println(ex.getMessage());
+
+        Collection<CompilationUnit> classesInSession =
+                VRL.getCurrentProjectController().getNamesOfDefinedClasses();
+
+        Collection<String> classNamesInSession = new ArrayList<String>();
+
+        for (CompilationUnit cu : classesInSession) {
+            classNamesInSession.addAll(cu.getClassNames());
+        }
+
+        for (StackTraceElement ste : ex.getStackTrace()) {
+
+            int lineNumber = ste.getLineNumber() - 3;
+
+            String className = ste.getClassName();
+
+            String msg = " --> at "
+                    + ste.getClassName() + "." + ste.getMethodName()
+                    + "(" + ste.getFileName() + ":" + lineNumber + ")";
+
+            if (classNamesInSession.contains(className)) {
+                System.err.println(
+                        "\n--------------------------\n"
+                        + msg + " <-- PROJECT CLASS!\n"
+                        +"--------------------------\n");
+            } else {
+                System.err.println(msg);
+            }
+
         }
 
     }
