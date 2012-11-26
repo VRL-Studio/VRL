@@ -137,7 +137,7 @@ public class GroovyFunction3D implements Serializable, Function3D {
     public Double run(Double x, Double y, Double z) {
         getScript().setProperty(getXVarName(), x);
         getScript().setProperty(getYVarName(), y);
-        getScript().setProperty(getYVarName(), z);
+        getScript().setProperty(getZVarName(), z);
 
         getScript().run();
 
