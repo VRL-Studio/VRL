@@ -108,11 +108,11 @@ public class CallTrace {
         return callStack;
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-
-        System.out.println(getClass().getName() + ": Finalize!!!");
-
-        super.finalize();
-    }
+//    @Override
+//    protected void finalize() throws Throwable {
+//
+//        System.out.println(getClass().getName() + ": Finalize!!!");
+//
+//        super.finalize();
+//    }
 }

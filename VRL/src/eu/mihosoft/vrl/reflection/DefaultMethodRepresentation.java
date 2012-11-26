@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.system.VThread;
@@ -722,11 +721,9 @@ public class DefaultMethodRepresentation extends VComponent
 //
 //                            mBox.addUniqueMessage("Can't invoke method:", text,
 //                                    null, MessageType.ERROR);
-
-                            Logger.getLogger(
-                                    DefaultMethodRepresentation.class.getName()).
-                                    log(Level.SEVERE, null, ex);
-
+//                            Logger.getLogger(
+//                                    DefaultMethodRepresentation.class.getName()).
+//                                    log(Level.SEVERE, null, ex);
                         }
 
                         thread = null;
@@ -735,19 +732,21 @@ public class DefaultMethodRepresentation extends VComponent
                         try {
                             invoke();
                         } catch (Exception ex) {
+                            
+                            // error output is now handled by objectinspector
+                            // TODO cleanup
+                            
 //                            MessageBox mBox =
 //                                    getParentObject().getMainCanvas().
 //                                    getMessageBox();
-
 //                            //TODO improve message text
 //                            String text = "Unexpected error: " + ex.toString();
 //
 //                            mBox.addUniqueMessage("Can't invoke method:", text,
 //                                    null, MessageType.ERROR);
-
-                            Logger.getLogger(
-                                    DefaultMethodRepresentation.class.getName()).
-                                    log(Level.SEVERE, null, ex);
+//                            Logger.getLogger(
+//                                    DefaultMethodRepresentation.class.getName()).
+//                                    log(Level.SEVERE, null, ex);
                         }
                         thread = null;
                         calledByUser = false;

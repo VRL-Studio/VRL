@@ -136,6 +136,9 @@ public class VisualInvocationObject {
                             }
                         }
                     } catch (Throwable ex) {
+                        
+                        // error output is now handled by objectinspector
+                        // TODO cleanup
 
 //                        String message = ex.toString();
 //
@@ -146,12 +149,10 @@ public class VisualInvocationObject {
 //                        mBox.addMessage("Cannot invoke Method:",
 //                                message, MessageType.ERROR);
 
-                        Logger.getLogger(
-                                VisualInvocationObject.class.getName()).
-                                log(Level.SEVERE, null, ex);
+//                        Logger.getLogger(
+//                                VisualInvocationObject.class.getName()).
+//                                log(Level.SEVERE, null, ex);
                     }
-                    
-                    System.out.println("--- DONE ---");
                     
                     thread = null;
                     running = false;
