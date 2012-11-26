@@ -1056,7 +1056,7 @@ public class DefaultMethodRepresentation extends VComponent
             } catch (Exception ex) {
                 MessageBox mBox =
                         getParentObject().getMainCanvas().getMessageBox();
-                String message = "unknown error!";
+                String message = "see stack trace for details!";
                 if (ex.getMessage() != null) {
                     message = ex.toString();
                 }

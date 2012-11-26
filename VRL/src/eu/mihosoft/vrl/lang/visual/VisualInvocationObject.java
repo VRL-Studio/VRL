@@ -53,14 +53,11 @@
 package eu.mihosoft.vrl.lang.visual;
 
 import eu.mihosoft.vrl.reflection.DefaultMethodRepresentation;
-import eu.mihosoft.vrl.reflection.DefaultObjectRepresentation;
-import eu.mihosoft.vrl.system.VThread;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
+import eu.mihosoft.vrl.system.VThread;
 import eu.mihosoft.vrl.visual.MessageBox;
 import eu.mihosoft.vrl.visual.MessageType;
 import java.util.Collection;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
