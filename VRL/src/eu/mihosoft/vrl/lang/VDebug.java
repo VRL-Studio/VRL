@@ -94,6 +94,17 @@ public class VDebug {
         disableAll = false;
     }
     
+    public static void step(String id) {
+
+        if (!synchronizedContains(id)) {
+            VMessage.exception("Cannot step over breakpoint",
+                    "Position not at breakpoint [" + id + "]!");
+            return;
+        }
+
+        synchronizedPut(id, Boolean.FALSE);
+    }
+    
     public static void step() {
         for (String id : synchronizedGetKeySet()) {
             synchronizedPut(id, Boolean.FALSE);
