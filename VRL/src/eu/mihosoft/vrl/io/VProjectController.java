@@ -1753,8 +1753,8 @@ public class VProjectController {
                     "Install Bundled Project Plugins?",
                     "<html>"
                     + "<div align=\"center\">"
-                    + "This project needs additional plugins.<br>"
-                    + "Shall the bundled plugins be installed?"
+                    + "To open this project additional plugins need to be installed.<br><br>"
+                    + "Shall the bundled plugins be installed?<br>"
                     + "</div>"
                     + "</html>",
                     VDialog.DialogType.YES_NO) == VDialog.YES;
@@ -2738,6 +2738,21 @@ public class VProjectController {
         return projectPlugins;
 
     }
+    
+    private static boolean deleteProjectPluginPayloadAndClose(VProject project) {
+        File pluginPayload = new File(project.getNonVersionedPayloadFolder(), "plugins");
+        IOUtil.deleteContainedFilesAndDirs(pluginPayload);
+        
+        try {
+            project.close();
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(VProjectController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+        
+        return false;
+    }
 
     private static Collection<File> getPluginPayloadThatShallBeInstalled(
             VProject project,
@@ -2765,7 +2780,7 @@ public class VProjectController {
     }
 
     private void installPayloadPlugins(
-            VProject project, final Collection<File> pluginsToInstall,
+            final VProject project, final Collection<File> pluginsToInstall,
             final InstallPluginAction action) {
 
         if (!pluginsToInstall.isEmpty()) {
@@ -2777,10 +2792,12 @@ public class VProjectController {
                     for (File file : pluginsToInstall) {
                         VRL.installPlugin(file, action);
                     }
-
+                    
                     VDialog.showMessageDialog(getCurrentCanvas(),
                             "Installed Plugins:",
                             "VRL-Studio will be closed now. Reopen the project again.");
+                    
+                    deleteProjectPluginPayloadAndClose(project);
 
                     VRL.exit(0);
                 }
