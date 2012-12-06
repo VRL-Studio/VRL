@@ -611,7 +611,7 @@ public class IOUtil {
         if (excludes != null) {
 
             for (File f : excludes) {
-                if (dir.getPath().startsWith(f.getPath())) {
+                if (dir.getAbsolutePath().startsWith(f.getAbsolutePath())) {
                     exclude = true;
                     break;
                 }
@@ -882,18 +882,28 @@ public class IOUtil {
             File srcFolder, String... endings) {
 
         Set<File> result = new HashSet<File>();
+        
+        if (isDebugginEnabled()) {
+            for (String e : endings) {
+                System.out.println("ENDING: " + e);
+            }
+        }
 
         for (File f : srcFolder.listFiles()) {
 
 
             boolean fMatches = false;
 
+            
+            // TODO probably not sufficient to check for contains
             for (String e : endings) {
-                if (f.getAbsolutePath().endsWith(e)) {
+                if (f.getAbsolutePath().endsWith(e)
+                        || f.getPath().contains(e)) {
                     fMatches = true;
                     break;
                 }
             }
+            
             if (isDebugginEnabled()) {
                 System.out.println("Matches: [" + fMatches + "] = " + f);
             }

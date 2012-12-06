@@ -396,7 +396,7 @@ class ExistingFolderValidator extends ParameterValidatorImpl {
         }
 
         if (!((File) p).isDirectory()) {
-            return new ValidationResult(false, p, "Argument is no directory.");
+            return new ValidationResult(false, p, "Argument is no directory: " + p);
         }
 
         return ValidationResult.VALID;
@@ -420,7 +420,7 @@ class ExistingFileValidator extends ParameterValidatorImpl {
 
         if (!((File) p).exists() || ((File) p).isDirectory()) {
             return new ValidationResult(
-                    false, p, "Argument is no existing file.");
+                    false, p, "Argument is no existing file: " + p);
         }
 
         return ValidationResult.VALID;

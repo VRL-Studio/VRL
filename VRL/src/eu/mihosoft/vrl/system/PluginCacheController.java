@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.io.IOUtil;
@@ -155,6 +154,63 @@ public class PluginCacheController {
         }
     }
 
+    /**
+     * Loads plugins from the specified cache file.
+     *
+     * @param f cache file
+     * @return plugins loaded from cache file
+     */
+    public static Collection<PluginConfigurator> loadPluginsFromCache(File f) {
+
+        Collection<PluginConfigurator> result =
+                new ArrayList<PluginConfigurator>();
+
+        File parentDir = f.getParentFile();
+
+        PluginCache cache = loadCache(f);
+
+        if (cache == null) {
+            System.err.println(">> Error: cannot load cache file");
+            return result;
+        }
+
+        SplashScreenGenerator.printBootMessage(
+                ">> loading plugin from cache");
+        System.out.println(">> loading plugin from cache");
+
+        for (PluginCacheEntry pEntry : cache.getEntries()) {
+            try {
+
+                URL[] urls = new URL[]{
+                    new File(parentDir,
+                    pEntry.getJarFile()).toURI().toURL()};
+
+                ClassLoader classLoader = new URLClassLoader(urls);
+
+                PluginConfigurator pC = (PluginConfigurator) classLoader.loadClass(
+                        pEntry.getConfiguratorClass()).
+                        newInstance();
+
+                result.add(pC);
+
+            } catch (MalformedURLException ex) {
+                Logger.getLogger(PluginCacheController.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            } catch (InstantiationException ex) {
+                Logger.getLogger(PluginCacheController.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            } catch (IllegalAccessException ex) {
+                Logger.getLogger(PluginCacheController.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            } catch (ClassNotFoundException ex) {
+                Logger.getLogger(PluginCacheController.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return result;
+    }
+
 //    private static void loadCache() {
 //        ArrayList<File> jarFiles = IOUtil.listFiles(
 //                new File(Constants.PLUGIN_DIR), new String[]{".jar"});
@@ -163,12 +219,26 @@ public class PluginCacheController {
 //            loadCache(f);
 //        }
 //    }
+    /**
+     * Loads cache file of the specified plugin file.
+     *
+     * @param f plugin file
+     * @return plugin cache of the specified plugin file if the cache exists;
+     * <code>null</code> otherwise
+     */
     private static PluginCache loadCache(File f) {
-        if (!_isCacheAvailable(f)) {
-            return null;
-        }
 
-        File cacheFile = getCacheFile(f);
+        File cacheFile = f;
+
+        // if f does not end with .xml check whether cache file exists in plugin
+        // folder
+        if (!f.getName().toLowerCase().endsWith(".xml")) {
+            if (!_isCacheAvailable(f)) {
+                return null;
+            }
+
+            cacheFile = getCacheFile(f);
+        }
 
         XMLDecoder d = null;
         try {
