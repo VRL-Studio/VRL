@@ -1745,7 +1745,7 @@ public class VProjectController {
         Collection<PluginConfigurator> payloadPlugins = getProjectPluginPayload(project);
         Collection<File> payloadToInstall = getPluginPayloadThatShallBeInstalled(project, payloadPlugins);
 
-
+        boolean providesPayload = !payloadPlugins.isEmpty();
         boolean installPayload = !payloadToInstall.isEmpty();
 
         if (installPayload) {
@@ -1859,6 +1859,8 @@ public class VProjectController {
                         MessageType.INFO);
             }
             return false;
+        } else if (providesPayload) {
+            deleteProjectPluginPayloadAndFlush(project);
         }
 
 
