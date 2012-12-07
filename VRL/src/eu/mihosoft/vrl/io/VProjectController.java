@@ -1758,13 +1758,13 @@ public class VProjectController {
                     + "</div>"
                     + "</html>",
                     VDialog.DialogType.YES_NO) == VDialog.YES;
-            
+
             // user chooses NO, we don't install payload or load the project
             if (!installPayload) {
                 closeProject();
                 return false;
             }
-                    
+
         }
 
         if (installPayload) {
@@ -1860,7 +1860,7 @@ public class VProjectController {
             }
             return false;
         }
-        
+
 
         // check for required plugins
         PluginDependencyCheck check = VRL.verify(pluginDependencies);
@@ -2500,6 +2500,30 @@ public class VProjectController {
     }
 
     /**
+     * Saves all opened sessions, flushes the project (writes to archive) and
+     * exports the project with all used plugins to the specified destination.
+     *
+     * @param dest archive destination
+     * @param commitChanges defines whether to commit changes
+     * @throws IOException
+     */
+    public void export(File dst, boolean commitChanges) throws IOException {
+
+        saveAll(null, commitChanges, null, false);
+
+        includeUsedPlugins();
+
+        getProject().flush();
+        
+        File src = getProject().getFile();
+        
+        IOUtil.copyFile(src, dst);
+
+        deleteProjectPluginPayloadAndFlush(project);
+
+    }
+
+    /**
      * Returns the current canvas. This is the canvas the user currently
      * interacts with.
      *
@@ -2738,11 +2762,25 @@ public class VProjectController {
         return projectPlugins;
 
     }
-    
+
+    private static boolean deleteProjectPluginPayloadAndFlush(VProject project) {
+        File pluginPayload = new File(project.getNonVersionedPayloadFolder(), "plugins");
+        IOUtil.deleteContainedFilesAndDirs(pluginPayload);
+        try {
+            project.flush();
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(VProjectController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return false;
+    }
+
     private static boolean deleteProjectPluginPayloadAndClose(VProject project) {
         File pluginPayload = new File(project.getNonVersionedPayloadFolder(), "plugins");
         IOUtil.deleteContainedFilesAndDirs(pluginPayload);
-        
+
         try {
             project.close();
             return true;
@@ -2750,7 +2788,7 @@ public class VProjectController {
             Logger.getLogger(VProjectController.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
-        
+
         return false;
     }
 
@@ -2792,11 +2830,11 @@ public class VProjectController {
                     for (File file : pluginsToInstall) {
                         VRL.installPlugin(file, action);
                     }
-                    
+
                     VDialog.showMessageDialog(getCurrentCanvas(),
                             "Installed Plugins:",
                             "VRL-Studio will be closed now. Reopen the project again.");
-                    
+
                     deleteProjectPluginPayloadAndClose(project);
 
                     VRL.exit(0);
