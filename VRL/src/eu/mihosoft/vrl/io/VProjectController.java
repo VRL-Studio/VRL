@@ -1923,13 +1923,8 @@ public class VProjectController {
      * Adds all plugins used by this project to the payload folder of this
      * project.
      */
-    public void includeUsedPlugins() {
-        VSwingUtil.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                getCurrentCanvas().getEffectPane().startSpin();
-            }
-        });
+    private void includeUsedPlugins() {
+
 
         for (AbstractPluginDependency aPD : getProject().getProjectInfo().getPluginDependencies()) {
             PluginDependency pD = aPD.toPluginDependency();
@@ -1974,12 +1969,6 @@ public class VProjectController {
             }
         }
 
-        VSwingUtil.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                getCurrentCanvas().getEffectPane().stopSpin();
-            }
-        });
     }
 
     /**
@@ -2502,24 +2491,71 @@ public class VProjectController {
     /**
      * Saves all opened sessions, flushes the project (writes to archive) and
      * exports the project with all used plugins to the specified destination.
+     * <p> <b>Note:</b> this method will returns immediately. All work is done
+     * in a new thread. </p>
      *
      * @param dest archive destination
      * @param commitChanges defines whether to commit changes
      * @throws IOException
      */
-    public void export(File dst, boolean commitChanges) throws IOException {
+    public void export(final File dst, boolean commitChanges) throws IOException {
+
+        final boolean visualSaveIndocation =
+                VProjectController.this.isVisualSaveIndication();
+
+        VProjectController.this.setVisualSaveIndication(false);
+
+        VSwingUtil.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                VSwingUtil.deactivateEventFilter();
+                VSwingUtil.activateEventFilter(
+                        getCurrentCanvas(),
+                        getCurrentCanvas().getMessageBox(),
+                        getCurrentCanvas().getDock());
+                getCurrentCanvas().getEffectPane().startSpin();
+            }
+        });
 
         saveAll(null, commitChanges, null, false);
 
-        includeUsedPlugins();
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
 
-        getProject().flush();
+                includeUsedPlugins();
+                try {
+                    getProject().flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(VProjectController.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
-        File src = getProject().getFile();
+                File src = getProject().getFile();
+                try {
+                    IOUtil.copyFile(src, dst);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(VProjectController.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(VProjectController.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
-        IOUtil.copyFile(src, dst);
+                deleteProjectPluginPayloadAndFlush(project);
 
-        deleteProjectPluginPayloadAndFlush(project);
+                VSwingUtil.deactivateEventFilter();
+
+                VSwingUtil.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        getCurrentCanvas().getEffectPane().stopSpin();
+                    }
+                });
+
+                VProjectController.this.setVisualSaveIndication(visualSaveIndocation);
+            }
+        };
+
+        Thread t = new Thread(r);
+        t.start();
 
     }
 
