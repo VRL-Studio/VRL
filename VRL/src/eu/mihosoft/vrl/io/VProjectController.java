@@ -2514,9 +2514,9 @@ public class VProjectController {
         includeUsedPlugins();
 
         getProject().flush();
-        
+
         File src = getProject().getFile();
-        
+
         IOUtil.copyFile(src, dst);
 
         deleteProjectPluginPayloadAndFlush(project);
@@ -2834,6 +2834,13 @@ public class VProjectController {
                     VDialog.showMessageDialog(getCurrentCanvas(),
                             "Installed Plugins:",
                             "VRL-Studio will be closed now. Reopen the project again.");
+
+                    VSwingUtil.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            getCurrentCanvas().getEffectPane().startSpin();
+                        }
+                    });
 
                     deleteProjectPluginPayloadAndClose(project);
 
