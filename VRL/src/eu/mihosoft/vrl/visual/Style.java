@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.reflection.ControlFlowConnection;
@@ -186,7 +185,7 @@ public final class Style {
                 ControlFlowConnection.CONTROLFLOW_CONNECTION_THICKNESS_KEY, 5.f);
         getBaseValues().set(
                 ControlFlowConnection.ACTIVE_CONTROLFLOW_CONNECTION_THICKNESS_KEY, 2.f);
-        
+
 
         getBaseValues().set(TypeRepresentationBase.INVALID_VALUE_COLOR_KEY, Color.RED);
         getBaseValues().set(TypeRepresentationBase.VALID_VALUE_COLOR_KEY, Color.GREEN);
@@ -270,34 +269,34 @@ public final class Style {
                         Canvas.TEXT_COLOR_KEY);
             }
         }
-        
+
 //        StyleContext sc = StyleContext.getDefaultStyleContext();
         Font baseFont = RSyntaxTextArea.getDefaultFont();
-		Font boldFont = baseFont.deriveFont(Font.BOLD);
-		Font italicFont = baseFont.deriveFont(Font.ITALIC);
-                
+        Font boldFont = baseFont.deriveFont(Font.BOLD);
+        Font italicFont = baseFont.deriveFont(Font.ITALIC);
+
         scheme.getStyle(Token.COMMENT_DOCUMENTATION).foreground = Color.gray;
         scheme.getStyle(Token.COMMENT_DOCUMENTATION).font = italicFont;
         scheme.getStyle(Token.COMMENT_MULTILINE).foreground = Color.gray;
         scheme.getStyle(Token.COMMENT_MULTILINE).font = italicFont;
         scheme.getStyle(Token.COMMENT_EOL).foreground = Color.gray;
         scheme.getStyle(Token.COMMENT_EOL).font = italicFont;
-        
+
         scheme.getStyle(Token.RESERVED_WORD).font = baseFont;
-        scheme.getStyle(Token.RESERVED_WORD).foreground = new Color(60,60,240);
-        scheme.getStyle(Token.DATA_TYPE).foreground = new Color(60,60,240);
-        
+        scheme.getStyle(Token.RESERVED_WORD).foreground = new Color(60, 60, 240);
+        scheme.getStyle(Token.DATA_TYPE).foreground = new Color(60, 60, 240);
+
         scheme.getStyle(Token.LITERAL_STRING_DOUBLE_QUOTE).foreground = new Color(170, 110, 30);
         scheme.getStyle(Token.LITERAL_CHAR).foreground = new Color(170, 110, 30);
 
         scheme.getStyle(Token.LITERAL_NUMBER_DECIMAL_INT).foreground = new Color(40, 120, 220);
         scheme.getStyle(Token.LITERAL_NUMBER_FLOAT).foreground = new Color(40, 120, 220);
         scheme.getStyle(Token.LITERAL_NUMBER_HEXADECIMAL).foreground = new Color(40, 120, 220);
-        
+
         scheme.getStyle(Token.ERROR_STRING_DOUBLE).foreground = new Color(230, 0, 30);
         scheme.getStyle(Token.ERROR_CHAR).foreground = new Color(230, 0, 30);
         scheme.getStyle(Token.ERROR_NUMBER_FORMAT).foreground = new Color(230, 0, 30);
-        
+
         getBaseValues().setEditorStyle(VCodeEditor.EDITOR_STYLE_KEY, scheme);
 
     }
