@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io;
 
 import eu.mihosoft.vrl.io.vrlx.FileVersionInfo;
@@ -174,12 +173,12 @@ public final class VersionedFile implements VersionController {
     /**
      * excluded paths (relative to tmpFolder)
      */
-    private static final Collection<String> excludedPaths =
+    private final Collection<String> excludedPaths =
             new ArrayList<String>();
     /**
      * endings of ignored file, e.g., .class
      */
-    private String[] ignoredEndings = new String[]{};
+    private String[] excludedEndings = new String[]{};
     /**
      * the name of the file-info file
      */
@@ -197,8 +196,12 @@ public final class VersionedFile implements VersionController {
     private ArchiveFormat archiveFormat;
 
     static {
-        excludedPaths.add(".git/");
-        excludedPaths.add(FILE_INFO_NAME);
+        //
+    }
+
+    private void init() {
+        getExcludedPaths().add(".git/");
+        getExcludedPaths().add(FILE_INFO_NAME);
     }
 
     /**
@@ -208,6 +211,8 @@ public final class VersionedFile implements VersionController {
      * @param af archive format
      */
     public VersionedFile(File f, ArchiveFormat af) {
+
+        init();
 
         VParamUtil.throwIfNull(f, af);
 
@@ -230,6 +235,9 @@ public final class VersionedFile implements VersionController {
      * @param f file to open/create
      */
     public VersionedFile(File f) {
+
+        init();
+
         VParamUtil.throwIfNull(f);
 
         this.archiveFile = f;
@@ -252,6 +260,9 @@ public final class VersionedFile implements VersionController {
      * @param af archive format
      */
     public VersionedFile(String fileName, ArchiveFormat af) {
+
+        init();
+
         VParamUtil.throwIfNull(fileName, af);
 
         this.archiveFile = new File(fileName);
@@ -267,8 +278,9 @@ public final class VersionedFile implements VersionController {
     }
 
     /**
-     * Updates the tmp folder. If the archiveFile has changed this method
-     * copies the content of the original tmp folder to the new location.
+     * Updates the tmp folder. If the archiveFile has changed this method copies
+     * the content of the original tmp folder to the new location.
+     *
      * @throws IOException if copying failed
      */
     private void updateTmpFolder() throws IOException {
@@ -281,7 +293,7 @@ public final class VersionedFile implements VersionController {
         } else if (!newTmpFolder.equals(this.tmpFolder)) {
             IOUtil.copyDirectory(tmpFolder, newTmpFolder);
         }
-        
+
         this.tmpFolder = newTmpFolder;
     }
 
@@ -291,6 +303,9 @@ public final class VersionedFile implements VersionController {
      * @param f file to open/create
      */
     public VersionedFile(String fileName) {
+
+        init();
+
         this.archiveFile = new File(fileName);
 
         this.tmpFolder = new File(getTmpFolderPath(this.getFile(),
@@ -308,6 +323,8 @@ public final class VersionedFile implements VersionController {
      * @param af archive format
      */
     private VersionedFile(File f, String tmpFolderPrefix, ArchiveFormat af) {
+
+        init();
 
         VParamUtil.throwIfNull(f, tmpFolderPrefix, af);
 
@@ -352,8 +369,7 @@ public final class VersionedFile implements VersionController {
      * Determines if the specified file exists.
      *
      * @param f the file to check
-     * @return
-     * <code>true</code> if the specified file exists;
+     * @return <code>true</code> if the specified file exists;
      * <code>false</code> otherwise
      *
      */
@@ -396,8 +412,7 @@ public final class VersionedFile implements VersionController {
      * content folder exists.
      *
      * @param f file to check
-     * @return
-     * <code>true</code> if this file is currently opened;
+     * @return <code>true</code> if this file is currently opened;
      * <code>false</code> otherwise
      */
     public boolean isOpened() {
@@ -410,9 +425,8 @@ public final class VersionedFile implements VersionController {
      * file info. Thus, it should be used carefully to avoid unnecessary io
      * operations.</p>
      *
-     * @return
-     * <code>true</code> if this file is valid;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if this file is valid; <code>false</code>
+     * otherwise
      */
     public boolean isValid() {
 
@@ -452,9 +466,8 @@ public final class VersionedFile implements VersionController {
      * Determines if this file is a valid versioned file. Does not open the
      * file.
      *
-     * @return
-     * <code>true</code> if this file is valid;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if this file is valid; <code>false</code>
+     * otherwise
      * @throws IllegalStateException if this file is currently not open
      */
     private boolean isValidWithoutOpen() {
@@ -542,8 +555,8 @@ public final class VersionedFile implements VersionController {
      * intensive tasks and may be inefficient for large files. </p>
      *
      * @param f file to check
-     * @return
-     * <code>true</code> if this file contains the history of the specified file
+     * @return <code>true</code> if this file contains the history of the
+     * specified file
      * @throws IllegalStateException if this file is currently not open
      */
     public boolean contains(VersionedFile f) {
@@ -628,8 +641,8 @@ public final class VersionedFile implements VersionController {
     /**
      * Returns the version info of this file.
      *
-     * @return the version info of this file or
-     * <code>null</code> if no version info exists
+     * @return the version info of this file or <code>null</code> if no version
+     * info exists
      * @throws IllegalStateException if this file is currently not open
      */
     public VersionedFileInfo getFileInfo() {
@@ -652,8 +665,8 @@ public final class VersionedFile implements VersionController {
      * Returns the version info from the specified location.
      *
      * @param contentDir location
-     * @return the version info from the specified location or
-     * <code>null</code> if no version info exists at the specified location
+     * @return the version info from the specified location or <code>null</code>
+     * if no version info exists at the specified location
      * @throws IOException
      * @throws IllegalStateException if this file is currently not open
      */
@@ -720,15 +733,17 @@ public final class VersionedFile implements VersionController {
                     "File \"" + getFile().getPath() + "\" not opened!");
         }
 
-        Collection<File> excludes = new ArrayList<File>();
+        List<File> excludes = new ArrayList<File>();
 
-        for (String p : excludedPaths) {
+        for (String p : getExcludedPaths()) {
             excludes.add(new File(tmpFolder.getPath() + "/" + p));
+//            System.out.println(excludes.get(excludes.size()-1) + ": " + 
+//                    excludes.get(excludes.size()-1).exists());
         }
 
-        // add files ending with an ending from ignoredEndings to excluded paths 
+        // add files ending with an ending from excludedEndings to excluded paths 
         Collection<File> clsFiles =
-                IOUtil.listFiles(getContent(), getIgnoredEndings());
+                IOUtil.listFiles(getContent(), getExcludedEndings());
 
         excludes.addAll(clsFiles);
 
@@ -917,8 +932,8 @@ public final class VersionedFile implements VersionController {
      * dirty content directory exists. This method should be used if this file
      * has not been closed after the last usage. </p> <p> <b>Note:</b> this
      * method checks whether the content directory contains the history of the
-     * archive file to be overwritten to prevent data loss. It throws an  {@link IOException}
-     * if this is not the case. </p>
+     * archive file to be overwritten to prevent data loss. It throws an
+     * {@link IOException} if this is not the case. </p>
      *
      * @return this file
      */
@@ -952,9 +967,8 @@ public final class VersionedFile implements VersionController {
      * if the file does contain the full history of the archive file to be
      * overwritten.
      *
-     * @return
-     * <code>true</code> if this file can be closed without loosing information;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if this file can be closed without loosing
+     * information; <code>false</code> otherwise
      */
     private boolean canClose() {
 
@@ -1116,9 +1130,8 @@ public final class VersionedFile implements VersionController {
      * version has been checked out this method will treat this as content
      * change. </p>
      *
-     * @return
-     * <code>true</code> if uncommited changes exist;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if uncommited changes exist; <code>false</code>
+     * otherwise
      */
     public boolean hasUncommittedChanges() {
 
@@ -1145,9 +1158,8 @@ public final class VersionedFile implements VersionController {
     /**
      * Determines if this file has conflicts.
      *
-     * @return
-     * <code>true</code> if conflicts exist;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if conflicts exist; <code>false</code>
+     * otherwise
      * @throws IOException
      * @throws IllegalStateException if this file is currently not open
      */
@@ -1291,8 +1303,7 @@ public final class VersionedFile implements VersionController {
     /**
      * Returns the number of versions.
      *
-     * @return the number of versions or
-     * <code>-1</code> if an error occured
+     * @return the number of versions or <code>-1</code> if an error occured
      * @throws IllegalStateException if this file is currently not open
      */
     @Override
@@ -1334,8 +1345,7 @@ public final class VersionedFile implements VersionController {
      * Determines whether a version with version number
      * <code>currentVersion+1</code> exists.
      *
-     * @return
-     * <code>true</code> if a next version exists
+     * @return <code>true</code> if a next version exists
      * @throws IllegalStateException if this file is currently not open
      */
     @Override
@@ -1355,8 +1365,7 @@ public final class VersionedFile implements VersionController {
      * <code>1</code>. Version
      * <code>0</code> is for internal use only and cannot be accessed.
      *
-     * @return
-     * <code>true</code> if a previous version exists
+     * @return <code>true</code> if a previous version exists
      * @throws IllegalStateException if this file is currently not open
      */
     @Override
@@ -1683,53 +1692,54 @@ public final class VersionedFile implements VersionController {
 
     /**
      * Switches this versioned file to a new archive location. This method
-     * implies copying of the tmp folder and one additional flushing to the
-     * new archive.
+     * implies copying of the tmp folder and one additional flushing to the new
+     * archive.
+     *
      * @param dest new archive destination
      * @throws IOException if switchin is not possible
      */
-    public void switchToNewArchive(File dest) throws IOException{
-        
+    public void switchToNewArchive(File dest) throws IOException {
+
         System.out.println(">> Switching archive:");
         System.out.println(" --> from: " + archiveFile);
         System.out.println(" --> to  : " + dest);
-        
+
         // keep the old folder location
         File oldTmpFolder = tmpFolder;
-        
+
         boolean canSwitch = false;
         IOException exception = null;
-        
+
         File oldArchiveFile = archiveFile;
-        
+
         try {
             archiveFile = dest;
             updateTmpFolder();
             canSwitch = true;
         } catch (IOException ex) {
             exception = ex;
-     
+
             Logger.getLogger(VersionedFile.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
-        
+
         if (canSwitch) {
             openedFiles.remove(oldArchiveFile.getAbsolutePath());
-            
+
             // delete old tmp folder
             boolean canDelete = IOUtil.deleteDirectory(oldTmpFolder);
-            
+
             if (!canDelete) {
                 System.out.println(
                         " --> cannot delete old tmp folder: " + oldTmpFolder);
             }
-            
+
         } else {
             archiveFile = oldArchiveFile;
             throw new IOException(
                     "Cannot switch to new archive: " + dest, exception);
         }
-        
+
         flush();
     }
 
@@ -1753,7 +1763,7 @@ public final class VersionedFile implements VersionController {
         if (!isOpened()) {
             return this;
         }
-        
+
         System.out.println(">> project:" + getFile());
         System.out.println(" --> flushing project...");
 
@@ -1773,11 +1783,21 @@ public final class VersionedFile implements VersionController {
                 parentPath = "./";
             }
 
+            Collection<String> endings = new ArrayList<String>();
+
+            endings.add(".git");
+            endings.add(".gitignore");
+            endings.add(FILE_INFO_NAME);
+            endings.add(".class");
+            endings.add("MANIFEST.MF");
+            endings.add("vproject-info.xml");
+     
+            endings.addAll(getExcludedPaths()); // check VProject.initGitIgnore()
+
             if (!archiveFormat.packContentsOfFolder(
                     tmpFolder,
                     new File(parentPath + "/" + getFile().getName()),
-                    ".git", ".gitignore", FILE_INFO_NAME,
-                    ".class", "MANIFEST.MF", "vproject-info.xml")) {
+                    endings.toArray(new String[endings.size()]))) {
                 throw new IOException("Could not pack archive: " + getFile());
             }
 
@@ -1796,18 +1816,17 @@ public final class VersionedFile implements VersionController {
                     "File \"" + getFile().getAbsolutePath()
                     + "\" cannot be created!", ex);
         }
-        
+
         System.out.println(" --> done.");
 
         return this;
     }
 
     /**
-     * <b>EXPERIMENTAL!</b>
-     * <br>
-     * <p> Flushes this file to a custom destination. This method saves the
-     * current state of the content folder of this file in the specified custom
-     * archive file. Existing files will be silently overwritten.
+     * <b>EXPERIMENTAL!</b> <br> <p> Flushes this file to a custom destination.
+     * This method saves the current state of the content folder of this file in
+     * the specified custom archive file. Existing files will be silently
+     * overwritten.
      *
      * This method shall be used to ensure the content directory and the archive
      * file are in sync. </p> <p> <b>Note:</b> this method may cause performance
@@ -1943,8 +1962,7 @@ public final class VersionedFile implements VersionController {
      * Removes the temporary content folder of the specified file.
      *
      * @param f file
-     * @return
-     * <code>true</code> if this operation was successful;
+     * @return <code>true</code> if this operation was successful;
      * <code>false</code> otherwise
      */
     private boolean rmTmpFolder() {
@@ -2074,17 +2092,47 @@ public final class VersionedFile implements VersionController {
     }
 
     /**
-     * @return the ignoredEndings
+     * @return the excludedEndings
      */
-    public String[] getIgnoredEndings() {
-        return ignoredEndings;
+    public String[] getExcludedEndings() {
+        return excludedEndings;
     }
 
     /**
-     * @param ignoredEndings the ignoredEndings to set
+     * @return the excludedPaths
      */
-    public VersionedFile ignore(String... ignoredEndings) {
-        this.ignoredEndings = ignoredEndings;
+    public Collection<String> getExcludedPaths() {
+        return excludedPaths;
+    }
+
+    /**
+     * Defines the endings that shall be excluded from project cleanup.
+     * <p><b>Note:</b> on project
+     * <code>close()</code> the working directory is deleted except for excluded
+     * files. Deleted working directory files managed by git are stored in the
+     * archive in the
+     * <code>.git</code> folder. </p>
+     *
+     * @param endings the endings to exclude
+     */
+    public VersionedFile setExcludeEndingsFromCleanup(String... endings) {
+        this.excludedEndings = endings;
+        return this;
+    }
+
+    /**
+     * Excludes the specified paths from project cleanup. <p><b>Note:</b> on
+     * project
+     * <code>close()</code> the working directory is deleted except for excluded
+     * files. Deleted working directory files managed by git are stored in the
+     * archive in the
+     * <code>.git</code> folder. Each call of this method adds paths that shall
+     * be excluded. It does not overwrite previous definitions.</p>
+     *
+     * @param endings the endings to exclude
+     */
+    public VersionedFile excludePathsFromCleanup(String... paths) {
+        this.excludedPaths.addAll(Arrays.asList(paths));
         return this;
     }
 
