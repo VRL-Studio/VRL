@@ -179,9 +179,7 @@ public class VProject {
     public static VProject create(File f) throws IOException {
 
         VProject prj = new VProject(
-                new VersionedFile(f).create());
-
-        prj.getProjectFile().open();
+                new VersionedFile(f).create().open());
 
         prj.createFileInfo();
 
