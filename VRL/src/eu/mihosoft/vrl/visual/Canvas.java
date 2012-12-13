@@ -49,12 +49,12 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.animation.Animation;
 import eu.mihosoft.vrl.animation.AnimationManager;
 import eu.mihosoft.vrl.animation.FrameListener;
+import eu.mihosoft.vrl.io.ConfigurationFile;
 import eu.mihosoft.vrl.io.vrlx.SessionInitializer;
 import eu.mihosoft.vrl.reflection.ComponentManagement;
 import eu.mihosoft.vrl.reflection.SessionInitializerGroup;
@@ -305,6 +305,9 @@ public class Canvas extends JPanel
     private boolean ignoreMessages = false;
     private static ArrayList<Disposable> disposables =
             new ArrayList<Disposable>();
+    
+//    private JTextArea backgroundLogView;
+//    private LoggingController loggingController;
 
     /**
      * Constructor.
@@ -459,7 +462,14 @@ public class Canvas extends JPanel
         add((GlobalBackgroundPainter) controlFlowConnections);
 
         canvasWindows = new CanvasWindows(this);
-
+        
+        
+        
+        // add logview
+//        backgroundLogView = new FullScreenLogView();
+//        add(backgroundLogView);
+        
+        
         // we set opaque true, even if the object is transparent
         // this is because of the custom repaint manager which
         // currently redraws everything, no matter if transparent or not
@@ -529,6 +539,13 @@ public class Canvas extends JPanel
         setActive(false);
 
     }
+
+//    public void initBackgroundLog(ConfigurationFile config) {
+//        backgroundLogView.setBackground(Color.BLACK);
+//        backgroundLogView.setForeground(Color.white);
+//        backgroundLogView.setEditable(false);
+//        loggingController = new LoggingController(backgroundLogView, config);
+//    }
 
     public boolean isActive() {
         return active;
