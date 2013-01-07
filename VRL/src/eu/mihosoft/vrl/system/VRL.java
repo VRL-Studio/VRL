@@ -52,6 +52,7 @@
 package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.io.*;
+import eu.mihosoft.vrl.lang.Keywords;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 import eu.mihosoft.vrl.types.observe.FileAnalyzer;
 import eu.mihosoft.vrl.visual.*;
@@ -2447,7 +2448,18 @@ public class VRL {
         projectController = aProjectController;
 
     }
-}
+    
+    /**
+     * Returns the VRL changelog as string.
+     * @return the VRL changelog as string
+     */
+    public static String getChangelog() {
+        return IOUtil.readResourceTextFile(
+                "/eu/mihosoft/vrl/resources/changelog/changelog.txt");
+    }
+    
+
+} // end class VRL
 
 /**
  * Classloader that has access to a collection of classloaders. This is used to

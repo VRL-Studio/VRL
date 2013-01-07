@@ -51,6 +51,7 @@
  */
 package eu.mihosoft.vrl.io;
 
+import eu.mihosoft.vrl.lang.Keywords;
 import eu.mihosoft.vrl.system.VParamUtil;
 import eu.mihosoft.vrl.system.VRL;
 import eu.mihosoft.vrl.system.VSysUtil;
@@ -322,6 +323,40 @@ public class IOUtil {
         } else {
             copyFile(sourceLocation, targetLocation);
         }
+    }
+    
+    /**
+     * Reads and returns a resource text file, such as changelog etc.
+     * @param resourceName name of the resource, e.g. <code>/eu/mihosoft/vrl/resources/changelog/changelog.txt</code>
+     * @return 
+     */
+    public static String readResourceTextFile(String resourceName) {
+        // load Sample Code
+        InputStream iStream = VRL.class.getResourceAsStream(
+                resourceName);
+
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(iStream));
+
+        String text = "";
+
+        try {
+            while (reader.ready()) {
+                String line = reader.readLine();
+                text += line + "\n";
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Keywords.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Keywords.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            }
+        }
+        return text;
     }
 
     /**
