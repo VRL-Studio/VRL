@@ -83,6 +83,10 @@
         <equals arg1="${singlejar.enabled}" arg2="true"/>
     </condition>
     
+    <condition property="changelogupdate">
+        <equals arg1="${changelogupdate.enabled}" arg2="true"/>
+    </condition>
+    
     
     <target name="-pre-compile">
         
@@ -95,7 +99,7 @@
 
         
         <javac srcdir="${src.dir}/eu/mihosoft/vrl/lang"
-               includes="SetTimeStampTask.java"
+               includes="SetTimeStampTask.java CreateChangelogTask.java"
                destdir="${build.classes.dir}"
                classpath="${javac.classpath}"/>
         
@@ -103,6 +107,14 @@
                  classname="eu.mihosoft.vrl.lang.SetTimeStampTask"
                  classpath="${build.classes.dir}"
                  />
+        
+        <taskdef name="create-changelog"
+                 classname="eu.mihosoft.vrl.lang.CreateChangelogTask"
+                 classpath="${build.classes.dir}"
+                 />
+        
+        <create-changelog location="${basedir}/${src.dir}" enabled="${changelogupdate.enabled}">
+        </create-changelog>
         
         <timestamp location="${basedir}/${src.dir}">
             <fileset dir="${src.dir}" includes="**/*Constants.java"/>
