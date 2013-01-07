@@ -181,9 +181,7 @@ public class VRLPlugin extends VPluginConfigurator {
                 "Copyright (c) 2002-2008, Simone Bordet",
                 "http://foxtrot.sourceforge.net/",
                 "BSD License",
-                "http://www.opensource.org/licenses/bsd-license.php");
-
-        setCopyrightInfoAsPlainText(VERSION_KEY);
+                "http://www.opensource.org/licenses/bsd-license.php");  
         
     }
 
