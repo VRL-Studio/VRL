@@ -113,7 +113,10 @@
                  classpath="${build.classes.dir}"
                  />
         
-        <create-changelog location="${basedir}/${src.dir}" enabled="${changelogupdate.enabled}">
+        <create-changelog
+            location="${basedir}/${src.dir}"
+            enabled="${changelogupdate.enabled}"
+            providesPreGithub="true">
         </create-changelog>
         
         <timestamp location="${basedir}/${src.dir}">
