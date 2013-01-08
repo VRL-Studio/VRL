@@ -71,9 +71,11 @@ public class CreateChangelogTask extends Task {
 
 //    private String file;
     private String location;
+    private String destination = "eu/mihosoft/vrl/resources/changelog/changelog.txt";
     private File locationFile;
     private boolean debug;
     private boolean enabled;
+    private boolean providesPreGithub = false;
 
     public void setLocation(String location) {
         this.location = location;
@@ -83,20 +85,26 @@ public class CreateChangelogTask extends Task {
     public void setDebug(String debug) {
         this.debug = new Boolean(debug);
     }
-    
+
     public void setEnabled(String enabled) {
         this.enabled = new Boolean(enabled);
     }
 
+    public void setProvidesPreGithub(String providesPreGithub) {
+        this.providesPreGithub = new Boolean(providesPreGithub);
+    }
+
     @Override
     public void execute() {
-        
+
         if (!isEnabled()) {
             System.out.println(">> skipping changelog creation (disabled)");
             return;
         }
 
         System.out.println(">> creating changelog");
+        System.out.println(" --> location:    " + location);
+        System.out.println(" --> destination: " + destination);
 
         String changelog = "";
 
@@ -114,45 +122,51 @@ public class CreateChangelogTask extends Task {
             changelog += msg + "\n";
         }
 
-        String preGitHubChangelog = "";
+        if (providesPreGithub) {
+            String preGitHubChangelog = "";
 
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(new File(locationFile,
-                    "eu/mihosoft/vrl/resources/changelog/changelog-pre-github.txt")));
+            BufferedReader reader = null;
+            try {
+                reader = new BufferedReader(new FileReader(new File(locationFile,
+                        "eu/mihosoft/vrl/resources/changelog/changelog-pre-github.txt")));
 
+                while (reader.ready()) {
+                    preGitHubChangelog += reader.readLine() + "\n";
+                }
 
-            while (reader.ready()) {
-                preGitHubChangelog += reader.readLine() + "\n";
-            }
-
-        } catch (IOException ex) {
-            Logger.getLogger(CreateChangelogTask.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        } finally {
-            if (reader != null) {
-                try {
-                    reader.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(CreateChangelogTask.class.getName()).
-                            log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(CreateChangelogTask.class.getName()).
+                        log(Level.SEVERE, null, ex);
+                System.err.println(" --> ERROR: cannot read pre-github changelog file");
+            } finally {
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (IOException ex) {
+                        Logger.getLogger(CreateChangelogTask.class.getName()).
+                                log(Level.SEVERE, null, ex);
+                        System.err.println(" --> ERROR: cannot close pre-github changelog file");
+                    }
                 }
             }
-        }
 
-        changelog = changelog + "\n--- [PRE GITHUB] ---\n\n" + preGitHubChangelog;
+            changelog = changelog + "\n--- [PRE GITHUB] ---\n\n" + preGitHubChangelog;
+
+        }
 
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(
                     new FileWriter(
                     new File(locationFile,
-                    "eu/mihosoft/vrl/resources/changelog/changelog.txt")));
+                    destination)));
 
             writer.append(changelog);
         } catch (IOException ex) {
             Logger.getLogger(CreateChangelogTask.class.getName()).
                     log(Level.SEVERE, null, ex);
+            System.err.println(" --> ERROR: cannot write destination changelog file");
+            ex.printStackTrace(System.err);
         } finally {
             if (writer != null) {
                 try {
@@ -160,6 +174,7 @@ public class CreateChangelogTask extends Task {
                 } catch (IOException ex) {
                     Logger.getLogger(CreateChangelogTask.class.getName()).
                             log(Level.SEVERE, null, ex);
+                    System.err.println(" --> ERROR: cannot close destination changelog file");
                 }
             }
         }
@@ -266,7 +281,8 @@ public class CreateChangelogTask extends Task {
 
             pr.waitFor();
 
-            BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+            BufferedReader input = new BufferedReader(
+                    new InputStreamReader(pr.getInputStream()));
 
             String line = null;
 
@@ -281,9 +297,11 @@ public class CreateChangelogTask extends Task {
             }
 
         } catch (InterruptedException ex) {
-            Logger.getLogger(CreateChangelogTask.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateChangelogTask.class.getName()).
+                    log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(CreateChangelogTask.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(CreateChangelogTask.class.getName()).
+                    log(Level.SEVERE, null, ex);
         }
 
 
@@ -302,5 +320,14 @@ public class CreateChangelogTask extends Task {
      */
     public boolean isEnabled() {
         return enabled;
+    }
+
+    /**
+     * @param destination the destination to set
+     */
+    public void setDestination(String destination) {
+        if (destination != null && !destination.trim().isEmpty()) {
+            this.destination = destination;
+        }
     }
 }

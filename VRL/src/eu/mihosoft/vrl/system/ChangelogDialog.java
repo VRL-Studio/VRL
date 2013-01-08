@@ -108,7 +108,7 @@ public class ChangelogDialog {
 //        scrollPane.getVerticalScrollBar().setValue(0);
 
         VDialog.showDialogWindow(
-                canvas, "Changelog",
+                canvas, "VRL Changelog",
                 scrollPane, "Close", true);
 
     }
