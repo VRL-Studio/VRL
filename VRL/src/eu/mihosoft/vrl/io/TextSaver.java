@@ -49,30 +49,34 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 
 /**
  * Saves content of a String object to file.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public class TextSaver implements FileSaver{
+public class TextSaver implements FileSaver {
 
     @Override
     public void saveFile(Object o, File file, String ext) throws IOException {
-        
+
         if (!(o instanceof String)) {
             return;
         }
-        
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
 
-        writer.write((String)o);
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), "UTF-8"));
+
+//        BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+
+        writer.write((String) o);
         writer.flush();
         writer.close();
     }
@@ -81,5 +85,4 @@ public class TextSaver implements FileSaver{
     public String getDefaultExtension() {
         return "txt";
     }
-    
 }
