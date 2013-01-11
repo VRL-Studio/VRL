@@ -12,12 +12,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import eu.mihosoft.vrl.io.Download;
 import eu.mihosoft.vrl.io.VersionInfo;
-import eu.mihosoft.vrl.reflection.VisualCanvas;
-import eu.mihosoft.vrl.visual.VDialog;
 import java.beans.XMLDecoder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
@@ -34,20 +34,6 @@ public class VRLUpdater {
     private List<RepositoryEntry> possibleUpdates;
     private final Object updateLock = new Object();
 
-    public static void main(String[] args) {
-        VRLUpdater.test();
-    }
-
-    public static VRLUpdater test() {
-        PluginIdentifier identifier = new PluginIdentifier("VRL-Studio", new VersionInfo("0.4.3"));
-
-        VRLUpdater updater = new VRLUpdater(identifier);
-
-        updater.checkForUpdates(new UpdateActionImpl());
-
-        return updater;
-    }
-
     public VRLUpdater(PluginIdentifier identifier) {
         this.identifier = identifier;
         try {
@@ -59,7 +45,25 @@ public class VRLUpdater {
         }
     }
 
-    public void checkForUpdates(final UpdateActionImpl action) {
+    public void checkForUpdates(final VRLUpdateAction action) {
+
+        InetAddress adr;
+        boolean hostAvailable = false;
+
+        try {
+            adr = InetAddress.getByName(updateURL.getHost());
+            hostAvailable = adr.isReachable(5000);
+        } catch (UnknownHostException e) {
+            e.printStackTrace(System.err);
+        } catch (IOException e) {
+            e.printStackTrace(System.err);
+        }
+        
+        if (!hostAvailable) {
+            System.out.println(">> VRLUpdater: host unreachable: " + updateURL.toExternalForm());
+            action.hostUnreachable(this, updateURL);
+            return;
+        }
 
         System.out.println(">> VRLUpdater: checking for updates: " + updateURL.toExternalForm());
 
@@ -75,7 +79,7 @@ public class VRLUpdater {
             return;
         }
 
-        Download download = new Download(updateURL, updateDir, 5000, 60000);
+        Download download = new Download(updateURL, updateDir, 5000, 60 * 1000);
 
         if (action != null) {
             action.checkForUpdates(this, download, updateURL);
@@ -87,11 +91,13 @@ public class VRLUpdater {
             public void update(Observable o, Object o1) {
                 Download d = (Download) o;
 
-                System.out.println(">> VRLUpdater: downloading repository " + d.getProgress() + "%");
+                System.out.println(">> VRLUpdater: downloading repository "
+                        + d.getProgress() + "%");
 
                 if (d.getStatus() == Download.COMPLETE) {
                     synchronized (updateLock) {
-                        System.out.println(" --> repository downoad finished. " + d.getTargetFile() + ", size: " + d.getSize());
+                        System.out.println(" --> repository downoad finished. "
+                                + d.getTargetFile() + ", size: " + d.getSize());
                         readUpdates(action, d);
                     }
                 }
@@ -99,7 +105,7 @@ public class VRLUpdater {
         });
     }
 
-    private void readUpdates(UpdateActionImpl action, Download d) {
+    private void readUpdates(VRLUpdateAction action, Download d) {
 
         File repositoryFile = d.getTargetFile();
 
@@ -108,7 +114,7 @@ public class VRLUpdater {
         try {
             encoder = new XMLDecoder(new FileInputStream(repositoryFile));
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(UpdateActionImpl.class.getName()).
+            Logger.getLogger(VRLUpdater.class.getName()).
                     log(Level.SEVERE, null, ex);
 
             ex.printStackTrace(System.err);
@@ -322,7 +328,6 @@ public class VRLUpdater {
 
         return updates;
     }
-    
 } // end class VRLUpdater
 
 class DownloadActionImpl {
@@ -370,143 +375,3 @@ class DownloadActionImpl {
         return targetFile;
     }
 }
-
-/**
- *
- * @author Michael Hoffer <info@michaelhoffer.de>
- */
-class UpdateActionImpl {
-
-    public UpdateActionImpl() {
-        //
-    }
-
-    public void checkForUpdates(VRLUpdater updater, Download d, URL location) {
-
-        VMessage.info("Checking for updates:",
-                ">> checking for updates from " + location.toExternalForm());
-
-        VisualCanvas canvas =
-                VRL.getCurrentProjectController().getCurrentCanvas();
-    }
-
-    public void errorOccured(VRLUpdater updater, Download d, URL location) {
-        VMessage.error("Cannot check for updates:",
-                ">> checking for updates failed! Location: "
-                + location.toExternalForm());
-    }
-
-    public void cannotReadRepositoryFile(VRLUpdater updater, File repositoryFile) {
-        VMessage.error("Cannot check for updates:",
-                ">> checking for updates failed! "
-                + "Cannot read repository file: " + repositoryFile);
-    }
-
-    public void repositoryFileHasWrongFormat(VRLUpdater updater, File repositoryFile) {
-        VMessage.error("Cannot check for updates:",
-                ">> checking for updates failed! "
-                + "Repository file has wrong format: " + repositoryFile);
-    }
-
-    public void downloadFinished(VRLUpdater updater, Download d, URL location) {
-
-        VMessage.info("Donloaded updates repository:",
-                ">> checking for updates finished!");
-
-    }
-
-    public void updateAvailable(final VRLUpdater updater, Download d, URL location, final RepositoryEntry update) {
-
-        VisualCanvas canvas =
-                VRL.getCurrentProjectController().getCurrentCanvas();
-
-        if (VDialog.YES == VDialog.showConfirmDialog(canvas,
-                "Update available!",
-                "Shall the update "
-                + update.getName() + "-" + update.getVersion() + " be installed?", VDialog.YES_NO)) {
-
-            updater.downloadUpdate(update, new DownloadActionImpl() {
-                @Override
-                public void finished(Download d, String url) {
-                    installAction(updater, update, d.getTargetFile());
-                }
-            });
-        }
-    }
-
-    public void installAction(VRLUpdater updater, RepositoryEntry update, File updateFile) {
-        System.out.println(">> VRLUpdater: install " + updateFile);
-    }
-}
-//File repositoryFile = d.getTargetFile();
-//
-//        XMLDecoder encoder = null;
-//
-//        try {
-//            encoder = new XMLDecoder(new FileInputStream(repositoryFile));
-//        } catch (FileNotFoundException ex) {
-//            Logger.getLogger(UpdateActionImpl.class.getName()).
-//                    log(Level.SEVERE, null, ex);
-//            VMessage.error("Cannot check for updates:",
-//                    ">> checking for updates failed! "
-//                    + "Cannot read repository file: " + repositoryFile);
-//        }
-//
-//        Object obj = encoder.readObject();
-//
-//        if (!(obj instanceof Repository)) {
-//            VMessage.error("Cannot check for updates:",
-//                    ">> checking for updates failed! "
-//                    + "Repository file has wrong format: " + repositoryFile);
-//        }
-//
-//        Repository repository = (Repository) obj;
-//
-//        List<RepositoryEntry> possibleUpdates =
-//                new ArrayList<RepositoryEntry>();
-//
-//        // search for possible updates
-//        for (RepositoryEntry e : repository.getEntries()) {
-//
-//            if (e.getName() == null || e.getVersion() == null) {
-//                System.err.println(">> update name or version null!");
-//                continue;
-//            }
-//
-//            if (!e.getName().trim().equals(updater.getIdentifier().getName())) {
-//                continue;
-//            }
-//
-//            VersionInfo vInfo = new VersionInfo(e.getVersion());
-//
-//            if (!vInfo.isVersionValid()) {
-//                System.err.println(
-//                        ">> update version invalid: name="
-//                        + e.getName() + ", version= " + e.getVersion());
-//                continue;
-//            }
-//
-//            if (vInfo.compareTo(updater.getIdentifier()) > 0) {
-//                possibleUpdates.add(e);
-//            }
-//        }
-//
-//        // choose the minimum version
-//        // (we are careful and don't support direct updates)
-//        VersionInfo min = updater.getIdentifier().getVersion();
-//        RepositoryEntry minE = null;
-//
-//        for (RepositoryEntry e : possibleUpdates) {
-//
-//            VersionInfo vInfo = new VersionInfo(e.getVersion());
-//
-//            if (vInfo.compareTo(min) < 0) {
-//                min = vInfo;
-//                minE = e;
-//            }
-//        }
-//
-//        // we found and update
-//        if (minE != null) {
-//            VDialog.showConfirmDialog(canvas, null, null, VDialog.DialogType.OK)
-//        }
