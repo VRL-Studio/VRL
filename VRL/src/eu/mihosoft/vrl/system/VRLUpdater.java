@@ -38,7 +38,7 @@ public class VRLUpdater {
         this.identifier = identifier;
         try {
             this.updateURL = new URL(""
-                    + "http://vrl-studio.mihosoft.eu/updates/repository.xml");
+                    + "http://vrl-studio.mihosoft.eu/updates/" + VSysUtil.getOSName() +"/repository.xml");
         } catch (MalformedURLException ex) {
             Logger.getLogger(VRLUpdater.class.getName()).
                     log(Level.SEVERE, null, ex);
@@ -96,9 +96,15 @@ public class VRLUpdater {
 
                 if (d.getStatus() == Download.COMPLETE) {
                     synchronized (updateLock) {
-                        System.out.println(" --> repository downoad finished. "
+                        System.out.println(" --> repository download finished. "
                                 + d.getTargetFile() + ", size: " + d.getSize());
                         readUpdates(action, d);
+                    }
+                } else if (d.getStatus() == Download.ERROR) {
+                    System.err.println(" --> cannot download repository: " + updateURL);
+                    
+                    if (action!=null) {
+                        action.errorOccured(VRLUpdater.this, d, updateURL);
                     }
                 }
             }
@@ -163,19 +169,19 @@ public class VRLUpdater {
         }
     }
 
-    public void downloadUpdate(RepositoryEntry update, final DownloadActionImpl action) {
+    public void downloadUpdate(RepositoryEntry update, final VRLDownloadAction action) {
         URL downloadURL = null;
 
         try {
-            downloadURL = new URL(update.getPath());
+            downloadURL = new URL(update.getUrl());
         } catch (MalformedURLException ex) {
             Logger.getLogger(VRLUpdater.class.getName()).
                     log(Level.SEVERE, null, ex);
             if (action != null) {
-                action.errorOccured(null, updateURL, "bad URL = " + update.getPath());
+                action.errorOccured(null, updateURL, "bad URL = " + update.getUrl());
             } else {
                 System.err.println(
-                        ">> VRLUpdater: bad URL = " + update.getPath());
+                        ">> VRLUpdater: bad URL = " + update.getUrl());
             }
 
             return;
@@ -193,7 +199,7 @@ public class VRLUpdater {
             try {
                 downloadLocation = IOUtil.createTempDir();
             } catch (IOException ex) {
-                Logger.getLogger(DownloadActionImpl.class.getName()).
+                Logger.getLogger(VRLUpdater.class.getName()).
                         log(Level.SEVERE, null, ex);
                 System.err.println(
                         ">> VRLUpdater: cannot create tmp folder!");
@@ -227,17 +233,6 @@ public class VRLUpdater {
         });
     }
 
-//    public void installUpdate(UpdateActionImpl action, DownloadActionImpl downloadAction) {
-//        RepositoryEntry update = findUpdate();
-//        
-//        if (downloadAction == null) {
-//            downloadAction = new DownloadActionImpl();
-//        }
-//
-//        if (update != null && action != null) {
-//            action.installAction(this, update);
-//        }
-//    }
     private RepositoryEntry findUpdate() {
         synchronized (updateLock) {
             // choose the minimum version
@@ -329,49 +324,3 @@ public class VRLUpdater {
         return updates;
     }
 } // end class VRLUpdater
-
-class DownloadActionImpl {
-
-    private File targetFile;
-
-    public DownloadActionImpl() {
-        //
-    }
-
-    public void errorOccured(Download d, URL url, String error) {
-        VMessage.error("Download failed",
-                ">> download failed! Error: " + error);
-    }
-
-    public void finished(Download d, String url) {
-        VMessage.info("Download finished",
-                ">> download finished: " + d.getTargetFile());
-        targetFile = d.getTargetFile();
-    }
-
-    public int getConnectionTimeout() {
-        return 5000;
-    }
-
-    public int getReadTimeout() {
-        return 60 * 1000;
-    }
-
-    public File getDownloadFolder() {
-        try {
-            return IOUtil.createTempDir();
-        } catch (IOException ex) {
-            Logger.getLogger(DownloadActionImpl.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
-
-        return null;
-    }
-
-    /**
-     * @return the targetFile
-     */
-    public File getTargetFile() {
-        return targetFile;
-    }
-}

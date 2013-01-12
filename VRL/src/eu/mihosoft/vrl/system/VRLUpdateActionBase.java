@@ -5,10 +5,14 @@
 package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.io.Download;
+import eu.mihosoft.vrl.io.IOUtil;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 import eu.mihosoft.vrl.visual.VDialog;
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -78,7 +82,7 @@ public abstract class VRLUpdateActionBase implements VRLUpdateAction {
                 + update.getName() + "-" + update.getVersion()
                 + " be downloaded?", VDialog.YES_NO)) {
 
-            updater.downloadUpdate(update, new DownloadActionImpl() {
+            updater.downloadUpdate(update, new VRLDownloadActionImpl() {
                 @Override
                 public void finished(Download d, String url) {
                     installAction(updater, update, d.getTargetFile());
@@ -92,6 +96,61 @@ public abstract class VRLUpdateActionBase implements VRLUpdateAction {
         //
     }
 }
+
+
+class VRLDownloadActionImpl implements VRLDownloadAction {
+
+    private File targetFile;
+
+    public VRLDownloadActionImpl() {
+        //
+    }
+
+    @Override
+    public void errorOccured(Download d, URL url, String error) {
+        VMessage.error("Download failed",
+                ">> download failed! Error: " + error);
+    }
+
+    @Override
+    public void finished(Download d, String url) {
+        VMessage.info("Download finished",
+                ">> download finished: " + d.getTargetFile());
+        targetFile = d.getTargetFile();
+    }
+
+    @Override
+    public int getConnectionTimeout() {
+        return 5000;
+    }
+
+    @Override
+    public int getReadTimeout() {
+        return 60 * 1000;
+    }
+
+    @Override
+    public File getDownloadFolder() {
+        try {
+            return IOUtil.createTempDir();
+        } catch (IOException ex) {
+            Logger.getLogger(VRLDownloadActionImpl.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
+    /**
+     * @return the targetFile
+     */
+    @Override
+    public File getTargetFile() {
+        return targetFile;
+    }
+}
+
+
 //File repositoryFile = d.getTargetFile();
 //
 //        XMLDecoder encoder = null;

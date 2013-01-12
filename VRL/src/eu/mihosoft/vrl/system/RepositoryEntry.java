@@ -12,16 +12,16 @@ public class RepositoryEntry {
     private String name;
     private String version;
     private String SHA1Checksum;
-    private String path; 
+    private String url; 
 
     public RepositoryEntry() {
     }
 
-    public RepositoryEntry(String name, String version, String sha1Checksum, String path) {
+    public RepositoryEntry(String name, String version, String sha1Checksum, String url) {
         this.name = name;
         this.version = version;
         this.SHA1Checksum = sha1Checksum;
-        this.path = path;
+        this.url = url;
     }
 
     /**
@@ -53,20 +53,6 @@ public class RepositoryEntry {
     }
 
     /**
-     * @return the path
-     */
-    public String getPath() {
-        return path;
-    }
-
-    /**
-     * @param path the path to set
-     */
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    /**
      * @return the name
      */
     public String getName() {
@@ -78,6 +64,20 @@ public class RepositoryEntry {
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the url
+     */
+    public String getUrl() {
+        return url;
+    }
+
+    /**
+     * @param url the url to set
+     */
+    public void setUrl(String url) {
+        this.url = url;
     }
     
     
