@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import eu.mihosoft.vrl.io.Download;
+import eu.mihosoft.vrl.io.NetUtil;
 import eu.mihosoft.vrl.io.VersionInfo;
 import java.beans.XMLDecoder;
 import java.io.FileInputStream;
@@ -67,17 +68,7 @@ public class VRLUpdater {
             return;
         }
 
-        InetAddress adr;
-        boolean hostAvailable = false;
-
-        try {
-            adr = InetAddress.getByName(updateURL.getHost());
-            hostAvailable = adr.isReachable(5000);
-        } catch (UnknownHostException e) {
-            e.printStackTrace(System.err);
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
-        }
+        boolean hostAvailable = NetUtil.isHostReachable(updateURL.getHost(), 80, 5000);
 
         if (!hostAvailable) {
             System.out.println(">> VRLUpdater: host unreachable: "
