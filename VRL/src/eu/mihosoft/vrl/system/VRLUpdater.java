@@ -116,6 +116,8 @@ public class VRLUpdater {
                     }
 
                     if (d.getStatus() == Download.COMPLETE) {
+                        System.out.println(">> VRLUpdater: downloading repository "
+                                + d.getProgress() + "%");
                         synchronized (updatesLock) {
                             System.out.println(" --> repository download finished. "
                                     + d.getTargetFile() + ", size: " + d.getSize());
@@ -185,7 +187,7 @@ public class VRLUpdater {
         RepositoryEntry update = findUpdate();
 
         if (update != null) {
-            System.out.println(">> --> selected: " + update.getName() + "-" + update.getVersion());
+            System.out.println(" --> selected: " + update.getName() + "-" + update.getVersion());
         }
 
         if (update != null && action != null) {
@@ -262,6 +264,10 @@ public class VRLUpdater {
                     }
 
                     if (d.getStatus() == Download.COMPLETE) {
+                        System.out.println(
+                                ">> VRLUpdater: downloading update "
+                                + d.getProgress() + "%");
+
                         synchronized (updateDownloadLock) {
                             updateDownload = null;
                         }
