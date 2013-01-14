@@ -174,8 +174,12 @@ public class UpdateNotifierApplet extends DockApplet {
      */
     public void setActive(boolean active) {
         this.active = active;
+        
+        Dimension d = new Dimension(
+                getAppletSize().width- getInsets().left - getInsets().right,
+                getAppletSize().height-getInsets().top - getInsets().bottom);
 
-        setIcon(generateIcon(getSize()));
+        setIcon(generateIcon(d));
         contentChanged();
     }
 }
