@@ -11,6 +11,7 @@ import java.net.MalformedURLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import eu.mihosoft.vrl.io.Download;
+import eu.mihosoft.vrl.io.NetUtil;
 import eu.mihosoft.vrl.io.VersionInfo;
 import java.beans.XMLDecoder;
 import java.io.FileInputStream;
@@ -67,17 +68,7 @@ public class VRLUpdater {
             return;
         }
 
-        InetAddress adr;
-        boolean hostAvailable = false;
-
-        try {
-            adr = InetAddress.getByName(updateURL.getHost());
-            hostAvailable = adr.isReachable(5000);
-        } catch (UnknownHostException e) {
-            e.printStackTrace(System.err);
-        } catch (IOException e) {
-            e.printStackTrace(System.err);
-        }
+        boolean hostAvailable = NetUtil.isHostReachable(updateURL.getHost(), 80, 5000);
 
         if (!hostAvailable) {
             System.out.println(">> VRLUpdater: host unreachable: "
@@ -125,6 +116,8 @@ public class VRLUpdater {
                     }
 
                     if (d.getStatus() == Download.COMPLETE) {
+                        System.out.println(">> VRLUpdater: downloading repository "
+                                + d.getProgress() + "%");
                         synchronized (updatesLock) {
                             System.out.println(" --> repository download finished. "
                                     + d.getTargetFile() + ", size: " + d.getSize());
@@ -194,7 +187,7 @@ public class VRLUpdater {
         RepositoryEntry update = findUpdate();
 
         if (update != null) {
-            System.out.println(">> --> selected: " + update.getName() + "-" + update.getVersion());
+            System.out.println(" --> selected: " + update.getName() + "-" + update.getVersion());
         }
 
         if (update != null && action != null) {
@@ -271,6 +264,10 @@ public class VRLUpdater {
                     }
 
                     if (d.getStatus() == Download.COMPLETE) {
+                        System.out.println(
+                                ">> VRLUpdater: downloading update "
+                                + d.getProgress() + "%");
+
                         synchronized (updateDownloadLock) {
                             updateDownload = null;
                         }
