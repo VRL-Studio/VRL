@@ -114,23 +114,81 @@ public class Dock extends VComponent implements BufferedPainter,
         });
     }
 
+    public int getNumberOfDockApplets() {
+        return dockApplets.size();
+    }
+
+    ;
+
     /**
      * Adds an applet to the dock.
      *
      * @param applet the dock applet to be added
      */
     public void addDockApplet(DockApplet applet) {
+        addDockApplet(applet, dockApplets.size());
+    }
+
+    /**
+     * Adds an applet to the dock.
+     *
+     * @param applet the dock applet to be added
+     * @param index the list index (valid range: 0, number of dock applets)
+     *
+     * @see #getNumberOfDockApplets()
+     */
+    public void addDockApplet(DockApplet applet, int index) {
         applet.setVisible(true);
         applet.setDock(this);
-        dockApplets.add(applet);
+        dockApplets.add(index, applet);
 
-        this.add(applet);
+        this.add(applet, index);
 
         int height =
                 (Integer) getMainCanvas().getStyle().
                 getBaseValues().get(DOCK_HEIGHT_KEY);
 
         resizeDockHeight(height);
+    }
+
+    /**
+     * Adds an applet to the dock before the specified applet.
+     *
+     * @param applet the dock applet to be added
+     */
+    public void addDockAppletBefore(DockApplet appletBefore, DockApplet applet) {
+        int index = 0;
+
+        int counter = 0;
+        for (DockApplet dockApplet : dockApplets) {
+            if (dockApplet == appletBefore) {
+                index = counter;
+                break;
+            }
+            counter++;
+        }
+
+        addDockApplet(applet, index);
+    }
+
+    /**
+     * Adds an applet to the dock after the specified applet.
+     *
+     * @param applet the dock applet to be added
+     */
+    public void addDockAppletAfter(DockApplet appletBefore, DockApplet applet) {
+        int index = 0;
+
+        int counter = 0;
+        for (DockApplet dockApplet : dockApplets) {
+            if (dockApplet == appletBefore) {
+                index = counter + 1;
+                break;
+            }
+            counter++;
+        }
+
+        addDockApplet(applet, index);
     }
 
     /**
@@ -148,7 +206,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
         resizeDockHeight(height);
     }
-    
+
     @Override
     protected void paintComponent(Graphics g) {
         if (buffer == null
