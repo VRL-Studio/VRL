@@ -38,7 +38,7 @@ public class VRLUpdater {
         this.identifier = identifier;
         try {
             this.updateURL = new URL(""
-                    + "http://vrl-studio.mihosoft.eu/updates/" + VSysUtil.getOSName() +"/repository.xml");
+                    + "http://vrl-studio.mihosoft.eu/updates/" + VSysUtil.getOSName() + "/repository.xml");
         } catch (MalformedURLException ex) {
             Logger.getLogger(VRLUpdater.class.getName()).
                     log(Level.SEVERE, null, ex);
@@ -58,7 +58,7 @@ public class VRLUpdater {
         } catch (IOException e) {
             e.printStackTrace(System.err);
         }
-        
+
         if (!hostAvailable) {
             System.out.println(">> VRLUpdater: host unreachable: " + updateURL.toExternalForm());
             action.hostUnreachable(this, updateURL);
@@ -102,8 +102,8 @@ public class VRLUpdater {
                     }
                 } else if (d.getStatus() == Download.ERROR) {
                     System.err.println(" --> cannot download repository: " + updateURL);
-                    
-                    if (action!=null) {
+
+                    if (action != null) {
                         action.errorOccured(VRLUpdater.this, d, updateURL);
                     }
                 }
@@ -214,11 +214,18 @@ public class VRLUpdater {
                 readTimeout);
 
         d.addObserver(new Observer() {
+            private long timestamp;
+
             @Override
             public void update(Observable o, Object o1) {
                 Download d = (Download) o;
 
-                System.out.println(">> VRLUpdater: downloading update " + d.getProgress() + "%");
+                long currentTime = System.currentTimeMillis();
+
+                if (timestamp == 0 || currentTime - timestamp > 1000) {
+                    System.out.println(">> VRLUpdater: downloading update " + d.getProgress() + "%");
+                    timestamp = currentTime;
+                }
 
                 if (d.getStatus() == Download.COMPLETE) {
                     if (action != null) {

@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.animation.Animation;
@@ -71,9 +70,9 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
-
 /**
  * A Dock implementation inspired by Mac OS X.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class Dock extends VComponent implements BufferedPainter,
@@ -90,6 +89,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
     /**
      * Constructor.
+     *
      * @param mainCanvas the main canvas
      */
     public Dock(Canvas mainCanvas) {
@@ -105,7 +105,6 @@ public class Dock extends VComponent implements BufferedPainter,
 
         mainCanvas.getStyleManager().
                 addStyleChangedListener(new StyleChangedListener() {
-
             @Override
             public void styleChanged(Style style) {
                 int height = (Integer) style.getBaseValues().get(DOCK_HEIGHT_KEY);
@@ -117,6 +116,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
     /**
      * Adds an applet to the dock.
+     *
      * @param applet the dock applet to be added
      */
     public void addDockApplet(DockApplet applet) {
@@ -135,11 +135,18 @@ public class Dock extends VComponent implements BufferedPainter,
 
     /**
      * Removes a dock applet from the dock.
+     *
      * @param applet the applet to remove
      */
     public void removeDockApplet(DockApplet applet) {
         this.remove(applet);
         dockApplets.remove(applet);
+
+        int height =
+                (Integer) getMainCanvas().getStyle().
+                getBaseValues().get(DOCK_HEIGHT_KEY);
+
+        resizeDockHeight(height);
     }
 
     @Override
@@ -236,10 +243,10 @@ public class Dock extends VComponent implements BufferedPainter,
         super.contentChanged();
     }
 
-
     /**
-     * Defines the dock height. This method should not be used for
-     * manual dock resizing. Use {@link Dock#resizeDockHeight(int) } instead.
+     * Defines the dock height. This method should not be used for manual dock
+     * resizing. Use {@link Dock#resizeDockHeight(int) } instead.
+     *
      * @param dockHeight the height to set
      */
     void setDockHeight(int dockHeight) {
@@ -248,6 +255,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
     /**
      * Returns the dock height.
+     *
      * @return the dock height
      */
     public int getDockHeight() {
@@ -256,6 +264,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
     /**
      * Returns the maximum height of the dock.
+     *
      * @return the maximum height of the dock
      */
     public int getMaxDockHeight() {
@@ -265,6 +274,7 @@ public class Dock extends VComponent implements BufferedPainter,
     /**
      * Defines the maximum dock height. This method should not be used for
      * manual dock resizing. Use {@link Dock#resizeDockHeight(int) } instead.
+     *
      * @param maxDockHeight the maximum dock height
      */
     public void setMaxDockHeight(int maxDockHeight) {
@@ -273,6 +283,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
     /**
      * Resizes the dock and its dock applets.
+     *
      * @param d the size
      */
     protected void resizeDock(Dimension d) {
@@ -298,6 +309,7 @@ public class Dock extends VComponent implements BufferedPainter,
     /**
      * This method resizes the dock height. It also takes care to resize the
      * dock applets.
+     *
      * @param h the height
      */
     public void resizeDockHeight(int h) {
@@ -316,6 +328,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
     /**
      * Returns the transparency of the dock.
+     *
      * @return the transparency of the dock
      */
     public float getTransparency() {
@@ -324,6 +337,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
     /**
      * Defines the transparency of the dock.
+     *
      * @param transparency the transparency to set
      */
     public void setTransparency(float transparency) {
@@ -337,6 +351,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
     /**
      * Fades out the dock.
+     *
      * @param offset the animation offset
      * @param duration the duration of the animation
      */
@@ -352,6 +367,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
     /**
      * Fades in the dock.
+     *
      * @param offset the animation offset
      * @param duration the duration of the animation
      */
@@ -382,6 +398,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
 /**
  * Fade in animation.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 class FadeInDockAnimation extends Animation implements FrameListener {
@@ -390,6 +407,7 @@ class FadeInDockAnimation extends Animation implements FrameListener {
 
     /**
      * Constructor.
+     *
      * @param dock
      */
     public FadeInDockAnimation(Dock dock) {
@@ -417,6 +435,7 @@ class FadeInDockAnimation extends Animation implements FrameListener {
 
 /**
  * Fade out animation.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 class FadeOutDockAnimation extends Animation implements FrameListener {
@@ -425,6 +444,7 @@ class FadeOutDockAnimation extends Animation implements FrameListener {
 
     /**
      * Constructor.
+     *
      * @param dock
      */
     public FadeOutDockAnimation(Dock dock) {
