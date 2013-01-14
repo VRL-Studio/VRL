@@ -148,7 +148,7 @@ public class Dock extends VComponent implements BufferedPainter,
 
         resizeDockHeight(height);
     }
-
+    
     @Override
     protected void paintComponent(Graphics g) {
         if (buffer == null

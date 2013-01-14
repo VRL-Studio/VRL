@@ -145,6 +145,16 @@ public class VProjectController {
      * defines the maximum number of repair attempts (project build).
      */
     private int maxRepairAttempts = 20;
+    
+    public static final String ON_CANVAS_CLOSE = "VProjectController:on-canvas-close";
+    public static final String ON_CANVAS_OPEN = "VProjectController:on-canvas-open";
+    
+    /**
+     * list of action listeners
+     */
+    private Collection<ActionListener> actionListeners =
+            new ArrayList<ActionListener>();
+    
     /**
      * Session disposables. (threads and other resources that shall be disposed
      * on session close)
@@ -474,6 +484,7 @@ public class VProjectController {
             exception = ex;
         } finally {
             mainCanvas.setActive(true);
+            fireAction(new ActionEvent(this, 0, ON_CANVAS_OPEN));
         }
 
         GroovyCodeEditorComponent.updateAllCodeEditorsOnCanvas(getCurrentCanvas());
@@ -2172,6 +2183,8 @@ public class VProjectController {
         if (!project.isOpened()) {
             return;
         }
+        
+        fireAction(new ActionEvent(this, 0, ON_CANVAS_CLOSE));
 
         VisualCanvas canvas = project.openedEntriesByName.get(name);
 
@@ -2892,7 +2905,42 @@ public class VProjectController {
         }
 
     }
-}
+    
+        /**
+     * Fires an action.
+     *
+     * @param event the event
+     */
+    protected void fireAction(ActionEvent event) {
+        for (ActionListener l : actionListeners) {
+            l.actionPerformed(event);
+        }
+    }    
+    
+        /**
+     * Adds a change listener to this project controller.
+     *
+     * @param l the listener to add
+     * @return
+     * <code>true</code> (as specified by {@link Collection#add})
+     */
+    public boolean addActionListener(ActionListener l) {
+        return actionListeners.add(l);
+    }
+
+    /**
+     * Removes a change listener from this controller.
+     *
+     * @param l the listener to remove
+     * @return
+     * <code>true</code> (as specified by {@link Collection#remove})
+     */
+    public boolean removeActionListener(ActionListener l) {
+        return actionListeners.remove(l);
+    }
+    
+    
+} // end class VProjectController
 
 /**
  * Default implementation of the session history controller interface.

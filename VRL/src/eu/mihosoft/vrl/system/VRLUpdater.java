@@ -87,12 +87,20 @@ public class VRLUpdater {
 
 
         download.addObserver(new Observer() {
+            private long timestamp;
+
             @Override
             public void update(Observable o, Object o1) {
                 Download d = (Download) o;
 
-                System.out.println(">> VRLUpdater: downloading repository "
-                        + d.getProgress() + "%");
+
+                long currentTime = System.currentTimeMillis();
+
+                if (timestamp == 0 || currentTime - timestamp > 1000) {
+                    System.out.println(">> VRLUpdater: downloading repository "
+                            + d.getProgress() + "%");
+                    timestamp = currentTime;
+                }
 
                 if (d.getStatus() == Download.COMPLETE) {
                     synchronized (updateLock) {
@@ -223,7 +231,9 @@ public class VRLUpdater {
                 long currentTime = System.currentTimeMillis();
 
                 if (timestamp == 0 || currentTime - timestamp > 1000) {
-                    System.out.println(">> VRLUpdater: downloading update " + d.getProgress() + "%");
+                    System.out.println(
+                            ">> VRLUpdater: downloading update "
+                            + d.getProgress() + "%");
                     timestamp = currentTime;
                 }
 
