@@ -261,12 +261,16 @@ public class VRLUpdater {
                                 ">> VRLUpdater: downloading update "
                                 + d.getProgress() + "%");
                         timestamp = currentTime;
+
+                        action.downloadStateChanged(d);
                     }
 
                     if (d.getStatus() == Download.COMPLETE) {
                         System.out.println(
                                 ">> VRLUpdater: downloading update "
                                 + d.getProgress() + "%");
+
+                        action.downloadStateChanged(d);
 
                         synchronized (updateDownloadLock) {
                             updateDownload = null;

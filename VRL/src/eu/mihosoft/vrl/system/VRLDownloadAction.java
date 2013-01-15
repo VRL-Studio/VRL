@@ -29,4 +29,6 @@ public interface VRLDownloadAction {
      */
     File getTargetFile();
     
+    public void downloadStateChanged(Download d);
+    
 }

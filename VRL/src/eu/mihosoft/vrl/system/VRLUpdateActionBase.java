@@ -82,13 +82,18 @@ public abstract class VRLUpdateActionBase implements VRLUpdateAction {
                 + update.getName() + "-" + update.getVersion()
                 + " be downloaded?", VDialog.YES_NO)) {
 
-            updater.downloadUpdate(update, new VRLDownloadActionImpl() {
+            updater.downloadUpdate(update, new VRLDownloadActionImpl(this) {
                 @Override
                 public void finished(Download d, String url) {
                     installAction(updater, update, d.getTargetFile());
                 }
             });
         }
+    }
+    
+    @Override
+    public void updateDownloadStateChanged(Download d) {
+        //
     }
     
     @Override
@@ -101,9 +106,10 @@ public abstract class VRLUpdateActionBase implements VRLUpdateAction {
 class VRLDownloadActionImpl implements VRLDownloadAction {
 
     private File targetFile;
+    private VRLUpdateAction baseAction;
 
-    public VRLDownloadActionImpl() {
-        //
+    public VRLDownloadActionImpl(VRLUpdateAction action) {
+        this.baseAction = action;
     }
 
     @Override
@@ -147,6 +153,11 @@ class VRLDownloadActionImpl implements VRLDownloadAction {
     @Override
     public File getTargetFile() {
         return targetFile;
+    }
+
+    @Override
+    public void downloadStateChanged(Download d) {
+        baseAction.updateDownloadStateChanged(d);
     }
 }
 

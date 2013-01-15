@@ -28,7 +28,7 @@ public class NetUtil {
      * which does not allow a port specification and does not reliably work on Windows
      * (the port which is checked is blocked for security reasons).</p>
      *
-     * @param host host (e.g. oogle.com)
+     * @param host host (e.g. google.com)
      * @param port 80
      * @return <code>true</code> if the specified host is reachable;
      * <code>false</code> otherwise

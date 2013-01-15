@@ -35,4 +35,6 @@ public interface VRLUpdateAction {
             Download d, URL location,
             final RepositoryEntry update);
     
+    public void updateDownloadStateChanged(Download d);
+    
 }
