@@ -49,13 +49,13 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.system;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.Kernel32;
 import eu.mihosoft.vrl.io.IOUtil;
+import java.awt.Desktop;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
@@ -63,9 +63,11 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.util.ArrayList;
@@ -619,6 +621,162 @@ public class VSysUtil {
         } catch (IOException ex) {
             Logger.getLogger(VSysUtil.class.getName()).
                     log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    /**
+     * Indicates whether the specified program is installed and present in the
+     * execution path.
+     *
+     * <p><b>Note:</b> this method is currently not supported on Windows. It
+     * requires the Unix program
+     * <code>which</code></p>.
+     *
+     * @param program program to check
+     * @return <code>true</code> if the program could be found;
+     * <code>false</code> otherwise
+     */
+    public static boolean isProgramInstalledOnUnix(String program) {
+        if (!isWindows()) {
+
+            try {
+
+                String msg = "";
+
+                Process p = new ProcessBuilder("which", program).start();
+
+                p.waitFor();
+
+                BufferedReader input = new BufferedReader(
+                        new InputStreamReader(p.getErrorStream()));
+
+                String line = null;
+
+                while ((line = input.readLine()) != null) {
+                    msg += line + "\n";
+                }
+
+                return msg.isEmpty();
+
+            } catch (InterruptedException ex) {
+                Logger.getLogger(VSysUtil.class.getName()).
+                        log(Level.SEVERE, null, ex);
+                return false;
+            } catch (IOException ex) {
+                return false;
+            }
+
+        } else {
+            throw new IllegalStateException("This command does not support Windows OS!");
+        }
+    }
+
+    /**
+     * Opens the specified file in the default file broswer of the operating
+     * system.
+     *
+     * If the default browser cannot be determined the application associated
+     * with the file type will be opened.
+     *
+     * @param f the file to open
+     */
+    public static boolean openFileInDefaultFileBrowser(File f) {
+        try {
+            if (VSysUtil.isWindows()) {
+                Process p = new ProcessBuilder("explorer.exe", "/select," + f.getAbsolutePath()).start();
+            } else if (VSysUtil.isMacOSX()) {
+                Process p = new ProcessBuilder("open", "-R", f.getAbsolutePath()).start();
+            } else if (VSysUtil.isLinux()) {
+                if (isKDERunning()) {
+                    Process p = new ProcessBuilder("dolphin", "--select", f.getAbsolutePath()).start();
+                } else if (isProgramInstalledOnUnix("nautilus")) {
+                    Process p = new ProcessBuilder("nautilus", "--browser", f.getAbsolutePath()).start();
+                } else if (Desktop.isDesktopSupported()) {
+                    Desktop desktop = Desktop.getDesktop();
+                    desktop.open(f);
+                }
+            } else if (Desktop.isDesktopSupported()) {
+                Desktop desktop = Desktop.getDesktop();
+                desktop.open(f);
+            }
+        } catch (IOException ex) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isKDERunning() {
+        if (isWindows()) {
+            throw new IllegalStateException("This command does not support Windows OS!");
+        }
+
+        Runtime rt = Runtime.getRuntime();
+
+        try {
+
+            String msg = "";
+
+            Process pr = rt.exec("sh -c ps aux");
+            
+            pr.waitFor();
+
+            BufferedReader input = new BufferedReader(
+                    new InputStreamReader(pr.getInputStream()));
+
+            String line = null;
+
+            while ((line = input.readLine()) != null) {
+                msg += line + "\n";
+            }
+
+            return msg.contains("kdeinit4");
+
+        }
+        catch (InterruptedException ex) {
+            Logger.getLogger(VSysUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+            
+            return false;
+        } catch (IOException ex) {
+             Logger.getLogger(VSysUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+            return false;
+        }
+    }
+
+    public static boolean isGnomeOrUnityRunning() {
+        if (isWindows()) {
+            throw new IllegalStateException("This command does not support Windows OS!");
+        }
+
+        Runtime rt = Runtime.getRuntime();
+
+        try {
+
+            String msg = "";
+
+            Process pr = rt.exec("sh -c ps aux");
+
+            pr.waitFor();
+
+            BufferedReader input = new BufferedReader(
+                    new InputStreamReader(pr.getErrorStream()));
+
+            String line = null;
+
+            while ((line = input.readLine()) != null) {
+                msg += line + "\n";
+            }
+
+            return msg.contains("gnome-session");
+
+        } catch (InterruptedException ex) {
+            Logger.getLogger(VSysUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+            return false;
+        } catch (IOException ex) {
             return false;
         }
     }
