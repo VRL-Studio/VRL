@@ -181,5 +181,6 @@ public class UpdateNotifierApplet extends DockApplet {
 
         setIcon(generateIcon(d));
         contentChanged();
+        VSwingUtil.repaintRequest(this);
     }
 }
