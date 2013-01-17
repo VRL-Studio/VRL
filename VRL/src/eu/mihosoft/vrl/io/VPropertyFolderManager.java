@@ -250,7 +250,7 @@ public class VPropertyFolderManager {
     }
     
     public File getUpdatesFolder() {
-        return PLUGIN_UPDATES;
+        return UPDATES;
     }
 
     public File getResourcesFolder() {
