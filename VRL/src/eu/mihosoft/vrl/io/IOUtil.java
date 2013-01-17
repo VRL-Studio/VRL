@@ -731,18 +731,21 @@ public class IOUtil {
     }
 
     /**
-     * Create a new temporary directory. The directory and its content can be
+     * Create a new temporary directory relative to the specified dir.
+     * The directory and its content can be
      * deleted on exit. Use {@link #deleteTmpFilesOnExit(java.io.File) } to
      * clean this directory up since it isn't deleted automatically.
      *
+     * @param dir parent directory
+     * 
      * @see
      * http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java
      * @return the new directory
      * @throws IOException if there is an error creating the temporary directory
      */
-    public static File createTempDir() throws IOException {
+    public static File createTempDir(File dir) throws IOException {
 //        final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
-        final File sysTempDir = VRL.getPropertyFolderManager().getTmpFolder();
+        final File sysTempDir = dir;
         File newTempDir;
         final int maxAttempts = 9;
         int attemptCount = 0;
@@ -769,6 +772,21 @@ public class IOUtil {
                     "Failed to create temp dir named "
                     + newTempDir.getAbsolutePath());
         }
+    }
+    
+    /**
+     * Create a new temporary directory in the VRL tmp folder.
+     * The directory and its content can be
+     * deleted on exit. Use {@link #deleteTmpFilesOnExit(java.io.File) } to
+     * clean this directory up since it isn't deleted automatically.
+     * 
+     * @see
+     * http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java
+     * @return the new directory
+     * @throws IOException if there is an error creating the temporary directory
+     */
+    public static File createTempDir() throws IOException {
+        return createTempDir(VRL.getPropertyFolderManager().getTmpFolder());
     }
 
     /**
