@@ -707,9 +707,19 @@ public class VSysUtil {
         return true;
     }
 
+    /**
+     * Indicates whether KDE 4 is running.
+     *
+     * <p><b>Note:</b> on Windows this method will return
+     * <code>false</code> even though KDE running (e.g. through
+     * Cygwin). </p>
+     *
+     * @return <code>true</code> if KDE 4 is
+     * running;<code>false</code> otherwise
+     */
     public static boolean isKDERunning() {
         if (isWindows()) {
-            throw new IllegalStateException("This command does not support Windows OS!");
+            return false;
         }
 
         Runtime rt = Runtime.getRuntime();
@@ -719,7 +729,7 @@ public class VSysUtil {
             String msg = "";
 
             Process pr = rt.exec("sh -c ps aux");
-            
+
             pr.waitFor();
 
             BufferedReader input = new BufferedReader(
@@ -733,22 +743,31 @@ public class VSysUtil {
 
             return msg.contains("kdeinit4");
 
-        }
-        catch (InterruptedException ex) {
+        } catch (InterruptedException ex) {
             Logger.getLogger(VSysUtil.class.getName()).
                     log(Level.SEVERE, null, ex);
-            
+
             return false;
         } catch (IOException ex) {
-             Logger.getLogger(VSysUtil.class.getName()).
+            Logger.getLogger(VSysUtil.class.getName()).
                     log(Level.SEVERE, null, ex);
             return false;
         }
     }
 
+    /**
+     * Indicates whether Gnome or Unity is running.
+     *
+     * <p><b>Note:</b> on Windows this method will return
+     * <code>false</code> even though Gnome or Unity is running (e.g. through
+     * Cygwin). </p>
+     *
+     * @return <code>true</code> if Gnome or Unity is
+     * running;<code>false</code> otherwise
+     */
     public static boolean isGnomeOrUnityRunning() {
         if (isWindows()) {
-            throw new IllegalStateException("This command does not support Windows OS!");
+            return false;
         }
 
         Runtime rt = Runtime.getRuntime();
@@ -779,5 +798,52 @@ public class VSysUtil {
         } catch (IOException ex) {
             return false;
         }
+    }
+
+    /**
+     * Runs the specified command with administrator privileges.
+     *
+     * <p><b>Note:</b> be careful. Using this method can do serious damage to
+     * the users data! Before considering the use of this method be sure you
+     * really need it. </p>
+     *
+     * @param cmd the full command to execute (including arguments)
+     * @return <code>true</code> if the command could be executed;
+     * <code>false</code> otherwise
+     */
+    public static boolean runWithAdminPrivileges(String cmd) {
+
+        throw new UnsupportedOperationException(
+                "Unfortunately, this is feature not implemented yet!");
+
+
+//        Runtime rt = Runtime.getRuntime();
+//
+//        try {
+//
+//            String msg = "";
+//
+//            Process pr = rt.exec("sh -c ps aux");
+//
+//            pr.waitFor();
+//
+//            BufferedReader input = new BufferedReader(
+//                    new InputStreamReader(pr.getErrorStream()));
+//
+//            String line = null;
+//
+//            while ((line = input.readLine()) != null) {
+//                msg += line + "\n";
+//            }
+//
+//            return msg.contains("gnome-session");
+//
+//        } catch (InterruptedException ex) {
+//            Logger.getLogger(VSysUtil.class.getName()).
+//                    log(Level.SEVERE, null, ex);
+//            return false;
+//        } catch (IOException ex) {
+//            return false;
+//        }
     }
 }
