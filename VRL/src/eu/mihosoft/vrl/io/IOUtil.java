@@ -56,7 +56,9 @@ import eu.mihosoft.vrl.system.VParamUtil;
 import eu.mihosoft.vrl.system.VRL;
 import eu.mihosoft.vrl.system.VSysUtil;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.channels.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -271,13 +273,13 @@ public class IOUtil {
 
         return null;
     }
-    
+
     /**
      * Generates a SHA-1 checksum for a given File.
      *
      * @param f the file
-     * @return the checksum or an empty String (<code>""</code>)
-     * if the specified file cannot be found/read
+     * @return the checksum or an empty String (<code>""</code>) if the
+     * specified file cannot be found/read
      */
     public static String generateSHA1Sum(File f) {
         MessageDigest md = null;
@@ -295,13 +297,13 @@ public class IOUtil {
 
         return "";
     }
-    
-     /**
+
+    /**
      * Generates a MD5 checksum for a given File.
      *
      * @param f the file
-     * @return the checksum or an empty String (<code>""</code>)
-     * if the specified file cannot be found/read
+     * @return the checksum or an empty String (<code>""</code>) if the
+     * specified file cannot be found/read
      */
     public static String generateMD5Sum(File f) {
         MessageDigest md = null;
@@ -319,13 +321,13 @@ public class IOUtil {
 
         return "";
     }
-    
+
     /**
      * Generates a SHA-256 checksum for a given File.
      *
      * @param f the file
-     * @return the checksum or an empty String (<code>""</code>)
-     * if the specified file cannot be found/read
+     * @return the checksum or an empty String (<code>""</code>) if the
+     * specified file cannot be found/read
      */
     public static String generateSHA256um(File f) {
         MessageDigest md = null;
@@ -436,6 +438,59 @@ public class IOUtil {
     }
 
     /**
+     * Retusn the root parent of the specified file, e.g., "/" on Unix or "C:\"
+     * on Windows.
+     *
+     * @param f file
+     * @return the root parent of the specified file
+     */
+    public static File getRootParent(File f) {
+
+        File parent = f.getAbsoluteFile();
+
+        while (parent != null) {
+            File pF = parent.getAbsoluteFile().getParentFile();
+
+            if (pF == null) {
+                return parent;
+            }
+
+            parent = pF;
+
+        }
+
+        return parent;
+    }
+
+    /**
+     * Returns the size of the specified file (byte). This method may use the
+     * {@link File#length() } method or use an alternative implementation
+     * for efficiency reasons.
+     * @param f file
+     * @return the size of the specified file (byte)
+     */
+    public static long getFileSize(File f) {
+
+        InputStream stream = null;
+        try {
+            URL url = f.toURI().toURL();
+            stream = url.openStream();
+            return stream.available();
+        } catch (IOException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException ex) {
+                Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return -1;
+
+    }
+
+    /**
      * Converts a byte array to hexadecimal String.
      *
      * @param data the data to convert
@@ -504,7 +559,7 @@ public class IOUtil {
     /**
      * Reads and returns a resource text file, such as changelog etc.
      *
-     * @param resourceName name of the resource, * * * * *      * e.g. <code>/eu/mihosoft/vrl/resources/changelog/changelog.txt</code>
+     * @param resourceName name of the resource, * * * * * * *      * e.g. <code>/eu/mihosoft/vrl/resources/changelog/changelog.txt</code>
      * @return
      */
     public static String readResourceTextFile(String resourceName) {
