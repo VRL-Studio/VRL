@@ -5,11 +5,15 @@
 package eu.mihosoft.vrl.io;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Downloads a file from the specified url. This class can be observed (for
@@ -267,5 +271,37 @@ public class Download extends Observable implements Runnable {
      */
     public File getTargetFile() {
         return new File(location, getFileName(url));
+    }
+
+    /**
+     * Verifies the downloaded file with the specified checksum.
+     *
+     * @param checksum checksum
+     * @return <code>true</code> if the verification was successful;
+     * <code>false</code> otherwise
+     */
+    public boolean verifyMD5(String checksum) {
+        if (getStatus() != COMPLETE) {
+            throw new IllegalStateException(
+                    "verification impossible. This download is incomplete!");
+        }
+
+        return IOUtil.verifyFileMD5(getTargetFile(), checksum);
+    }
+
+    /**
+     * Verifies the downloaded file with the specified checksum.
+     *
+     * @param checksum checksum
+     * @return <code>true</code> if the verification was successful;
+     * <code>false</code> otherwise
+     */
+    public boolean verifySHA1(String checksum) {
+        if (getStatus() != COMPLETE) {
+            throw new IllegalStateException(
+                    "verification impossible. This download is incomplete!");
+        }
+
+        return IOUtil.verifyFileSHA1(getTargetFile(), checksum);
     }
 }

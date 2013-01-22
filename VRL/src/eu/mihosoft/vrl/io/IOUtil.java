@@ -252,8 +252,8 @@ public class IOUtil {
     public static String generateSHASum(byte[] data) {
         return generateSHA1Sum(data);
     }
-    
-     /**
+
+    /**
      * Generates a SHA-1 checksum for a given byte array.
      *
      * @param data the data to convert
@@ -271,7 +271,7 @@ public class IOUtil {
 
         return null;
     }
-    
+
     /**
      * Generates a SHA-2 (SHA-256) checksum for a given byte array.
      *
@@ -308,6 +308,52 @@ public class IOUtil {
         }
 
         return null;
+    }
+
+    /**
+     * Verifies the specified file via MD5 checksum.
+     *
+     * @param f the file to verify (must exist)
+     * @param checksum the checksum
+     * @return <code>true</code> if the sverification is successful;
+     * <code>false</code> otherwise
+     */
+    public static boolean verifyFileMD5(File f, String checksum) {
+        try {
+            byte[] fileData = IOUtil.fileToByteArray(f);
+            String checksumOfFile = generateMD5Sum(fileData);
+
+            return checksum.equals(checksumOfFile);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return false;
+    }
+
+    /**
+     * Verifies the specified file via SHA-1 checksum.
+     *
+     * @param f the file to verify (must exist)
+     * @param checksum the checksum
+     * @return <code>true</code> if the sverification is successful;
+     * <code>false</code> otherwise
+     */
+    public static boolean verifyFileSHA1(File f, String checksum) {
+        try {
+            byte[] fileData = IOUtil.fileToByteArray(f);
+            String checksumOfFile = generateSHA1Sum(fileData);
+
+            return checksum.equals(checksumOfFile);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return false;
     }
 
     /**
@@ -379,8 +425,7 @@ public class IOUtil {
     /**
      * Reads and returns a resource text file, such as changelog etc.
      *
-     * @param resourceName name of the resource,
-     * e.g. <code>/eu/mihosoft/vrl/resources/changelog/changelog.txt</code>
+     * @param resourceName name of the resource, * * * * *      * e.g. <code>/eu/mihosoft/vrl/resources/changelog/changelog.txt</code>
      * @return
      */
     public static String readResourceTextFile(String resourceName) {
