@@ -279,7 +279,7 @@ public class PluginCacheController {
         for (File f : jarFiles) {
             try {
                 String jarFileChecksum =
-                        IOUtil.generateSHASum(IOUtil.fileToByteArray(f));
+                        IOUtil.generateSHA1Sum(IOUtil.fileToByteArray(f));
                 result.put(f.getAbsolutePath(), jarFileChecksum);
             } catch (FileNotFoundException ex) {
                 Logger.getLogger(PluginCacheEntry.class.getName()).

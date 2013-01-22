@@ -248,10 +248,40 @@ public class IOUtil {
      * @param data the data to convert
      * @return the checksum
      */
+    @Deprecated
     public static String generateSHASum(byte[] data) {
+        return generateSHA1Sum(data);
+    }
+    
+     /**
+     * Generates a SHA-1 checksum for a given byte array.
+     *
+     * @param data the data to convert
+     * @return the checksum
+     */
+    public static String generateSHA1Sum(byte[] data) {
         MessageDigest md = null;
         try {
             md = MessageDigest.getInstance("SHA-1");
+            return convertToHex(md.digest(data));
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(IOUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+    
+    /**
+     * Generates a SHA-2 (SHA-256) checksum for a given byte array.
+     *
+     * @param data the data to convert
+     * @return the checksum
+     */
+    public static String generateSHA256Sum(byte[] data) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
             return convertToHex(md.digest(data));
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(IOUtil.class.getName()).
