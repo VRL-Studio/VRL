@@ -38,12 +38,15 @@ public class VRLUpdater {
     private final Object updateDownloadLock = new Object();
     private Download repositoryDownload;
     private final Object repositoryDownloadLock = new Object();
+    private boolean verificationEnabled;
+    private boolean verificationSuccessful;
 
     public VRLUpdater(PluginIdentifier identifier) {
         this.identifier = identifier;
         try {
             this.updateURL = new URL(""
-                    + "http://vrl-studio.mihosoft.eu/updates/" + VSysUtil.getOSName() + "/repository.xml");
+                    + "http://vrl-studio.mihosoft.eu/updates/"
+                    + VSysUtil.getOSName() + "/repository.xml");
         } catch (MalformedURLException ex) {
             Logger.getLogger(VRLUpdater.class.getName()).
                     log(Level.SEVERE, null, ex);
@@ -195,7 +198,7 @@ public class VRLUpdater {
         }
     }
 
-    public void downloadUpdate(RepositoryEntry update, final VRLDownloadAction action) {
+    public void downloadUpdate(final RepositoryEntry update, final VRLDownloadAction action) {
 
 
         if (isDownloadingUpdate() || isDownloadingRepository()) {
@@ -282,6 +285,11 @@ public class VRLUpdater {
                         System.out.println(
                                 " --> finished download: "
                                 + d.getTargetFile());
+
+                        if (isVerificationEnabled()) {
+                            verificationSuccessful =
+                                    d.verifySHA1(update.getSHA1Checksum());
+                        }
                     }
                 }
             });
@@ -377,5 +385,26 @@ public class VRLUpdater {
         }
 
         return updates;
+    }
+
+    /**
+     * @return the verificationEnabled
+     */
+    public boolean isVerificationEnabled() {
+        return verificationEnabled;
+    }
+
+    /**
+     * @param verificationEnabled the verificationEnabled to set
+     */
+    public void setVerificationEnabled(boolean verificationEnabled) {
+        this.verificationEnabled = verificationEnabled;
+    }
+
+    /**
+     * @return the verificationSuccessful
+     */
+    public boolean isVerificationSuccessful() {
+        return verificationSuccessful;
     }
 } // end class VRLUpdater

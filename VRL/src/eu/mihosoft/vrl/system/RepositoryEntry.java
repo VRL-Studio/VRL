@@ -9,15 +9,17 @@ package eu.mihosoft.vrl.system;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class RepositoryEntry {
+
     private String name;
     private String version;
     private String SHA1Checksum;
-    private String url; 
+    private String url;
 
     public RepositoryEntry() {
     }
 
-    public RepositoryEntry(String name, String version, String sha1Checksum, String url) {
+    public RepositoryEntry(
+            String name, String version, String sha1Checksum, String url) {
         this.name = name;
         this.version = version;
         this.SHA1Checksum = sha1Checksum;
@@ -79,6 +81,4 @@ public class RepositoryEntry {
     public void setUrl(String url) {
         this.url = url;
     }
-    
-    
 }
