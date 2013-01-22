@@ -271,6 +271,78 @@ public class IOUtil {
 
         return null;
     }
+    
+    /**
+     * Generates a SHA-1 checksum for a given File.
+     *
+     * @param f the file
+     * @return the checksum or an empty String (<code>""</code>)
+     * if the specified file cannot be found/read
+     */
+    public static String generateSHA1Sum(File f) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-1");
+            return convertToHex(md.digest(fileToByteArray(f)));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(IOUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return "";
+    }
+    
+     /**
+     * Generates a MD5 checksum for a given File.
+     *
+     * @param f the file
+     * @return the checksum or an empty String (<code>""</code>)
+     * if the specified file cannot be found/read
+     */
+    public static String generateMD5Sum(File f) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("MD5");
+            return convertToHex(md.digest(fileToByteArray(f)));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(IOUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return "";
+    }
+    
+    /**
+     * Generates a SHA-256 checksum for a given File.
+     *
+     * @param f the file
+     * @return the checksum or an empty String (<code>""</code>)
+     * if the specified file cannot be found/read
+     */
+    public static String generateSHA256um(File f) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+            return convertToHex(md.digest(fileToByteArray(f)));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(IOUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return "";
+    }
 
     /**
      * Generates a SHA-2 (SHA-256) checksum for a given byte array.
@@ -342,10 +414,17 @@ public class IOUtil {
      * <code>false</code> otherwise
      */
     public static boolean verifyFileSHA1(File f, String checksum) {
+        if (isDebugginEnabled()) {
+            System.out.println(">> IOUtil.verifyFileSHA1: " + f);
+        }
         try {
             byte[] fileData = IOUtil.fileToByteArray(f);
             String checksumOfFile = generateSHA1Sum(fileData);
-
+            if (isDebugginEnabled()) {
+                System.out.println(" --> sum1: " + checksum);
+                System.out.println(" --> sum2: " + checksumOfFile);
+                System.out.println(" -- result: " + checksum.equals(checksumOfFile));
+            }
             return checksum.equals(checksumOfFile);
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);

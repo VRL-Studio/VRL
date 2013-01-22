@@ -278,17 +278,23 @@ public class VRLUpdater {
                         synchronized (updateDownloadLock) {
                             updateDownload = null;
                         }
-                        if (action != null) {
-                            action.finished(d, d.getUrl());
-                        }
+
 
                         System.out.println(
                                 " --> finished download: "
                                 + d.getTargetFile());
 
+                        action.startVerification(d);
+                        
                         if (isVerificationEnabled()) {
                             verificationSuccessful =
                                     d.verifySHA1(update.getSHA1Checksum());
+                        }
+                        
+                        action.stopVerification(d, verificationSuccessful);
+
+                        if (action != null) {
+                            action.finished(d, d.getUrl());
                         }
                     }
                 }

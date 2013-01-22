@@ -30,5 +30,9 @@ public interface VRLDownloadAction {
     File getTargetFile();
     
     public void downloadStateChanged(Download d);
+
+    public void startVerification(Download d);
+
+    public void stopVerification(Download d, boolean verificationSuccessful);
     
 }

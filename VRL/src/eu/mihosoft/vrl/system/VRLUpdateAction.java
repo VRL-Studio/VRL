@@ -20,7 +20,7 @@ public interface VRLUpdateAction {
     
     void hostUnreachable(VRLUpdater updater, URL location);
 
-    void downloadFinished(VRLUpdater updater, Download d, URL location);
+//    void downloadFinished(VRLUpdater updater, Download d, URL location);
 
     void errorOccured(VRLUpdater updater, Download d, URL location);
 
@@ -36,5 +36,9 @@ public interface VRLUpdateAction {
             final RepositoryEntry update);
     
     public void updateDownloadStateChanged(Download d);
+
+    public void startVerification(Download d);
+
+    public void stopVerification(Download d, boolean verificationSuccessful);
     
 }

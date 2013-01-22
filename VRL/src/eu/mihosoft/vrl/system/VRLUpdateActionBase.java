@@ -61,13 +61,13 @@ public abstract class VRLUpdateActionBase implements VRLUpdateAction {
                 + "Repository file has wrong format: " + repositoryFile);
     }
 
-    @Override
-    public void downloadFinished(VRLUpdater updater, Download d, URL location) {
-
-        VMessage.info("Donloaded updates repository:",
-                ">> checking for updates finished!");
-
-    }
+//    @Override
+//    public void downloadFinished(VRLUpdater updater, Download d, URL location) {
+//
+//        VMessage.info("Donloaded updates repository:",
+//                ">> checking for updates finished!");
+//
+//    }
 
     @Override
     public void updateAvailable(final VRLUpdater updater, Download d,
@@ -85,6 +85,7 @@ public abstract class VRLUpdateActionBase implements VRLUpdateAction {
             updater.downloadUpdate(update, new VRLDownloadActionImpl(this) {
                 @Override
                 public void finished(Download d, String url) {
+
                     installAction(updater, update, d.getTargetFile());
                 }
             });
@@ -158,6 +159,16 @@ class VRLDownloadActionImpl implements VRLDownloadAction {
     @Override
     public void downloadStateChanged(Download d) {
         baseAction.updateDownloadStateChanged(d);
+    }
+
+    @Override
+    public void startVerification(Download d) {
+        baseAction.startVerification(d);
+    }
+
+    @Override
+    public void stopVerification(Download d, boolean verificationSuccessful) {
+        baseAction.stopVerification(d, verificationSuccessful);
     }
 }
 
