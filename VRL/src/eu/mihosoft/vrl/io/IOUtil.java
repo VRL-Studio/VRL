@@ -187,10 +187,12 @@ public class IOUtil {
 
     /**
      * Converts a stream to a string. This method can be used to easily read
-     * text files via <code>Class.getResourceAsStream(...)</code>
-     * 
-     * @see http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
-     * 
+     * text files via
+     * <code>Class.getResourceAsStream(...)</code>
+     *
+     * @see
+     * http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
+     *
      * @param is
      * @return stream as String
      */
@@ -241,7 +243,7 @@ public class IOUtil {
     }
 
     /**
-     * Generates a checksum for a given byte array.
+     * Generates a SHA-1 checksum for a given byte array.
      *
      * @param data the data to convert
      * @return the checksum
@@ -250,6 +252,25 @@ public class IOUtil {
         MessageDigest md = null;
         try {
             md = MessageDigest.getInstance("SHA-1");
+            return convertToHex(md.digest(data));
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(IOUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
+    /**
+     * Generates a MD5 checksum for a given byte array.
+     *
+     * @param data the data to convert
+     * @return the checksum
+     */
+    public static String generateMD5Sum(byte[] data) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("MD5");
             return convertToHex(md.digest(data));
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(IOUtil.class.getName()).
@@ -324,11 +345,13 @@ public class IOUtil {
             copyFile(sourceLocation, targetLocation);
         }
     }
-    
+
     /**
      * Reads and returns a resource text file, such as changelog etc.
-     * @param resourceName name of the resource, e.g. <code>/eu/mihosoft/vrl/resources/changelog/changelog.txt</code>
-     * @return 
+     *
+     * @param resourceName name of the resource,
+     * e.g. <code>/eu/mihosoft/vrl/resources/changelog/changelog.txt</code>
+     * @return
      */
     public static String readResourceTextFile(String resourceName) {
         // load Sample Code
@@ -731,13 +754,12 @@ public class IOUtil {
     }
 
     /**
-     * Create a new temporary directory relative to the specified dir.
-     * The directory and its content can be
-     * deleted on exit. Use {@link #deleteTmpFilesOnExit(java.io.File) } to
-     * clean this directory up since it isn't deleted automatically.
+     * Create a new temporary directory relative to the specified dir. The
+     * directory and its content can be deleted on exit. Use {@link #deleteTmpFilesOnExit(java.io.File)
+     * } to clean this directory up since it isn't deleted automatically.
      *
      * @param dir parent directory
-     * 
+     *
      * @see
      * http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java
      * @return the new directory
@@ -773,13 +795,12 @@ public class IOUtil {
                     + newTempDir.getAbsolutePath());
         }
     }
-    
+
     /**
-     * Create a new temporary directory in the VRL tmp folder.
-     * The directory and its content can be
-     * deleted on exit. Use {@link #deleteTmpFilesOnExit(java.io.File) } to
-     * clean this directory up since it isn't deleted automatically.
-     * 
+     * Create a new temporary directory in the VRL tmp folder. The directory and
+     * its content can be deleted on exit. Use {@link #deleteTmpFilesOnExit(java.io.File)
+     * } to clean this directory up since it isn't deleted automatically.
+     *
      * @see
      * http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java
      * @return the new directory
@@ -935,7 +956,7 @@ public class IOUtil {
             File srcFolder, String... endings) {
 
         Set<File> result = new HashSet<File>();
-        
+
         if (isDebugginEnabled()) {
             for (String e : endings) {
                 System.out.println("ENDING: " + e);
@@ -947,7 +968,7 @@ public class IOUtil {
 
             boolean fMatches = false;
 
-            
+
             // TODO probably not sufficient to check for contains
             for (String e : endings) {
                 if (f.getAbsolutePath().endsWith(e)
@@ -956,7 +977,7 @@ public class IOUtil {
                     break;
                 }
             }
-            
+
             if (isDebugginEnabled()) {
                 System.out.println("Matches: [" + fMatches + "] = " + f);
             }
