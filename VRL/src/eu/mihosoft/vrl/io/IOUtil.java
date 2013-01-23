@@ -461,6 +461,18 @@ public class IOUtil {
 
         return parent;
     }
+    
+    /**
+     * Returns the free space on the partion where the specified file is located
+     * @param f the file
+     * @return the free space (byte)
+     */
+    public static long getFreeSpaceOnPartition(File f) {
+        // TODO sometimes f.getUsableSpace() returned 0 and we had to use
+        // the filesystem root to determine free space. is it safe now to
+        // directly use f.getUsableSpace() ?
+        return f.getUsableSpace();
+    }
 
     /**
      * Returns the size of the specified file (byte). This method may use the
