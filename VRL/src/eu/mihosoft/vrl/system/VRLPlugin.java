@@ -53,6 +53,7 @@
 package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.g4j.lang.G4J;
+import eu.mihosoft.vrl.devel.CheckSumCreator;
 import eu.mihosoft.vrl.devel.LibraryMerger;
 import eu.mihosoft.vrl.devel.LibraryPluginCreator;
 import eu.mihosoft.vrl.devel.NativePluginCreator;
@@ -235,6 +236,7 @@ public class VRLPlugin extends VPluginConfigurator {
             vapi.addComponent(LibraryMerger.class);
             vapi.addComponent(NativePluginCreator.class);
             vapi.addComponent(PluginContentAdder.class);
+            vapi.addComponent(CheckSumCreator.class);
 
             // language
             vapi.addComponent(G4J.class);
