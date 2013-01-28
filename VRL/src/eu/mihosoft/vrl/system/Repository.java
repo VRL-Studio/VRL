@@ -4,6 +4,7 @@
  */
 package eu.mihosoft.vrl.system;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,17 +12,20 @@ import java.util.List;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public class Repository {
+public class Repository implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+    
     private List<RepositoryEntry> entries =
             new ArrayList<RepositoryEntry>();
 
     public Repository() {
     }
-    
+
     public void addEntry(RepositoryEntry entry) {
         entries.add(entry);
     }
-    
+
     public boolean removeEntry(RepositoryEntry entry) {
         return entries.remove(entry);
     }
@@ -39,6 +43,4 @@ public class Repository {
     public void setEntries(List<RepositoryEntry> entries) {
         this.entries = entries;
     }
-    
-    
 }
