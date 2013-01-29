@@ -118,6 +118,7 @@ public final class GroovyCompiler implements eu.mihosoft.vrl.lang.VCompiler {
         imports.add("import eu.mihosoft.vrl.lang.groovy.*;");
         imports.add("import eu.mihosoft.vrl.lang.visual.*;");
         imports.add("import eu.mihosoft.vrl.reflection.*;");
+        imports.add("import eu.mihosoft.vrl.security.*;");
         imports.add("import eu.mihosoft.vrl.system.*;");
         imports.add("import eu.mihosoft.vrl.types.*;");
         imports.add("import eu.mihosoft.vrl.media.*;");
