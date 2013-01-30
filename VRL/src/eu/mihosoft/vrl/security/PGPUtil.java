@@ -14,27 +14,27 @@ import org.bouncycastle.openpgp.PGPException;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public class SecurityUtil {
+public class PGPUtil {
 
-    private SecurityUtil() {
+    private PGPUtil() {
         throw new AssertionError();
     }
 
-    public static void createPGPKeyPair(
+    public static void createKeyPair(
             String identity, String password,
             File pubKeyFile, File privKeyFile, boolean ascii) throws IOException {
         RSAKeyPairGenerator.createKeyPair(
                 identity, password, ascii, pubKeyFile, privKeyFile);
     }
 
-    public static void signFilePGP(File privKeyFile, String password,
+    public static void signFile(File privKeyFile, String password,
             File file, File signatureFile, boolean ascii) throws IOException, PGPException {
         DetachedSignatureProcessor.signFile(privKeyFile,
                 password, file,
                 signatureFile, ascii);
     }
 
-    public static boolean verifyFilePGP(
+    public static boolean verifyFile(
             File pubKeyFile, String password, File file, File signatureFile)
             throws IOException, PGPException {
 
