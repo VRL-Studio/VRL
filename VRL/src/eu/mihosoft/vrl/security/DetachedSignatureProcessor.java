@@ -183,7 +183,7 @@ class DetachedSignatureProcessor {
 
     public static void signFile(File keyFile, String password, File file, boolean ascii)
             throws Exception {
-        Security.addProvider(new BouncyCastleProvider());
+//        Security.addProvider(new BouncyCastleProvider());
 
         if (ascii) {
             signFile(
@@ -201,7 +201,7 @@ class DetachedSignatureProcessor {
 
     public static void signFile(File keyFile, String password, File file, File signatureFile, boolean ascii) throws IOException, PGPException {
 
-        Security.addProvider(new BouncyCastleProvider());
+//        Security.addProvider(new BouncyCastleProvider());
 
         if (ascii) {
             try {
@@ -227,7 +227,7 @@ class DetachedSignatureProcessor {
 
     public static boolean verifyFile(File keyFile, File file, File signatureFile) throws IOException, PGPException {
         try {
-            Security.addProvider(new BouncyCastleProvider());
+//            Security.addProvider(new BouncyCastleProvider());
 
             return verifySignature(file.getAbsolutePath(),
                     signatureFile.getAbsolutePath(), keyFile.getAbsolutePath());
