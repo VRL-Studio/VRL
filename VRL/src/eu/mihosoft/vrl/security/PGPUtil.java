@@ -21,7 +21,7 @@ import org.bouncycastle.openpgp.PGPException;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class PGPUtil {
-    
+
     {
         Security.addProvider(new BouncyCastleProvider());
     }
@@ -44,7 +44,8 @@ public class PGPUtil {
      */
     public static void createKeyPair(
             String identity, String password,
-            File pubKeyFile, File privKeyFile, boolean ascii) throws IOException, PGPException {
+            File pubKeyFile, File privKeyFile, boolean ascii)
+            throws IOException, PGPException {
         RSAKeyPairGenerator.createKeyPair(
                 identity, password, ascii, pubKeyFile, privKeyFile);
     }
@@ -64,7 +65,8 @@ public class PGPUtil {
      * accepted
      */
     public static void signFile(File privKeyFile, String password,
-            File file, File signatureFile, boolean ascii) throws IOException, PGPException {
+            File file, File signatureFile, boolean ascii)
+            throws IOException, PGPException {
         DetachedSignatureProcessor.signFile(privKeyFile,
                 password, file,
                 signatureFile, ascii);
