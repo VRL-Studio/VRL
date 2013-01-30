@@ -22,10 +22,6 @@ import org.bouncycastle.openpgp.PGPException;
  */
 public class PGPUtil {
 
-    {
-        Security.addProvider(new BouncyCastleProvider());
-    }
-
     private PGPUtil() {
         throw new AssertionError();
     }
@@ -46,6 +42,9 @@ public class PGPUtil {
             String identity, String password,
             File pubKeyFile, File privKeyFile, boolean ascii)
             throws IOException, PGPException {
+        
+        addProviderIfNecessary();
+        
         RSAKeyPairGenerator.createKeyPair(
                 identity, password, ascii, pubKeyFile, privKeyFile);
     }
@@ -67,6 +66,9 @@ public class PGPUtil {
     public static void signFile(File privKeyFile, String password,
             File file, File signatureFile, boolean ascii)
             throws IOException, PGPException {
+        
+        addProviderIfNecessary();
+        
         DetachedSignatureProcessor.signFile(privKeyFile,
                 password, file,
                 signatureFile, ascii);
@@ -89,7 +91,19 @@ public class PGPUtil {
             File pubKeyFile, File file, File signatureFile)
             throws IOException, PGPException {
 
+        addProviderIfNecessary();
+        
         return DetachedSignatureProcessor.verifyFile(
                 pubKeyFile, file, signatureFile);
+    }
+
+    /**
+     * Adds the BC provider if necessary, i.e., if the provider hasn't already
+     * been added.
+     */
+    private static void addProviderIfNecessary() {
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(new BouncyCastleProvider());
+        }
     }
 }
