@@ -13,6 +13,9 @@ import java.util.logging.Logger;
 import eu.mihosoft.vrl.io.Download;
 import eu.mihosoft.vrl.io.NetUtil;
 import eu.mihosoft.vrl.io.VersionInfo;
+import eu.mihosoft.vrl.security.PGPUtil;
+import eu.mihosoft.vrl.visual.ProceedRequest;
+import eu.mihosoft.vrl.visual.VSwingUtil;
 import java.beans.XMLDecoder;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,12 +34,14 @@ import java.util.Observer;
 public class VRLUpdater {
 
     private URL updateURL;
+    private URL updateSignatureURL;
     private PluginIdentifier identifier;
     private List<RepositoryEntry> possibleUpdates;
     private final Object updatesLock = new Object();
     private Download updateDownload;
     private final Object updateDownloadLock = new Object();
     private Download repositoryDownload;
+    private Download repositorySignatureDownload;
     private final Object repositoryDownloadLock = new Object();
     private boolean verificationEnabled;
     private boolean verificationSuccessful;
@@ -47,6 +52,9 @@ public class VRLUpdater {
             this.updateURL = new URL(""
                     + "http://vrl-studio.mihosoft.eu/updates/"
                     + VSysUtil.getOSName() + "/repository.xml");
+            this.updateSignatureURL = new URL(""
+                    + "http://vrl-studio.mihosoft.eu/updates/"
+                    + VSysUtil.getOSName() + "/repository.xml.asc");
         } catch (MalformedURLException ex) {
             Logger.getLogger(VRLUpdater.class.getName()).
                     log(Level.SEVERE, null, ex);
@@ -96,6 +104,52 @@ public class VRLUpdater {
         }
 
         synchronized (repositoryDownloadLock) {
+
+            // downloading signature
+            repositorySignatureDownload = new Download(updateSignatureURL, updateDir, 5000, 60 * 1000);
+
+            repositorySignatureDownload.addObserver(new Observer() {
+                private long timestamp;
+
+                @Override
+                public void update(Observable o, Object o1) {
+                    Download d = (Download) o;
+
+
+                    long currentTime = System.currentTimeMillis();
+
+                    if (timestamp == 0 || currentTime - timestamp > 1000) {
+                        System.out.println(">> VRLUpdater: downloading repository signature "
+                                + d.getProgress() + "%");
+                        timestamp = currentTime;
+                    }
+
+                    if (d.getStatus() == Download.COMPLETE) {
+                        System.out.println(">> VRLUpdater: downloading repository signature"
+                                + d.getProgress() + "%");
+                        synchronized (updatesLock) {
+                            System.out.println(" --> repository signature download finished. "
+                                    + d.getTargetFile() + ", size: " + d.getSize());
+                        }
+                    } else if (d.getStatus() == Download.ERROR) {
+                        System.err.println(" --> cannot download repository signature: " + updateSignatureURL);
+
+                        if (action != null) {
+                            action.errorOccured(VRLUpdater.this, d, updateSignatureURL);
+                        }
+                    }
+                }
+            });
+
+            // wait for signature to complete
+            VSwingUtil.newWaitController().requestConcurrentWait(new ProceedRequest() {
+                @Override
+                public boolean proceed() {
+                    return repositorySignatureDownload.getStatus() != Download.DOWNLOADING;
+                }
+            });
+
+            // downloading repository
             repositoryDownload = new Download(updateURL, updateDir, 5000, 60 * 1000);
 
             if (action != null) {
@@ -143,7 +197,26 @@ public class VRLUpdater {
 
     private void readUpdates(VRLUpdateAction action, Download d) {
 
+        boolean repositoryVerified = false;
         File repositoryFile = d.getTargetFile();
+        try {
+            repositoryVerified = PGPUtil.verifyFile(PGPUtil.loadPublicVRLKey(), repositoryFile,
+                    repositorySignatureDownload.getTargetFile());
+        } catch (IOException ex) {
+            Logger.getLogger(VRLUpdater.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (RuntimeException ex) {
+            Logger.getLogger(VRLUpdater.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (repositoryVerified) {
+            System.out.println(">> VRLUpdater: repository successfully verified");
+        } else {
+            if (action != null) {
+                VMessage.warning("Cannot check for updates:",
+                        ">> checking for updates failed! "
+                        + "Repository cannot be verified " + repositoryFile);
+            }
+        }
 
         XMLDecoder encoder = null;
 
@@ -167,7 +240,7 @@ public class VRLUpdater {
         Object obj = encoder.readObject();
 
         if (!(obj instanceof Repository)) {
-            VMessage.error("Cannot check for updates:",
+            VMessage.warning("Cannot check for updates:",
                     ">> checking for updates failed! "
                     + "Repository file has wrong format: " + repositoryFile);
 
@@ -285,12 +358,12 @@ public class VRLUpdater {
                                 + d.getTargetFile());
 
                         action.startVerification(d);
-                        
+
                         if (isVerificationEnabled()) {
                             verificationSuccessful =
                                     d.verifySHA1(update.getSHA1Checksum());
                         }
-                        
+
                         action.stopVerification(d, verificationSuccessful);
 
                         if (action != null) {

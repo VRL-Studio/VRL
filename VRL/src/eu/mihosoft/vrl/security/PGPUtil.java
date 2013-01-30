@@ -4,9 +4,14 @@
  */
 package eu.mihosoft.vrl.security;
 
+import eu.mihosoft.vrl.io.IOUtil;
+import eu.mihosoft.vrl.system.VRL;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.Security;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.openpgp.PGPException;
 
@@ -35,18 +40,22 @@ public class PGPUtil {
      * @param privKeyFile private key file (will be created/overwritten)
      * @param ascii defines whether to use ASCII format
      * @throws IOException if key files cannot be writen
-     * @throws PGPExceptionif PGP algorithms failed or security provider hasn't
+     * @throws RuntimeException if PGP algorithms failed or security provider hasn't
      * been accepted
      */
     public static void createKeyPair(
             String identity, String password,
             File pubKeyFile, File privKeyFile, boolean ascii)
-            throws IOException, PGPException {
+            throws IOException, RuntimeException {
 
         addProviderIfNecessary();
-
-        RSAKeyPairGenerator.createKeyPair(
-                identity, password, ascii, pubKeyFile, privKeyFile);
+        try {
+            RSAKeyPairGenerator.createKeyPair(
+                    identity, password, ascii, pubKeyFile, privKeyFile);
+        } catch (PGPException ex) {
+            Logger.getLogger(PGPUtil.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
@@ -60,18 +69,22 @@ public class PGPUtil {
      * @param ascii defines whether to use ASCII format
      * @throws IOException if files cannot be found or the signature cannot be
      * written
-     * @throws PGPExceptionif PGP algorithms failed or security provider hasn't
+     * @throws RuntimeException if PGP algorithms failed or security provider hasn't
      * been accepted
      */
     public static void signFile(File privKeyFile, String password,
             File file, File signatureFile, boolean ascii)
-            throws IOException, PGPException {
+            throws IOException, RuntimeException {
 
         addProviderIfNecessary();
-
-        DetachedSignatureProcessor.signFile(privKeyFile,
-                password, file,
-                signatureFile, ascii);
+        try {
+            DetachedSignatureProcessor.signFile(privKeyFile,
+                    password, file,
+                    signatureFile, ascii);
+        } catch (PGPException ex) {
+            Logger.getLogger(PGPUtil.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
@@ -84,17 +97,21 @@ public class PGPUtil {
      * @return <code>true</code> if verification was successful;
      * <code>false</code> otherwise
      * @throws IOException if files cannot be read
-     * @throws PGPExceptionif PGP algorithms failed or security provider hasn't
+     * @throws RuntimeException if PGP algorithms failed or security provider hasn't
      * been accepted
      */
     public static boolean verifyFile(
             File pubKeyFile, File file, File signatureFile)
-            throws IOException, PGPException {
+            throws IOException, RuntimeException {
 
         addProviderIfNecessary();
-
-        return DetachedSignatureProcessor.verifyFile(
-                pubKeyFile, file, signatureFile);
+        try {
+            return DetachedSignatureProcessor.verifyFile(
+                    pubKeyFile, file, signatureFile);
+        } catch (PGPException ex) {
+            Logger.getLogger(PGPUtil.class.getName()).log(Level.SEVERE, null, ex);
+            throw new RuntimeException(ex);
+        }
     }
 
     /**
@@ -105,5 +122,28 @@ public class PGPUtil {
         if (Security.getProvider("BC") == null) {
             Security.addProvider(new BouncyCastleProvider());
         }
+    }
+
+    /**
+     * Loads the public VRL/mihosoft key from the resource location and copies
+     * it to the tmp file returned by this method.
+     *
+     * @return file that contains the public key (this is a tmp file, copy it
+     * for permanent storage)
+     */
+    public static File loadPublicVRLKey() {
+        try {
+            File tmpKeyFile = new File(IOUtil.createTempDir(),
+                    "pub-key-vrl.asc");
+            IOUtil.saveStreamToFile(VRL.class.getResourceAsStream(
+                    "/eu/mihosoft/vrl/resources/security/pub-key-vrl.asc"),
+                    tmpKeyFile);
+            return tmpKeyFile;
+        } catch (IOException ex) {
+            Logger.getLogger(PGPUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return null;
     }
 }
