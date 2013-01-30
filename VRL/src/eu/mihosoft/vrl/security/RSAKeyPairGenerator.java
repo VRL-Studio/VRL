@@ -117,7 +117,7 @@ class RSAKeyPairGenerator {
             String identity, String password, boolean ascii, File pubFile, File privFile) throws IOException, PGPException
              {
         try {
-//            Security.addProvider(new BouncyCastleProvider());
+            Security.addProvider(new BouncyCastleProvider());
 
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", "BC");
 
