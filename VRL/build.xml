@@ -163,7 +163,7 @@ minus the .jar extension. It should not have spaces.
         <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
             <zipgroupfileset dir="dist" includes="*.jar"/>
             <!--We have to EXCLUDE bouncycastle jar files as they would loose their signature-->
-            <zipgroupfileset dir="dist/lib" includes="*.jar" excludes="bcpg*.jar"/>
+            <zipgroupfileset dir="dist/lib" includes="*.jar" excludes="bcp*.jar"/>
 
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>
