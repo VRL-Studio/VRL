@@ -35,16 +35,16 @@ public class PGPUtil {
      * @param privKeyFile private key file (will be created/overwritten)
      * @param ascii defines whether to use ASCII format
      * @throws IOException if key files cannot be writen
-     * @throws PGPException if PGP algorithms failed or security provider is not
-     * accepted
+     * @throws PGPExceptionif PGP algorithms failed or security provider hasn't
+     * been accepted
      */
     public static void createKeyPair(
             String identity, String password,
             File pubKeyFile, File privKeyFile, boolean ascii)
             throws IOException, PGPException {
-        
+
         addProviderIfNecessary();
-        
+
         RSAKeyPairGenerator.createKeyPair(
                 identity, password, ascii, pubKeyFile, privKeyFile);
     }
@@ -60,15 +60,15 @@ public class PGPUtil {
      * @param ascii defines whether to use ASCII format
      * @throws IOException if files cannot be found or the signature cannot be
      * written
-     * @throws PGPException if PGP algorithms failed or security provider is not
-     * accepted
+     * @throws PGPExceptionif PGP algorithms failed or security provider hasn't
+     * been accepted
      */
     public static void signFile(File privKeyFile, String password,
             File file, File signatureFile, boolean ascii)
             throws IOException, PGPException {
-        
+
         addProviderIfNecessary();
-        
+
         DetachedSignatureProcessor.signFile(privKeyFile,
                 password, file,
                 signatureFile, ascii);
@@ -84,15 +84,15 @@ public class PGPUtil {
      * @return <code>true</code> if verification was successful;
      * <code>false</code> otherwise
      * @throws IOException if files cannot be read
-     * @throws PGPExceptionif PGP algorithms failed or security provider is not
-     * accepted
+     * @throws PGPExceptionif PGP algorithms failed or security provider hasn't
+     * been accepted
      */
     public static boolean verifyFile(
             File pubKeyFile, File file, File signatureFile)
             throws IOException, PGPException {
 
         addProviderIfNecessary();
-        
+
         return DetachedSignatureProcessor.verifyFile(
                 pubKeyFile, file, signatureFile);
     }
