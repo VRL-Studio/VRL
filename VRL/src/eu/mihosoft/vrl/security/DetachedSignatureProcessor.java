@@ -104,10 +104,10 @@ class DetachedSignatureProcessor {
         dIn.close();
 
         if (sig.verify()) {
-            System.out.println("signature verified.");
+//            System.out.println("signature verified.");
             return true;
         } else {
-            System.out.println("signature verification failed.");
+//            System.out.println("signature verification failed.");
             return false;
         }
     }
