@@ -114,10 +114,10 @@ class RSAKeyPairGenerator {
     }
 
     public static void createKeyPair(
-            String identity, String password, boolean ascii, File pubFile, File privFile) throws IOException
+            String identity, String password, boolean ascii, File pubFile, File privFile) throws IOException, PGPException
              {
         try {
-            Security.addProvider(new BouncyCastleProvider());
+//            Security.addProvider(new BouncyCastleProvider());
 
             KeyPairGenerator kpg = KeyPairGenerator.getInstance("RSA", "BC");
 
@@ -140,8 +140,6 @@ class RSAKeyPairGenerator {
         } catch (InvalidKeyException ex) {
             Logger.getLogger(RSAKeyPairGenerator.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SignatureException ex) {
-            Logger.getLogger(RSAKeyPairGenerator.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (PGPException ex) {
             Logger.getLogger(RSAKeyPairGenerator.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(RSAKeyPairGenerator.class.getName()).log(Level.SEVERE, null, ex);
