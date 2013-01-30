@@ -89,6 +89,7 @@ public class PGPUtil {
             File pubKeyFile, File file, File signatureFile)
             throws IOException, PGPException {
 
-        return DetachedSignatureProcessor.verifyFile(pubKeyFile, file, signatureFile);
+        return DetachedSignatureProcessor.verifyFile(
+                pubKeyFile, file, signatureFile);
     }
 }
