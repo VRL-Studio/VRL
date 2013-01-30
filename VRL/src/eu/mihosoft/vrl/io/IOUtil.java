@@ -461,9 +461,10 @@ public class IOUtil {
 
         return parent;
     }
-    
+
     /**
      * Returns the free space on the partion where the specified file is located
+     *
      * @param f the file
      * @return the free space (byte)
      */
@@ -476,8 +477,9 @@ public class IOUtil {
 
     /**
      * Returns the size of the specified file (byte). This method may use the
-     * {@link File#length() } method or use an alternative implementation
-     * for efficiency reasons.
+     * {@link File#length() } method or use an alternative implementation for
+     * efficiency reasons.
+     *
      * @param f file
      * @return the size of the specified file (byte)
      */
@@ -571,7 +573,8 @@ public class IOUtil {
     /**
      * Reads and returns a resource text file, such as changelog etc.
      *
-     * @param resourceName name of the resource, * * * * * * *      * e.g. <code>/eu/mihosoft/vrl/resources/changelog/changelog.txt</code>
+     * @param resourceName name of the resource, e.g.
+     * <code>/eu/mihosoft/vrl/resources/changelog/changelog.txt</code>
      * @return
      */
     public static String readResourceTextFile(String resourceName) {
