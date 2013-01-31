@@ -75,11 +75,14 @@ public class VRLUpdater {
 
     public void checkForUpdates(final VRLUpdateAction action) {
         if (isDownloadingUpdate() || isDownloadingRepository()) {
-            System.out.println(">> VRLUpdater: currently downloading repository. Please wait!");
+            System.out.println(
+                    ">> VRLUpdater: "
+                    + "currently downloading repository. Please wait!");
             return;
         }
 
-        boolean hostAvailable = NetUtil.isHostReachable(updateURL.getHost(), 80, 5000);
+        boolean hostAvailable = NetUtil.isHostReachable(
+                updateURL.getHost(), 80, 5000);
 
         if (!hostAvailable) {
             System.out.println(">> VRLUpdater: host unreachable: "
@@ -106,7 +109,8 @@ public class VRLUpdater {
         synchronized (repositoryDownloadLock) {
 
             // downloading signature
-            repositorySignatureDownload = new Download(updateSignatureURL, updateDir, 5000, 60 * 1000);
+            repositorySignatureDownload = new Download(
+                    updateSignatureURL, updateDir, 5000, 60 * 1000);
 
             repositorySignatureDownload.addObserver(new Observer() {
                 private long timestamp;
@@ -119,38 +123,50 @@ public class VRLUpdater {
                     long currentTime = System.currentTimeMillis();
 
                     if (timestamp == 0 || currentTime - timestamp > 1000) {
-                        System.out.println(">> VRLUpdater: downloading repository signature "
+                        System.out.println(
+                                ">> VRLUpdater:"
+                                + " downloading repository signature "
                                 + d.getProgress() + "%");
                         timestamp = currentTime;
                     }
 
                     if (d.getStatus() == Download.COMPLETE) {
-                        System.out.println(">> VRLUpdater: downloading repository signature"
+                        System.out.println(
+                                ">> VRLUpdater:"
+                                + " downloading repository signature"
                                 + d.getProgress() + "%");
                         synchronized (updatesLock) {
-                            System.out.println(" --> repository signature download finished. "
-                                    + d.getTargetFile() + ", size: " + d.getSize());
+                            System.out.println(
+                                    " --> repository signature download finished. "
+                                    + d.getTargetFile()
+                                    + ", size: " + d.getSize() + " byte");
                         }
                     } else if (d.getStatus() == Download.ERROR) {
-                        System.err.println(" --> cannot download repository signature: " + updateSignatureURL);
+                        System.err.println(
+                                " --> cannot download repository signature: "
+                                + updateSignatureURL);
 
                         if (action != null) {
-                            action.errorOccured(VRLUpdater.this, d, updateSignatureURL);
+                            action.errorOccured(
+                                    VRLUpdater.this, d, updateSignatureURL);
                         }
                     }
                 }
             });
 
             // wait for signature to complete
-            VSwingUtil.newWaitController().requestConcurrentWait(new ProceedRequest() {
-                @Override
-                public boolean proceed() {
-                    return repositorySignatureDownload.getStatus() != Download.DOWNLOADING;
-                }
-            });
+            VSwingUtil.newWaitController().requestConcurrentWait(
+                    new ProceedRequest() {
+                        @Override
+                        public boolean proceed() {
+                            return repositorySignatureDownload.getStatus()
+                                    != Download.DOWNLOADING;
+                        }
+                    });
 
             // downloading repository
-            repositoryDownload = new Download(updateURL, updateDir, 5000, 60 * 1000);
+            repositoryDownload = new Download(
+                    updateURL, updateDir, 5000, 60 * 1000);
 
             if (action != null) {
                 action.checkForUpdates(this, repositoryDownload, updateURL);
@@ -167,24 +183,29 @@ public class VRLUpdater {
                     long currentTime = System.currentTimeMillis();
 
                     if (timestamp == 0 || currentTime - timestamp > 1000) {
-                        System.out.println(">> VRLUpdater: downloading repository "
+                        System.out.println(
+                                ">> VRLUpdater: downloading repository "
                                 + d.getProgress() + "%");
                         timestamp = currentTime;
                     }
 
                     if (d.getStatus() == Download.COMPLETE) {
-                        System.out.println(">> VRLUpdater: downloading repository "
+                        System.out.println(
+                                ">> VRLUpdater: downloading repository "
                                 + d.getProgress() + "%");
                         synchronized (updatesLock) {
-                            System.out.println(" --> repository download finished. "
-                                    + d.getTargetFile() + ", size: " + d.getSize());
+                            System.out.println(
+                                    " --> repository download finished. "
+                                    + d.getTargetFile()
+                                    + ", size: " + d.getSize() + " byte");
                             readUpdates(action, d);
                             synchronized (repositoryDownloadLock) {
                                 repositoryDownload = null;
                             }
                         }
                     } else if (d.getStatus() == Download.ERROR) {
-                        System.err.println(" --> cannot download repository: " + updateURL);
+                        System.err.println(" --> cannot download repository: "
+                                + updateURL);
 
                         if (action != null) {
                             action.errorOccured(VRLUpdater.this, d, updateURL);
@@ -200,22 +221,28 @@ public class VRLUpdater {
         boolean repositoryVerified = false;
         File repositoryFile = d.getTargetFile();
         try {
-            repositoryVerified = PGPUtil.verifyFile(PGPUtil.loadPublicVRLKey(), repositoryFile,
+            repositoryVerified = PGPUtil.verifyFile(PGPUtil.loadPublicVRLKey(),
+                    repositoryFile,
                     repositorySignatureDownload.getTargetFile());
         } catch (IOException ex) {
-            Logger.getLogger(VRLUpdater.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VRLUpdater.class.getName()).log(
+                    Level.SEVERE, null, ex);
         } catch (RuntimeException ex) {
-            Logger.getLogger(VRLUpdater.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VRLUpdater.class.getName()).log(
+                    Level.SEVERE, null, ex);
         }
 
         if (repositoryVerified) {
-            System.out.println(">> VRLUpdater: repository successfully verified");
+            System.out.println(
+                    ">> VRLUpdater: repository successfully verified.");
         } else {
             if (action != null) {
                 VMessage.warning("Cannot check for updates:",
                         ">> checking for updates failed! "
                         + "Repository cannot be verified " + repositoryFile);
             }
+            System.out.println(
+                    ">> VRLUpdater: repository cannot be verified!");
         }
 
         XMLDecoder encoder = null;
@@ -263,7 +290,9 @@ public class VRLUpdater {
         RepositoryEntry update = findUpdate();
 
         if (update != null) {
-            System.out.println(" --> selected: " + update.getName() + "-" + update.getVersion());
+            System.out.println(
+                    " --> selected possible update: " + update.getName()
+                    + "-" + update.getVersion());
         }
 
         if (update != null && action != null) {
@@ -271,11 +300,13 @@ public class VRLUpdater {
         }
     }
 
-    public void downloadUpdate(final RepositoryEntry update, final VRLDownloadAction action) {
+    public void downloadUpdate(final RepositoryEntry update,
+            final VRLDownloadAction action) {
 
 
         if (isDownloadingUpdate() || isDownloadingRepository()) {
-            System.out.println(">> VRLUpdater: download in progress. Please wait!");
+            System.out.println(">> VRLUpdater: download in progress."
+                    + " Please wait!");
             return;
         }
 
@@ -287,7 +318,8 @@ public class VRLUpdater {
             Logger.getLogger(VRLUpdater.class.getName()).
                     log(Level.SEVERE, null, ex);
             if (action != null) {
-                action.errorOccured(null, updateURL, "bad URL = " + update.getUrl());
+                action.errorOccured(null, updateURL,
+                        "bad URL = " + update.getUrl());
             } else {
                 System.err.println(
                         ">> VRLUpdater: bad URL = " + update.getUrl());
@@ -429,7 +461,8 @@ public class VRLUpdater {
         this.identifier = identifier;
     }
 
-    private List<RepositoryEntry> searchForPossibleUpdates(Repository repository) {
+    private List<RepositoryEntry> searchForPossibleUpdates(
+            Repository repository) {
 
         List<RepositoryEntry> updates =
                 new ArrayList<RepositoryEntry>();
