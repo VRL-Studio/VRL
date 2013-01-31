@@ -94,7 +94,7 @@ public class PluginCacheEntry {
         }
         
         try {
-            jarFileChecksum = IOUtil.generateSHASum(IOUtil.fileToByteArray(f));
+            jarFileChecksum = IOUtil.generateSHA1Sum(IOUtil.fileToByteArray(f));
         } catch (FileNotFoundException ex) {
             Logger.getLogger(PluginCacheEntry.class.getName()).
                     log(Level.SEVERE, null, ex);

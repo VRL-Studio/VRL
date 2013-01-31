@@ -76,6 +76,7 @@ public class VPropertyFolderManager {
     private  File TMP_BASE;
     private  File PLUGINS;
     private  File PLUGIN_UPDATES;
+    private  File UPDATES;
     private  File ETC;
     private  File TMP;
     private  File RESOURCES;
@@ -128,6 +129,9 @@ public class VPropertyFolderManager {
 
         // init plugin update folder
         PLUGIN_UPDATES.mkdir();
+        
+        // init update folder
+        UPDATES.mkdir();
 
         // init tmp folder
         TMP_BASE.mkdir();
@@ -178,6 +182,7 @@ public class VPropertyFolderManager {
             TMP = new File(TMP_BASE, "0");
             PLUGINS = new File(getPropertyFolder(), "plugins");
             PLUGIN_UPDATES = new File(getPropertyFolder(), "plugin-updates");
+            UPDATES = new File(getPropertyFolder(), "updates");
             ETC = new File(getPropertyFolder(), "etc");
             RESOURCES = new File(getPropertyFolder(), "resources");
             PROJECT_TEMPLATES = new File(RESOURCES, "project-templates");
@@ -242,6 +247,10 @@ public class VPropertyFolderManager {
 
     public File getPluginUpdatesFolder() {
         return PLUGIN_UPDATES;
+    }
+    
+    public File getUpdatesFolder() {
+        return UPDATES;
     }
 
     public File getResourcesFolder() {

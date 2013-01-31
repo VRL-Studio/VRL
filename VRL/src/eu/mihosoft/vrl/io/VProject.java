@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io;
 
 import eu.mihosoft.vrl.io.vrlx.AbstractCode;
@@ -89,6 +88,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 
 /**
  * VRL Project object
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class VProject {
@@ -107,9 +107,12 @@ public class VProject {
      */
     private static final String PROJECT_INFO_NAME = "vproject-info.xml";
     private static final String PROJECT_INFO_DIR = "META-INF/VRL";
+    private static final String PROJECT_PAYLOAD_VERSIONING = "META-INF/VRL/payload/versioning/";
+    private static final String PROJECT_PAYLOAD_NO_VERSIONING = "META-INF/VRL/payload/no-versioning/";
 
     private VProject(VersionedFile projectFile) {
         this.projectFile = projectFile;
+        updateGitIgnore();
     }
 
     /**
@@ -119,6 +122,11 @@ public class VProject {
         return projectFile;
     }
 
+    /**
+     * Returns the content location of this project.
+     *
+     * @return the content location of this project
+     */
     public File getContentLocation() {
         return projectFile.getContent();
     }
@@ -169,10 +177,9 @@ public class VProject {
     }
 
     public static VProject create(File f) throws IOException {
-        VProject prj = new VProject(
-                new VersionedFile(f).create().ignore(".class"));
 
-        prj.getProjectFile().open();
+        VProject prj = new VProject(
+                new VersionedFile(f).create().open());
 
         prj.createFileInfo();
 
@@ -180,18 +187,30 @@ public class VProject {
 
         writeManifest(prj.getContentLocation());
 
-        TextSaver saver = new TextSaver();
-
-        saver.saveFile(
-                "*.class\n",
-                new File(prj.getContentLocation().getAbsolutePath()
-                + "/.gitignore"), "");
-
         prj.createMainClass();
-
         prj.getProjectFile().commit("project created.");
 
         return prj;
+    }
+
+    /**
+     * Returns the versioned payload folder of this project. It can be used to
+     * include plugins and other resources to the project.
+     *
+     * @return the versioned payload folder of this project
+     */
+    public File getVersionedPayloadFolder() {
+        return new File(getContentLocation(), PROJECT_PAYLOAD_VERSIONING);
+    }
+
+    /**
+     * Returns the non-versioned payload folder of this project. It can be used
+     * to include plugins and other resources to the project.
+     *
+     * @return the non-versioned payload folder of this project
+     */
+    public File getNonVersionedPayloadFolder() {
+        return new File(getContentLocation(), PROJECT_PAYLOAD_NO_VERSIONING);
     }
 
     private void createMainClass() throws IOException {
@@ -367,8 +386,12 @@ public class VProject {
 
         System.out.println(">> opening VProject: " + f.getAbsolutePath());
 
+        // please check that excludes are in sync with updateGitIgnore()!
         VProject prj = new VProject(
-                new VersionedFile(f).ignore(".class").cleanup().open());
+                new VersionedFile(f)
+                .setExcludeEndingsFromCleanup(".class")
+                .excludePathsFromCleanup(PROJECT_PAYLOAD_NO_VERSIONING).
+                cleanup().open());
 
         prj.projectInfo = prj.loadFileInfo();
 
@@ -816,6 +839,28 @@ public class VProject {
         manifest.write(new FileOutputStream(
                 new File(meta_inf.getAbsolutePath() + "/MANIFEST.MF")));
     }
-    
-    
+
+    private VProject updateGitIgnore() {
+        
+        // please check that excludes are in sync with open()!
+        
+        getProjectFile().setExcludeEndingsFromCleanup(
+                ".class").excludePathsFromCleanup(PROJECT_PAYLOAD_NO_VERSIONING);
+        
+        TextSaver saver = new TextSaver();
+        try {
+            // note: keep excludes in sync with gitignore!
+            saver.saveFile(
+                    "*.class\n"
+                    + PROJECT_PAYLOAD_NO_VERSIONING,
+                    new File(getContentLocation().getAbsolutePath()
+                    + "/.gitignore"), "");
+            
+            
+        } catch (IOException ex) {
+            Logger.getLogger(VProject.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return this;
+    }
 }

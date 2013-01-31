@@ -51,11 +51,14 @@
  */
 package eu.mihosoft.vrl.io;
 
+import eu.mihosoft.vrl.lang.Keywords;
 import eu.mihosoft.vrl.system.VParamUtil;
 import eu.mihosoft.vrl.system.VRL;
 import eu.mihosoft.vrl.system.VSysUtil;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.nio.channels.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -186,10 +189,12 @@ public class IOUtil {
 
     /**
      * Converts a stream to a string. This method can be used to easily read
-     * text files via <code>Class.getResourceAsStream(...)</code>
-     * 
-     * @see http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
-     * 
+     * text files via
+     * <code>Class.getResourceAsStream(...)</code>
+     *
+     * @see
+     * http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
+     *
      * @param is
      * @return stream as String
      */
@@ -240,12 +245,23 @@ public class IOUtil {
     }
 
     /**
-     * Generates a checksum for a given byte array.
+     * Generates a SHA-1 checksum for a given byte array.
      *
      * @param data the data to convert
      * @return the checksum
      */
+    @Deprecated
     public static String generateSHASum(byte[] data) {
+        return generateSHA1Sum(data);
+    }
+
+    /**
+     * Generates a SHA-1 checksum for a given byte array.
+     *
+     * @param data the data to convert
+     * @return the checksum
+     */
+    public static String generateSHA1Sum(byte[] data) {
         MessageDigest md = null;
         try {
             md = MessageDigest.getInstance("SHA-1");
@@ -256,6 +272,236 @@ public class IOUtil {
         }
 
         return null;
+    }
+
+    /**
+     * Generates a SHA-1 checksum for a given File.
+     *
+     * @param f the file
+     * @return the checksum or an empty String (<code>""</code>) if the
+     * specified file cannot be found/read
+     */
+    public static String generateSHA1Sum(File f) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-1");
+            return convertToHex(md.digest(fileToByteArray(f)));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(IOUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return "";
+    }
+
+    /**
+     * Generates a MD5 checksum for a given File.
+     *
+     * @param f the file
+     * @return the checksum or an empty String (<code>""</code>) if the
+     * specified file cannot be found/read
+     */
+    public static String generateMD5Sum(File f) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("MD5");
+            return convertToHex(md.digest(fileToByteArray(f)));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(IOUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return "";
+    }
+
+    /**
+     * Generates a SHA-256 checksum for a given File.
+     *
+     * @param f the file
+     * @return the checksum or an empty String (<code>""</code>) if the
+     * specified file cannot be found/read
+     */
+    public static String generateSHA256um(File f) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+            return convertToHex(md.digest(fileToByteArray(f)));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(IOUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return "";
+    }
+
+    /**
+     * Generates a SHA-2 (SHA-256) checksum for a given byte array.
+     *
+     * @param data the data to convert
+     * @return the checksum
+     */
+    public static String generateSHA256Sum(byte[] data) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+            return convertToHex(md.digest(data));
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(IOUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
+    /**
+     * Generates a MD5 checksum for a given byte array.
+     *
+     * @param data the data to convert
+     * @return the checksum
+     */
+    public static String generateMD5Sum(byte[] data) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("MD5");
+            return convertToHex(md.digest(data));
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(IOUtil.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return null;
+    }
+
+    /**
+     * Verifies the specified file via MD5 checksum.
+     *
+     * @param f the file to verify (must exist)
+     * @param checksum the checksum
+     * @return <code>true</code> if the sverification is successful;
+     * <code>false</code> otherwise
+     */
+    public static boolean verifyFileMD5(File f, String checksum) {
+        try {
+            byte[] fileData = IOUtil.fileToByteArray(f);
+            String checksumOfFile = generateMD5Sum(fileData);
+
+            return checksum.equals(checksumOfFile);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return false;
+    }
+
+    /**
+     * Verifies the specified file via SHA-1 checksum.
+     *
+     * @param f the file to verify (must exist)
+     * @param checksum the checksum
+     * @return <code>true</code> if the sverification is successful;
+     * <code>false</code> otherwise
+     */
+    public static boolean verifyFileSHA1(File f, String checksum) {
+        if (isDebugginEnabled()) {
+            System.out.println(">> IOUtil.verifyFileSHA1: " + f);
+        }
+        try {
+            byte[] fileData = IOUtil.fileToByteArray(f);
+            String checksumOfFile = generateSHA1Sum(fileData);
+            if (isDebugginEnabled()) {
+                System.out.println(" --> sum1: " + checksum);
+                System.out.println(" --> sum2: " + checksumOfFile);
+                System.out.println(" -- result: " + checksum.equals(checksumOfFile));
+            }
+            return checksum.equals(checksumOfFile);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Download.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return false;
+    }
+
+    /**
+     * Retusn the root parent of the specified file, e.g., "/" on Unix or "C:\"
+     * on Windows.
+     *
+     * @param f file
+     * @return the root parent of the specified file
+     */
+    public static File getRootParent(File f) {
+
+        File parent = f.getAbsoluteFile();
+
+        while (parent != null) {
+            File pF = parent.getAbsoluteFile().getParentFile();
+
+            if (pF == null) {
+                return parent;
+            }
+
+            parent = pF;
+
+        }
+
+        return parent;
+    }
+
+    /**
+     * Returns the free space on the partion where the specified file is located
+     *
+     * @param f the file
+     * @return the free space (byte)
+     */
+    public static long getFreeSpaceOnPartition(File f) {
+        // TODO sometimes f.getUsableSpace() returned 0 and we had to use
+        // the filesystem root to determine free space. is it safe now to
+        // directly use f.getUsableSpace() ?
+        return f.getUsableSpace();
+    }
+
+    /**
+     * Returns the size of the specified file (byte). This method may use the
+     * {@link File#length() } method or use an alternative implementation for
+     * efficiency reasons.
+     *
+     * @param f file
+     * @return the size of the specified file (byte)
+     */
+    public static long getFileSize(File f) {
+
+        InputStream stream = null;
+        try {
+            URL url = f.toURI().toURL();
+            stream = url.openStream();
+            return stream.available();
+        } catch (IOException ex) {
+            Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException ex) {
+                Logger.getLogger(IOUtil.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return -1;
+
     }
 
     /**
@@ -322,6 +568,42 @@ public class IOUtil {
         } else {
             copyFile(sourceLocation, targetLocation);
         }
+    }
+
+    /**
+     * Reads and returns a resource text file, such as changelog etc.
+     *
+     * @param resourceName name of the resource, e.g.
+     * <code>/eu/mihosoft/vrl/resources/changelog/changelog.txt</code>
+     * @return
+     */
+    public static String readResourceTextFile(String resourceName) {
+        // load Sample Code
+        InputStream iStream = VRL.class.getResourceAsStream(
+                resourceName);
+
+        BufferedReader reader =
+                new BufferedReader(new InputStreamReader(iStream));
+
+        String text = "";
+
+        try {
+            while (reader.ready()) {
+                String line = reader.readLine();
+                text += line + "\n";
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Keywords.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                reader.close();
+            } catch (IOException ex) {
+                Logger.getLogger(Keywords.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            }
+        }
+        return text;
     }
 
     /**
@@ -611,7 +893,7 @@ public class IOUtil {
         if (excludes != null) {
 
             for (File f : excludes) {
-                if (dir.getPath().startsWith(f.getPath())) {
+                if (dir.getAbsolutePath().startsWith(f.getAbsolutePath())) {
                     exclude = true;
                     break;
                 }
@@ -696,18 +978,20 @@ public class IOUtil {
     }
 
     /**
-     * Create a new temporary directory. The directory and its content can be
-     * deleted on exit. Use {@link #deleteTmpFilesOnExit(java.io.File) } to
-     * clean this directory up since it isn't deleted automatically.
+     * Create a new temporary directory relative to the specified dir. The
+     * directory and its content can be deleted on exit. Use {@link #deleteTmpFilesOnExit(java.io.File)
+     * } to clean this directory up since it isn't deleted automatically.
+     *
+     * @param dir parent directory
      *
      * @see
      * http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java
      * @return the new directory
      * @throws IOException if there is an error creating the temporary directory
      */
-    public static File createTempDir() throws IOException {
+    public static File createTempDir(File dir) throws IOException {
 //        final File sysTempDir = new File(System.getProperty("java.io.tmpdir"));
-        final File sysTempDir = VRL.getPropertyFolderManager().getTmpFolder();
+        final File sysTempDir = dir;
         File newTempDir;
         final int maxAttempts = 9;
         int attemptCount = 0;
@@ -734,6 +1018,20 @@ public class IOUtil {
                     "Failed to create temp dir named "
                     + newTempDir.getAbsolutePath());
         }
+    }
+
+    /**
+     * Create a new temporary directory in the VRL tmp folder. The directory and
+     * its content can be deleted on exit. Use {@link #deleteTmpFilesOnExit(java.io.File)
+     * } to clean this directory up since it isn't deleted automatically.
+     *
+     * @see
+     * http://stackoverflow.com/questions/617414/create-a-temporary-directory-in-java
+     * @return the new directory
+     * @throws IOException if there is an error creating the temporary directory
+     */
+    public static File createTempDir() throws IOException {
+        return createTempDir(VRL.getPropertyFolderManager().getTmpFolder());
     }
 
     /**
@@ -883,17 +1181,27 @@ public class IOUtil {
 
         Set<File> result = new HashSet<File>();
 
+        if (isDebugginEnabled()) {
+            for (String e : endings) {
+                System.out.println("ENDING: " + e);
+            }
+        }
+
         for (File f : srcFolder.listFiles()) {
 
 
             boolean fMatches = false;
 
+
+            // TODO probably not sufficient to check for contains
             for (String e : endings) {
-                if (f.getAbsolutePath().endsWith(e)) {
+                if (f.getAbsolutePath().endsWith(e)
+                        || f.getPath().contains(e)) {
                     fMatches = true;
                     break;
                 }
             }
+
             if (isDebugginEnabled()) {
                 System.out.println("Matches: [" + fMatches + "] = " + f);
             }

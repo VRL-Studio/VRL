@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io;
 
 import eu.mihosoft.vrl.asm.ByteCodeUtil;
@@ -75,6 +74,7 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
@@ -145,6 +145,13 @@ public class VProjectController {
      * defines the maximum number of repair attempts (project build).
      */
     private int maxRepairAttempts = 20;
+    public static final String ON_CANVAS_CLOSE = "VProjectController:on-canvas-close";
+    public static final String ON_CANVAS_OPEN = "VProjectController:on-canvas-open";
+    /**
+     * list of action listeners
+     */
+    private Collection<ActionListener> actionListeners =
+            new ArrayList<ActionListener>();
     /**
      * Session disposables. (threads and other resources that shall be disposed
      * on session close)
@@ -199,7 +206,7 @@ public class VProjectController {
     public void addSessionDisposable(Disposable d) {
         if (isProjectOpened() && getCurrentSession() != null) {
 
-            test123(d);
+            addSessnionDisplosable(d);
         } else {
             throw new IllegalStateException(
                     "Cannot add session disposable. No session opened!");
@@ -474,6 +481,7 @@ public class VProjectController {
             exception = ex;
         } finally {
             mainCanvas.setActive(true);
+            fireAction(new ActionEvent(this, 0, ON_CANVAS_OPEN));
         }
 
         GroovyCodeEditorComponent.updateAllCodeEditorsOnCanvas(getCurrentCanvas());
@@ -1585,7 +1593,11 @@ public class VProjectController {
      * otherwise
      */
     public boolean isProjectOpened() {
-        return project != null && project.isOpened();
+        if (project == null) {
+            return false;
+        } else {
+            return project.isOpened();
+        }
     }
 
     /**
@@ -1742,6 +1754,128 @@ public class VProjectController {
             System.out.println(">> warning: no plugin dependencies in project!");
         }
 
+        Collection<PluginConfigurator> payloadPlugins = getProjectPluginPayload(project);
+        Collection<File> payloadToInstall = getPluginPayloadThatShallBeInstalled(project, payloadPlugins);
+
+        boolean providesPayload = !payloadPlugins.isEmpty();
+        boolean installPayload = !payloadToInstall.isEmpty();
+
+        if (installPayload) {
+            installPayload = VDialog.showConfirmDialog(getCurrentCanvas(),
+                    "Install Bundled Project Plugins?",
+                    "<html>"
+                    + "<div align=\"center\">"
+                    + "To open this project additional plugins need to be installed.<br><br>"
+                    + "Shall the bundled plugins be installed?<br>"
+                    + "</div>"
+                    + "</html>",
+                    VDialog.DialogType.YES_NO) == VDialog.YES;
+
+            // user chooses NO, we don't install payload or load the project
+            if (!installPayload) {
+                closeProject();
+                return false;
+            }
+
+        }
+
+        if (installPayload) {
+
+            final Map<String, Boolean> installErrors = new HashMap<String, Boolean>();
+
+            installPayloadPlugins(getProject(), payloadToInstall, new InstallPluginAction() {
+                @Override
+                public boolean overwrite(File src, File dest) {
+//                return VDialog.showConfirmDialog(getCurrentCanvas(),
+//                        "Overwrite existing Plugin?",
+//                        "Shall the plugin " + src.getName()
+//                        + " be replaced?",
+//                        VDialog.DialogType.YES_NO) == VDialog.YES;
+
+                    return true;
+                }
+
+                @Override
+                public void isNoPlugin(File src) {
+                    getCurrentCanvas().getMessageBox().addMessage(
+                            "Cannot Install Plugin:",
+                            ">> the file "
+                            + Message.EMPHASIZE_BEGIN
+                            + src
+                            + Message.EMPHASIZE_END + " is no VRL plugin!",
+                            MessageType.ERROR);
+                }
+
+                @Override
+                public void cannotInstall(Exception ex) {
+                    getCurrentCanvas().getMessageBox().addMessage(
+                            "Cannot Install Plugin:",
+                            ">> the following exception occured: "
+                            + ex.getMessage(),
+                            MessageType.ERROR);
+                    installErrors.put(ex.getMessage(), true);
+                }
+
+                @Override
+                public void installed(File f) {
+                    getCurrentCanvas().getMessageBox().addMessage(
+                            "Installed Plugin:",
+                            ">> the plugin "
+                            + f.getName() + " has been installed.",
+                            MessageType.INFO);
+                }
+
+                @Override
+                public void analyzeStart(File src) {
+//                                getCurrentCanvas().getMessageBox().addUniqueMessage(
+//                                        "Analyzing file:",
+//                                        ">> analyzing "
+//                                        + Message.EMPHASIZE_BEGIN
+//                                        + src.getName()
+//                                        + Message.EMPHASIZE_END + ".",
+//                                        null,
+//                                        MessageType.INFO);
+                    VSwingUtil.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            getCurrentCanvas().getEffectPane().startSpin();
+                        }
+                    });
+
+                }
+
+                @Override
+                public void analyzeStop(File src) {
+//                                getCurrentCanvas().getMessageBox().addUniqueMessage(
+//                                        "Analyzing file:",
+//                                        ">> analyzing "
+//                                        + Message.EMPHASIZE_BEGIN
+//                                        + src.getName()
+//                                        + Message.EMPHASIZE_END + ".",
+//                                        null,
+//                                        MessageType.INFO);
+
+                    VSwingUtil.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            getCurrentCanvas().getEffectPane().stopSpin();
+                        }
+                    });
+                }
+            });
+
+            if (!installErrors.isEmpty()) {
+                getCurrentCanvas().getMessageBox().addMessage(
+                        "Cannot Install Project Plugins:",
+                        "Project Plugins cannot be installed. Trying to load project anyway...",
+                        MessageType.INFO);
+            }
+            return false;
+        } else if (providesPayload) {
+            deleteProjectPluginPayloadAndFlush(project);
+        }
+
+
         // check for required plugins
         PluginDependencyCheck check = VRL.verify(pluginDependencies);
 
@@ -1797,6 +1931,58 @@ public class VProjectController {
         open("Main", false, false);
 
         return true;
+    }
+
+    /**
+     * Adds all plugins used by this project to the payload folder of this
+     * project.
+     */
+    private void includeUsedPlugins() {
+
+
+        for (AbstractPluginDependency aPD : getProject().getProjectInfo().getPluginDependencies()) {
+            PluginDependency pD = aPD.toPluginDependency();
+
+            PluginConfigurator pC = VRL.getPluginConfiguratorByName(pD.getName());
+
+            if (pC != null) {
+                File src = VJarUtil.getClassLocation(pC.getClass());
+                File dst = new File(
+                        getProject().getNonVersionedPayloadFolder(),
+                        "plugins" + File.separator + src.getName());
+
+                File srcXML = new File(VJarUtil.getClassLocation(pC.getClass()) + ".xml");
+                File dstXML = new File(
+                        getProject().getNonVersionedPayloadFolder(),
+                        "plugins" + File.separator + srcXML.getName());
+
+                boolean result = false;
+
+                try {
+                    dst.getParentFile().mkdirs();
+                    IOUtil.copyFile(src, dst);
+                    dstXML.getParentFile().mkdirs();
+                    IOUtil.copyFile(srcXML, dstXML);
+                    result = true;
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(VProjectController.class.getName()).
+                            log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(VProjectController.class.getName())
+                            .log(Level.SEVERE, null, ex);
+                }
+
+                if (!result) {
+                    VMessage.error("Cannot Copy Plugin To Project:",
+                            ">> the file "
+                            + Message.EMPHASIZE_BEGIN
+                            + src.getName()
+                            + Message.EMPHASIZE_END
+                            + " cannot be copied to project.");
+                }
+            }
+        }
+
     }
 
     /**
@@ -1998,6 +2184,8 @@ public class VProjectController {
         if (!project.isOpened()) {
             return;
         }
+
+        fireAction(new ActionEvent(this, 0, ON_CANVAS_CLOSE));
 
         VisualCanvas canvas = project.openedEntriesByName.get(name);
 
@@ -2317,6 +2505,77 @@ public class VProjectController {
     }
 
     /**
+     * Saves all opened sessions, flushes the project (writes to archive) and
+     * exports the project with all used plugins to the specified destination.
+     * <p> <b>Note:</b> this method will returns immediately. All work is done
+     * in a new thread. </p>
+     *
+     * @param dest archive destination
+     * @param commitChanges defines whether to commit changes
+     * @throws IOException
+     */
+    public void export(final File dst, boolean commitChanges) throws IOException {
+
+        final boolean visualSaveIndocation =
+                VProjectController.this.isVisualSaveIndication();
+
+        VProjectController.this.setVisualSaveIndication(false);
+
+        VSwingUtil.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                VSwingUtil.deactivateEventFilter();
+                VSwingUtil.activateEventFilter(
+                        getCurrentCanvas(),
+                        getCurrentCanvas().getMessageBox(),
+                        getCurrentCanvas().getDock());
+                getCurrentCanvas().getEffectPane().startSpin();
+            }
+        });
+
+        saveAll(null, commitChanges, null, false);
+
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+
+                includeUsedPlugins();
+                try {
+                    getProject().flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(VProjectController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                File src = getProject().getFile();
+                try {
+                    IOUtil.copyFile(src, dst);
+                } catch (FileNotFoundException ex) {
+                    Logger.getLogger(VProjectController.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IOException ex) {
+                    Logger.getLogger(VProjectController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                deleteProjectPluginPayloadAndFlush(project);
+
+                VSwingUtil.deactivateEventFilter();
+
+                VSwingUtil.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        getCurrentCanvas().getEffectPane().stopSpin();
+                    }
+                });
+
+                VProjectController.this.setVisualSaveIndication(visualSaveIndocation);
+            }
+        };
+
+        Thread t = new Thread(r);
+        t.start();
+
+    }
+
+    /**
      * Returns the current canvas. This is the canvas the user currently
      * interacts with.
      *
@@ -2521,7 +2780,7 @@ public class VProjectController {
         this.commitOnSave = commitOnSave;
     }
 
-    private void test123(Disposable d) {
+    private void addSessnionDisplosable(Disposable d) {
         if (sessionDisposablesByName.get(getCurrentSession()) == null) {
             sessionDisposablesByName.put(
                     getCurrentSession(), new ArrayList<Disposable>());
@@ -2529,7 +2788,156 @@ public class VProjectController {
 
         sessionDisposablesByName.get(getCurrentSession()).add(d);
     }
-}
+
+    private static Collection<PluginConfigurator> getProjectPluginPayload(VProject project) {
+        Collection<PluginConfigurator> projectPlugins =
+                new ArrayList<PluginConfigurator>();
+
+        File pluginPayload = new File(project.getNonVersionedPayloadFolder(), "plugins");
+
+        if (!pluginPayload.exists()) {
+            return projectPlugins;
+        }
+
+        System.out.println(">> analyzing plugin payload in project...");
+
+        for (File f : pluginPayload.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File file) {
+                return file.getName().toLowerCase().endsWith(".xml");
+            }
+        })) {
+            projectPlugins.addAll(
+                    PluginCacheController.loadPluginsFromCache(f));
+        }
+
+        return projectPlugins;
+
+    }
+
+    private static boolean deleteProjectPluginPayloadAndFlush(VProject project) {
+        File pluginPayload = new File(project.getNonVersionedPayloadFolder(), "plugins");
+        IOUtil.deleteContainedFilesAndDirs(pluginPayload);
+        try {
+            project.flush();
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(VProjectController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return false;
+    }
+
+    private static boolean deleteProjectPluginPayloadAndClose(VProject project) {
+        File pluginPayload = new File(project.getNonVersionedPayloadFolder(), "plugins");
+        IOUtil.deleteContainedFilesAndDirs(pluginPayload);
+
+        try {
+            project.close();
+            return true;
+        } catch (IOException ex) {
+            Logger.getLogger(VProjectController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return false;
+    }
+
+    private static Collection<File> getPluginPayloadThatShallBeInstalled(
+            VProject project,
+            Collection<PluginConfigurator> projectPlugins) {
+
+        Collection<File> pluginsToInstall =
+                new ArrayList<File>();
+
+        for (PluginConfigurator pC : projectPlugins) {
+
+            PluginConfigurator installedPlugin =
+                    VRL.getPluginConfiguratorByName(pC.getIdentifier().getName());
+
+            // plugin is not available, mark it for install
+            if (installedPlugin == null) {
+                pluginsToInstall.add(VJarUtil.getClassLocation(pC.getClass()));
+            } // installed version is older, mark it for install
+            else if (installedPlugin.getIdentifier().getVersion().compareTo(pC.getIdentifier().getVersion()) < 0) {
+                pluginsToInstall.add(VJarUtil.getClassLocation(pC.getClass()));
+            }
+
+        } // end for projectPlugins
+
+        return pluginsToInstall;
+    }
+
+    private void installPayloadPlugins(
+            final VProject project, final Collection<File> pluginsToInstall,
+            final InstallPluginAction action) {
+
+        if (!pluginsToInstall.isEmpty()) {
+
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+
+                    for (File file : pluginsToInstall) {
+                        VRL.installPlugin(file, action);
+                    }
+
+                    VDialog.showMessageDialog(getCurrentCanvas(),
+                            "Installed Plugins:",
+                            "VRL-Studio will be closed now. Reopen the project again.");
+
+                    VSwingUtil.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            getCurrentCanvas().getEffectPane().startSpin();
+                        }
+                    });
+
+                    deleteProjectPluginPayloadAndClose(project);
+
+                    VRL.exit(0);
+                }
+            };
+
+            Thread thread = new Thread(r);
+            thread.start();
+
+        }
+
+    }
+
+    /**
+     * Fires an action.
+     *
+     * @param event the event
+     */
+    protected void fireAction(ActionEvent event) {
+        for (ActionListener l : actionListeners) {
+            l.actionPerformed(event);
+        }
+    }
+
+    /**
+     * Adds a change listener to this project controller.
+     *
+     * @param l the listener to add
+     * @return <code>true</code> (as specified by {@link Collection#add})
+     */
+    public boolean addActionListener(ActionListener l) {
+        return actionListeners.add(l);
+    }
+
+    /**
+     * Removes a change listener from this controller.
+     *
+     * @param l the listener to remove
+     * @return <code>true</code> (as specified by {@link Collection#remove})
+     */
+    public boolean removeActionListener(ActionListener l) {
+        return actionListeners.remove(l);
+    }
+} // end class VProjectController
 
 /**
  * Default implementation of the session history controller interface.

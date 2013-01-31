@@ -1,0 +1,7 @@
+//
+// Prefix header for all source files of the 'VRLInstaller' target in the 'VRLInstaller' project.
+//
+
+#ifdef __OBJC__
+    #import <Foundation/Foundation.h>
+#endif

@@ -83,6 +83,10 @@
         <equals arg1="${singlejar.enabled}" arg2="true"/>
     </condition>
     
+    <condition property="changelogupdate">
+        <equals arg1="${changelogupdate.enabled}" arg2="true"/>
+    </condition>
+    
     
     <target name="-pre-compile">
         
@@ -95,7 +99,7 @@
 
         
         <javac srcdir="${src.dir}/eu/mihosoft/vrl/lang"
-               includes="SetTimeStampTask.java"
+               includes="SetTimeStampTask.java CreateChangelogTask.java"
                destdir="${build.classes.dir}"
                classpath="${javac.classpath}"/>
         
@@ -103,6 +107,17 @@
                  classname="eu.mihosoft.vrl.lang.SetTimeStampTask"
                  classpath="${build.classes.dir}"
                  />
+        
+        <taskdef name="create-changelog"
+                 classname="eu.mihosoft.vrl.lang.CreateChangelogTask"
+                 classpath="${build.classes.dir}"
+                 />
+        
+        <create-changelog
+            location="${basedir}/${src.dir}"
+            enabled="${changelogupdate.enabled}"
+            providesPreGithub="true">
+        </create-changelog>
         
         <timestamp location="${basedir}/${src.dir}">
             <fileset dir="${src.dir}" includes="**/*Constants.java"/>
@@ -147,7 +162,8 @@ minus the .jar extension. It should not have spaces.
 
         <jar destfile="${store.dir}/temp_final.jar" filesetmanifest="skip">
             <zipgroupfileset dir="dist" includes="*.jar"/>
-            <zipgroupfileset dir="dist/lib" includes="*.jar"/>
+            <!--We have to EXCLUDE bouncycastle jar files as they would loose their signature-->
+            <zipgroupfileset dir="dist/lib" includes="*.jar" excludes="bcp*.jar"/>
 
             <manifest>
                 <attribute name="Main-Class" value="${main.class}"/>

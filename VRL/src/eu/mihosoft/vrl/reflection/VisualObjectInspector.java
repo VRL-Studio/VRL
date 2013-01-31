@@ -906,9 +906,13 @@ public class VisualObjectInspector extends ObjectInspector {
 
         for (StackTraceElement ste : ex.getStackTrace()) {
 
-            int lineNumber = ste.getLineNumber() - 3;
-
+            int lineNumber = ste.getLineNumber();
+            
             String className = ste.getClassName();
+            
+            if (classNamesInSession.contains(className)) {
+                lineNumber -=3;
+            }
 
             String msg = " --> at "
                     + ste.getClassName() + "." + ste.getMethodName()

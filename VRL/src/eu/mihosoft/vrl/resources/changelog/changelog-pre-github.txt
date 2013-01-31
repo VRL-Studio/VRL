@@ -1,0 +1,404 @@
+-----------------------------------------------
+Version:	v0.4.2.4
+Date:		Wed, 17 Oct 2012 10:59:01 +0200
+-----------------------------------------------
+
+0.4.2.4 release:
+
+- new "custom default project" functionality added
+- method parameters can be copied (works also selective for groups)
+  pasting to textfiles also works for archivating method parameters
+- new color input type
+preparing 0.4.2.4 release
+
+-----------------------------------------------
+Version:	v0.4.2.3
+Date:		Thu, 13 Sep 2012 17:27:05 +0200
+-----------------------------------------------
+
+Bugfixe Release:
+fixed critical classloader bug:
+- root resources must have different path because they are visible for all plugins
+fixed critical classloader bug:
+- root resources must have different path because they are visible for all plugins
+
+-----------------------------------------------
+Version:	v0.4.2.2
+Date:		Thu, 13 Sep 2012 14:41:04 +0200
+-----------------------------------------------
+
+version string corrected
+project name changed, compiles correctly
+
+-----------------------------------------------
+Version:	v0.4.2.1
+Date:		Thu, 13 Sep 2012 14:33:21 +0200
+-----------------------------------------------
+
+project name changed, compiles correctly
+Merge branch 'master' into stable-0.4
+
+
+-----------------------------------------------
+Version:	v0.4.2.0
+Date:		Thu, 13 Sep 2012 13:08:07 +0200
+-----------------------------------------------
+
+Merge branch 'master' into stable-0.4
+
+memory display position fixed (would overlap with ug plugin)
+
+-----------------------------------------------
+Version:	v0.4.2-milestone-1
+Date:		Thu, 28 Jun 2012 17:20:14 +0200
+-----------------------------------------------
+
+starting VRL-0.4.2 development
+Alternative Parameter Groups Implemented:
+- groups via param-info id inplemented
+- dedicated ui elements added to method representation
+- grouping is independend from parameter location in method body
+
+-----------------------------------------------
+Version:	v0.4.1.1
+Date:		Wed, 27 Jun 2012 11:43:11 +0200
+-----------------------------------------------
+
+Bugfix Release:
+
+ - architecture detection bug fixed:
+   some linux distros use really strange architecture names
+   vrl should now be able to correctly detect architecture
+   on all x86 based linux distros. if not, try -Dos.arch=x86
+fixed:
+ - architecture detection bug fixed:
+    some linux distros use really strange architecture names
+
+-----------------------------------------------
+Version:	v0.4.1-milestone-1
+Date:		Tue, 15 May 2012 15:54:28 +0200
+-----------------------------------------------
+
+recent files menus can be deleted
+improved auto-completion:
+- now considers hidden imports (imports used by GroovyCompiler)
+
+-----------------------------------------------
+Version:	v0.4.1
+Date:		Mon, 25 Jun 2012 16:49:08 +0200
+-----------------------------------------------
+
+backaps reduced to 5
+Merge branch 'master' into stable-0.4
+
+
+-----------------------------------------------
+Version:	v0.4.0.1
+Date:		Thu, 19 Apr 2012 20:25:24 +0200
+-----------------------------------------------
+
+relase 0.4.0.1:
+
+- fixed codegeneration bug for ArrayBaseTypes and derived representations
+- improved version sheme: 0.4.x is defined as major version, every digit after x is a minor version,
+  e.g. 0.4.0.1 and 0.4.0.6 are compatible (only major versions define incompatibilities)
+- fixed codegeneration bug for ArrayBaseTypes and derived representations
+- improved version sheme: 0.4.x is defined as major version, every digit after x is a minor version,
+  e.g. 0.4.0.1 and 0.4.0.6 are compatible (only major versions define incompatibilities)
+Merge branch 'master' into stable-0.4
+
+
+-----------------------------------------------
+Version:	v0.4.0
+Date:		Tue, 17 Apr 2012 16:06:47 +0200
+-----------------------------------------------
+
+final vrl-0.4.0 version:
+
+highlights:
+
+- full-featured code editor including highlighting and code folding, search & replace etc.
+- full plugin support (ui for installation, deinstallation)
+- supports generation of plugins from vrl-project via library merger and plugin creator
+- projects can be exported as plugins
+- plugins have config storage support and can use custom resources (images, other data and executables)
+- project format optimized (heavily reduces size and io operation, ca. 2x)
+- new options for methodinfo and objectinfo (can ask if close and hide close icon)
+- improved version management
+- media support (can create movies from png images)
+
+version info on splashscreen
+
+-----------------------------------------------
+Version:	v0.3.9.0
+Date:		Mon, 31 Jan 2011 15:06:32 +0100
+-----------------------------------------------
+
+version info updated
+
+improved code generation (param info code improved,; it can handle quotes correctly by escaping them)
+
+
+-----------------------------------------------
+Version:	v0.3.8.12
+Date:		Tue, 16 Nov 2010 11:10:12 +0100
+-----------------------------------------------
+
+new stable release 0.3.8.12:
+
+new features:
+
+ - added enhanced style support, including laf
+
+ - connection correctness is checked while dragging, type reresentations
+   can implement custom compatibility rules, e.g., allow connections
+   from connectors with different style
+
+ - additional effects for visualizing method invocation:
+   artificially delays invocation and colorizes methods that
+   wait for invocation. good for debugging and demonstration
+   purposes
+
+ - support for custom param data, i.e., typerepresentations can
+   store additional information that can't be stored in the param
+   object (used for saving 3d orientation etc.)
+
+ - vrl enables array visualization through special arraybasetype.
+   this is a container for other type representations, array elements are
+   visualized by normal type representations. adding and removing
+   elements is possible. with arrays it is possible to simulate multiple
+   return values as the connectors of the element visualizations can be
+   used like any other connector (file format supports this now)
+
+ - if a class is currently in use (as visualobject, not as parameter)
+   and this class is going to be recompiled, a dialog is shown and asks
+   whether to recompile, as all instances of the old class will be
+   removed from canvas. this is necessary as instances of the old class
+   do not share the same class object anymore and are thus treated as
+   instances of another class
+
+ - VGeometry3D allows improved 3d visualizations including vertex
+   coloring etc. it can be used as input and output (inputs change
+   orientation of the param object)
+
+ - typerepresentations can decide whether to prefer binary serialization. This is useful for
+   Collection based values such as ArrayList objects. The VGeometry3DType now uses binary
+   serialization for big arrays, e.g., geometries with more than 500 triangles. This
+   increases the performance dramatically!
+
+ - typereprensentations can decide whether to serialize values or not.
+   if an object is too big or cannot be used because of other reasons
+   serialization can be ommited
+
+ - support for session initializer (and finalizer) with groovy support:
+   this allows custom actions when loading session, compiling codes etc.
+
+ - initial fullscreen support for type representations and other
+   components
+
+ - highly improved drawing performance
+
+ - highly improved memory handling for hidden windows (they release
+   unused buffers earlier, effect framework supports this now),
+   memory display added (shows memory usage on canvas background)
+
+ - initial presentation support: window groups consider window location
+   and animate between window states (currently only location), dock has
+   new applets for changing current window group
+
+ - animated layout added: allows to animate almost any swing layout
+
+ - improved architecture specific binary path handling: this is useful
+   for executing external binaries or loading libraries
+
+ - type representations allow custom error messages
+
+ - bufferedimagetype supports fixedAspectRatio option
+
+ - number-based type representations support min/max and value option,
+   e.g., @ParamInfo(options="min=30.1D;max=33.34D;value=33.0D")
+
+ - category option in component info finally used:
+   @ComponentInfo(name="my name", category "cat1/cat2/cat3/") this will
+   put this component in the sub menu "cat1/cat2/cat3/"
+
+ - support for multiple visualizations:
+   it is possible to have multiple visualizations of the same object
+   instance, each visualization has a unique visualID. multiple
+   visualization improves codeblock behavior. in previous versions a
+   method could not be invoked twice (with different connections).
+   This is one step to improved control flow visualization
+
+rangecheck fixed, was wrong for floating point numbers, min was the smallest positive number instead - (the biggest positive number)
+
+
+-----------------------------------------------
+Version:	v0.3.8.11
+Date:		Thu, 24 Dec 2009 17:43:23 +0100
+-----------------------------------------------
+
+some changes
+
+version info
+
+
+-----------------------------------------------
+Version:	v0.3.8.10
+Date:		Tue, 22 Dec 2009 16:27:15 +0100
+-----------------------------------------------
+
+version string
+
+conflict resolved
+
+
+-----------------------------------------------
+Version:	internship-11.11.2011
+Date:		Thu, 10 Nov 2011 13:19:46 +0100
+-----------------------------------------------
+
+Merge branch 'master' of ssh://mihosoft.eu/git/VRL
+
+critical reference related bug fixed (if a reference was set from a normal method reference output
+sendReturnValueData() was without effectd, because methoddescription was replaced later without
+updating input values)
+
+-----------------------------------------------
+Version:	internship-05.07.2012-2
+Date:		Thu, 5 Jul 2012 16:15:09 +0200
+-----------------------------------------------
+
+class-name type did not work properly because of typo in style name
+if a project does not compile message will be of type error, not warning
+
+-----------------------------------------------
+Version:	internship-05.07.2012
+Date:		Thu, 5 Jul 2012 14:39:01 +0200
+-----------------------------------------------
+
+if a project does not compile message will be of type error, not warning
+if a project does not compile message will be of type error, not warning
+
+-----------------------------------------------
+Version:	internship-04.11.2011
+Date:		Thu, 3 Nov 2011 18:08:48 +0100
+-----------------------------------------------
+
+adding java version to shell output (usefull in case of installation problems)
+property file added (allows to enable/disable timestamp generation and single-jar generation)
+
+-----------------------------------------------
+Version:	internship-01
+Date:		Sun, 9 Oct 2011 21:31:42 +0200
+-----------------------------------------------
+
+plugin configurator slightly changed (allows to override description methods)
+fixed a bug concerning connection-dragging gestures
+
+-----------------------------------------------
+Version:	0.4.0
+Date:		Tue, 17 Apr 2012 16:06:47 +0200
+-----------------------------------------------
+
+final vrl-0.4.0 version:
+
+highlights:
+
+- full-featured code editor including highlighting and code folding, search & replace etc.
+- full plugin support (ui for installation, deinstallation)
+- supports generation of plugins from vrl-project via library merger and plugin creator
+- projects can be exported as plugins
+- plugins have config storage support and can use custom resources (images, other data and executables)
+- project format optimized (heavily reduces size and io operation, ca. 2x)
+- new options for methodinfo and objectinfo (can ask if close and hide close icon)
+- improved version management
+- media support (can create movies from png images)
+
+version info on splashscreen
+
+-----------------------------------------------
+Version:	0.3.8.9
+Date:		Mon, 21 Dec 2009 18:08:02 +0100
+-----------------------------------------------
+
+version info
+
+Merge branch 'master' into stable-0.3
+
+
+-----------------------------------------------
+Version:	0.3.8.8
+Date:		Fri, 27 Nov 2009 22:34:51 +0100
+-----------------------------------------------
+
+Merge branch 'master' into stable-0.3
+
+Conflicts:
+	VRL/src/eu/mihosoft/vrl/io/Constants.java
+
+- nullpointer exception while saving removed
+- asks before removing components
+- windows won't be placed outside of the canvas anymore even if right-click
+  happens near top-left corner
+
+
+-----------------------------------------------
+Version:	0.3.8.7
+Date:		Wed, 18 Nov 2009 14:17:18 +0100
+-----------------------------------------------
+
+version specified
+
+window group loading bug fixed
+
+
+-----------------------------------------------
+Version:	0.3.8.6
+Date:		Tue, 10 Nov 2009 18:43:16 +0100
+-----------------------------------------------
+
+VRl is considdered to be stable again
+
+Support for Groovy 1.6 added.
+
+
+-----------------------------------------------
+Version:	0.3.8.5
+Date:		Fri, 28 Aug 2009 12:47:43 +0200
+-----------------------------------------------
+
+documentation updated
+
+documentation updated
+
+
+-----------------------------------------------
+Version:	0.3.8.4
+Date:		Fri, 21 Aug 2009 12:30:22 +0200
+-----------------------------------------------
+
+new 0.3.8.4 release
+
+window group behavior improved.
+
+
+-----------------------------------------------
+Version:	0.3.8.3
+Date:		Wed, 19 Aug 2009 13:45:20 +0200
+-----------------------------------------------
+
+release script updated
+
+release script updated
+
+
+-----------------------------------------------
+Version:	0.3.8.2
+Date:		Mon, 17 Aug 2009 17:13:03 +0200
+-----------------------------------------------
+
+fading bugs removed, window group stuff working
+
+save file bugs fixed. they occured when a dir with same name as the basename of the file already existed.
+
+

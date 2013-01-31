@@ -103,8 +103,6 @@ public class VProjectSessionCreator implements FileSaver {
         VDialog.AnswerType answer = VDialog.YES;
 
         if (sameProject) {
-            
-            System.out.println("HERE: " + file);
 
             answer = VDialog.showConfirmDialog(controller.getCurrentCanvas(),
                     "OVerwrite current Project?",
@@ -114,7 +112,7 @@ public class VProjectSessionCreator implements FileSaver {
                     + "</div></html>",
                     VDialog.DialogType.YES_NO);
         } else {
-            System.out.println("NOT HERE: " + file);
+            //
         }
 
         // stop if current project shall not be overwritten

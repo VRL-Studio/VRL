@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.animation.AnimationTask;
@@ -71,6 +70,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
@@ -79,14 +79,10 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 /**
- * <p>
- * This class defines a Mac OS X like dock applet. An applet defines an icon and
- * can receive notifications. The number of notifications is displayed in the
- * upper right corner of the icon.
- * </p>
- * <p>
- * Additionally an applet behaves like a button and fires an action event if
- * it receives a left mouse click.
+ * <p> This class defines a Mac OS X like dock applet. An applet defines an icon
+ * and can receive notifications. The number of notifications is displayed in
+ * the upper right corner of the icon. </p> <p> Additionally an applet behaves
+ * like a button and fires an action event if it receives a left mouse click.
  * </p>
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
@@ -106,10 +102,12 @@ public class DockApplet extends EffectPanel implements CanvasChild,
     private FadeEffect fadeEffect;
     private Dimension appletSize;
 //    private boolean iconVisible = true;
-    public static final String CLICKED_ACTION="dock-applet:clicked";
+    public static final String CLICKED_ACTION = "dock-applet:clicked";
+    private int progress;
 
     /**
      * Constructor.
+     *
      * @param mainCanvas the main canvas object
      */
     public DockApplet(Canvas mainCanvas) {
@@ -127,6 +125,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Constructor.
+     *
      * @param mainCanvas the main canvas
      * @param icon the icon to use
      */
@@ -151,7 +150,6 @@ public class DockApplet extends EffectPanel implements CanvasChild,
         fadeEffect = new FadeEffect(this);
 
         fadeEffect.getAnimation().addFrameListener(new AnimationTask() {
-
             @Override
             public void firstFrameStarted() {
                 if (fadeEffect.isFadeIn()) {
@@ -195,6 +193,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Defines the number of notifications.
+     *
      * @param notifications the number of notifications to set
      */
     public void setNumberOfNotification(int notifications) {
@@ -204,6 +203,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Returns the number of notifications.
+     *
      * @return the number of notifications
      */
     public int getNumberOfNotifications() {
@@ -237,6 +237,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
 //            g2.drawRect(0, 0, getWidth()-1, getHeight()-1);
 
+
             if (isActive) {
                 float value = 1.f / 6f;
 
@@ -255,6 +256,8 @@ public class DockApplet extends EffectPanel implements CanvasChild,
                 g2 = buffer.createGraphics();
             }
 
+            paintProgressIndicator(g2);
+
             if (getNumberOfNotifications() > 0) {
 
                 BufferedImage notifier = paintNotifier();
@@ -264,6 +267,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
             }
 
             g2.dispose();
+
         }
 
         Graphics2D g2 = (Graphics2D) g;
@@ -274,6 +278,57 @@ public class DockApplet extends EffectPanel implements CanvasChild,
         g2.setComposite(ac1);
 
         g2.drawImage(buffer, 0, 0, getWidth(), getHeight(), null);
+    }
+
+    private void paintProgressIndicator(Graphics2D g2) {
+
+        if (progress < 1) {
+            return;
+        }
+
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+
+        float strokeWidth = 1.5f;
+
+        double width = getAppletSize().width - strokeWidth - 1;
+        double height = getAppletSize().height / 6.0;
+
+        double x = strokeWidth / 2 + 0.5;
+        double y = getAppletSize().height / 2.0 - height;
+
+        RoundRectangle2D bkgRect = new RoundRectangle2D.Double(
+                x, y, width, height, 8, 8);
+
+        g2.setColor(Color.BLACK);
+        g2.fill(bkgRect);
+
+        RoundRectangle2D rect = new RoundRectangle2D.Double(
+                x + strokeWidth, y, (width - (strokeWidth) * 2f) / 100 * progress, height, 5, 5);
+
+        g2.setColor(new Color(140, 130, 150));
+        g2.fill(rect);
+
+        g2.setColor(Color.BLACK);
+        g2.draw(rect);
+
+        float blackStrokeWidth = strokeWidth * 2f;
+
+        g2.setStroke(new BasicStroke(blackStrokeWidth));
+
+        g2.setColor(Color.BLACK);
+        g2.draw(bkgRect);
+
+        x = blackStrokeWidth / 2;
+        width = getAppletSize().width - blackStrokeWidth - 0.5;
+
+        RoundRectangle2D bkgRectWhite = new RoundRectangle2D.Double(
+                x, y, width, height, 5, 5);
+
+        g2.setStroke(new BasicStroke(strokeWidth));
+
+        g2.setColor(Color.WHITE);
+        g2.draw(bkgRectWhite);
     }
 
     @Override
@@ -302,6 +357,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Returnns the applet icon.
+     *
      * @return the applet icon
      */
     public ImageIcon getIcon() {
@@ -310,6 +366,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Defines the applet icon.
+     *
      * @param icon the icon to set
      */
     public final void setIcon(ImageIcon icon) {
@@ -328,6 +385,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Paints the notification display.
+     *
      * @return the image containing the notification display graphics
      */
     protected BufferedImage paintNotifier() {
@@ -366,7 +424,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
         if (width < area.getWidth() + leftRightBorder) {
             width = (int) area.getWidth() + leftRightBorder;
             g2.dispose();
-            notifierBuffer = new BufferedImage(width+10, height,
+            notifierBuffer = new BufferedImage(width + 10, height,
                     BufferedImage.TYPE_INT_ARGB);
             g2 = notifierBuffer.createGraphics();
 
@@ -413,6 +471,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Returns the applet transparency.
+     *
      * @return the applet transparency
      */
     public float getTransparency() {
@@ -421,6 +480,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Defines the applet transparency.
+     *
      * @param transparency the transparency to set
      */
     public void setTransparency(float transparency) {
@@ -429,7 +489,8 @@ public class DockApplet extends EffectPanel implements CanvasChild,
     }
 
     /**
-     * Returns the action lister associated with this  applet.
+     * Returns the action lister associated with this applet.
+     *
      * @return the action listener associated with this applet if such an action
      * listener is defined;<code>null</code> otherwise
      */
@@ -439,6 +500,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Defines the action listener that is to be used for firing click events.
+     *
      * @param actionListener the action listener to set
      */
     public void setActionListener(CanvasActionListener actionListener) {
@@ -447,6 +509,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Fires an action event.
+     *
      * @param event the event to fire
      */
     private void fireAction(ActionEvent event) {
@@ -509,8 +572,9 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Returns the dock this applet belongs to.
+     *
      * @return the dock this applet belongs to if such a dock exists;
-     *         <code>null</code> otherwise
+     * <code>null</code> otherwise
      */
     public Dock getDock() {
         return dock;
@@ -518,6 +582,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Defines the dock this applet belongs to.
+     *
      * @param dock the dock to set
      */
     public void setDock(Dock dock) {
@@ -526,6 +591,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Fades in this applet.
+     *
      * @param duration the duration of the fade in effect
      */
     public void fadeIn(double duration) {
@@ -537,6 +603,7 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Fades out this applet.
+     *
      * @param duration the duration of the fade out effect
      */
     public void fadeOut(double duration) {
@@ -568,9 +635,38 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     /**
      * Returns the applet size independently from swing getSize() methods.
+     *
      * @return the applet size
      */
     public Dimension getAppletSize() {
         return appletSize;
+    }
+
+    /**
+     * @return the progress
+     */
+    public int getProgress() {
+        return progress;
+    }
+
+    /**
+     * @param progress the progress to set
+     */
+    public void setProgress(int progress) {
+
+        if (progress < 0) {
+            progress = 0;
+        }
+
+        if (progress > 100) {
+            progress = 100;
+        }
+
+        if (this.progress != progress) {
+            contentChanged();
+            VSwingUtil.repaintRequest(this);
+        }
+
+        this.progress = progress;
     }
 }

@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.animation.AnimationTask;
@@ -357,7 +356,9 @@ public class DefaultObjectRepresentation extends JPanel
         if (!mainCanvas.isDisableEffects()
                 && !mRep.getEffectManager().isDisabled()) {
             mRep.getEffectManager().
-                    startAppearanceEffect(mRep, 0.8);
+                    startAppearanceEffect(mRep, mRep.getStyle().
+                    getBaseValues().getDouble(
+                    CanvasWindow.FADE_IN_DURATION_KEY));
         } else {
             mRep.getEffectManager().
                     startAppearanceEffect(mRep, 0.0);
@@ -419,8 +420,9 @@ public class DefaultObjectRepresentation extends JPanel
 
             if (!mainCanvas.isDisableEffects()) {
                 method.getEffectManager().
-                        startDisappearanceEffect(method, 0.8,
-                        frameListener);
+                        startDisappearanceEffect(method, method.getStyle().
+                        getBaseValues().getDouble(
+                        CanvasWindow.FADE_OUT_DURATION_KEY), frameListener);
             } else {
                 method.getEffectManager().
                         startDisappearanceEffect(method, 0.0,
@@ -614,7 +616,10 @@ public class DefaultObjectRepresentation extends JPanel
         if (!mainCanvas.isDisableEffects()
                 && !selectionView.getEffectManager().isDisabled()) {
             selectionView.getEffectManager().
-                    startAppearanceEffect(selectionView, 0.8);
+                    startAppearanceEffect(selectionView, getParentWindow().
+                    getStyle().
+                    getBaseValues().getDouble(
+                    CanvasWindow.FADE_IN_DURATION_KEY));
         } else {
             selectionView.getEffectManager().
                     startAppearanceEffect(selectionView, 0.0);
@@ -629,7 +634,10 @@ public class DefaultObjectRepresentation extends JPanel
         if (!mainCanvas.isDisableEffects()
                 && !selectionView.getEffectManager().isDisabled()) {
             selectionView.getEffectManager().
-                    startDisappearanceEffect(selectionView, 0.8);
+                    startDisappearanceEffect(selectionView, getParentWindow().
+                    getStyle().
+                    getBaseValues().getDouble(
+                    CanvasWindow.FADE_OUT_DURATION_KEY));
         } else {
             selectionView.getEffectManager().
                     startDisappearanceEffect(selectionView, 0.0);
