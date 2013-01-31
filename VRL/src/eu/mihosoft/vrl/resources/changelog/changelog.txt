@@ -1,44 +1,94 @@
 -----------------------------------------------
+Version:	v0.4.2.8
+Date:		Thu, 31 Jan 2013 11:44:27 +0100
+-----------------------------------------------
+
+        Major Improvements:
+    
+    Project Format improved:
+    
+    - VRL now provides "Payload Support":
+      -- projects can store payload/data (versioned and non-versioned)
+      -- plugins can be stored as payload, they can be used in case VRL-Studio does not have
+         them installed. this allows for "export project" features
+    
+    Update Support:
+    
+    - finally VRL provides an update service for updating VRL based applications
+      -- this includes repository support, checksum verification and PGP signatures for verifying repository.xml
+      -- the dock provides a new icon that indicates updates and draws a progessbar for downloads
+    
+    Minor Improvements:
+    
+    - style values for animation duration are used more often to allow performance debugging (no bugs found so far)
+    
+    - IOUtil deleteDir improved, when trying to match also do contains() check
+        -- plugin caches can now also be used load plugins from arbitrary locations
+        -- param util shows parameter that was specified in error message
+    
+    - log can be shown in external window
+    
+    - automatic changelog creation/update implemented
+    
+    - dock applet order can be specified:
+        -- new addBefore and AddAfter methods
+    
+    - new isReachable (network) implementation. NetUtil class added
+    
+    - new tmpdir method that allows to specify parent folder
+    
+    - md5 sha-2 sha-256 support added to io utils
+    
+    - added verification support to download class
+    
+    Fixes:
+    
+    - critical fix that prevented to create new projects
+    - utf-8 bug in text-saver fixed
+
+-----------------------------------------------
 Version:	v0.4.2.7
 Date:		Tue, 4 Dec 2012 10:41:56 +0100
 -----------------------------------------------
 
-interface for visual invocation is now public, this allows loops
-debug api improved
+        - interface for visual invocation is now public
+      this allows loops
+    - debug output improved
+    - basic breakpoint support added
 
 -----------------------------------------------
 Version:	v0.4.2.6
 Date:		Mon, 19 Nov 2012 19:49:30 +0100
 -----------------------------------------------
 
-Version 0.4.2.6:
-
-- improved error output
-- custom plugin code can be shown
-- 3d enhancements:
-  -- limited transparency support
-  -- scale factor and offset of triangle arrays
-     can be accessed
-- arraytypes can be customized via new options:
-  elemNames, elemStyle, elemOptions
-- other minor bugfixes
-Merge branch 'master' into stable-0.4
-
+        Version 0.4.2.6:
+    
+    - updated to Groovy 1.8.8
+    - improved error output
+    - custom plugin code can be shown
+    - 3d enhancements:
+      -- limited transparency support
+      -- scale factor and offset of triangle arrays
+         can be accessed
+    - arraytypes can be customized via new options:
+      elemNames, elemStyle, elemOptions
+    - other minor bugfixes
 
 -----------------------------------------------
 Version:	v0.4.2.5
 Date:		Mon, 5 Nov 2012 14:05:50 +0100
 -----------------------------------------------
 
-auto-completion improved:
-- rt.jar classes are part of auto-complete
-- method params can be auto-completed
-- comments and strings are filtered before applying auto-complete
-
-math package improved:
-- groovyfunction types in math package can autogenerate session code
-- var names are validated (session code compilation cannot be broken through incorrect names)
-added java.lang completion fox OS X (didn't work on OS X because of jar location incompatibilities)
+        Bugfix Release:
+    
+    auto-completion improved:
+    - rt.jar classes are part of auto-complete
+    - method params can be auto-completed
+    - comments and strings are filtered before applying auto-complete
+    
+    math package improved:
+    - groovyfunction types in math package can autogenerate session code
+    - var names are validated (session code compilation cannot be broken through incorrect names)
 
 
 --- [PRE GITHUB] ---

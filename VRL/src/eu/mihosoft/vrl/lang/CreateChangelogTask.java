@@ -238,7 +238,9 @@ public class CreateChangelogTask extends Task {
         }
 
         try {
-            Process pr = rt.exec("git log -2 --pretty=%B " + tag, null, locationFile);
+//            Process pr = rt.exec("git log -2 --pretty=%B " + tag, null, locationFile);
+            
+            Process pr = rt.exec("git tag -l " + tag +" -n1000", null, locationFile);
 
             pr.waitFor();
 
@@ -246,9 +248,15 @@ public class CreateChangelogTask extends Task {
 
             String line = null;
 
+            boolean first = true;
 
             while ((line = input.readLine()) != null) {
                 msg += line + "\n";
+                
+                if (first) {
+                    first = false;
+                    msg = msg.replace(tag, "");
+                }
             }
 
             int exitVal = pr.waitFor();
