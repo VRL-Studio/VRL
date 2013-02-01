@@ -7,6 +7,7 @@ package eu.mihosoft.vrl.system;
 import eu.mihosoft.vrl.io.Download;
 import eu.mihosoft.vrl.io.IOUtil;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
+import eu.mihosoft.vrl.visual.MessageType;
 import eu.mihosoft.vrl.visual.VDialog;
 import java.io.File;
 import java.io.IOException;
@@ -40,9 +41,11 @@ public abstract class VRLUpdateActionBase implements VRLUpdateAction {
 
     @Override
     public void errorOccured(VRLUpdater updater, Download d, URL location) {
-        VMessage.error("Cannot check for updates:",
+
+        VMessage.getMsgBox().addUniqueMessage("Download failed",
                 ">> checking for updates failed! Location: "
-                + location.toExternalForm());
+                + location.toExternalForm(),
+                null, MessageType.WARNING);
     }
 
     @Override
@@ -68,7 +71,6 @@ public abstract class VRLUpdateActionBase implements VRLUpdateAction {
 //                ">> checking for updates finished!");
 //
 //    }
-
     @Override
     public void updateAvailable(final VRLUpdater updater, Download d,
             URL location, final RepositoryEntry update) {
@@ -91,18 +93,17 @@ public abstract class VRLUpdateActionBase implements VRLUpdateAction {
             });
         }
     }
-    
+
     @Override
     public void updateDownloadStateChanged(Download d) {
         //
     }
-    
+
     @Override
     public void hostUnreachable(VRLUpdater updater, URL url) {
         //
     }
 }
-
 
 class VRLDownloadActionImpl implements VRLDownloadAction {
 
@@ -115,8 +116,10 @@ class VRLDownloadActionImpl implements VRLDownloadAction {
 
     @Override
     public void errorOccured(Download d, URL url, String error) {
-        VMessage.error("Download failed",
-                ">> download failed! Error: " + error);
+        VMessage.getMsgBox().addUniqueMessage("Download failed",
+                ">> download failed! Error: " + error,
+                null, MessageType.WARNING);
+
     }
 
     @Override
@@ -171,8 +174,6 @@ class VRLDownloadActionImpl implements VRLDownloadAction {
         baseAction.stopVerification(d, verificationSuccessful);
     }
 }
-
-
 //File repositoryFile = d.getTargetFile();
 //
 //        XMLDecoder encoder = null;
