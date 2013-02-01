@@ -45,6 +45,7 @@ public class VRLUpdater {
     private final Object repositoryDownloadLock = new Object();
     private boolean verificationEnabled;
     private boolean verificationSuccessful;
+    private File customPublicKey;
 
     public VRLUpdater(PluginIdentifier identifier) {
         this.identifier = identifier;
@@ -145,7 +146,7 @@ public class VRLUpdater {
                         System.err.println(
                                 " --> cannot download repository signature: "
                                 + updateSignatureURL);
-
+                        repositorySignatureDownload = null;
                         if (action != null) {
                             action.errorOccured(
                                     VRLUpdater.this, d, updateSignatureURL);
@@ -159,8 +160,12 @@ public class VRLUpdater {
                     new ProceedRequest() {
                 @Override
                 public boolean proceed() {
-                    return repositorySignatureDownload.getStatus()
-                            != Download.DOWNLOADING;
+                    if (repositorySignatureDownload != null) {
+                        return repositorySignatureDownload.getStatus()
+                                != Download.DOWNLOADING;
+                    } else {
+                        return true;
+                    }
                 }
             });
 
@@ -207,6 +212,8 @@ public class VRLUpdater {
                         System.err.println(" --> cannot download repository: "
                                 + updateURL);
 
+                        repositoryDownload = null;
+
                         if (action != null) {
                             action.errorOccured(VRLUpdater.this, d, updateURL);
                         }
@@ -221,7 +228,16 @@ public class VRLUpdater {
         boolean repositoryVerified = false;
         File repositoryFile = d.getTargetFile();
         try {
-            repositoryVerified = PGPUtil.verifyFile(PGPUtil.loadPublicVRLKey(),
+
+            File keyFile;
+
+            if (customPublicKey != null) {
+                keyFile = customPublicKey;
+            } else {
+                keyFile = PGPUtil.loadPublicVRLKey();
+            }
+
+            repositoryVerified = PGPUtil.verifyFile(keyFile,
                     repositoryFile,
                     repositorySignatureDownload.getTargetFile());
         } catch (IOException ex) {
@@ -536,5 +552,19 @@ public class VRLUpdater {
      */
     public boolean isVerificationSuccessful() {
         return verificationSuccessful;
+    }
+
+    /**
+     * @return the customPublicKey
+     */
+    public File getCustomPublicKey() {
+        return customPublicKey;
+    }
+
+    /**
+     * @param customPublicKey the customPublicKey to set
+     */
+    public void setCustomPublicKey(File customPublicKey) {
+        this.customPublicKey = customPublicKey;
     }
 } // end class VRLUpdater
