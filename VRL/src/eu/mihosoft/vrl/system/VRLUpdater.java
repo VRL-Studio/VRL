@@ -139,7 +139,7 @@ public class VRLUpdater {
                             System.out.println(
                                     " --> repository signature download finished. "
                                     + d.getTargetFile()
-                                    + ", size: " + d.getSize() + " byte");
+                                    + ", size: " + (d.getSize() / 1024.0) + " KB");
                         }
                     } else if (d.getStatus() == Download.ERROR) {
                         System.err.println(
@@ -157,12 +157,12 @@ public class VRLUpdater {
             // wait for signature to complete
             VSwingUtil.newWaitController().requestConcurrentWait(
                     new ProceedRequest() {
-                        @Override
-                        public boolean proceed() {
-                            return repositorySignatureDownload.getStatus()
-                                    != Download.DOWNLOADING;
-                        }
-                    });
+                @Override
+                public boolean proceed() {
+                    return repositorySignatureDownload.getStatus()
+                            != Download.DOWNLOADING;
+                }
+            });
 
             // downloading repository
             repositoryDownload = new Download(
@@ -197,7 +197,7 @@ public class VRLUpdater {
                             System.out.println(
                                     " --> repository download finished. "
                                     + d.getTargetFile()
-                                    + ", size: " + d.getSize() + " byte");
+                                    + ", size: " + (d.getSize() / 1024.0) + " KB");
                             readUpdates(action, d);
                             synchronized (repositoryDownloadLock) {
                                 repositoryDownload = null;
@@ -423,7 +423,16 @@ public class VRLUpdater {
                     minE = e;
                 }
 
-                if (vInfo.compareTo(min) < 0) {
+                boolean lessThan = vInfo.compareTo(min) < 0;
+                boolean equal = vInfo.compareTo(min) == 0;
+
+                // check whether less or equal + shorter, i.e.,
+                // 0.1.2.0 and 0.1.2
+                // the compare method compares only the min number of digits, in
+                // this case 0.1.2
+                if (lessThan
+                        || (equal && vInfo.getVersion().length()
+                        < min.getVersion().length())) {
                     min = vInfo;
                     minE = e;
                 }
@@ -488,7 +497,16 @@ public class VRLUpdater {
                 continue;
             }
 
-            if (vInfo.compareTo(getIdentifier().getVersion()) > 0) {
+            boolean bigger = vInfo.compareTo(getIdentifier().getVersion()) > 0;
+            boolean equal = vInfo.compareTo(getIdentifier().getVersion()) == 0;
+
+            // check whether bigger or equal + longer, i.e.,
+            // 0.1.2.0 and 0.1.2
+            // the compare method compares only the min number of digits, in
+            // this case 0.1.2
+            if (bigger
+                    || (equal && vInfo.getVersion().length()
+                    > getIdentifier().getVersion().getVersion().length())) {
                 updates.add(e);
                 System.out.println(
                         " --> update = "
