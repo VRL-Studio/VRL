@@ -53,7 +53,7 @@
 package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.visual.Action;
-import eu.mihosoft.vrl.visual.ActionDelelator;
+import eu.mihosoft.vrl.visual.ActionDelegator;
 import eu.mihosoft.vrl.visual.ActionGroup;
 import eu.mihosoft.vrl.visual.MenuController;
 import eu.mihosoft.vrl.visual.VMenuController;
@@ -63,7 +63,7 @@ import eu.mihosoft.vrl.visual.VSeparator;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-class VActionDelegator implements ActionDelelator {
+class VActionDelegator implements ActionDelegator {
 
     private MenuController fileMenuController = new VMenuController();
     private MenuController editMenuController = new VMenuController();

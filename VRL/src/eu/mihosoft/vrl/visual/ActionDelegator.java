@@ -1,5 +1,5 @@
 /* 
- * CanvasActionDelegator.java
+ * ActionDelelator.java
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
@@ -53,31 +53,74 @@
 package eu.mihosoft.vrl.visual;
 
 /**
+ * Delegates actions to the correct menu controllers.
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-class CanvasActionDelegator implements ActionDelegator{
-    private Canvas canvas;
+public interface ActionDelegator {
 
-    public CanvasActionDelegator(Canvas canvas) {
-        this.canvas = canvas;
-    }
+    /**
+     * Adds an action to this delegator.
+     *
+     * @param a action to add
+     * @param destination destination
+     * @return
+     * <code>true</code> if the action could be added at the specified location;
+     * <code>false</code> otherwise
+     */
+    public boolean addAction(Action a, String destination);
 
-    @Override
-    public boolean addAction(Action a, String destination) {
-        if (destination.equals(WINDOW_MENU)) {
-            canvas.getWindowMenuController().addAction(a);
-            return true;
-        } else if (destination.equals(CANVAS_MENU)) {
-            canvas.getCanvasMenuController().addAction(a);
-            return true;
-        }
-        return false;
-    }
+//    /**
+//     * Adds an action to this delegator.
+//     *
+//     * @param a action to add
+//     * @param destination destination
+//     * @return
+//     * <code>true</code> if the action could be added at the specified location;
+//     * <code>false</code> otherwise
+//     */
+//    public boolean addAction(ActionGroup a, String destination);
 
-    @Override
-    public boolean addSeparator(String destination) {
-        return addAction(new VSeparator(), destination);
-    }
-
+    /**
+     * Adds a separator to this delegator.
+     *
+     * @param destination destination
+     * @return
+     * <code>true</code> if the separator could be added at the specified
+     * location;
+     * <code>false</code> otherwise
+     */
+    public boolean addSeparator(String destination);
+    /**
+     * Popup menu of the canvas.
+     */
+    public final String CANVAS_MENU = "Action:Destination=CanvasMenu";
+    /**
+     * Window popup menu.
+     */
+    public final String WINDOW_MENU = "Action:Destination=WindowMenu";
+    /**
+     * File menu.
+     */
+    public final String FILE_MENU = "Action:Destination=FileMenu";
+    /**
+     * Edit menu.
+     */
+    public final String EDIT_MENU = "Action:Destination=EditMenu";
+    /**
+     * View menu.
+     */
+    public final String VIEW_MENU = "Action:Destination=ViewMenu";
+    /**
+     * Tool menu.
+     */
+    public final String TOOL_MENU = "Action:Destination=ToolMenu";
+    /**
+     * Debug menu.
+     */
+    public final String DEBUG_MENU = "Action:Destination=DebugMenu";
+    /**
+     * Info menu.
+     */
+    public final String INFO_MENU = "Action:Destination=InfoMenu";
 }
