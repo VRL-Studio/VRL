@@ -88,12 +88,6 @@ public class FileDialogManager {
         return CACHED_DIR;
     }
 
-    /**
-     * @param dir the default dir to set
-     */
-    public static void setDefaultDir(File dir) {
-        CACHED_DIR = dir;
-    }
 
 //    public static final String FILE_OR_FOLDER_LOADED_ACTION = "file-or-folder-selected";
 //    //
@@ -189,7 +183,7 @@ public class FileDialogManager {
 
             if (file.exists()) {
 
-                updateDefaultDir(file);
+                setDefaultDir(file);
 
                 try {
                     result = loader.loadFile(file);
@@ -242,7 +236,7 @@ public class FileDialogManager {
         return directory;
     }
 
-    private static void updateDefaultDir(File fileOrDir) {
+    public static void setDefaultDir(File fileOrDir) {
 
         if (fileOrDir == null) {
             return;
@@ -251,8 +245,10 @@ public class FileDialogManager {
         if (fileOrDir.isFile()) {
             fileOrDir = fileOrDir.getAbsoluteFile().getParentFile();
         }
+        
+        System.out.println("DIR: " + fileOrDir);
 
-        setDefaultDir(fileOrDir);
+        CACHED_DIR = fileOrDir;
     }
 
     /**
@@ -292,7 +288,7 @@ public class FileDialogManager {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
 
-            updateDefaultDir(file);
+            setDefaultDir(file);
 
             result = file;
 
@@ -344,7 +340,7 @@ public class FileDialogManager {
             File[] file = fc.getSelectedFiles();
 
             if (file.length > 0) {
-                updateDefaultDir(file[0]);
+                setDefaultDir(file[0]);
             }
 
             result = file;
@@ -414,7 +410,7 @@ public class FileDialogManager {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
 
-            updateDefaultDir(file);
+            setDefaultDir(file);
 
 ////            if (file.exists()) {
 ////                result = file;
@@ -476,7 +472,7 @@ public class FileDialogManager {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
 
-            updateDefaultDir(file);
+            setDefaultDir(file);
 
 ////            if (file.exists()) {
 ////                result = file;
@@ -563,7 +559,7 @@ public class FileDialogManager {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
 
-            updateDefaultDir(file);
+            setDefaultDir(file);
 
             String ext = getFileExtension(file);
 
@@ -646,7 +642,7 @@ public class FileDialogManager {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
 
-            updateDefaultDir(file);
+            setDefaultDir(file);
 
 //            if (file.exists()) {
 //                result = file;
@@ -705,7 +701,7 @@ public class FileDialogManager {
             File file[] = fc.getSelectedFiles();
 
             if (file.length > 0) {
-                updateDefaultDir(file[0]);
+                setDefaultDir(file[0]);
             }
 
 //            if (file.exists()) {
@@ -761,7 +757,7 @@ public class FileDialogManager {
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             
-            updateDefaultDir(file);
+            setDefaultDir(file);
 
 //            if (file.exists()) {
 //                result = file;

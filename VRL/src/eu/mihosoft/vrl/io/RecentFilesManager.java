@@ -49,9 +49,9 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io;
 
+import eu.mihosoft.vrl.dialogs.FileDialogManager;
 import eu.mihosoft.vrl.visual.VDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -67,8 +67,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
 /**
- * A Controller for recently opened VRL Sessions and other files. This class
- * can be used to create "Recently opened Files" like menus.
+ * A Controller for recently opened VRL Sessions and other files. This class can
+ * be used to create "Recently opened Files" like menus.
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
@@ -100,6 +100,7 @@ public class RecentFilesManager {
 
     /**
      * Adds a recent project to this manager.
+     *
      * @param project project to add.
      */
     public void addRecentSession(VProject project) {
@@ -108,6 +109,7 @@ public class RecentFilesManager {
 
     /**
      * Adds a recent session/file to this manager.
+     *
      * @param entry entry to add
      */
     public void addRecentSession(RecentFilesEntry entry) {
@@ -163,6 +165,7 @@ public class RecentFilesManager {
 
     /**
      * Adds a recent session from file.
+     *
      * @param entry entry to add
      */
     private void addRecentSessionFromFile(RecentFilesEntry entry) {
@@ -184,7 +187,7 @@ public class RecentFilesManager {
                 new ArrayList<RecentFilesEntry>(getRecentSessions());
 
         for (RecentFilesEntry session : delList) {
-            
+
             removeRecentSession(session);
         }
     }
@@ -225,9 +228,8 @@ public class RecentFilesManager {
         sessionsMenu.addSeparator();
         JMenuItem clearItem = new JMenuItem("Delete all Entries");
         clearItem.addActionListener(new ActionListener() {
-
             @Override
-            public void actionPerformed(ActionEvent e) {               
+            public void actionPerformed(ActionEvent e) {
                 clear();
                 save();
             }
@@ -247,7 +249,6 @@ public class RecentFilesManager {
             final JMenuItem loadSessionItem = new JMenuItem(entry.getFileName());
 
             loadSessionItem.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     if (e.getActionCommand().equals(entry.getFileName())) {
@@ -325,13 +326,13 @@ public class RecentFilesManager {
         JMenuItem result = null;
 
         for (int i = 0; i < menu.getItemCount(); i++) {
-            
+
             // we skip this item if it is no menu item
             // see documentation of JMenu.getItem(i)
-            if (menu.getItem(i)==null) {
+            if (menu.getItem(i) == null) {
                 continue;
             }
-            
+
             if (menu.getItem(i).getText().equals(name)) {
                 result = menu.getItem(i);
             }
@@ -502,5 +503,28 @@ public class RecentFilesManager {
         }
 
         d.close();
+
+        initDefaultDir();
+    }
+
+    private void initDefaultDir() {
+        if (!getRecentSessions().isEmpty()) {
+            FileDialogManager.setDefaultDir(
+                    new File(recentSessions.get(recentSessions.size() - 1).
+                    getFileName()));
+        }
+    }
+
+    public File getLastUsedDir() {
+        if (!getRecentSessions().isEmpty()) {
+            File fileOrDir = new File(recentSessions.get(
+                    recentSessions.size() - 1).getFileName());
+
+            if (fileOrDir.isFile()) {
+                return fileOrDir.getAbsoluteFile().getParentFile();
+            }
+
+        }
+        return null;
     }
 }
