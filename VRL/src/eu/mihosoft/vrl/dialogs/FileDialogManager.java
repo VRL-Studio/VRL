@@ -81,6 +81,20 @@ public class FileDialogManager {
 
     private static File CACHED_DIR;
 
+    /**
+     * @return the default dir
+     */
+    public static File getDefaultDir() {
+        return CACHED_DIR;
+    }
+
+    /**
+     * @param dir the default dir to set
+     */
+    public static void setDefaultDir(File dir) {
+        CACHED_DIR = dir;
+    }
+
 //    public static final String FILE_OR_FOLDER_LOADED_ACTION = "file-or-folder-selected";
 //    //
 //    protected File latestFileOrFolder;
@@ -222,7 +236,7 @@ public class FileDialogManager {
 
     private static File chooseDefaultDir(File directory) {
         if (directory == null) {
-            directory = CACHED_DIR;
+            directory = getDefaultDir();
         }
 
         return directory;
@@ -238,7 +252,7 @@ public class FileDialogManager {
             fileOrDir = fileOrDir.getAbsoluteFile().getParentFile();
         }
 
-        CACHED_DIR = fileOrDir;
+        setDefaultDir(fileOrDir);
     }
 
     /**
