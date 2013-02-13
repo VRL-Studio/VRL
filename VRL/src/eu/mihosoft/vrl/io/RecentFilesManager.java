@@ -508,8 +508,9 @@ public class RecentFilesManager {
     }
 
     /**
-     * Initializes the default dir that is used by all methods of this class
-     * that create file dialogs. Therefore it uses the recentSessions list.
+     * Initializes the default dir that is used by all methods of the
+     * {@link FileDialogManager} class that create file dialogs. Therefore it
+     * uses the recentSessions list.
      */
     private void initDefaultDir() {
         if (!getRecentSessions().isEmpty()) {
@@ -520,8 +521,9 @@ public class RecentFilesManager {
     }
 
     /**
-     * Returns the last recently used dir. It returns the directory from
-     *  the recentSessions collection.
+     * Returns the last recently used dir. It returns the directory from the
+     * recentSessions collection.
+     *
      * @return the last recently used dir
      */
     public File getLastUsedDir() {

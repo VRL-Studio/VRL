@@ -228,6 +228,11 @@ public class FileDialogManager {
         return getLoadFile(parent, null, filter, false);
     }
 
+    /**
+     * Chooses the finally used default dir for all file dialogs in this class.
+     * @param directory the directory (may be <code>null</code>)
+     * @return the finally used default dir or <code>null</code>
+     */
     private static File chooseDefaultDir(File directory) {
         if (directory == null) {
             directory = getDefaultDir();
@@ -236,6 +241,12 @@ public class FileDialogManager {
         return directory;
     }
 
+    /**
+     * Defines the default directory that shall be used if no directory has
+     * been specified.
+     * @param fileOrDir the default directory to set
+     * (if it is a file, the parent dir wil be used)
+     */
     public static void setDefaultDir(File fileOrDir) {
 
         if (fileOrDir == null) {
@@ -245,8 +256,6 @@ public class FileDialogManager {
         if (fileOrDir.isFile()) {
             fileOrDir = fileOrDir.getAbsoluteFile().getParentFile();
         }
-        
-        System.out.println("DIR: " + fileOrDir);
 
         CACHED_DIR = fileOrDir;
     }
