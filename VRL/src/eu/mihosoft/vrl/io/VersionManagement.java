@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io;
 
 import eu.mihosoft.vrl.reflection.*;
@@ -120,9 +119,11 @@ public class VersionManagement {
     }
 
     public static void showVersionDialog(final VisualCanvas canvas, Point loc) {
-        
+
         // if canvas is inactive don't show dialog
-        if (!canvas.isActive()) return;
+        if (!canvas.isActive()) {
+            return;
+        }
 
         VParamUtil.throwIfNull(canvas);
 
@@ -159,7 +160,6 @@ public class VersionManagement {
                 CanvasWindow.FADE_OUT_DURATION_KEY, 0.0);
 
         dialog.setLayoutController(new VLayoutController() {
-
             @Override
             public void layoutComponent(JComponent c) {
                 try {
@@ -204,7 +204,6 @@ public class VersionManagement {
         });
 
         dialog.addActionListener(new CanvasActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (e.getActionCommand().equals(CanvasWindow.CLOSED_ACTION)) {
@@ -217,7 +216,6 @@ public class VersionManagement {
 
                 if (e.getActionCommand().equals(CanvasWindow.VISIBLE_ACTION)) {
                     VSwingUtil.invokeLater(new Runnable() {
-
                         @Override
                         public void run() {
                             componentPanel.requestFocus();
@@ -353,7 +351,6 @@ public class VersionManagement {
 
             JButton searchButton = new JButton("search");
             searchButton.addActionListener(new ActionListener() {
-
                 @Override
                 public void actionPerformed(ActionEvent ae) {
                     searchAndAddToResultList();
@@ -375,7 +372,6 @@ public class VersionManagement {
 
 
             searchField.addKeyListener(new KeyAdapter() {
-
                 String tmp = "";
 
                 @Override
@@ -450,7 +446,6 @@ public class VersionManagement {
             add(splitPane);
 
             versionList.addMouseListener(new MouseAdapter() {
-
                 @Override
                 public void mouseClicked(MouseEvent e) {
 
@@ -495,6 +490,14 @@ public class VersionManagement {
                     if (e.getClickCount() == 2
                             && SwingUtilities.isLeftMouseButton(e)) {
 
+                        if (((Version) versionList.getSelectedValue()).getVersion() < 2) {
+                            VDialog.showMessageDialog(canvas,
+                                    "Cannot Load Version",
+                                    "The first version in a project contains no"
+                                    + " sessions and cannot be loaded!");
+                            return;
+                        }
+
 //                        if (VDialog.showConfirmDialog(canvas,
 //                                "Checkout Version:",
 //                                "<html><div align=Center>"
@@ -523,7 +526,7 @@ public class VersionManagement {
                             } catch (IOException ex) {
                                 Logger.getLogger(VersionManagement.class.getName()).
                                         log(Level.SEVERE, null, ex);
-                                
+
                                 VDialog.showMessageDialog(
                                         canvas,
                                         "Cannot save Project:",
