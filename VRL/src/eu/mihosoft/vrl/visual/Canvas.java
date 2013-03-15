@@ -266,7 +266,7 @@ public class Canvas extends JPanel
     /**
      *
      */
-    private ActionDelelator actionDelegator;
+    private ActionDelegator actionDelegator;
     /**
      *
      */
@@ -1871,7 +1871,7 @@ public class Canvas extends JPanel
         return sessionInitializers;
     }
 
-    public ActionDelelator getActionDelegator() {
+    public ActionDelegator getActionDelegator() {
         return actionDelegator;
     }
 

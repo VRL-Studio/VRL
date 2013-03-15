@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.dialogs;
 
 import eu.mihosoft.vrl.io.FileSaver;
@@ -80,6 +79,16 @@ import javax.swing.filechooser.FileFilter;
  */
 public class FileDialogManager {
 
+    private static File CACHED_DIR;
+
+    /**
+     * @return the default dir
+     */
+    public static File getDefaultDir() {
+        return CACHED_DIR;
+    }
+
+
 //    public static final String FILE_OR_FOLDER_LOADED_ACTION = "file-or-folder-selected";
 //    //
 //    protected File latestFileOrFolder;
@@ -108,15 +117,14 @@ public class FileDialogManager {
 //            l.actionPerformed(event);
 //        }
 //    }
-
     /**
      * Opens a load file dialog.
      *
      * @param parent the parent component of the dialog
      * @param loader the file loader to use for loading
      * @param filter the file extension filter
-     * @return the loaded object or
-     * <code>null</code> if the file could not be loaded
+     * @return the loaded object or <code>null</code> if the file could not be
+     * loaded
      */
     public Object loadFile(Canvas parent, FileLoader loader,
             FileFilter filter) {
@@ -128,14 +136,14 @@ public class FileDialogManager {
      *
      * @param parent the parent component of the dialog
      * @param loader the file loader to use for loading
-     * @param directory the current directory to use or
-     * <code>null</code> if the current directory shall not be defined (if the
-     * file is no directoy the parent directory is used)
+     * @param directory the current directory to use or <code>null</code> if the
+     * current directory shall not be defined (if the file is no directoy the
+     * parent directory is used)
      * @param filter the file extension filter
      * @param restrict defines whether to restrict the dialog to the specified
      * directory and its subdirectories
-     * @return the loaded object or
-     * <code>null</code> if the file could not be loaded
+     * @return the loaded object or <code>null</code> if the file could not be
+     * loaded
      */
     public Object loadFile(Component parent, FileLoader loader, File directory,
             FileFilter filter, boolean restrict) {
@@ -147,6 +155,8 @@ public class FileDialogManager {
         }
 
         final JFileChooser fc = new JFileChooser();
+
+        directory = chooseDefaultDir(directory);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -172,6 +182,8 @@ public class FileDialogManager {
             boolean fileNotFound = false;
 
             if (file.exists()) {
+
+                setDefaultDir(file);
 
                 try {
                     result = loader.loadFile(file);
@@ -209,11 +221,43 @@ public class FileDialogManager {
      *
      * @param parent the parent component of the dialog
      * @param filter the file extension filter
-     * @return the selected file or
-     * <code>null</code> if no file has been selected
+     * @return the selected file or <code>null</code> if no file has been
+     * selected
      */
     public File getLoadFile(Component parent, FileFilter filter) {
         return getLoadFile(parent, null, filter, false);
+    }
+
+    /**
+     * Chooses the finally used default dir for all file dialogs in this class.
+     * @param directory the directory (may be <code>null</code>)
+     * @return the finally used default dir or <code>null</code>
+     */
+    private static File chooseDefaultDir(File directory) {
+        if (directory == null) {
+            directory = getDefaultDir();
+        }
+
+        return directory;
+    }
+
+    /**
+     * Defines the default directory that shall be used if no directory has
+     * been specified.
+     * @param fileOrDir the default directory to set
+     * (if it is a file, the parent dir wil be used)
+     */
+    public static void setDefaultDir(File fileOrDir) {
+
+        if (fileOrDir == null) {
+            return;
+        }
+
+        if (fileOrDir.isFile()) {
+            fileOrDir = fileOrDir.getAbsoluteFile().getParentFile();
+        }
+
+        CACHED_DIR = fileOrDir;
     }
 
     /**
@@ -224,11 +268,14 @@ public class FileDialogManager {
      * @param filter the file extension filter
      * @param restrict defines whether to restrict the dialog to the specified
      * directory and its subdirectories
-     * @return the selected file or
-     * <code>null</code> if no file has been selected
+     * @return the selected file or <code>null</code> if no file has been
+     * selected
      */
     public File getLoadFile(Component parent,
             File directory, FileFilter filter, boolean restrict) {
+
+        directory = chooseDefaultDir(directory);
+
         File result = null;
 
         if (VSysUtil.isMacOSX()) {
@@ -249,6 +296,8 @@ public class FileDialogManager {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
+
+            setDefaultDir(file);
 
             result = file;
 
@@ -272,8 +321,8 @@ public class FileDialogManager {
      * @param filter the file extension filter
      * @param restrict defines whether to restrict the dialog to the specified
      * directory and its subdirectories
-     * @return the selected file or
-     * <code>null</code> if no file has been selected
+     * @return the selected file or <code>null</code> if no file has been
+     * selected
      */
     public File[] getLoadFiles(Component parent,
             File directory, FileFilter filter, boolean restrict) {
@@ -284,6 +333,8 @@ public class FileDialogManager {
         }
 
         final JFileChooser fc = new JFileChooser();
+
+        directory = chooseDefaultDir(directory);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -296,6 +347,10 @@ public class FileDialogManager {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File[] file = fc.getSelectedFiles();
+
+            if (file.length > 0) {
+                setDefaultDir(file[0]);
+            }
 
             result = file;
 
@@ -318,8 +373,8 @@ public class FileDialogManager {
      * @param directory the current directory to use
      * @param restrict defines whether to restrict the dialog to the specified
      * directory and its subdirectories
-     * @return the selected folder or
-     * <code>null</code> if no folder has been selected
+     * @return the selected folder or <code>null</code> if no folder has been
+     * selected
      */
     public File getLoadFolder(Component parent,
             File directory, boolean restrict) {
@@ -333,10 +388,10 @@ public class FileDialogManager {
      * @param directory the current directory to use
      * @param restrict defines whether to restrict the dialog to the specified
      * @param loadType specifies whether to load files, floders both , see
-     * {@link javax.swing.JFileChooser#DIRECTORIES_ONLY} etc.
-     * directory and its subdirectories
-     * @return the selected folder or
-     * <code>null</code> if no folder has been selected
+     * {@link javax.swing.JFileChooser#DIRECTORIES_ONLY} etc. directory and its
+     * subdirectories
+     * @return the selected folder or <code>null</code> if no folder has been
+     * selected
      */
     public File getLoadFileOrFolder(Component parent,
             File directory, boolean restrict, int loadType, FileFilter filter) {
@@ -347,6 +402,8 @@ public class FileDialogManager {
         }
 
         final JFileChooser fc = new JFileChooser();
+
+        directory = chooseDefaultDir(directory);
 
         fc.setFileFilter(filter);
 
@@ -361,6 +418,8 @@ public class FileDialogManager {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
+
+            setDefaultDir(file);
 
 ////            if (file.exists()) {
 ////                result = file;
@@ -384,17 +443,17 @@ public class FileDialogManager {
         return result;
     }
 
-        /**
+    /**
      * Opens a save file/folder dialog and returns the selected folder.
      *
      * @param parent the parent component of the dialog
      * @param directory the current directory to use
      * @param restrict defines whether to restrict the dialog to the specified
      * @param saveType specifies whether to load files, folders both , see
-     * {@link javax.swing.JFileChooser#DIRECTORIES_ONLY} etc.
-     * directory and its subdirectories
-     * @return the selected folder or
-     * <code>null</code> if no folder has been selected
+     * {@link javax.swing.JFileChooser#DIRECTORIES_ONLY} etc. directory and its
+     * subdirectories
+     * @return the selected folder or <code>null</code> if no folder has been
+     * selected
      */
     public File getSaveFileOrFolder(Component parent,
             File directory, boolean restrict, int saveType, FileFilter filter) {
@@ -405,6 +464,8 @@ public class FileDialogManager {
         }
 
         final JFileChooser fc = new JFileChooser();
+
+        directory = chooseDefaultDir(directory);
 
         fc.setFileFilter(filter);
 
@@ -419,6 +480,8 @@ public class FileDialogManager {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
+
+            setDefaultDir(file);
 
 ////            if (file.exists()) {
 ////                result = file;
@@ -463,9 +526,9 @@ public class FileDialogManager {
      * @param parent the parent component of the dialog
      * @param o the object to save
      * @param fileSaver the file saver to use for saving
-     * @param directory the current directory to use or
-     * <code>null</code> if the current directory shall not be defined (if the
-     * file is no directoy the parent directory is used)
+     * @param directory the current directory to use or <code>null</code> if the
+     * current directory shall not be defined (if the file is no directoy the
+     * parent directory is used)
      * @param restrict defines whether to restrict the dialog to the specified
      * directory and its subdirectories
      * @param filter the file extension filter
@@ -480,6 +543,8 @@ public class FileDialogManager {
         }
 
         final JFileChooser fc = new JFileChooser();
+
+        directory = chooseDefaultDir(directory);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -502,6 +567,8 @@ public class FileDialogManager {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
+
+            setDefaultDir(file);
 
             String ext = getFileExtension(file);
 
@@ -557,8 +624,8 @@ public class FileDialogManager {
      * @param filter the file extension filter
      * @param restrict defines whether to restrict the dialog to the specified
      * directory and its subdirectories
-     * @return the selected file or
-     * <code>null</code> if no file has been selected
+     * @return the selected file or <code>null</code> if no file has been
+     * selected
      */
     public File getSaveFile(Component parent,
             File directory, FileFilter filter, boolean restrict) {
@@ -569,6 +636,8 @@ public class FileDialogManager {
         }
 
         final JFileChooser fc = new JFileChooser();
+
+        directory = chooseDefaultDir(directory);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -581,6 +650,8 @@ public class FileDialogManager {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
+
+            setDefaultDir(file);
 
 //            if (file.exists()) {
 //                result = file;
@@ -609,8 +680,8 @@ public class FileDialogManager {
      * @param filter the file extension filter
      * @param restrict defines whether to restrict the dialog to the specified
      * directory and its subdirectories
-     * @return the selected files or
-     * <code>null</code> if no file has been selected
+     * @return the selected files or <code>null</code> if no file has been
+     * selected
      */
     public File[] getSaveFiles(Component parent,
             File directory, FileFilter filter, boolean restrict) {
@@ -621,6 +692,8 @@ public class FileDialogManager {
         }
 
         final JFileChooser fc = new JFileChooser();
+
+        directory = chooseDefaultDir(directory);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -635,6 +708,10 @@ public class FileDialogManager {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file[] = fc.getSelectedFiles();
+
+            if (file.length > 0) {
+                setDefaultDir(file[0]);
+            }
 
 //            if (file.exists()) {
 //                result = file;
@@ -662,8 +739,8 @@ public class FileDialogManager {
      * @param directory the current directory to use
      * @param restrict defines whether to restrict the dialog to the specified
      * directory and its subdirectories
-     * @return the selected folder or
-     * <code>null</code> if no folder has been selected
+     * @return the selected folder or <code>null</code> if no folder has been
+     * selected
      */
     public File getSaveFolder(Component parent,
             File directory, boolean restrict) {
@@ -674,6 +751,8 @@ public class FileDialogManager {
         }
 
         final JFileChooser fc = new JFileChooser();
+
+        directory = chooseDefaultDir(directory);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -686,6 +765,8 @@ public class FileDialogManager {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
+            
+            setDefaultDir(file);
 
 //            if (file.exists()) {
 //                result = file;
@@ -710,8 +791,8 @@ public class FileDialogManager {
      *
      * @param parent the parent component of the dialog
      * @param filter the file extension filter
-     * @return the selected file or
-     * <code>null</code> if no file has been selected
+     * @return the selected file or <code>null</code> if no file has been
+     * selected
      */
     public File getSaveFile(Component parent, FileFilter filter) {
         return getSaveFile(parent, null, filter, false);
@@ -739,8 +820,7 @@ public class FileDialogManager {
      * Indicates whether the given file has an extension.
      *
      * @param file the file to check
-     * @return
-     * <code>true</code> if the file has an extension;
+     * @return <code>true</code> if the file has an extension;
      * <code>false</code> ozherwise
      */
     private boolean hasExtension(File file) {
@@ -753,8 +833,7 @@ public class FileDialogManager {
      *
      * @param file the file to check
      * @param filter the file extension filter
-     * @return
-     * <code>true</code> if the extension is supported;
+     * @return <code>true</code> if the extension is supported;
      * <code>false</code> ozherwise
      */
     private boolean hasSupportedExtension(File file, FileFilter filter) {
@@ -814,8 +893,7 @@ public class FileDialogManager {
      *
      * @param parent the parent of the dialog
      * @param file the file to save
-     * @return
-     * <code>true</code> if the file shall be overwritten;
+     * @return <code>true</code> if the file shall be overwritten;
      * <code>false</code> otherwise
      */
     private boolean writeEvenIfFileExists(Component parent, File file) {
@@ -852,7 +930,6 @@ public class FileDialogManager {
             tf.setEditable(false);
         }
     }
-
 //    /**
 //     * @return the latestFileOrFolder
 //     */
