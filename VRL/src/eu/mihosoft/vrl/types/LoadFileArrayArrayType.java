@@ -69,7 +69,14 @@ public class LoadFileArrayArrayType extends ArrayBaseType {
     public LoadFileArrayArrayType() {
         setValueName("File List:");
         
-        setElementInputInfo(new ParamInfo() {
+        // TODO 29.04.2013 this is a fix, setElementinputinfo has to be overridden to
+        //      make this work (argument has to be ignored) 
+        setElementInputInfo(null);
+    }
+    
+    @Override
+    public void setElementInputInfo(ParamInfo info) {
+        super.setElementInputInfo(new ParamInfo() {
 
             @Override
             public String name() {

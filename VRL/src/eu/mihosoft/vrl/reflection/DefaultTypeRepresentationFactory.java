@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.annotation.MethodInfo;
@@ -275,7 +274,6 @@ final class DefaultTypeRepresentationFactory implements
     public TypeRepresentationBase getInputInstance(Class<?> type,
             ParamInfo paramInfo) {
 
-
         type = VClassLoaderUtil.convertPrimitiveToWrapper(type);
 
         TypeRepresentationBase result = null;
@@ -447,7 +445,7 @@ final class DefaultTypeRepresentationFactory implements
             ArrayList<Class<? extends TypeRepresentationBase>> availableRepresentations,
             String representationStyle) {
 
-        // is no style enter 
+        // is no style entered 
         if (representationStyle.trim().isEmpty()) {
             representationStyle = "default";
         }
@@ -471,17 +469,19 @@ final class DefaultTypeRepresentationFactory implements
                             log(Level.SEVERE, null, tr);
                 }
 
-                break;
-
 //                System.out.println(
 //                        ">> TypeRepresentationFactory.getInstance():"
 //                        + " request satisfied!");
+
+                break;
+
+//
             }
         } // end for availableRepresentations
 
         // if no appropriate representation could been found
         // try to find a representation that supports the default style
-        if (value == null) {
+        if (value instanceof UnsupportedType) {
             for (Class<? extends TypeRepresentationBase> t : availableRepresentations) {
                 String style = TypeUtil.getStyle(t);
 
@@ -496,12 +496,14 @@ final class DefaultTypeRepresentationFactory implements
                                 DefaultTypeRepresentationFactory.class.getName()).
                                 log(Level.SEVERE, null, tr);
                     }
-
-                    break;
-
+                    
 //                    System.out.println(
 //                            ">> TypeRepresentationFactory.getInstance():"
 //                            + " request not satisfied (using default)!");
+
+                    break;
+
+
                 }
             } // end for availableRepresentations
         }
