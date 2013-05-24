@@ -106,7 +106,7 @@ import javax.swing.text.Document;
  * <p>The corresponding type representation:</p>
  * <code>
  * <pre>
- * @TypeInfo(type=Circle.class, input = false, output = true, style="default")
+ * &#064;TypeInfo(type=Circle.class, input = false, output = true, style="default")
  * class CircleType extends BufferedImageType {
  *
  *   public CircleType(){
