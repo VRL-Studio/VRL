@@ -170,7 +170,12 @@ public class OBJ2Geometry {
             // read nodes
             while (!line.trim().startsWith("f")) {
 
-                if (line.trim().startsWith("v") && !line.trim().startsWith("vn")) {
+                // Thomas Licht 2013-05-23: exclude vt (texture coordinate)
+                //                          following line in obj file leads to an error:
+                //                          line1: # dummy texture coordinate to increase compatability with the somewhat ill-defined wavefront .obj format.
+                //                          line2: vt 0.0 0.0
+                //                          error message: java.lang.NumberFormatException: For input string: "t"
+                if (line.trim().startsWith("v") && !line.trim().startsWith("vn") && !line.trim().startsWith("vt")) {
                     line = line.replace("v", "");
 
                     stringTokenizer = new StringTokenizer(line);
@@ -197,7 +202,9 @@ public class OBJ2Geometry {
                 if (line.trim().startsWith("f")) {
                     line = line.replace("f", "");
 
-                    stringTokenizer = new StringTokenizer(line);
+                    // Thomas Licht 2013-05-23: extended for / as delimiter
+                    //                          line: f 6/1/6 4/1/4 5/1/5 2/1/2
+                    stringTokenizer = new StringTokenizer(line, " /");
 
                     Triangle t = readTriangle(stringTokenizer);
 

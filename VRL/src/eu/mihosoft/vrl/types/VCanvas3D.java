@@ -465,7 +465,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
     /**
      * Adds a post render animation to the animation manager.
      */
-    void postRenderTask() {
+    public void postRenderTask() {
 
 //        if (getTypeRepresentation() != null
 //                && getTypeRepresentation().getMainCanvas() != null) {
