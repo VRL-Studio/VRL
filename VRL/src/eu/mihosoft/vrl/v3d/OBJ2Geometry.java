@@ -202,9 +202,7 @@ public class OBJ2Geometry {
                 if (line.trim().startsWith("f")) {
                     line = line.replace("f", "");
 
-                    // Thomas Licht 2013-05-23: extended for / as delimiter
-                    //                          line: f 6/1/6 4/1/4 5/1/5 2/1/2
-                    stringTokenizer = new StringTokenizer(line, " /");
+                    stringTokenizer = new StringTokenizer(line);
 
                     Triangle t = readTriangle(stringTokenizer);
 
@@ -278,13 +276,29 @@ public class OBJ2Geometry {
             StringTokenizer stringTokenizer) throws IOException {
 
         Triangle t = new Triangle();
+        
+//        t.setNodeOne(
+//                new Node(Integer.parseInt(stringTokenizer.nextToken()), null));
+//        t.setNodeTwo(
+//                new Node(Integer.parseInt(stringTokenizer.nextToken()), null));
+//        t.setNodeThree(
+//                new Node(Integer.parseInt(stringTokenizer.nextToken()), null));
 
-        t.setNodeOne(
-                new Node(Integer.parseInt(stringTokenizer.nextToken()), null));
-        t.setNodeTwo(
-                new Node(Integer.parseInt(stringTokenizer.nextToken()), null));
-        t.setNodeThree(
-                new Node(Integer.parseInt(stringTokenizer.nextToken()), null));
+        // Thomas Licht 2013-05-23: there exists three different types of face difinitions
+        //                          (1) vertex
+        //                              f v1 v2 v3
+        //                          (2) vertex/texture coordinates
+        //                              f v1/vt1 v2/vt2 v3/vt3
+        //                          (3) vertex/texture-coordinat/normal
+        //                              f v1/vt1/vn1 v2/vt2/vn2 v3/vt3/vn3         
+        
+        String v1 = stringTokenizer.nextToken().split("/")[0];
+        String v2 = stringTokenizer.nextToken().split("/")[0];
+        String v3 = stringTokenizer.nextToken().split("/")[0];
+
+        t.setNodeOne(new Node(Integer.parseInt(v1), null));
+        t.setNodeTwo(new Node(Integer.parseInt(v2), null));
+        t.setNodeThree(new Node(Integer.parseInt(v3), null));
 
         return t;
     }
