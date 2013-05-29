@@ -203,23 +203,63 @@ public class OBJ2Geometry {
                     line = line.replace("f", "");
 
                     stringTokenizer = new StringTokenizer(line);
+                    
+                    if (stringTokenizer.countTokens() == 4)
+                    {
+                        // defines a quadrilateral (viereck)
+                        //  split it into two triangles
+                        
+                        Triangle t1 = new Triangle();
+                        Triangle t2 = new Triangle();
+        
+                        String v1 = stringTokenizer.nextToken().split("/")[0];
+                        String v2 = stringTokenizer.nextToken().split("/")[0];
+                        String v3 = stringTokenizer.nextToken().split("/")[0];
+                        String v4 = stringTokenizer.nextToken().split("/")[0];
+                        
+                        Node n1 = nodes.getNode(Integer.parseInt(v1));
+                        Node n2 = nodes.getNode(Integer.parseInt(v2));
+                        Node n3 = nodes.getNode(Integer.parseInt(v3));
+                        Node n4 = nodes.getNode(Integer.parseInt(v4));
 
-                    Triangle t = readTriangle(stringTokenizer);
+                        // create first triangle
+                        t1.setNodeOne(n1);
+                        t1.setNodeTwo(n2);
+                        t1.setNodeThree(n3);
+                        
+                        // create second triangle
+                        t2.setNodeOne(n1);
+                        t2.setNodeTwo(n3);
+                        t2.setNodeThree(n4);
+                        
+                        // add triangles to triangle array
+                        triangleArray.addTriangle(t1);
+                        t1.setIndex(i);
+                        i++;
+                        
+                        triangleArray.addTriangle(t2);
+                        t2.setIndex(i);
+                        i++;
+                    }
+                    else
+                    {
+                        Triangle t = readTriangle(stringTokenizer);
 
-                    // collect node coordinates
-                    Node n = nodes.getNode(t.getNodeOne().getIndex());
-                    t.setNodeOne(n);
-                    n = nodes.getNode(t.getNodeTwo().getIndex());
-                    t.setNodeTwo(n);
-                    n = nodes.getNode(t.getNodeThree().getIndex());
-                    t.setNodeThree(n);
+                        // collect node coordinates
+                        Node n = nodes.getNode(t.getNodeOne().getIndex());
+                        t.setNodeOne(n);
+                        n = nodes.getNode(t.getNodeTwo().getIndex());
+                        t.setNodeTwo(n);
+                        n = nodes.getNode(t.getNodeThree().getIndex());
+                        t.setNodeThree(n);
 
-                    // add triangle to triangle array
-                    triangleArray.addTriangle(t);
+                        // add triangle to triangle array
+                        triangleArray.addTriangle(t);
 
-                    t.setIndex(i);
+                        t.setIndex(i);
 
-                    i++;
+                        i++;
+                    }
                 }
 
                 line = reader.readLine();
