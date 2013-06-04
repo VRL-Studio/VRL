@@ -253,6 +253,8 @@ public class RecentFilesManager {
                 public void actionPerformed(ActionEvent e) {
                     if (e.getActionCommand().equals(entry.getFileName())) {
                         loadRequest.request(entry.getFileName());
+                        // update default directory
+                        FileDialogManager.setDefaultDir(new File(entry.getFileName()));
                     }
                 }
             });
