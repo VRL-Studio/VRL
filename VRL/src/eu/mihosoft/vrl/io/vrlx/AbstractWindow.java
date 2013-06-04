@@ -96,7 +96,14 @@ public final class AbstractWindow {
 
         setVisible(obj.isVisible());
         
-        setZindex(obj.getMainCanvas().getComponentZOrder(obj));
+        // try-catch is a workaround for issue #1: https://github.com/miho/VRL/issues/1
+        // todo: find a better solution (04.06.2013)
+        try {        
+            setZindex(obj.getMainCanvas().getComponentZOrder(obj));
+        } catch (Exception ex) {
+            System.err.println(
+                    ">> Windows order cannot be fully restored (some windows are missing)");
+        }
     }
 
     /**
