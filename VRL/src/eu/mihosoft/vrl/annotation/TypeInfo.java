@@ -58,26 +58,29 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Use this annotation to define component information.
+ * Use this annotation to define the style and type of typerepresentations.
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface TypeInfo {
     /**
-     * Defines the name of the component.
+     * Defines the style name of the type representation.
      */
     String style() default "default";
 
     /**
-     * Defines the component category.
+     * Defines the type/class the type representation shall be used for
      */
     Class<?> type() default Object.class;
 
     /**
-     * Defines the component description (currently unused).
+     * Defines whether the type representation can be used as inputs.
      */
     boolean input() default true;
     
+    /**
+     * Defines whether the type representation can be used as output.
+     */
     boolean output() default true;
 }
