@@ -31,6 +31,6 @@ REM version of 2011
 REM start /min /realtime %JAVAEXE% -Xms64m -Xmx512m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled -XX:MaxPermSize=256m -splash:resources\studio-resources\splashscreen.png -Djava.library.path="%LIBDIR%" -jar VRL-Studio.jar %CONF%
 
 REM optimized for jre 7 (19.04.2012)
-start /max /realtime %JAVAEXE% -Xms64m -Xmx%MAXHEAP%m -XX:MaxPermSize=256m -Djava.library.path="%LIBDIR%" -jar "%PROJECT_FILE%" %CONF%
+cmd /k %JAVAEXE% -Xms64m -Xmx%MAXHEAP%m -XX:MaxPermSize=256m -Djava.library.path="%LIBDIR%" -jar "%PROJECT_FILE%" %CONF%
 
 exit
