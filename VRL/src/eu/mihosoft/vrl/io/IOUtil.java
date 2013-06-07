@@ -1392,10 +1392,12 @@ public class IOUtil {
      *
      * @param archive archive to unzip
      * @param destDir destination directory
+     * @param filters filters, i.e., optional strings that specify exactly which folders
+     * shall be unzipped
      * @throws IOException
      * @throws ZipException
      */
-    public static void unzip(File archive, File destDir) throws IOException {
+    public static void unzip(File archive, File destDir, String... filters) throws IOException {
 
         // based on ideas from http://stackoverflow.com/questions/1399126/java-util-zip-recreating-directory-structure
 
@@ -1409,6 +1411,30 @@ public class IOUtil {
         Enumeration<? extends ZipEntry> entries = zfile.entries();
         while (entries.hasMoreElements()) {
             ZipEntry entry = entries.nextElement();
+
+            // filter entry if filters have been specified
+            boolean inFilter = false || filters.length == 0;
+
+            // search filters for entry name
+            for (String filter : filters) {
+                
+                String parentName = new File(entry.getName()).getParent();
+                
+                if (parentName==null) {
+                    parentName = "";
+                }
+                
+                if (entry.getName().equals(filter) || parentName.equals(filter)) {
+                    inFilter = true;
+                    break;
+                }
+            }
+
+            // if not found in filters then skip entry
+            if (!inFilter) {
+                continue;
+            }
+
             File file = new File(destDir, entry.getName());
             if (entry.isDirectory()) {
                 file.mkdirs();

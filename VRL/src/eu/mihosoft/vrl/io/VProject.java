@@ -105,10 +105,10 @@ public class VProject {
     /**
      * the name of the file-info file
      */
-    private static final String PROJECT_INFO_NAME = "vproject-info.xml";
-    private static final String PROJECT_INFO_DIR = "META-INF/VRL";
-    private static final String PROJECT_PAYLOAD_VERSIONING = "META-INF/VRL/payload/versioning/";
-    private static final String PROJECT_PAYLOAD_NO_VERSIONING = "META-INF/VRL/payload/no-versioning/";
+    public static final String PROJECT_INFO_NAME = "vproject-info.xml";
+    public static final String PROJECT_INFO_DIR = "META-INF/VRL";
+    public static final String PROJECT_PAYLOAD_VERSIONING = "META-INF/VRL/payload/versioning/";
+    public static final String PROJECT_PAYLOAD_NO_VERSIONING = "META-INF/VRL/payload/no-versioning/";
 
     private VProject(VersionedFile projectFile) {
         this.projectFile = projectFile;

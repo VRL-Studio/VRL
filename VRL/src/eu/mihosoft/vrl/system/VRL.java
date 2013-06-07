@@ -192,6 +192,14 @@ public class VRL {
      */
     private static Map<String, ClassLoader> externalCLMap =
             new HashMap<String, ClassLoader>();
+    /**
+     * Defines whether to install plugin help.
+     */
+    private static boolean installPluginHelp = true;
+    /**
+     * Defines whether to install payload plugins
+     */
+    private static boolean installPayloadPlugins = true;
 
     static {
 
@@ -212,6 +220,82 @@ public class VRL {
     private static PluginClassLoader externalPluginClassLoader;
 
     /**
+     * Evaluates arguments.
+     */
+    private static void evaluateArgs(String[] args) {
+        String installPluginHelpArg = VArgUtil.getArg(args,
+                "-install-plugin-help");
+
+        if (installPluginHelpArg != null) {
+            if (installPluginHelpArg.trim().equals("no")) {
+                installPluginHelp = false;
+            } else if (installPluginHelpArg.trim().equals("yes")) {
+                installPluginHelp = true;
+            } else {
+                System.err.println(
+                        ">> Unknown value for argument -install-plugin-help: '"
+                        + installPluginHelpArg
+                        + "', valid arguments are: [yes/no]");
+            }
+        }
+
+        String installPayloadPluginsArg = VArgUtil.getArg(args,
+                "-install-payload-plugins");
+        if (installPayloadPluginsArg != null) {
+            if (installPayloadPluginsArg.trim().equals("no")) {
+                installPayloadPlugins = false;
+            } else if (installPayloadPluginsArg.trim().equals("yes")) {
+                installPayloadPlugins = true;
+            } else {
+                System.err.println(
+                        ">> Unknown value for argument -install-payload-plugins: '"
+                        + installPluginHelpArg
+                        + "', valid arguments are: [yes/no]");
+            }
+        }
+    }
+
+    private static void checkAndInstallProjectPluginPayload() {
+        System.out.print(">> installing payload plugins:");
+
+        if (!installPayloadPlugins) {
+            System.out.println(" [skipped] (deactivated)");
+            return;
+        }
+
+        Class<?> projectMainClass = null;
+
+        try {
+            projectMainClass =
+                    VRL.class.getClassLoader().loadClass(
+                    "eu.mihosoft.vrl.user.Main");
+        } catch (Throwable tr) {
+            //
+        }
+
+        if (projectMainClass == null) {
+            System.out.println(" [failed]");
+            System.out.println(" --> project main class not found (assuming there is no project)");
+            return;
+        }
+
+        File projectLocation = VJarUtil.getClassLocation(projectMainClass);
+
+        try {
+            IOUtil.unzip(
+                    projectLocation,
+                    getPropertyFolderManager().getPluginUpdatesFolder(),
+                    VProject.PROJECT_PAYLOAD_NO_VERSIONING + "/plugins/");
+
+        } catch (IOException ex) {
+            Logger.getLogger(VRL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        System.out.println(" [done]");
+
+    }
+
+    /**
      * Initializes the VRL runtime system.
      *
      * @param args optional arguments such as plugin location. Example:
@@ -219,12 +303,15 @@ public class VRL {
      */
     public static void initAll(String[] args) {
 
-
         VRL.setCommandLineOptions(args);
+
+        evaluateArgs(args);
 
 //        List<String> invalidPlugins = new ArrayList<String>();
 
         getPropertyFolderManager().evalueteArgs(args);
+
+        checkAndInstallProjectPluginPayload();
 
         SplashScreenGenerator.setProgress(5);
 
@@ -782,6 +869,12 @@ public class VRL {
             System.out.print(
                     " --> installing content \"" + contentName + "\"");
 
+            // skip help content install if deactivated
+            if ("help".equals(contentName) && !installPluginHelp) {
+                System.out.println(" [skipped] (deactivated)");
+                return;
+            }
+
             String finalResourceName = "/eu/mihosoft/vrl/plugin/content/" + contentName + "/";
 
             // special case for VRL:
@@ -855,7 +948,6 @@ public class VRL {
                         log(Level.SEVERE, null, ex);
             }
 
-
             if (installSuccessful) {
                 System.out.println(" [ok]");
             } else {
@@ -915,7 +1007,7 @@ public class VRL {
             pluginClsLoader =
                     new URLClassLoader(
                     new URL[]{VJarUtil.getClassLocation(cls).
-                        toURI().toURL()}, parent);
+                toURI().toURL()}, parent);
         } catch (MalformedURLException ex) {
             Logger.getLogger(VRL.class.getName()).
                     log(Level.SEVERE, null, ex);
@@ -1708,179 +1800,179 @@ public class VRL {
         for (final PluginConfigurator p : plugins.values()) {
             pluginMenuController.addAction(
                     new VAction(p.getIdentifier().toString(), null) {
-                        @Override
-                        public void actionPerformed(ActionEvent e, Object owner) {
-                            System.out.println(
-                                    "Plugin: " + p.getIdentifier().toString());
+                @Override
+                public void actionPerformed(ActionEvent e, Object owner) {
+                    System.out.println(
+                            "Plugin: " + p.getIdentifier().toString());
 
-                            Canvas canvas = null;
+                    Canvas canvas = null;
 
-                            if (!getCanvases().isEmpty()) {
+                    if (!getCanvases().isEmpty()) {
+
+                        for (Canvas c : getCanvases()) {
+                            if (VSwingUtil.isWindowChild(c)) {
+                                canvas = c;
+                                break;
+                            }
+                        }
+
+                        String copyrightStatementText =
+                                p.getCopyrightInfo().
+                                getCopyrightStatement();
+
+                        if (copyrightStatementText == null
+                                || copyrightStatementText.isEmpty()) {
+                            copyrightStatementText = "info missing";
+                        }
+
+                        String description = p.getDescription();
+
+                        if (description == null
+                                || description.isEmpty()) {
+                            description = "description missing";
+                        }
+
+                        Box container = Box.createVerticalBox();
+
+                        HTMLLabel label = new HTMLLabel(
+                                "<html><body color=white><div align=Center>"
+                                + "<p><b><font size=10>&nbsp;&nbsp;&nbsp;&nbsp;"
+                                + p.getIdentifier().getName()
+                                + "&nbsp;&nbsp;&nbsp;&nbsp;</b></p><br>"
+                                + "<p><font size=4>"
+                                + p.getIdentifier().getVersion().toString()
+                                + "</p><br><br>"
+                                + "<p><b>Description:</b></p><br>"
+                                + description + "<br><br>"
+                                + "<p><b>Copyright:</b></p><br>"
+                                + copyrightStatementText
+                                + "<br>"
+                                + "</div></body></html>");
+
+                        label.setAlignmentX(0.5f);
+
+                        container.add(label);
+
+                        VButton copyrightBtn =
+                                new VButton("Copyright Information");
+
+                        copyrightBtn.setAlignmentX(0.5f);
+
+                        copyrightBtn.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                Canvas currentCanvas = null;
 
                                 for (Canvas c : getCanvases()) {
                                     if (VSwingUtil.isWindowChild(c)) {
-                                        canvas = c;
+                                        currentCanvas = c;
+                                        break;
+                                    }
+                                }
+                                CopyrightDialog.showCopyrightDialog(
+                                        currentCanvas, p.getCopyrightInfo());
+                            }
+                        });
+
+                        if (!p.getCopyrightInfo().isPlainText()
+                                && (p.getCopyrightInfo().getCopyrightStatement() == null
+                                || p.getCopyrightInfo().getLicense() == null
+                                || p.getCopyrightInfo().getProjectName() == null
+                                || p.getCopyrightInfo().getProjectPage() == null)) {
+                            copyrightBtn.setEnabled(false);
+                        }
+
+                        VButton preferencesBtn =
+                                new VButton("Preferences");
+
+                        preferencesBtn.setAlignmentX(0.5f);
+
+                        container.add(Box.createVerticalStrut(5));
+                        container.add(copyrightBtn);
+                        container.add(Box.createVerticalStrut(20));
+                        container.add(preferencesBtn);
+                        container.add(Box.createVerticalStrut(20));
+
+                        if (p.getPreferencePane() == null
+                                || p.getPreferencePane().getInterface() == null) {
+                            preferencesBtn.setEnabled(false);
+                        }
+
+                        preferencesBtn.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent e) {
+                                final JFrame f = new JFrame(
+                                        "Preferences: "
+                                        + p.getIdentifier().getName());
+                                f.setDefaultCloseOperation(
+                                        JFrame.DISPOSE_ON_CLOSE);
+
+                                PreferencePane pane = p.getPreferencePane();
+                                pane.setControl(new PreferencePaneControl() {
+                                    @Override
+                                    public void close() {
+                                        f.setVisible(false);
+                                        f.dispose();
+                                    }
+                                });
+
+                                f.add(pane.getInterface());
+                                f.setMinimumSize(new Dimension(400, 300));
+                                f.pack();
+
+                                f.setVisible(true);
+
+                                Canvas currentCanvas = null;
+
+                                for (Canvas c : getCanvases()) {
+                                    if (VSwingUtil.isWindowChild(c)) {
+                                        currentCanvas = c;
                                         break;
                                     }
                                 }
 
-                                String copyrightStatementText =
-                                        p.getCopyrightInfo().
-                                        getCopyrightStatement();
+                                VGraphicsUtil.centerOnWindow(
+                                        VSwingUtil.getTopmostParent(
+                                        currentCanvas), f);
+                            }
+                        });
 
-                                if (copyrightStatementText == null
-                                        || copyrightStatementText.isEmpty()) {
-                                    copyrightStatementText = "info missing";
-                                }
+                        VButton helpBtn =
+                                new VButton("Help");
+                        helpBtn.setMinimumSize(
+                                new Dimension(100,
+                                helpBtn.getMinimumSize().height));
+                        helpBtn.setAlignmentX(0.5f);
+                        container.add(helpBtn);
 
-                                String description = p.getDescription();
+                        // help
+                        final File helpIndex = new File(
+                                pluginsDataControllers.get(
+                                p.getIdentifier().getName()).
+                                getHelpFolder(), "index.html");
 
-                                if (description == null
-                                        || description.isEmpty()) {
-                                    description = "description missing";
-                                }
+                        if (!helpIndex.exists()) {
+                            helpBtn.setEnabled(false);
+                        }
 
-                                Box container = Box.createVerticalBox();
-
-                                HTMLLabel label = new HTMLLabel(
-                                        "<html><body color=white><div align=Center>"
-                                        + "<p><b><font size=10>&nbsp;&nbsp;&nbsp;&nbsp;"
-                                        + p.getIdentifier().getName()
-                                        + "&nbsp;&nbsp;&nbsp;&nbsp;</b></p><br>"
-                                        + "<p><font size=4>"
-                                        + p.getIdentifier().getVersion().toString()
-                                        + "</p><br><br>"
-                                        + "<p><b>Description:</b></p><br>"
-                                        + description + "<br><br>"
-                                        + "<p><b>Copyright:</b></p><br>"
-                                        + copyrightStatementText
-                                        + "<br>"
-                                        + "</div></body></html>");
-
-                                label.setAlignmentX(0.5f);
-
-                                container.add(label);
-
-                                VButton copyrightBtn =
-                                        new VButton("Copyright Information");
-
-                                copyrightBtn.setAlignmentX(0.5f);
-
-                                copyrightBtn.addActionListener(new ActionListener() {
-                                    @Override
-                                    public void actionPerformed(ActionEvent e) {
-                                        Canvas currentCanvas = null;
-
-                                        for (Canvas c : getCanvases()) {
-                                            if (VSwingUtil.isWindowChild(c)) {
-                                                currentCanvas = c;
-                                                break;
-                                            }
-                                        }
-                                        CopyrightDialog.showCopyrightDialog(
-                                                currentCanvas, p.getCopyrightInfo());
-                                    }
-                                });
-
-                                if (!p.getCopyrightInfo().isPlainText()
-                                        && (p.getCopyrightInfo().getCopyrightStatement() == null
-                                        || p.getCopyrightInfo().getLicense() == null
-                                        || p.getCopyrightInfo().getProjectName() == null
-                                        || p.getCopyrightInfo().getProjectPage() == null)) {
-                                    copyrightBtn.setEnabled(false);
-                                }
-
-                                VButton preferencesBtn =
-                                        new VButton("Preferences");
-
-                                preferencesBtn.setAlignmentX(0.5f);
-
-                                container.add(Box.createVerticalStrut(5));
-                                container.add(copyrightBtn);
-                                container.add(Box.createVerticalStrut(20));
-                                container.add(preferencesBtn);
-                                container.add(Box.createVerticalStrut(20));
-
-                                if (p.getPreferencePane() == null
-                                        || p.getPreferencePane().getInterface() == null) {
-                                    preferencesBtn.setEnabled(false);
-                                }
-
-                                preferencesBtn.addActionListener(new ActionListener() {
-                                    @Override
-                                    public void actionPerformed(ActionEvent e) {
-                                        final JFrame f = new JFrame(
-                                                "Preferences: "
-                                                + p.getIdentifier().getName());
-                                        f.setDefaultCloseOperation(
-                                                JFrame.DISPOSE_ON_CLOSE);
-
-                                        PreferencePane pane = p.getPreferencePane();
-                                        pane.setControl(new PreferencePaneControl() {
-                                            @Override
-                                            public void close() {
-                                                f.setVisible(false);
-                                                f.dispose();
-                                            }
-                                        });
-
-                                        f.add(pane.getInterface());
-                                        f.setMinimumSize(new Dimension(400, 300));
-                                        f.pack();
-
-                                        f.setVisible(true);
-
-                                        Canvas currentCanvas = null;
-
-                                        for (Canvas c : getCanvases()) {
-                                            if (VSwingUtil.isWindowChild(c)) {
-                                                currentCanvas = c;
-                                                break;
-                                            }
-                                        }
-
-                                        VGraphicsUtil.centerOnWindow(
-                                                VSwingUtil.getTopmostParent(
-                                                currentCanvas), f);
-                                    }
-                                });
-
-                                VButton helpBtn =
-                                        new VButton("Help");
-                                helpBtn.setMinimumSize(
-                                        new Dimension(100,
-                                        helpBtn.getMinimumSize().height));
-                                helpBtn.setAlignmentX(0.5f);
-                                container.add(helpBtn);
-
-                                // help
-                                final File helpIndex = new File(
-                                        pluginsDataControllers.get(
-                                        p.getIdentifier().getName()).
-                                        getHelpFolder(), "index.html");
-
-                                if (!helpIndex.exists()) {
-                                    helpBtn.setEnabled(false);
-                                }
-
-                                helpBtn.addActionListener(new ActionListener() {
-                                    @Override
-                                    public void actionPerformed(ActionEvent ae) {
-                                        VSysUtil.openURI(helpIndex.toURI());
-                                    }
-                                });
+                        helpBtn.addActionListener(new ActionListener() {
+                            @Override
+                            public void actionPerformed(ActionEvent ae) {
+                                VSysUtil.openURI(helpIndex.toURI());
+                            }
+                        });
 
 //                                new CanvasLabel(new CopyrightInfo2HTML(p.getCopyrightInfo()).toString())
 
-                                VDialog.showDialogWindow(
-                                        canvas, "Plugin Information",
-                                        container, "Close", false);
+                        VDialog.showDialogWindow(
+                                canvas, "Plugin Information",
+                                container, "Close", false);
 
 //                                VDialog.showMessageDialog(canvas, "Plugin Information",
 //                                        container);
-                            }
-                        }
-                    });
+                    }
+                }
+            });
         }
 
         pluginMenuController.buildMenu(infoMenu, null);
@@ -1894,77 +1986,77 @@ public class VRL {
 
             uninstallPluginMenuController.addAction(
                     new VAction(p.getIdentifier().toString(), null) {
-                        @Override
-                        public void actionPerformed(ActionEvent e, Object owner) {
-                            System.out.println(
-                                    "Uninstall Plugin?: "
-                                    + p.getIdentifier().toString());
+                @Override
+                public void actionPerformed(ActionEvent e, Object owner) {
+                    System.out.println(
+                            "Uninstall Plugin?: "
+                            + p.getIdentifier().toString());
 
-                            Canvas canvas = null;
+                    Canvas canvas = null;
 
-                            if (!getCanvases().isEmpty()) {
+                    if (!getCanvases().isEmpty()) {
 
-                                for (Canvas c : getCanvases()) {
-                                    if (VSwingUtil.isWindowChild(c)) {
-                                        canvas = c;
-                                        break;
-                                    }
-                                }
-
-                                if (VDialog.showConfirmDialog(
-                                        canvas, "Uninstall Plugin?",
-                                        "<html><div align=Center>"
-                                        + "<p>Shall the plugin "
-                                        + Message.EMPHASIZE_BEGIN
-                                        + p.getIdentifier()
-                                        + Message.EMPHASIZE_END
-                                        + " be uninstalled?</p>"
-                                        + "</div></html>",
-                                        VDialog.DialogType.YES_NO)
-                                        == VDialog.AnswerType.YES) {
-
-                                    if (e.getSource() instanceof AbstractButton) {
-                                        AbstractButton item =
-                                                (AbstractButton) e.getSource();
-                                        item.setEnabled(false);
-                                    }
-
-                                    // call uninstall method
-                                    // check whether to install/update this plugin
-                                    System.out.println(
-                                            " --> " + p.getIdentifier().getName()
-                                            + ": calling uninstall()");
-                                    try {
-
-                                        InitPluginAPI initAPI =
-                                                new InitPluginAPIImpl(
-                                                pluginsDataControllers.get(
-                                                p.getIdentifier().getName()));
-
-                                        // uninstall the plugin
-                                        p.uninstall(initAPI);
-                                    } catch (Throwable tr) {
-                                        System.err.println(
-                                                "--> Error: cannot call uninstall() method!");
-                                        tr.printStackTrace(System.err);
-                                    }
-
-
-                                    UninstallPluginController.addRequest(p);
-
-                                    canvas.getMessageBox().addMessage(
-                                            "Uninstalled Plugin:",
-                                            ">> the plugin "
-                                            + p.getIdentifier()
-                                            + " has been uninstalled. "
-                                            + "Restart VRL-Studio to complete "
-                                            + "this operation.",
-                                            MessageType.INFO);
-
-                                }
+                        for (Canvas c : getCanvases()) {
+                            if (VSwingUtil.isWindowChild(c)) {
+                                canvas = c;
+                                break;
                             }
                         }
-                    });
+
+                        if (VDialog.showConfirmDialog(
+                                canvas, "Uninstall Plugin?",
+                                "<html><div align=Center>"
+                                + "<p>Shall the plugin "
+                                + Message.EMPHASIZE_BEGIN
+                                + p.getIdentifier()
+                                + Message.EMPHASIZE_END
+                                + " be uninstalled?</p>"
+                                + "</div></html>",
+                                VDialog.DialogType.YES_NO)
+                                == VDialog.AnswerType.YES) {
+
+                            if (e.getSource() instanceof AbstractButton) {
+                                AbstractButton item =
+                                        (AbstractButton) e.getSource();
+                                item.setEnabled(false);
+                            }
+
+                            // call uninstall method
+                            // check whether to install/update this plugin
+                            System.out.println(
+                                    " --> " + p.getIdentifier().getName()
+                                    + ": calling uninstall()");
+                            try {
+
+                                InitPluginAPI initAPI =
+                                        new InitPluginAPIImpl(
+                                        pluginsDataControllers.get(
+                                        p.getIdentifier().getName()));
+
+                                // uninstall the plugin
+                                p.uninstall(initAPI);
+                            } catch (Throwable tr) {
+                                System.err.println(
+                                        "--> Error: cannot call uninstall() method!");
+                                tr.printStackTrace(System.err);
+                            }
+
+
+                            UninstallPluginController.addRequest(p);
+
+                            canvas.getMessageBox().addMessage(
+                                    "Uninstalled Plugin:",
+                                    ">> the plugin "
+                                    + p.getIdentifier()
+                                    + " has been uninstalled. "
+                                    + "Restart VRL-Studio to complete "
+                                    + "this operation.",
+                                    MessageType.INFO);
+
+                        }
+                    }
+                }
+            });
         }
 
         uninstallPluginMenuController.buildMenu(uninstallMenu, null);
@@ -2448,17 +2540,16 @@ public class VRL {
         projectController = aProjectController;
 
     }
-    
+
     /**
      * Returns the VRL changelog as string.
+     *
      * @return the VRL changelog as string
      */
     public static String getChangelog() {
         return IOUtil.readResourceTextFile(
                 "/eu/mihosoft/vrl/resources/changelog/changelog.txt");
     }
-    
-
 } // end class VRL
 
 /**
