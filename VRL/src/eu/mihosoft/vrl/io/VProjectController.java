@@ -2846,7 +2846,8 @@ public class VProjectController {
 
         File projectName = new File(applicationDir, "project.vrlp");
 
-        build();
+        build(true, false);
+        
         try {
             export(projectName, commitChanges).join();
         } catch (InterruptedException ex) {
