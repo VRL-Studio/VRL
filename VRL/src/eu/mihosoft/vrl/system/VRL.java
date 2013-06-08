@@ -253,6 +253,7 @@ public class VRL {
                         + "', valid arguments are: [yes/no]");
             }
         }
+        
     }
 
     private static void checkAndInstallProjectPluginPayload() {
@@ -281,16 +282,18 @@ public class VRL {
 
         File projectLocation = VJarUtil.getClassLocation(projectMainClass);
 
-        try {
-            IOUtil.unzip(
-                    projectLocation,
-                    getPropertyFolderManager().getPluginUpdatesFolder(),
-                    VProject.PROJECT_PAYLOAD_NO_VERSIONING + "/plugins/");
+        if (getPropertyFolderManager().getPluginFolder().listFiles().length == 0) {
+            try {
+                IOUtil.unzip(
+                        projectLocation,
+                        getPropertyFolderManager().getPluginUpdatesFolder(),
+                        (VProject.PROJECT_PAYLOAD_NO_VERSIONING + "/plugins/").replace("//", "/"));
 
-        } catch (IOException ex) {
-            Logger.getLogger(VRL.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(VRL.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-        
+
         System.out.println(" [done]");
 
     }

@@ -1392,8 +1392,8 @@ public class IOUtil {
      *
      * @param archive archive to unzip
      * @param destDir destination directory
-     * @param filters filters, i.e., optional strings that specify exactly which folders
-     * shall be unzipped
+     * @param filters filters, i.e., optional strings that specify which folders/files
+     * shall be unzipped (comparison via startsWith() )
      * @throws IOException
      * @throws ZipException
      */
@@ -1418,17 +1418,19 @@ public class IOUtil {
             // search filters for entry name
             for (String filter : filters) {
                 
-                String parentName = new File(entry.getName()).getParent();
+//                String parentName = new File(entry.getName()).getParent();
+//                
+//                if (parentName==null) {
+//                    parentName = "";
+//                }
                 
-                if (parentName==null) {
-                    parentName = "";
-                }
-                
-                if (entry.getName().equals(filter) || parentName.equals(filter)) {
+                if (entry.getName().startsWith(filter)) {
                     inFilter = true;
                     break;
                 }
             }
+            
+            System.out.println("" + inFilter + " : " + entry.getName());
 
             // if not found in filters then skip entry
             if (!inFilter) {

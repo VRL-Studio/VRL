@@ -310,6 +310,7 @@ public class VProjectController {
             disposables.clear();
         }
     }
+    
 
     /**
      * Opens a session by name.
