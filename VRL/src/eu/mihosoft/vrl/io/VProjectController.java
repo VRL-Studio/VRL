@@ -310,7 +310,6 @@ public class VProjectController {
             disposables.clear();
         }
     }
-    
 
     /**
      * Opens a session by name.
@@ -2517,23 +2516,43 @@ public class VProjectController {
      * @throws IOException
      */
     public Thread export(final File dst, boolean commitChanges) throws IOException {
+        return export(dst, commitChanges, true);
+    }
+
+    /**
+     * Saves all opened sessions, flushes the project (writes to archive) and
+     * exports the project with all used plugins to the specified destination.
+     * <p> <b>Note:</b> this method will returns immediately. All work is done
+     * in a new thread. </p>
+     *
+     * @param dest archive destination
+     * @param commitChanges defines whether to commit changes
+     * @param eventFiltersAndVisual defines whether to visualize export action
+     * and whether to block the ui (user cannot change session etc., quit the
+     * application etc.)
+     * @return the thread that performs the project export
+     * @throws IOException
+     */
+    public Thread export(final File dst, boolean commitChanges, final boolean eventFiltersAndVisual) throws IOException {
 
         final boolean visualSaveIndocation =
                 VProjectController.this.isVisualSaveIndication();
 
         VProjectController.this.setVisualSaveIndication(false);
 
-        VSwingUtil.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                VSwingUtil.deactivateEventFilter();
-                VSwingUtil.activateEventFilter(
-                        getCurrentCanvas(),
-                        getCurrentCanvas().getMessageBox(),
-                        getCurrentCanvas().getDock());
-                getCurrentCanvas().getEffectPane().startSpin();
-            }
-        });
+        if (eventFiltersAndVisual) {
+            VSwingUtil.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    VSwingUtil.deactivateEventFilter();
+                    VSwingUtil.activateEventFilter(
+                            getCurrentCanvas(),
+                            getCurrentCanvas().getMessageBox(),
+                            getCurrentCanvas().getDock());
+                    getCurrentCanvas().getEffectPane().startSpin();
+                }
+            });
+        }
 
         saveAll(null, commitChanges, null, false);
 
@@ -2559,14 +2578,16 @@ public class VProjectController {
 
                 deleteProjectPluginPayloadAndFlush(project);
 
-                VSwingUtil.deactivateEventFilter();
+                if (eventFiltersAndVisual) {
+                    VSwingUtil.deactivateEventFilter();
 
-                VSwingUtil.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        getCurrentCanvas().getEffectPane().stopSpin();
-                    }
-                });
+                    VSwingUtil.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            getCurrentCanvas().getEffectPane().stopSpin();
+                        }
+                    });
+                }
 
                 VProjectController.this.setVisualSaveIndication(visualSaveIndocation);
             }
@@ -2827,65 +2848,109 @@ public class VProjectController {
      * @param dest destination file (must end with zip, existing files will be
      * overwritten)
      * @param commitChanges defines whether to commit project changes
+     * @return the thread that performs the project export
      * @throws IOException if copy/move/zip operations cannot be performed
      */
-    public void exportAsRunnableConsoleApplication(File dest, boolean commitChanges)
+    public Thread exportAsRunnableConsoleApplication(final File dest, final boolean commitChanges)
             throws IOException {
 
         if (!dest.getName().toLowerCase().endsWith(".zip")) {
             throw new IllegalArgumentException("file must end with .zip!");
         }
 
-        File destFolder = new File(IOUtil.createTempDir(),
-                dest.getName().substring(0, (int) dest.getName().length() - ".zip".length()));
+        final boolean visualSaveIndocation =
+                VProjectController.this.isVisualSaveIndication();
 
-        destFolder.mkdirs();
+        VProjectController.this.setVisualSaveIndication(false);
 
-        File applicationDir = new File(destFolder, ".application");
+        VSwingUtil.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                VSwingUtil.deactivateEventFilter();
+                VSwingUtil.activateEventFilter(
+                        getCurrentCanvas(),
+                        getCurrentCanvas().getMessageBox(),
+                        getCurrentCanvas().getDock());
+                getCurrentCanvas().getEffectPane().startSpin();
+            }
+        });
 
-        applicationDir.mkdirs();
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File destFolder = new File(IOUtil.createTempDir(),
+                            dest.getName().substring(0, (int) dest.getName().length() - ".zip".length()));
 
-        File projectName = new File(applicationDir, "project.vrlp");
+                    destFolder.mkdirs();
 
-        build(true, false);
-        
-        try {
-            export(projectName, commitChanges).join();
-        } catch (InterruptedException ex) {
-            Logger.getLogger(VProjectController.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
+                    File applicationDir = new File(destFolder, ".application");
 
-        File jarFileName = new File(applicationDir, "project.jar");
+                    applicationDir.mkdirs();
 
-        IOUtil.move(projectName, jarFileName);
+                    File projectName = new File(applicationDir, "project.vrlp");
 
-        // install VRL.jar
-        File vrlSrcJarFile = VJarUtil.getClassLocation(VRL.class);
-        File libDir = new File(applicationDir, "lib");
-        libDir.mkdirs();
-        File vrlDestJarFile = new File(libDir, "VRL.jar");
-        IOUtil.copyFile(vrlSrcJarFile, vrlDestJarFile);
+                    build(true, false);
 
-        // create run.sh
-        String runSh = IOUtil.readResourceTextFile(
-                "/eu/mihosoft/vrl/resources/run/run.sh");
-        File runSHFile = new File(destFolder, "run.sh");
-        TextSaver saver = new TextSaver();
-        saver.saveFile(runSh, runSHFile, ".sh");
+                    try {
+                        export(projectName, commitChanges, false).join();
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(VProjectController.class.getName()).
+                                log(Level.SEVERE, null, ex);
+                    }
 
-        // create run.bat
-        String runBat = IOUtil.readResourceTextFile(
-                "/eu/mihosoft/vrl/resources/run/run.bat");
-        File runBatFile = new File(destFolder, "run.bat");
-        saver = new TextSaver();
-        saver.saveFile(runBat, runBatFile, ".bat");
+                    File jarFileName = new File(applicationDir, "project.jar");
 
-        // create dest.zip
-        IOUtil.zipFolder(destFolder, dest);
+                    IOUtil.move(projectName, jarFileName);
 
-        // delete dest tmp folder
-        IOUtil.deleteDirectory(destFolder);
+                    // install VRL.jar
+                    File vrlSrcJarFile = VJarUtil.getClassLocation(VRL.class);
+                    File libDir = new File(applicationDir, "lib");
+                    libDir.mkdirs();
+                    File vrlDestJarFile = new File(libDir, "VRL.jar");
+                    IOUtil.copyFile(vrlSrcJarFile, vrlDestJarFile);
+
+                    // create run.sh
+                    String runSh = IOUtil.readResourceTextFile(
+                            "/eu/mihosoft/vrl/resources/run/run.sh");
+                    File runSHFile = new File(destFolder, "run.sh");
+                    TextSaver saver = new TextSaver();
+                    saver.saveFile(runSh, runSHFile, ".sh");
+
+                    // create run.bat
+                    String runBat = IOUtil.readResourceTextFile(
+                            "/eu/mihosoft/vrl/resources/run/run.bat");
+                    File runBatFile = new File(destFolder, "run.bat");
+                    saver = new TextSaver();
+                    saver.saveFile(runBat, runBatFile, ".bat");
+
+                    // create dest.zip
+                    IOUtil.zipFolder(destFolder, dest);
+
+                    // delete dest tmp folder
+                    IOUtil.deleteDirectory(destFolder);
+                    
+
+                    VSwingUtil.deactivateEventFilter();
+                    VSwingUtil.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            getCurrentCanvas().getEffectPane().stopSpin();
+                        }
+                    });
+                    VProjectController.this.setVisualSaveIndication(visualSaveIndocation);
+                    
+
+                } catch (IOException ex) {
+                    Logger.getLogger(VProjectController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        };
+
+        Thread t = new Thread(r);
+        t.start();
+        return t;
+
     }
 
     private static boolean deleteProjectPluginPayloadAndFlush(VProject project) {
