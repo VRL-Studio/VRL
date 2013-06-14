@@ -65,7 +65,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface AutoCompletionInfo {
    /**
-     * Defines whether this method is to be hidden from auto-completion.
+     * Defines whether this method shall be hidden from auto-completion.
      */
     boolean hide() default false;
 

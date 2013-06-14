@@ -49,11 +49,16 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.system;
 
+import eu.mihosoft.vrl.io.ClassPathUpdater;
+import eu.mihosoft.vrl.io.IOUtil;
+import eu.mihosoft.vrl.io.VJarUtil;
+import eu.mihosoft.vrl.reflection.VisualCanvas;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -72,6 +77,10 @@ public class VSessionRunner {
 
         // load libraries and plugins
         VRL.initAll(args);
+
+        
+        ClassPathUpdater.addAllJarsInDirectory(
+                VRL.getPropertyFolderManager().getPluginFolder());
 
         System.out.println("--------------------------------------------------------------------------------");
         try {

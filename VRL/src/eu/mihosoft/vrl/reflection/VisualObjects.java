@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.io.vrlx.AbstractWindow;
@@ -70,6 +69,7 @@ import java.util.Collections;
 
 /**
  * Represents a list of all visual objects inside a VisualCanvas object.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class VisualObjects extends CanvasWindows {
@@ -111,8 +111,9 @@ public class VisualObjects extends CanvasWindows {
 
     /**
      * Removes object from list.
-     * @param ID the ID value of the object that is to be removed,
-     *           valid range: [0,MAX_INT]
+     *
+     * @param ID the ID value of the object that is to be removed, valid range:
+     * [0,MAX_INT]
      */
     public void removeObjectOnlyFromCanvas(int ID) {
         super.removeObject(ID);
@@ -146,9 +147,9 @@ public class VisualObjects extends CanvasWindows {
 //        }
 //        e.writeObject(objects);
 //    }
-
     /**
      * Load visual objects from file.
+     *
      * @param d the xml decoder that is to be used for deserialization
      */
     // TODO maybe move this method to VisualCanvas or VisualObjectInspector
@@ -192,6 +193,14 @@ public class VisualObjects extends CanvasWindows {
 
         for (VisualObject vObj : delList) {
 
+            if (vObj == null) {
+                getMainCanvas().getMessageBox().addMessage(
+                        "Error: object does not exist",
+                        "Error: null obj in visual-object-list",
+                        MessageType.ERROR);
+                continue;
+            }
+
             VisualCanvas canvas = (VisualCanvas) getMainCanvas();
 
             Object o = canvas.getInspector().
@@ -199,7 +208,22 @@ public class VisualObjects extends CanvasWindows {
 
             removeObjectWithoutEffect(vObj.getID());
 
-            if (!(o instanceof IgnoreNotSerializableWarnings) 
+            if (o == null) {
+                getMainCanvas().getMessageBox().addMessage(
+                        "Error: object does not exist",
+                        "Error: object with id "
+                        + vObj.getObjectRepresentation().getObjectID()
+                        + " is null!",
+                        MessageType.ERROR);
+
+                System.err.println("Error: object with id "
+                        + vObj.getObjectRepresentation().getObjectID()
+                        + " is null!");
+
+                continue;
+            }
+
+            if (!(o instanceof IgnoreNotSerializableWarnings)
                     && !ComponentUtil.isSerializationEnabled(o.getClass())) {
 
                 getMainCanvas().getMessageBox().addMessage(
@@ -224,6 +248,4 @@ public class VisualObjects extends CanvasWindows {
 //
 //        }
 //    }
-    
-    
 }

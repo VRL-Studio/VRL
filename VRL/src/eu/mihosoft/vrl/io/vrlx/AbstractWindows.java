@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io.vrlx;
 
 import eu.mihosoft.vrl.reflection.Pair;
@@ -108,32 +107,40 @@ public class AbstractWindows extends ArrayList<AbstractWindow> {
 
         // sorting windows to restore z order
         Collections.sort(windows, new Comparator<Pair<CanvasWindow, AbstractWindow>>() {
-
             @Override
             public int compare(
                     Pair<CanvasWindow, AbstractWindow> o1, Pair<CanvasWindow, AbstractWindow> o2) {
-                
+
                 int index1 = o1.getSecond().getZindex();
                 int index2 = o2.getSecond().getZindex();
-                
+
                 return index1 - index2;
-                
+
             }
         });
 
 
         for (int i = 0; i < windows.size(); i++) {
-            
+
             Pair<CanvasWindow, AbstractWindow> wp = windows.get(i);
 
             if (wp.getFirst() != null && wp.getSecond() != null) {
-                mainCanvas.setComponentZOrder(
-                        wp.getFirst(), i);
+                
+                // try-catch is a workaround for issue #1: https://github.com/miho/VRL/issues/1
+                // todo: find a better solution (04.06.2013)
+                try {
+                    mainCanvas.setComponentZOrder(
+                            wp.getFirst(), i);
+                } catch (Exception ex) {
+                    System.err.println(
+                            ">> Windows order cannot be fully restored (some windows are missing)");
+                }
+
             }
         }
-        
+
         // ensure effect pane is always on top
-        mainCanvas.setComponentZOrder(mainCanvas.getEffectPane(),0);
+        mainCanvas.setComponentZOrder(mainCanvas.getEffectPane(), 0);
 
 
     }

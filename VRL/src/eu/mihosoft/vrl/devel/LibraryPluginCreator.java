@@ -57,6 +57,7 @@ import eu.mihosoft.vrl.annotation.MethodInfo;
 import eu.mihosoft.vrl.annotation.ObjectInfo;
 import eu.mihosoft.vrl.annotation.ParamInfo;
 import eu.mihosoft.vrl.io.IOUtil;
+import eu.mihosoft.vrl.io.TextSaver;
 import eu.mihosoft.vrl.lang.Patterns;
 import eu.mihosoft.vrl.lang.groovy.GroovyCompiler;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
@@ -343,6 +344,17 @@ public class LibraryPluginCreator implements Serializable {
         CompilationUnit cu = new CompilationUnit(gcl);
         cu.configure(conf);
         cu.addSource("PluginConfigurator", code);
+        
+        File codeFile = new File(tmpFolder,"eu/mihosoft/vrl/user/");
+        codeFile.mkdirs();
+        codeFile = new File(codeFile,"PluginConfigurator.groovy");
+        
+        TextSaver saver = new TextSaver();
+        try {
+            saver.saveFile(code, codeFile, ".groovy");
+        } catch (IOException ex) {
+            Logger.getLogger(LibraryPluginCreator.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         try {
             cu.compile();
