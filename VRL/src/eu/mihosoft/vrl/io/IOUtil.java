@@ -1430,7 +1430,9 @@ public class IOUtil {
                 }
             }
             
-            System.out.println("" + inFilter + " : " + entry.getName());
+            if (isDebugginEnabled()) {
+                System.out.println("" + inFilter + " : " + entry.getName());
+            }
 
             // if not found in filters then skip entry
             if (!inFilter) {
