@@ -1,7 +1,9 @@
 VRL (Visual Reflection Library)
 ===============================
 
-Webpage: http://vrl.mihosoft.eu
+Webpage: http://vrl-studio.mihosoft.eu
+
+Join the [Developer Group](https://groups.google.com/forum/#!forum/vrl-developers) if you'd like to contribute.
 
 # Dependencies
 
