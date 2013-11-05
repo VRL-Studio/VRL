@@ -109,6 +109,11 @@ public class Shape3DArrayType extends TypeRepresentationBase {
     private Dimension previousVCanvas3DSize;
     protected Dimension minimumVCanvas3DSize;
     public static String ORIENTATION_KEY = "orientation";
+
+    // ThomasL
+    // remember Shape3DArray for rendering
+    private Shape3DArray shapes = null;    
+    
     /**
      * Defines whether to force branch group in favour of ordered group.
      */
@@ -301,6 +306,11 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
             final Shape3DArray shapes = (Shape3DArray) o;
 
+            // ThomasL
+            // remember Shape3DArray for rendering with sunflow
+            this.shapes = (Shape3DArray) o;
+            
+            
             if (shapeParents[0] != null) {
                 shapeParents[1] = new BranchGroup();
                 shapeParents[1].setCapability(BranchGroup.ENABLE_PICK_REPORTING);
@@ -377,6 +387,21 @@ public class Shape3DArrayType extends TypeRepresentationBase {
         }
     }
 
+    
+    // Thomas Licht
+//    @Override
+//    public void setValue(Object o)
+//    {
+//        // here comes an Shape3DArray object
+//        if (o != null)
+//        {
+//            // remember Shape3DArray for rendering with sunflow
+//            this.shapes = (Shape3DArray) o;
+//        }
+//        super.setValue(o);
+//    }    
+    
+    
     @Override
     public void emptyView() {
         clearView();
@@ -572,6 +597,19 @@ public class Shape3DArrayType extends TypeRepresentationBase {
         return values;
     }
 
+    // ThomasL
+    // get float array
+    public float[] getOrientationFromUniverseF() {
+        if (VGraphicsUtil.NO_3D) {
+            return new float[0];
+        }
+        Transform3D t3d = new Transform3D();
+        getUniverseCreator().getRootGroup().getTransform(t3d);
+        float[] values = new float[16];
+        t3d.get(values);
+        return values;    
+    }
+    
     @Override
     public void evaluateCustomParamData() {
 

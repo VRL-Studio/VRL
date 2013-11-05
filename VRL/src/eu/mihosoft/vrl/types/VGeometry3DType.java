@@ -131,8 +131,10 @@ public class VGeometry3DType extends Shape3DArrayType {
 
     @Override
     public void emptyView() {
-        super.emptyView();
-        geometryValue = null;
+        // Thomas Licht: why is this called between setValue and getValue call from connected component?
+        //               sets geometryValue back to null, getValue will then give back a null pointer..
+        //super.emptyView();
+        //geometryValue = null;
     }
 
     @Override
@@ -143,6 +145,20 @@ public class VGeometry3DType extends Shape3DArrayType {
         return geometryValue;
     }
 
+    // Thomas Licht
+    // added
+    @Override
+    public Object getValue()
+    {
+        System.out.println("VGeometry3D2Type.getValue ID:" + this.toString());
+        if (geometryValue==null) System.out.println("  result is null");
+        
+        // always set orientation
+        geometryValue.setOrientation(getOrientationFromUniverse());
+        return (Object)geometryValue;
+    }    
+    
+    
     @Override
     public boolean preferBinarySerialization() {
         return (geometryValue == null)
