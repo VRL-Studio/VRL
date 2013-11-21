@@ -2,7 +2,7 @@
 apply plugin: 'maven'
 
 // maven deployment properties
-group = 'eu.mihosoft.vrl.vrl-0.4'
+group = 'eu.mihosoft.vrl'
 
-version = '0.4.2.8.5'
+version = '0.4.2.8.5-SNAPSHOT'
 

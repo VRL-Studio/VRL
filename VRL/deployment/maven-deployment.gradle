@@ -14,21 +14,21 @@ apply from: 'version-info.gradle'
 //  }
 // }
 // 
-// file("/media/truecrypt1/sonatype-linux.properties").withReader { reader ->
-//  def userProps = new Properties()
-//  userProps.load(reader)
-//  userProps.each{
-//    it->  project.ext.set(it.key, it.value)
-//  }
-// }
-
-file("/Volumes/TRUECRYPT/sonatype-osx.properties").withReader { reader ->
-  def userProps = new Properties()
-  userProps.load(reader)
-  userProps.each{
-    it->  project.ext.set(it.key, it.value)
-  }
+file("/media/truecrypt1/sonatype-linux.properties").withReader { reader ->
+ def userProps = new Properties()
+ userProps.load(reader)
+ userProps.each{
+   it->  project.ext.set(it.key, it.value)
+ }
 }
+
+// file("/Volumes/TRUECRYPT/sonatype-osx.properties").withReader { reader ->
+//   def userProps = new Properties()
+//   userProps.load(reader)
+//   userProps.each{
+//     it->  project.ext.set(it.key, it.value)
+//   }
+// }
 
 configurations{
 	allJars
@@ -41,10 +41,11 @@ artifacts {
 }
 
 signing {
-    sign configurations.archives
+    sign configurations.allJars
 }
 
 uploadArchives {
+  
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
