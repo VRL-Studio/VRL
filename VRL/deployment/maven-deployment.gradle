@@ -1,0 +1,85 @@
+// apply from: 'jdkdetect.gradle'
+
+// sonatype dependencies
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+apply from: 'version-info.gradle'
+
+// file("E:\\sonatype-windows.properties").withReader { reader ->
+//  def userProps = new Properties()
+//  userProps.load(reader)
+//  userProps.each{
+//    it->  project.ext.set(it.key, it.value)
+//  }
+// }
+// 
+// file("/media/truecrypt1/sonatype-linux.properties").withReader { reader ->
+//  def userProps = new Properties()
+//  userProps.load(reader)
+//  userProps.each{
+//    it->  project.ext.set(it.key, it.value)
+//  }
+// }
+
+file("/Volumes/TRUECRYPT/sonatype-osx.properties").withReader { reader ->
+  def userProps = new Properties()
+  userProps.load(reader)
+  userProps.each{
+    it->  project.ext.set(it.key, it.value)
+  }
+}
+
+configurations{
+	allJars
+}
+
+artifacts {
+    allJars file: file('releases/v0.4.2.8.5/VRL.jar')
+	allJars classifier: 'javadoc', file: file('releases/v0.4.2.8.5/VRL-API-doc.zip')
+	allJars classifier: 'sources', file: file('releases/v0.4.2.8.5/VRL-src.zip')
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
+ 
+            repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+              authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+ 
+            pom.project {
+               name 'VRL'
+               packaging 'jar'
+               description 'VRL - Visual Reflection Library'
+               url 'http://vrl-studio.mihosoft.eu/'
+ 
+               scm {
+                   url 'scm:https://github.com/miho/VRL.git'
+                   connection 'scm:https://github.com/miho/VRL.git'
+                   developerConnection 'scm:https://github.com/miho/VRL.git'
+               }
+ 
+               licenses {
+                   license {
+                       name 'LGPLv3'
+                       url 'http://vrl-studio.mihosoft.eu/license.html'
+                       distribution 'repo'
+                   }
+               }
+ 
+               developers {
+                   developer {
+                       id 'miho'
+                       name 'Michael Hoffer'
+                   }
+               }
+           }
+        }
+    }
+}
