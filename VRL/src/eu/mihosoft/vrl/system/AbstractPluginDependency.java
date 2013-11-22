@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.system;
 
 /**
@@ -57,9 +56,11 @@ package eu.mihosoft.vrl.system;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public final class AbstractPluginDependency {
+
     private String name;
     private String min;
     private String max;
+    private boolean optional;
 
     public AbstractPluginDependency() {
     }
@@ -68,16 +69,18 @@ public final class AbstractPluginDependency {
         setName(dep.getName());
         setMin(dep.getMin().toString());
         setMax(dep.getMax().toString());
+        setOptional(dep.isOptional());
     }
 
-    public AbstractPluginDependency(String name, String min, String max) {
+    public AbstractPluginDependency(String name, String min, String max, boolean optional) {
         this.name = name;
         this.min = min;
         this.max = max;
+        this.optional = optional;
     }
 
     public PluginDependency toPluginDependency() {
-        return new PluginDependency(name, min, max);
+        return new PluginDependency(name, min, max, optional);
     }
 
     /**
@@ -122,5 +125,18 @@ public final class AbstractPluginDependency {
         this.max = max;
     }
 
+    /**
+     * @return the optional
+     */
+    public boolean isOptional() {
+        return optional;
+    }
+
+    /**
+     * @param optional the optional to set
+     */
+    public void setOptional(boolean optional) {
+        this.optional = optional;
+    }
 
 }

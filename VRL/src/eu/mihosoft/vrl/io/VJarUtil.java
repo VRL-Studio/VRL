@@ -227,8 +227,8 @@ public class VJarUtil {
                         new URLClassLoader(new URL[]{f.toURI().toURL()});
             }
         } catch (IOException ex) {
-            System.err.println(
-                    ">> ERROR while loading classes from file: " + f.getName());
+//            System.err.println(
+//                    ">> ERROR while loading classes from file: " + f.getName());
             Logger.getLogger(
                     VJarUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -240,17 +240,17 @@ public class VJarUtil {
                 classes.add(loader.loadClass(n));
 
             } catch (NoClassDefFoundError ex) {
-                System.err.println(">> ERROR: cannot add \"" + n +
-                        "\"");
-                System.err.println(" > cause: " + ex.toString());
+//                System.err.println(">> ERROR: cannot add \"" + n +
+//                        "\"");
+//                System.err.println(" > cause: " + ex.toString());
             } catch (Exception ex) {
-                System.err.println(">> ERROR: cannot add \"" + n +
-                        "\"");
-                System.err.println(" > cause: " + ex.toString());
+//                System.err.println(">> ERROR: cannot add \"" + n +
+//                        "\"");
+//                System.err.println(" > cause: " + ex.toString());
             } catch (java.lang.IncompatibleClassChangeError ex) {
-                System.err.println(">> ERROR: cannot add \"" + n +
-                        "\"");
-                System.err.println(" > cause: " + ex.toString());
+//                System.err.println(">> ERROR: cannot add \"" + n +
+//                        "\"");
+//                System.err.println(" > cause: " + ex.toString());
             } catch (Throwable tr) {
                 //
             }

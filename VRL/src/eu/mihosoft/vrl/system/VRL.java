@@ -52,9 +52,7 @@
 package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.io.*;
-import eu.mihosoft.vrl.lang.Keywords;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
-import eu.mihosoft.vrl.types.observe.FileAnalyzer;
 import eu.mihosoft.vrl.visual.*;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -349,7 +347,7 @@ public class VRL {
      *
      * @param dependencies requested plugins
      * @return dependencycheck object that contains information on whether
-     * plugins are available and, if not, whicl plugins are missing
+     * plugins are available and, if not, which plugins are missing
      */
     public static PluginDependencyCheck verify(
             Collection<AbstractPluginDependency> dependencies) {
@@ -369,7 +367,7 @@ public class VRL {
                     break;
                 }
             }
-            if (!found) {
+            if (!found && !dep.isOptional()) {
                 result.addMissingDependency(dep);
             }
         }
@@ -398,7 +396,7 @@ public class VRL {
             dependencies.add(new AbstractPluginDependency(
                     p.getIdentifier().getName(),
                     p.getIdentifier().getVersion().toString(),
-                    VersionInfo.UNDEFINED));
+                    VersionInfo.UNDEFINED, /*optional*/false));
         }
 
         return dependencies;
