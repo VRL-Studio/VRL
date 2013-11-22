@@ -44,7 +44,7 @@ signing {
     sign configurations.allJars
 }
 
-uploadArchives {
+uploadAllJars {
   
     repositories {
         mavenDeployer {
