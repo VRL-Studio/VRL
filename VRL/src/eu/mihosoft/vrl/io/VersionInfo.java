@@ -57,8 +57,8 @@ import java.util.ArrayList;
 /**
  * <p> Defines a VRL version information. It also specifies specifies how to compare
  * versions. It is used to check file format compatibility and plugin versions
- * etc. Valid version number strings are integer numbers, separated by dots.
- * Additionally the character
+ * etc. Valid version numbers are strings that consist of decimal numbers, each pair
+ * separated by a full stop (dot). Additionally the character
  * <code>x</code> can be used to denote an undefined number. This is useful for
  * defining plugin dependencies. </p> <p> Examples: 0.3.8.10, 1.3, 4.30.100,
  * 3.x, 1.2, x </p>
