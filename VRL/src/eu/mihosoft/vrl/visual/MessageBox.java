@@ -59,7 +59,6 @@ import eu.mihosoft.vrl.animation.FrameListener;
 import eu.mihosoft.vrl.animation.LinearInterpolation;
 import eu.mihosoft.vrl.reflection.DefaultObjectRepresentation;
 import eu.mihosoft.vrl.system.VSysUtil;
-import eu.mihosoft.vrl.visual.ImageUtils;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -69,11 +68,13 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -88,11 +89,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.InputMap;
 import javax.swing.JEditorPane;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
@@ -194,6 +197,26 @@ public class MessageBox extends VComponent implements
 
         messagePanel.setOpaque(false);
         this.add(messagePanel);
+        
+        // add shortcuts
+        if (VSysUtil.isMacOSX()) {
+
+            InputMap keyMap = messageField.getInputMap();
+
+            KeyStroke keyC = KeyStroke.getKeyStroke(KeyEvent.VK_C,
+                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+            KeyStroke keyV = KeyStroke.getKeyStroke(KeyEvent.VK_V,
+                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+            KeyStroke keyX = KeyStroke.getKeyStroke(KeyEvent.VK_X,
+                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+            KeyStroke keyA = KeyStroke.getKeyStroke(KeyEvent.VK_A,
+                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+
+            keyMap.put(keyC, DefaultEditorKit.copyAction);
+            keyMap.put(keyV, DefaultEditorKit.pasteAction);
+            keyMap.put(keyX, DefaultEditorKit.cutAction);
+            keyMap.put(keyA, DefaultEditorKit.selectAllAction);
+        }
 
         messageField.setAlignmentX(TOP_ALIGNMENT);
 
