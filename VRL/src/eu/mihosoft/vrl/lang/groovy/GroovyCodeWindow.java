@@ -190,21 +190,21 @@ public class GroovyCodeWindow extends CanvasWindow {
             code.setName(c.getName());
             visualCanvas.getCodes().add(code);
 
-            boolean instanciate = true;
+            boolean instantiate = true;
 
             // analyse annotations and try to find component info
             for (Annotation a : c.getAnnotations()) {
                 if (a.annotationType().equals(ComponentInfo.class)) {
                     ComponentInfo cInfo = (ComponentInfo) a;
-                    instanciate = cInfo.instanciate();
+                    instantiate = cInfo.instantiate();
                 }
             }
 
-            instanciate = instanciate && !c.isInterface();
+            instantiate = instantiate && !c.isInterface();
 
             Object object = null;
 
-            if (instanciate) {
+            if (instantiate) {
                 InstanceCreator creator = new InstanceCreator();
                 object = creator.newInstance(c);
             }
@@ -218,7 +218,7 @@ public class GroovyCodeWindow extends CanvasWindow {
 
                 visualCanvas.getWindows().removeObject(
                         GroovyCodeWindow.this);
-            } else if (!instanciate) {
+            } else if (!instantiate) {
                 visualCanvas.getWindows().removeObject(
                         GroovyCodeWindow.this);
             } else if (object != null) {

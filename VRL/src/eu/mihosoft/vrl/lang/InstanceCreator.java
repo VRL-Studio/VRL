@@ -86,7 +86,7 @@ public class InstanceCreator {
 //                result = c.newInstance();
 //            } catch (Exception ex) {
 //                canvas.getMessageBox().
-//                        addMessage("Can't instanciate class:",
+//                        addMessage("Can't instantiate class:",
 //                        ex.toString(), MessageType.ERROR);
 //            }
 //        }
@@ -109,7 +109,7 @@ public class InstanceCreator {
         } catch (Exception ex) {
             if (canvas != null) {
                 canvas.getMessageBox().
-                        addMessage("Can't instanciate class:",
+                        addMessage("Can't instantiate class:",
                         ex.toString(), MessageType.ERROR);
             }
         }

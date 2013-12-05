@@ -677,7 +677,7 @@ public class CanvasWindow extends VComponent
             }
         } else {
             throw new NotCapableOfException(
-                    "Not capable of instanciate or remove objects"
+                    "Not capable of instantiate or remove objects"
                     + " from canvas! Thus, no close icon can be added to this "
                     + "window.");
         }

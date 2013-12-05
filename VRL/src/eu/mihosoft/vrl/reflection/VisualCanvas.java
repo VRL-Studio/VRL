@@ -317,7 +317,7 @@ public final class VisualCanvas extends Canvas {
 
     /**
      * Reduces VRL capabilities. In addition to moving objects around it allows
-     * to instanciate objects, i.e., to add components from the popup menu.
+     * to instantiate objects, i.e., to add components from the popup menu.
      */
     public void enableFullPlayerMode() {
         getCapabilityManager().disableAllCapabilities();

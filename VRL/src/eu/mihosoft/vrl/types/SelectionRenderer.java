@@ -77,7 +77,7 @@ import javax.vecmath.Point3f;
  * HIGHLY EXPERIMENTAL! DON'T USE THIS!
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-@ComponentInfo(name = "SelectionRenderer", instanciate = false)
+@ComponentInfo(name = "SelectionRenderer", instantiate = false)
 public class SelectionRenderer extends JPanel
         implements ListCellRenderer {
 

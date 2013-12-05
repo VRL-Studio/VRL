@@ -98,30 +98,30 @@ public class ComponentUtil {
     public static void addObject(Class<?> compClass, VisualCanvas canvas,
             Point location, boolean centered) {
 
-        boolean instanciate = true;
+        boolean instantiate = true;
 
         // analyse annotations and try to find component info
         for (Annotation a : compClass.getAnnotations()) {
             if (a.annotationType().equals(ComponentInfo.class)) {
                 ComponentInfo cInfo = (ComponentInfo) a;
-                instanciate = cInfo.instanciate();
+                instantiate = cInfo.instantiate();
             }
         }
 
-        instanciate =
-                instanciate
+        instantiate =
+                instantiate
                 && !compClass.isInterface()
                 && !TypeRepresentationBase.class.isAssignableFrom(compClass);
 
         Object o = null;
 
-        if (instanciate) {
+        if (instantiate) {
             InstanceCreator creator = new InstanceCreator(canvas);
             o = creator.newInstance(compClass);
         }
 
         boolean addCodeWindowToCanvas =
-                !instanciate
+                !instantiate
                 || compClass.isInterface()
                 || o instanceof TypeRepresentationBase;
 

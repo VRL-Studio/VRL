@@ -80,9 +80,12 @@ public @interface ComponentInfo {
     String description() default "no description";
 
     /**
-     * Defines whether to instanciate this component. If <code>false</code>
+     * Defines whether to instantiate this component. If <code>false</code>
      * a code window is shown instead of an object visualization.
      */
+    boolean instantiate() default true;
+
+    @Deprecated()
     boolean instanciate() default true;
 
     /**
