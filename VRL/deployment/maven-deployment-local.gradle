@@ -7,13 +7,13 @@ apply plugin: 'signing'
 apply from: 'version-info.gradle'
 
 configurations{
-	allJars
+    allJars
 }
 
 artifacts {
     allJars file: file('releases/v0.4.2.8.5/VRL.jar')
-	allJars classifier: 'javadoc', file: file('releases/v0.4.2.8.5/VRL-API-doc.zip')
-	allJars classifier: 'sources', file: file('releases/v0.4.2.8.5/VRL-src.zip')
+    allJars classifier: 'javadoc', file: file('releases/v0.4.2.8.5/VRL-API-doc.jar')
+    allJars classifier: 'sources', file: file('releases/v0.4.2.8.5/VRL-src.jar')
 }
 
 //signing {
