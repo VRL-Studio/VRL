@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.annotation;
 
 import java.lang.annotation.ElementType;
@@ -59,11 +58,13 @@ import java.lang.annotation.Target;
 
 /**
  * Use this annotation to define component information.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface ComponentInfo {
+
     /**
      * Defines the name of the component.
      */
@@ -80,11 +81,16 @@ public @interface ComponentInfo {
     String description() default "no description";
 
     /**
-     * Defines whether to instantiate this component. If <code>false</code>
-     * a code window is shown instead of an object visualization.
+     * Defines whether to instantiate this component. If <code>false</code> a
+     * code window is shown instead of an object visualization.
      */
     boolean instantiate() default true;
 
+    /**
+     * Wrong spelling.
+     *
+     * @deprecated use {@link instantiate()} instead.
+     */
     @Deprecated()
     boolean instanciate() default true;
 
@@ -94,7 +100,8 @@ public @interface ComponentInfo {
     boolean allowRemoval() default true;
 
     /**
-     * Defines whether to ingore this component (don't add it to the menus etc.).
+     * Defines whether to ingore this component (don't add it to the menus
+     * etc.).
      */
     boolean ignore() default false;
 
