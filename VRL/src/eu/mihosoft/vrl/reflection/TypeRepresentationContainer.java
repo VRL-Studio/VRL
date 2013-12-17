@@ -268,8 +268,6 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
     @Override
     public ConnectionResult compatible(ValueObject obj) {
 
-        System.out.println(">> TARGET HERE!!!");
-
         if (!(obj instanceof TypeRepresentationContainer)) {
 
             return new ConnectionResult(null,
