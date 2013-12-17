@@ -605,7 +605,7 @@ public final class Transferable extends JPanel implements
 
 //                    System.out.println("ConnectionResult: " + connectionResult.getStatus());
 
-                    System.out.println(">> check-msg: " + connectionResult.getMessage());
+//                    System.out.println(">> check-msg: " + connectionResult.getMessage());
                     
                     setStatusMessage(connectionResult.getMessage());
 
