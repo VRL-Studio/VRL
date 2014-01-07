@@ -1,6 +1,8 @@
 VRL (Visual Reflection Library)
 ===============================
 
+[![Build Status](https://travis-ci.org/miho/VRL.png?branch=master)](https://travis-ci.org/miho/VRL)
+
 Webpage: http://vrl-studio.mihosoft.eu
 
 Join the [Developer Group](https://groups.google.com/forum/#!forum/vrl-developers) if you'd like to contribute.
