@@ -1,0 +1,16 @@
+language: java
+jdk:
+  - oraclejdk6
+  - oraclejdk7
+  
+before_install:
+  - "export DISPLAY=:99.0"
+  - "export TERM=dumb"
+  - "sh -e /etc/init.d/xvfb start"
+  - "cd VRL"
+
+install:
+    - TERM=dumb ant clean
+
+script:
+    - TERM=dumb ant test
