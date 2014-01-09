@@ -25,6 +25,11 @@ import org.junit.Test;
  */
 public class VIOTest {
 
+    File testDir;
+    File projectDir;
+    File testPropertyFolder;
+    VProjectController projectController;
+
     @BeforeClass
     public static void setUpClass() throws Exception {
     }
@@ -35,6 +40,22 @@ public class VIOTest {
 
     @Before
     public void setUp() {
+        testDir = new File(new File("build"), "test-tmp");
+        testDir.mkdirs();
+
+        projectDir = new File(testDir, "projects");
+        projectDir.mkdirs();
+
+        testPropertyFolder = new File(testDir, "property-folder");
+        testPropertyFolder.mkdirs();
+
+        VRL.initAll(new String[]{"-property-folder", testPropertyFolder.getAbsolutePath()});
+        
+        JPanel canvasParent = new JPanel();
+        VisualCanvas canvas = new VisualCanvas();
+        canvasParent.add(canvas);
+
+        projectController = new VProjectController(canvasParent, null);
     }
 
     @After
@@ -43,38 +64,21 @@ public class VIOTest {
 
     @Test
     public void createProjectTest() {
-        
-        File testDir = new File(new File("build"), "test-tmp");
-        testDir.mkdirs();
-        
-        File projectDir = new File(testDir, "projects");
-        projectDir.mkdirs();
-        
-        File testPropertyFolder = new File(testDir, "property-folder");
-        testPropertyFolder.mkdirs();
-        
-        VRL.initAll(new String[]{"-property-folder",testPropertyFolder.getAbsolutePath()});
-
-        JPanel canvasParent = new JPanel();
-        VisualCanvas canvas = new VisualCanvas();
-        canvasParent.add(canvas);
-        
-        VProjectController controller = new VProjectController(canvasParent, null);
 
         VProjectSessionCreator saver
                 = new VProjectSessionCreator(null);
-        
+
         File project = new File(projectDir, "project-01.vrlp");
-        
+
         boolean throwsExcepion = true;
-        
+
         try {
-            saver.saveFile(controller, project, ".vrlp");
+            saver.saveFile(projectController, project, ".vrlp");
             throwsExcepion = false;
         } catch (IOException ex) {
             Logger.getLogger(VIOTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         Assert.assertTrue("saving project must not throw exception!", throwsExcepion == false);
     }
 }
