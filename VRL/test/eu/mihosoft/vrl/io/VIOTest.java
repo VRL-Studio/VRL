@@ -7,11 +7,16 @@ package eu.mihosoft.vrl.io;
 
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 import eu.mihosoft.vrl.system.VRL;
+import eu.mihosoft.vrl.system.VSysUtil;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.filechooser.FileFilter;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -35,6 +40,7 @@ public class VIOTest {
     @BeforeClass
     public static void setUpClass() throws Exception {
         testDir = new File(new File("build"), "test-tmp");
+        IOUtil.deleteContainedFilesAndDirs(testDir);
         testDir.mkdirs();
 
         projectDir = new File(testDir, "projects");
@@ -45,7 +51,9 @@ public class VIOTest {
 
         VRL.initAll(new String[]{"-property-folder", testPropertyFolder.getAbsolutePath()});
 
+        JFrame frame = new JFrame();
         JPanel canvasParent = new JPanel();
+        frame.add(canvasParent);
         VisualCanvas canvas = new VisualCanvas();
         canvasParent.add(canvas);
 
@@ -56,6 +64,7 @@ public class VIOTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        IOUtil.deleteContainedFilesAndDirs(testDir);
     }
 
     @Before
@@ -84,7 +93,7 @@ public class VIOTest {
 
     private boolean createProject() {
         VProjectSessionCreator saver
-                = new VProjectSessionCreator(null);
+                = new VProjectSessionCreator(null, false);
         boolean success = false;
         try {
             saver.saveFile(projectController, projectFile, ".vrlp");
@@ -105,7 +114,7 @@ public class VIOTest {
         }
         return success;
     }
-    
+
     private boolean saveProject() {
         boolean success = false;
         try {
@@ -142,7 +151,7 @@ public class VIOTest {
         }
 
         Assert.assertTrue("adding object must not throw exception!", success);
-        
+
         Assert.assertTrue("saving project must not throw exception!", saveProject());
 
         Assert.assertTrue("closing project must not throw exception!", closeProject());
@@ -150,14 +159,95 @@ public class VIOTest {
         Assert.assertTrue("loading project must not throw exception!", openProject());
 
         int numObjects = projectController.getCurrentCanvas().getInspector().getObjects().size();
-        
+
         Assert.assertTrue("project must contain exactly one objects!: contains " + numObjects,
                 numObjects == 1);
-        
+
         int numWindows = projectController.getCurrentCanvas().getWindows().size();
-        
+
         Assert.assertTrue("canvas must contain exactly 3 windows (start, stop, string)! contains " + numWindows,
                 numWindows == 3);
 
+        Assert.assertTrue("closing project must not throw exception!", closeProject());
+
+    }
+
+    public boolean createConsoleApp(VProject project) {
+
+        boolean success = false;
+
+        try {
+            
+            Assert.assertTrue("console app project must compile!", projectController.build(true, false));
+
+            class DummySaveAs implements FileSaver {
+
+                public File dest;
+
+                @Override
+                public void saveFile(Object o, File file, String ext)
+                        throws IOException {
+                    // we won't save anything
+                    dest = file;
+                }
+
+                @Override
+                public String getDefaultExtension() {
+                    return "zip";
+                }
+            }
+
+            final DummySaveAs saver = new DummySaveAs();
+
+            saver.dest = new File(projectDir, "console-app-01.zip");
+
+            projectController.exportAsRunnableConsoleApplication(saver.dest, true).join();
+
+            Assert.assertTrue("console app must exist!", saver.dest.exists());
+
+            File consoleApp = new File(projectDir, "console-app-01.dir");
+            IOUtil.deleteDirectory(consoleApp);
+            consoleApp.mkdirs();
+
+            IOUtil.unzip(saver.dest, consoleApp);
+
+            if (VSysUtil.isWindows()) {
+                // not supported
+            } else {
+
+                Process p = new ProcessBuilder("/bin/bash", consoleApp.getAbsolutePath() + "/console-app-01/run.sh").start();
+                String line;
+                BufferedReader serr;
+
+                BufferedReader sout = new BufferedReader(new InputStreamReader(p.getInputStream()));
+                serr = new BufferedReader(new InputStreamReader(p.getErrorStream()));
+                while ((line = sout.readLine()) != null) {
+                    System.out.println(line);
+                }
+
+                while ((line = serr.readLine()) != null) {
+                    System.err.println(line);
+                }
+                serr.close();
+                p.waitFor();
+            }
+
+            success = true;
+        } catch (Exception ex) {
+            Logger.getLogger(VIOTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return success;
+    }
+
+    @Test
+    public void consoleAppTest() {
+        Assert.assertTrue("creating project must not throw exception!", createProject());
+
+        System.out.println("a");
+
+        Assert.assertTrue("opening project must not throw exception!", openProject());
+
+        Assert.assertTrue("creating console app must not throw exception!", createConsoleApp(project));
     }
 }

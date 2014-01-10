@@ -68,9 +68,16 @@ public class VProjectSessionCreator implements FileSaver {
 
     private boolean createdProject;
     private String defaultProject;
+    private boolean askBeforeOverwrite;
 
-    public VProjectSessionCreator(String defaultSessionName) {
+    public VProjectSessionCreator(String defaultSessionName, boolean askBeforeOverwrite) {
         this.defaultProject = defaultSessionName;
+        this.askBeforeOverwrite = askBeforeOverwrite;
+    }
+    
+        public VProjectSessionCreator(String defaultSessionName) {
+        this.defaultProject = defaultSessionName;
+        this.askBeforeOverwrite = true;
     }
 
     @Override
@@ -78,7 +85,7 @@ public class VProjectSessionCreator implements FileSaver {
 
         VParamUtil.throwIfNull(file);
 
-        // ensure that o is an instance of VisualCanvas
+        // ensure that o is an instance of VProjectController
         VParamUtil.throwIfNotValid(
                 VParamUtil.VALIDATOR_INSTANCEOF, VProjectController.class, o);
 
@@ -102,7 +109,7 @@ public class VProjectSessionCreator implements FileSaver {
 
         VDialog.AnswerType answer = VDialog.YES;
 
-        if (sameProject) {
+        if (sameProject && askBeforeOverwrite) {
 
             answer = VDialog.showConfirmDialog(controller.getCurrentCanvas(),
                     "OVerwrite current Project?",
