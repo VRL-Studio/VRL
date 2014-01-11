@@ -222,9 +222,11 @@ public class VisualObjects extends CanvasWindows {
 
                 continue;
             }
+            
+            boolean implementsIgnoreMarkerInterface = (o instanceof IgnoreNotSerializableWarnings);
+            boolean serializableEnabledInObjectAnnotation = ComponentUtil.isSerializationEnabled(o.getClass());
 
-            if (!(o instanceof IgnoreNotSerializableWarnings)
-                    && !ComponentUtil.isSerializationEnabled(o.getClass())) {
+            if (!implementsIgnoreMarkerInterface && serializableEnabledInObjectAnnotation) {
 
                 getMainCanvas().getMessageBox().addMessage(
                         "Warning: Can't save some objects",
@@ -236,9 +238,9 @@ public class VisualObjects extends CanvasWindows {
                         + "Use <b><i>transient</i></b> in this case.<p>"
                         + "Classes added from shell cannot be deserialized"
                         + " because source code definition is not available."
-                        + "This can be fixed by adding a new "
+                        + " This can be fixed by adding a new "
                         + "<b><i>AbstractCode</i></b> to the canvas before"
-                        + "saving the session.",
+                        + " saving the session.",
                         MessageType.WARNING);
             }
         }
