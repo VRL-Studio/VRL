@@ -139,6 +139,9 @@ public class VIOTest {
 
     @Test
     public void addComponentToCanvas() {
+        
+        Assert.assertTrue("saving project must not throw exception!", createProject());
+        
         Assert.assertTrue("loading project must not throw exception!", openProject());
 
         boolean success = false;
@@ -249,5 +252,7 @@ public class VIOTest {
         Assert.assertTrue("opening project must not throw exception!", openProject());
 
         Assert.assertTrue("creating console app must not throw exception!", createConsoleApp(project));
+        
+        Assert.assertTrue("closing project must not throw exception!", closeProject());
     }
 }
