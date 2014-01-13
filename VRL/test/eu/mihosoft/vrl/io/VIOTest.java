@@ -56,6 +56,8 @@ public class VIOTest {
         frame.add(canvasParent);
         VisualCanvas canvas = new VisualCanvas();
         canvasParent.add(canvas);
+        frame.setSize(800, 600);
+        frame.setVisible(true);
 
         projectController = new VProjectController(canvasParent, null);
 
