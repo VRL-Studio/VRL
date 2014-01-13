@@ -381,9 +381,10 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
         updateConnectorIds();
 
-        for (TypeRepresentationContainer tCont : typeContainers) {
-            tCont.getTypeRepresentation().addedToMethodRepresentation();
-        }
+        // This is already (and should better be) done in updateView.
+        //for (TypeRepresentationContainer tCont : typeContainers) {
+        //    tCont.getTypeRepresentation().addedToMethodRepresentation();
+        //}
     }
 
     private void updateConnectorIds() {
