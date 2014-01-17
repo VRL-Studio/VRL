@@ -296,7 +296,7 @@ public class AnimationManager implements Serializable {
         }
         
         // don't allow 0 fps
-        if (Math.abs(getFps()) < TOL){
+        if (getFps() < TOL){
             setFps(30);
             numberOfFrames = 0; // retrigger fps measurement
         }
