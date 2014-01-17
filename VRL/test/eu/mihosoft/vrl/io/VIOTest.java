@@ -8,6 +8,7 @@ package eu.mihosoft.vrl.io;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 import eu.mihosoft.vrl.system.VRL;
 import eu.mihosoft.vrl.system.VSysUtil;
+import java.awt.Toolkit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.filechooser.FileFilter;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import junit.framework.Assert;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -51,6 +53,10 @@ public class VIOTest {
 
         VRL.initAll(new String[]{"-property-folder", testPropertyFolder.getAbsolutePath()});
 
+        Toolkit.getDefaultToolkit();
+
+        setLAF();
+
         JFrame frame = new JFrame();
         JPanel canvasParent = new JPanel();
         frame.add(canvasParent);
@@ -64,9 +70,25 @@ public class VIOTest {
         projectFile = new File(projectDir, "project-01.vrlp");
     }
 
+    public static void setLAF() {
+        try {
+            // Set cross-platform Java L&F (also called "Metal")
+            UIManager.setLookAndFeel(
+                    UIManager.getCrossPlatformLookAndFeelClassName());
+        } catch (UnsupportedLookAndFeelException e) {
+            // handle exception
+        } catch (ClassNotFoundException e) {
+            // handle exception
+        } catch (InstantiationException e) {
+            // handle exception
+        } catch (IllegalAccessException e) {
+            // handle exception
+        }
+    }
+
     @AfterClass
     public static void tearDownClass() throws Exception {
-        
+
         Assert.assertTrue("closing project must not throw exception!", closeProject());
         IOUtil.deleteContainedFilesAndDirs(testDir);
     }
