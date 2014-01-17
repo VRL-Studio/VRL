@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 import junit.framework.Assert;
 import org.junit.After;
@@ -52,10 +53,10 @@ public class VIOTest {
         testPropertyFolder.mkdirs();
 
         VRL.initAll(new String[]{"-property-folder", testPropertyFolder.getAbsolutePath()});
+        
+        setLAF();
 
         Toolkit.getDefaultToolkit();
-
-        setLAF();
 
         JFrame frame = new JFrame();
         JPanel canvasParent = new JPanel();
@@ -71,19 +72,33 @@ public class VIOTest {
     }
 
     public static void setLAF() {
+
         try {
-            // Set cross-platform Java L&F (also called "Metal")
-            UIManager.setLookAndFeel(
-                    UIManager.getCrossPlatformLookAndFeelClassName());
-        } catch (UnsupportedLookAndFeelException e) {
-            // handle exception
-        } catch (ClassNotFoundException e) {
-            // handle exception
-        } catch (InstantiationException e) {
-            // handle exception
-        } catch (IllegalAccessException e) {
-            // handle exception
+            for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (Exception e) {
+            
+            System.out.println(" -> nimbus style not available!");
+            
+            try {
+                // Set cross-platform Java L&F (also called "Metal")
+                UIManager.setLookAndFeel(
+                        UIManager.getCrossPlatformLookAndFeelClassName());
+            } catch (UnsupportedLookAndFeelException ex) {
+                // handle exception
+            } catch (ClassNotFoundException ex) {
+                // handle exception
+            } catch (InstantiationException ex) {
+                // handle exception
+            } catch (IllegalAccessException ex) {
+                // handle exception
+            }
         }
+
     }
 
     @AfterClass
