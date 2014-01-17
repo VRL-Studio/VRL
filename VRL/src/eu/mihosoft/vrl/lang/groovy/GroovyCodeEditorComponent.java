@@ -767,7 +767,7 @@ public class GroovyCodeEditorComponent implements Serializable {
         InputCodeType tRep = (InputCodeType) mRep.getParameter(1);
         VCodeEditor editor = tRep.getEditor();
 
-        // we automatically add apackage definition if missing
+        // we automatically add a package definition if missing
         if (!VLangUtils.packageDefinedInCode(compileCode)) {
             compileCode = "package eu.mihosoft.vrl.user;" + compileCode;
         }

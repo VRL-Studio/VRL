@@ -56,6 +56,8 @@ public class VIOTest {
         frame.add(canvasParent);
         VisualCanvas canvas = new VisualCanvas();
         canvasParent.add(canvas);
+        frame.setSize(800, 600);
+        frame.setVisible(true);
 
         projectController = new VProjectController(canvasParent, null);
 
@@ -64,6 +66,8 @@ public class VIOTest {
 
     @AfterClass
     public static void tearDownClass() throws Exception {
+        
+        Assert.assertTrue("closing project must not throw exception!", closeProject());
         IOUtil.deleteContainedFilesAndDirs(testDir);
     }
 
@@ -126,7 +130,7 @@ public class VIOTest {
         return success;
     }
 
-    private boolean closeProject() {
+    private static boolean closeProject() {
         boolean success = false;
         try {
             projectController.closeProject();
@@ -139,6 +143,9 @@ public class VIOTest {
 
     @Test
     public void addComponentToCanvas() {
+
+        Assert.assertTrue("saving project must not throw exception!", createProject());
+
         Assert.assertTrue("loading project must not throw exception!", openProject());
 
         boolean success = false;
@@ -177,7 +184,7 @@ public class VIOTest {
         boolean success = false;
 
         try {
-            
+
             Assert.assertTrue("console app project must compile!", projectController.build(true, false));
 
             class DummySaveAs implements FileSaver {
@@ -249,5 +256,7 @@ public class VIOTest {
         Assert.assertTrue("opening project must not throw exception!", openProject());
 
         Assert.assertTrue("creating console app must not throw exception!", createConsoleApp(project));
+
+        Assert.assertTrue("closing project must not throw exception!", closeProject());
     }
 }

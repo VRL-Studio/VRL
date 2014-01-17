@@ -89,8 +89,8 @@ public class VisualObjectInspector extends ObjectInspector {
     private static final long serialVersionUID = 1674189302728167206L;
     private VisualCanvas mainCanvas;
     private CallOptionsEvaluator callOptionsEvaluator;
-    private IDArrayMap<DefaultObjectRepresentation> visualizations =
-            new IDArrayMap<DefaultObjectRepresentation>();
+    private IDArrayMap<DefaultObjectRepresentation> visualizations
+            = new IDArrayMap<DefaultObjectRepresentation>();
 
     /**
      * Constructor.
@@ -225,11 +225,11 @@ public class VisualObjectInspector extends ObjectInspector {
      */
     public ArrayList<DefaultMethodRepresentation> getMethodRepresentations(
             MethodDescription desc) {
-        ArrayList<DefaultMethodRepresentation> result =
-                new ArrayList<DefaultMethodRepresentation>();
+        ArrayList<DefaultMethodRepresentation> result
+                = new ArrayList<DefaultMethodRepresentation>();
 
-        ArrayList<DefaultObjectRepresentation> oReps =
-                getObjectRepresentations(desc.getObjectID());
+        ArrayList<DefaultObjectRepresentation> oReps
+                = getObjectRepresentations(desc.getObjectID());
 
         for (DefaultObjectRepresentation oRep : oReps) {
             for (DefaultMethodRepresentation method : oRep.getMethods()) {
@@ -252,8 +252,8 @@ public class VisualObjectInspector extends ObjectInspector {
      */
     public DefaultMethodRepresentation getMethodRepresentation(MethodIdentifier desc) {
 
-        IDArrayList<DefaultObjectRepresentation> oReps =
-                getObjectRepresentations(desc.getObjectID());
+        IDArrayList<DefaultObjectRepresentation> oReps
+                = getObjectRepresentations(desc.getObjectID());
 
         DefaultMethodRepresentation result = null;
 
@@ -262,7 +262,6 @@ public class VisualObjectInspector extends ObjectInspector {
 //        System.out.println("ID: " + desc.getVisualID());
 //
 //        System.out.println("OREP: " + oReps.getById(desc.getVisualID()));
-
         for (DefaultMethodRepresentation method : oReps.getById(desc.getVisualID()).getMethods()) {
 //            if (method.getDescription().getMethodID() == desc.getMethodID()) {
 //                result = method;
@@ -328,26 +327,26 @@ public class VisualObjectInspector extends ObjectInspector {
     public ArrayList<DefaultMethodRepresentation> getMethodRepresentations(Object o,
             String methodName, Class<?>[] paramTypes) {
 
-        ArrayList<DefaultObjectRepresentation> oReps =
-                getObjectRepresentationsByReference(o);
+        ArrayList<DefaultObjectRepresentation> oReps
+                = getObjectRepresentationsByReference(o);
 
-        ArrayList<DefaultMethodRepresentation> result =
-                new ArrayList<DefaultMethodRepresentation>();
+        ArrayList<DefaultMethodRepresentation> result
+                = new ArrayList<DefaultMethodRepresentation>();
 
         for (DefaultObjectRepresentation oRep : oReps) {
 
             for (DefaultMethodRepresentation mRep : oRep.getMethods()) {
 
-                boolean paramTypesAreEqual =
-                        mRep.getDescription().getParameterTypes().length
+                boolean paramTypesAreEqual
+                        = mRep.getDescription().getParameterTypes().length
                         == paramTypes.length;
 
                 if (paramTypesAreEqual) {
 
                     for (int i = 0; i < paramTypes.length; i++) {
                         Class<?> class1 = paramTypes[i];
-                        Class<?> class2 =
-                                mRep.getDescription().getParameterTypes()[i];
+                        Class<?> class2
+                                = mRep.getDescription().getParameterTypes()[i];
 
                         if (!class1.equals(class2)) {
                             paramTypesAreEqual = false;
@@ -368,12 +367,14 @@ public class VisualObjectInspector extends ObjectInspector {
     }
 
     /**
-     * <p> Returns an object representation for the specified object. The
-     * specified object has to be added to the inspector before calling this
-     * method. Returns
-     * <code>null</code> otherwise. </p> <p> <b>Note:</b> this method should
-     * only be used to load from file or in other rare cases where restoring
-     * previously assigned ids is required. </p>
+     * <p>
+     * Returns an object representation for the specified object. The specified
+     * object has to be added to the inspector before calling this method.
+     * Returns <code>null</code> otherwise. </p>
+     * <p>
+     * <b>Note:</b> this method should only be used to load from file or in
+     * other rare cases where restoring previously assigned ids is required.
+     * </p>
      *
      * @param o the object to represent
      * @param visualID the visual id that shall be assigned to the object
@@ -389,8 +390,8 @@ public class VisualObjectInspector extends ObjectInspector {
             IDArrayList<IDTable> connectorIDTables, Integer visualID) {
         DefaultObjectRepresentation result = null;
 
-        ObjectDescription oDesc =
-                getMainCanvas().getInspector().getObjectDescription(o);
+        ObjectDescription oDesc
+                = getMainCanvas().getInspector().getObjectDescription(o);
 
         if (oDesc != null) {
 
@@ -410,9 +411,10 @@ public class VisualObjectInspector extends ObjectInspector {
     }
 
     /**
-     * <p> Replaces the instance of the specified object representation with a
-     * specified instance. Returns
-     * <code>null</code> if replacement cannot be performed. </p>
+     * <p>
+     * Replaces the instance of the specified object representation with a
+     * specified instance. Returns <code>null</code> if replacement cannot be
+     * performed. </p>
      *
      * @param newInstance the instance to use
      * @param oldInstance the old instance (optional, may be null)
@@ -429,8 +431,8 @@ public class VisualObjectInspector extends ObjectInspector {
 
         DefaultObjectRepresentation result = null;
 
-        ObjectDescription oDesc =
-                getMainCanvas().getInspector().
+        ObjectDescription oDesc
+                = getMainCanvas().getInspector().
                 getObjectDescription(newInstance);
 
         // if oldinstance was not specified search it by id
@@ -445,8 +447,8 @@ public class VisualObjectInspector extends ObjectInspector {
 
             addObject(newInstance);
 
-            oDesc =
-                    getMainCanvas().getInspector().
+            oDesc
+                    = getMainCanvas().getInspector().
                     getObjectDescription(newInstance);
         }
 
@@ -467,8 +469,8 @@ public class VisualObjectInspector extends ObjectInspector {
 
             Object returnValue = null;
 
-            boolean hasNonCustomReferenceMethod =
-                    oRep.getReferenceMethod() != null
+            boolean hasNonCustomReferenceMethod
+                    = oRep.getReferenceMethod() != null
                     && oRep.getReferenceMethod().isReferenceMethod();
 
             // get param value of reference method
@@ -515,12 +517,11 @@ public class VisualObjectInspector extends ObjectInspector {
 //        for (DefaultObjectRepresentation oRep : oldVisualizations) {
 //            visualizations.add(newObj, oRep);
 //        }
+        Collection<DefaultObjectRepresentation> oReps
+                = getObjectRepresentationsByReference(oldObject);
 
-        Collection<DefaultObjectRepresentation> oReps =
-                getObjectRepresentationsByReference(oldObject);
-
-        Collection<DefaultObjectRepresentation> oldOReps =
-                new ArrayList<DefaultObjectRepresentation>(oReps);
+        Collection<DefaultObjectRepresentation> oldOReps
+                = new ArrayList<DefaultObjectRepresentation>(oReps);
 
         for (DefaultObjectRepresentation oRep : oldOReps) {
             replaceInstance(oRep, newObj, oldObject);
@@ -545,8 +546,7 @@ public class VisualObjectInspector extends ObjectInspector {
     /**
      * Returns an object representation for an object. The description of the
      * specified object has to be added to the inspector before calling this
-     * method. Returns
-     * <code>null</code> otherwise.
+     * method. Returns <code>null</code> otherwise.
      *
      * @param o description of the object to represent
      * @return the object representation of the specified object or
@@ -612,9 +612,9 @@ public class VisualObjectInspector extends ObjectInspector {
 
         if (refreshCanvas) {
 
-            final DefaultMethodRepresentation method =
-                    chooseMethodRepresentation(
-                    getMethodRepresentations(methodDescription), visualID);
+            final DefaultMethodRepresentation method
+                    = chooseMethodRepresentation(
+                            getMethodRepresentations(methodDescription), visualID);
 
 //            method.invoke(this);
             this.invoke(methodDescription);
@@ -668,9 +668,9 @@ public class VisualObjectInspector extends ObjectInspector {
             paramTypes.add(c);
         }
 
-        MethodDescription methodDescription =
-                this.getMethodDescription(o, methodName,
-                paramTypes.toArray(new Class<?>[]{}));
+        MethodDescription methodDescription
+                = this.getMethodDescription(o, methodName,
+                        paramTypes.toArray(new Class<?>[]{}));
 
         DefaultMethodRepresentation method = chooseMethodRepresentation(
                 getMethodRepresentations(methodDescription), visualID);
@@ -701,8 +701,8 @@ public class VisualObjectInspector extends ObjectInspector {
             Object o, int visualID, String methodName, Object... types)
             throws InvocationTargetException {
 
-        MethodDescription methodDescription =
-                this.getMethodDescriptionFromGUI(o, methodName, types);
+        MethodDescription methodDescription
+                = this.getMethodDescriptionFromGUI(o, methodName, types);
 
         boolean allAreClassObjects = true;
 
@@ -760,8 +760,8 @@ public class VisualObjectInspector extends ObjectInspector {
     public Object invokeFromInvokeButton(
             Object o, int visualID, String methodName, Object... types) {
 
-        MethodDescription methodDescription =
-                this.getMethodDescriptionFromGUI(o, methodName, types);
+        MethodDescription methodDescription
+                = this.getMethodDescriptionFromGUI(o, methodName, types);
 
         boolean allAreClassObjects = true;
 
@@ -879,6 +879,56 @@ public class VisualObjectInspector extends ObjectInspector {
         String methodName = VLangUtils.shortNameFromFullClassName(oDesc.getName())
                 + "." + mDesc.getMethodName() + "()";
 
+        System.err.println(ex.getMessage());
+
+        Collection<CompilationUnit> classesInSession
+                = VRL.getCurrentProjectController().getNamesOfDefinedClasses();
+
+        Collection<String> classNamesInSession = new ArrayList<String>();
+
+        for (CompilationUnit cu : classesInSession) {
+            classNamesInSession.addAll(cu.getClassNames());
+        }
+
+        String stackTraceMsg = "";
+
+        for (StackTraceElement ste : ex.getStackTrace()) {
+
+            int lineNumber = ste.getLineNumber();
+
+            String className = ste.getClassName();
+
+            if (classNamesInSession.contains(className)) {
+                lineNumber -= 3;
+            }
+
+            String msg = " --> at "
+                    + ste.getClassName() + "." + ste.getMethodName()
+                    + ", " + ste.getFileName() + ":" + lineNumber + "";
+
+            if (classNamesInSession.contains(className)) {
+                System.err.println(
+                        "\n--------------------------\n"
+                        + msg + " <-- PROJECT CLASS!\n"
+                        + "--------------------------\n");
+
+                if (stackTraceMsg.isEmpty()) {
+
+                    String finalClsName = VRL.getCurrentProjectController().getProject().
+                            getEntryNameWithoutDefaultPackage(ste.getClassName());
+
+                    stackTraceMsg = " --> <b>[component:"
+                            + " '" + finalClsName + "',"
+                            + " method: '" + ste.getMethodName()+ "',"
+                            + " line: " + lineNumber + "]</b>";
+                }
+
+            } else {
+                System.err.println(msg);
+            }
+
+        }
+
         MessageBox mBox = getMainCanvas().getMessageBox();
 
         if (ex instanceof VWorkflowException) {
@@ -887,46 +937,13 @@ public class VisualObjectInspector extends ObjectInspector {
 
             mBox.addMessage(vex.getTitle(), vex.getMessage(), MessageType.ERROR);
         } else {
-
+            String mBoxMsg = ex.toString();
+            if (!stackTraceMsg.isEmpty()) {
+                mBoxMsg = stackTraceMsg + " : " + ex.toString();
+            }
             mBox.addUniqueMessage("Method \"" + methodName + "\" can't be invoked:",
-                    ex.toString(),
+                    mBoxMsg,
                     null, MessageType.ERROR);
-        }
-
-        System.err.println(ex.getMessage());
-
-        Collection<CompilationUnit> classesInSession =
-                VRL.getCurrentProjectController().getNamesOfDefinedClasses();
-
-        Collection<String> classNamesInSession = new ArrayList<String>();
-
-        for (CompilationUnit cu : classesInSession) {
-            classNamesInSession.addAll(cu.getClassNames());
-        }
-
-        for (StackTraceElement ste : ex.getStackTrace()) {
-
-            int lineNumber = ste.getLineNumber();
-            
-            String className = ste.getClassName();
-            
-            if (classNamesInSession.contains(className)) {
-                lineNumber -=3;
-            }
-
-            String msg = " --> at "
-                    + ste.getClassName() + "." + ste.getMethodName()
-                    + "(" + ste.getFileName() + ":" + lineNumber + ")";
-
-            if (classNamesInSession.contains(className)) {
-                System.err.println(
-                        "\n--------------------------\n"
-                        + msg + " <-- PROJECT CLASS!\n"
-                        +"--------------------------\n");
-            } else {
-                System.err.println(msg);
-            }
-
         }
 
     }
