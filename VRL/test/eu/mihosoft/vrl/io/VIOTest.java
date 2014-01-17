@@ -42,6 +42,12 @@ public class VIOTest {
 
     @BeforeClass
     public static void setUpClass() throws Exception {
+        
+        setLAF();
+
+        Toolkit.getDefaultToolkit();
+        
+        
         testDir = new File(new File("build"), "test-tmp");
         IOUtil.deleteContainedFilesAndDirs(testDir);
         testDir.mkdirs();
@@ -54,9 +60,6 @@ public class VIOTest {
 
         VRL.initAll(new String[]{"-property-folder", testPropertyFolder.getAbsolutePath()});
         
-        setLAF();
-
-        Toolkit.getDefaultToolkit();
 
         JFrame frame = new JFrame();
         JPanel canvasParent = new JPanel();
