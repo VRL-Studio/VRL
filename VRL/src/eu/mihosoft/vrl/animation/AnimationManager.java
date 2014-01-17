@@ -294,6 +294,13 @@ public class AnimationManager implements Serializable {
                 setFps((long) 1e9 / diff);
             }
         }
+        
+        // don't allow 0 fps
+        if (Math.abs(getFps() -0.001) < TOL){
+            setFps(30);
+            numberOfFrames = 0; // retrigger fps measurement
+        }
+        
 //        System.out.println(">> AnimationManager: Frame: " +
 //                numberOfFrames + " FPS=" +
 //                getFps());
