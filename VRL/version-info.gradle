@@ -1,0 +1,9 @@
+apply from: rootProject.file('jdkdetect.gradle')
+apply plugin: 'maven'
+	
+artifactId = project.name.toLowerCase()
+
+group = "eu.mihosoft.vrl"
+
+version = '0.5-SNAPSHOT'
+
