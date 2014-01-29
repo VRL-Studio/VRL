@@ -1,10 +1,15 @@
-// common config
-
+// **** Common Config ****
+// 
+// - shared config for all subprojects
+//
 apply plugin: 'java'
 
+// all projects must be comatible with the java version specified here
+// overriding this property in subprojects is not allowed
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
+// maven repositories for dependency resolution
 repositories {
     mavenCentral()
     mavenLocal()
@@ -14,13 +19,20 @@ repositories {
     }
 }
 
+// common dependencies
+// - subprojects can declare additional dependencies and config inside their
+//   'build.gradle' file
 dependencies {
-    // TODO: Add dependencies here ...
-    // You can read more about how to add dependency here:
-    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
     testCompile group: 'junit', name: 'junit', version: '4.10'
+    
+    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.2.1';
+    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.2.1', classifier: 'sources';
+    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.2.1', classifier: 'javadoc';
 }
 
 // maven config
-
-apply from: rootProject.file('version-info.gradle')
+if (!rootProject.skipMaven.contains(project.parent.name+":"+project.name)) {
+    apply from: rootProject.file('version-info.gradle')
+    apply from: rootProject.file('maven-deployment-local.gradle')
+    //apply from: rootProject.file('maven-deployment.gradle')
+}

@@ -1,0 +1,18 @@
+This file contains all available comment types in the following order:
+
+1. line comment
+2. plain multiline comment
+3. javadoc comment
+
+
+
+
+// this is a line comment
+
+/*
+plain multiline comment
+*/
+
+/**
+ * JavaDoc comment
+ */

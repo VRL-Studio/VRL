@@ -1,0 +1,29 @@
+This file contains comments (of all available types) and is intended for correct
+comment detection (comments inside strings shall be excluded etc.).
+
+Expected parser behavior:
+
+# strings                    = 2 (1xdouble, 1xsingle)
+# linecomments               = 4
+# javadoc-comments           = 0
+# plain-multiline-comments:  = 2
+
+
+a = "// this is a line comment inside a string"
+a = '// this is a line comment inside a string'
+
+/*
+// line comment inside plain multiline comment
+*/
+
+// /**
+//  * JavaDoc comment inside line comments
+//  */
+
+// "string inside line comment"
+
+/*
+
+' string inside multiline comment '
+
+*/

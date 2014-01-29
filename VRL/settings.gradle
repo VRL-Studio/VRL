@@ -1,18 +1,35 @@
+// **** Project Settings ****
+//
+// - this is a shared settings file
+//   (subprojects should not use their own 'settings.gradle')
+//
+
+// project name
 rootProject.name = 'VRL'
+
+// subprojects
+// - add new projects here
+// - subproject locations/paths is defined by their position in the hierarchy
+//  -- gradle allows to change that. but for this project it is not allowed to
+//     chage the default configuration
+include "VRL-Base", "VRL-Lang", "VRL-Lang:CommentParser", "VRL-UI", "VRL-Reflection", "VRL-IDE"
+
+// ------------ EXPERIMENTAL ------------
 
 // Find the directories containing a "build.gradle" file in the root directory
 // of the project. That is, every directory containing a "build.gradle" will
 // be automatically the subproject of this project.
-def subDirs = rootDir.listFiles(new FileFilter() {
-    public boolean accept(File file) {
-        if (!file.isDirectory()) {
-            return false
-        }
 
-        return new File(file, 'build.gradle').isFile()
-    }
-});
+//def subDirs = rootDir.listFiles(new FileFilter() {
+//    public boolean accept(File file) {
+//        if (!file.isDirectory()) {
+//            return false
+//        }
+//
+//        return new File(file, 'build.gradle').isFile()
+//    }
+//});
 
-subDirs.each { File dir ->
-    include dir.name
-}
+//subDirs.each { File dir ->
+//    include dir.name
+//}

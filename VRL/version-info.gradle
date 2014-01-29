@@ -1,9 +1,18 @@
+// **** MAVEN Version Information ****
+//
 apply from: rootProject.file('jdkdetect.gradle')
 apply plugin: 'maven'
-	
-artifactId = project.name.toLowerCase()
 
+// - artifactId is defined as projectName.toLowercase()
+// - do not change this setting!
+install {
+    repositories.mavenInstaller {
+        pom.artifactId = project.name.toLowerCase()
+    }
+}
+
+// group id (see http://maven.apache.org/guides/mini/guide-naming-conventions.html)
 group = "eu.mihosoft.vrl"
 
+// version (see http://maven.apache.org/guides/mini/guide-naming-conventions.html)
 version = '0.5-SNAPSHOT'
-

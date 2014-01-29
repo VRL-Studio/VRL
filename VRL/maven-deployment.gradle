@@ -4,7 +4,29 @@ apply from: 'jdkdetect.gradle'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-apply from: 'version-info.gradle'
+
+// additional javadoc task (creates javadoc-jar)
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from 'build/docs/javadoc'
+}
+
+// additional src task (creates src-jar)
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+// all active maven artifacts that shall be uploaded/installed
+artifacts {
+    archives jar
+//    archives javadocJar
+    archives sourcesJar
+}
+
+//
+// -------- SONATYPE UPLOAD CONFIG (TODO: cleanup) --------
+//
 
 //file("E:\\sonatype-windows.properties").withReader { reader ->
 //  def userProps = new Properties()
@@ -30,23 +52,6 @@ file("/Volumes/TRUECRYPT/sonatype-osx.properties").withReader { reader ->
   }
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from 'build/docs/javadoc'
-}
-
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    classifier = 'sources'
-}
-
-artifacts {
-    archives jar
-    
-    archives javadocJar
-    archives sourcesJar
-}
-
 signing {
     sign configurations.archives
 }
@@ -61,15 +66,15 @@ uploadArchives {
             }
  
             pom.project {
-               name 'VWorkflows-Core'
+               name 'VRL'
                packaging 'jar'
-               description 'VWorkflows is a workflow/graph library with JavaFX bindings'
-               url 'https://github.com/miho/VWorkflows'
+               description 'Visual Reflection Library'
+               url 'https://github.com/miho/VRL'
  
                scm {
-                   url 'scm:https://github.com/miho/VWorkflows.git'
-                   connection 'scm:https://github.com/miho/VWorkflows.git'
-                   developerConnection 'scm:https://github.com/miho/VWorkflows.git'
+                   url 'scm:https://github.com/miho/VRL.git'
+                   connection 'scm:https://github.com/miho/VRL.git'
+                   developerConnection 'scm:https://github.com/miho/VRL.git'
                }
  
                licenses {

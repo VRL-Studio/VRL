@@ -2,6 +2,10 @@
 
 apply plugin: 'base' // To add "clean" task to the root project.
 
+
+// define projects that shall not be deployed via maven
+project.ext.set("skipMaven",["VRL-Lang:CommentParser"])
+
 subprojects {
     apply from: rootProject.file('common.gradle')
 }
@@ -22,4 +26,8 @@ subprojects {
 task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper to the current directory.') {
     gradleVersion = '1.10'
 }
+
+//task install() {
+//    dependsOn subprojects.install
+//}
 

@@ -15,25 +15,25 @@ if (!hasProperty('mainClass')) {
 
 apply plugin: 'groovy'
 
-repositories {
-    
+// additional code/class-files from subprojects
+jar {
+    from project("CommentParser").sourceSets.main.output
+}
+
+sourcesJar {
+    from project("CommentParser").sourceSets.main.allSource
+}
+
+javadocJar {
+    from project("CommentParser").projectDir.path + '/build/docs/javadoc'
 }
 
 dependencies {
-    // TODO: Add dependencies here
-    //   but note that JUnit should have already been added in parent.gradle.
-    //   By default, only the Maven Central Repository is specified in
-    //   parent.gradle.
-    //
-    // You can read more about how to add dependency here:
-    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
     
-    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.2.1';
-    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.2.1', classifier: 'sources';
-    compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.2.1', classifier: 'javadoc';
-    
-    groovy "com.google.guava:guava:14.0"
+    compile "com.google.guava:guava:14.0"
     
     compile ( 'eu.mihosoft.vrl.workflow:vworkflows-core:0.1-r2-SNAPSHOT' ) { changing = true }
-//    compile ( 'eu.mihosoft.vrl.workflow:vworkflows-fx:0.1-r2-SNAPSHOT' ) { changing = true }
+    //    compile ( 'eu.mihosoft.vrl.workflow:vworkflows-fx:0.1-r2-SNAPSHOT' ) { changing = true }
+    
+    compile project("CommentParser")
 }

@@ -491,6 +491,7 @@ class CompilationUnitRenderer implements CodeRenderer<CompilationUnitDeclaration
     public void setClassDeclarationRenderer(CodeRenderer<ClassDeclaration> classDeclarationRenderer) {
         this.classDeclarationRenderer = classDeclarationRenderer;
     }
+
 }
 
 //class ScopeCodeRendererImpl implements CodeRenderer<Scope> {

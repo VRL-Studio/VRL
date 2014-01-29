@@ -1,0 +1,81 @@
+apply plugin: 'java'
+
+sourceCompatibility = '1.6'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+// NetBeans will automatically add "run" and "debug" tasks relying on the
+// "mainClass" property. You may however define the property prior executing
+// tasks by passing a "-PmainClass=<QUALIFIED_CLASS_NAME>" argument.
+//
+// Note however, that you may define your own "run" and "debug" task if you
+// prefer. In this case NetBeans will not add these tasks but you may rely on
+// your own implementation.
+if (!hasProperty('mainClass')) {
+    ext.mainClass = 'eu.mihosoft.vrl.codetools.Main'
+}
+
+repositories {
+/** 
+ * Comment123
+ */
+    mavenCentral()
+    // You may define additional repositories, or even remove "mavenCentral()".
+    // Read more about repositories here:
+    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:repositories
+    
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+}
+
+dependencies {
+    // TODO: Add dependencies here ...
+    // You can read more about how to add dependency here:
+    //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
+    testCompile group: 'junit', name: 'junit', version: '4.10'
+    
+    compile (group: 'eu.mihosoft.vrl', name: 'vrl', version: '0.4.2.8.5-SNAPSHOT')
+    //    compile (group: 'eu.mihosoft.vrl', name: 'vrl', version: '0.4.2.8.5-SNAPSHOT', classifier: 'sources')
+    //    compile (group: 'eu.mihosoft.vrl', name: 'vrl', version: '0.4.2.8.5-SNAPSHOT', classifier: 'javadoc')
+
+    compile (group: /*group comment*/'org.antlr', name: 'antlr4', version: '4.1')
+}
+
+def loadProperties(String sourceFileName) {
+    
+    def config = new Properties()
+    def propFile = new File(projectDir,sourceFileName)
+    
+    if (propFile.isFile()) {
+        config.load(new FileInputStream(propFile))
+        for (Map.Entry property in config) {
+            ext.set(property.key, property.value)
+        }
+    }
+}
+
+// create a fat-jar (class files plus dependencies
+// excludes VRL.jar (plugin jar files must not start with 'vrl-\\d+')
+jar {
+
+    // dependencies except VRL
+    from configurations.runtime.asFileTree.
+        filter({file->return !file.name.startsWith("vrl-0")}).
+        files.collect { zipTree(it) }
+
+    // project class files compiled from source /* nested comment (must not be recignized)*/ 
+    from files(sourceSets.main.output.classesDir)
+}
+
+// loads the property file
+loadProperties('build.properties')
+
+// compiles and installs the vrl plugin to the specified folder
+task installVRLPlugin(dependsOn: [clean,jar]) << {
+    println(">> copying vrl plugin to: " + vrldir+"/plugin-updates")
+    copy {
+        from buildDir.getPath()+"/libs/"+rootProject.name + ".jar"
+        into vrldir+"/plugin-updates"
+        include '**/*.jar'
+    }
+}

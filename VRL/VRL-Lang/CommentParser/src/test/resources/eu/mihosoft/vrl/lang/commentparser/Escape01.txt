@@ -1,0 +1,16 @@
+This file contains comments (of all available types) and is intended for correct
+comment detection (comments inside strings shall be excluded etc.).
+
+Expected parser behavior:
+
+# strings                    = 4 (2xdouble, 2xsingle)
+
+1. escaped quotes inside string environment
+
+a = "this is an escaped \" (double quote)"
+a = 'this is an escaped \' (single quote)'
+
+2. unescaped single quotes inside double quote environment and vice versa
+
+a = "we use ' inside \" env"
+a = 'we use " inside \' env'
