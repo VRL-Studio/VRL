@@ -18,14 +18,14 @@ buildscript {
     }
     
     dependencies {
-        classpath (group: 'org.antlr', name: 'antlr4', version: '4.1')
+        classpath (group: 'org.antlr', name: 'antlr4', version: '4.2')
     }
 }
 
 dependencies {
    
-    compile (group: 'org.antlr', name: 'antlr4', version: '4.1')
-    compile (group: 'org.antlr', name: 'antlr4', version: '4.1', classifier: 'sources')
+    compile (group: 'org.antlr', name: 'antlr4', version: '4.2')
+    compile (group: 'org.antlr', name: 'antlr4', version: '4.2', classifier: 'sources')
 }
 
 class AntlrTool extends org.antlr.v4.Tool {
