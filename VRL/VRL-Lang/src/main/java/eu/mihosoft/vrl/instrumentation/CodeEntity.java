@@ -4,6 +4,8 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.ICodeRange;
+
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
@@ -15,7 +17,7 @@ public interface CodeEntity {
     public void setCode(String code);
     public String getCode();
     
-    public void setLocation(Location location);
-    public Location getLocation();
+    public void setRange(ICodeRange location);
+    public ICodeRange getRange();
     
 }

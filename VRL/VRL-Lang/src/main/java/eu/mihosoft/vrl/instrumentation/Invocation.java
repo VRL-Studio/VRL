@@ -4,6 +4,7 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.ICodeRange;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -54,8 +55,8 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
     }
 
     @Override
-    public Location getLocation() {
-        return scope.getLocation();
+    public ICodeRange getRange() {
+        return scope.getRange();
     }
 
 }
@@ -72,7 +73,7 @@ class InvocationImpl implements Invocation {
     private String code;
     private final Scope parent;
     private boolean Static;
-    private Location location;
+    private ICodeRange location;
 
     public InvocationImpl(
             Scope parent,
@@ -216,14 +217,14 @@ class InvocationImpl implements Invocation {
     /**
      * @return the location
      */
-    public Location getLocation() {
+    public ICodeRange getRange() {
         return location;
     }
 
     /**
      * @param location the location to set
      */
-    public void setLocation(Location location) {
+    public void setRange(ICodeRange location) {
         this.location = location;
     }
 

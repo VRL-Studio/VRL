@@ -4,6 +4,7 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
 import java.util.ArrayList;
@@ -82,6 +83,10 @@ public class VRLVisualizationTransformation implements ASTTransformation {
                 System.out.println("method: " + m.getName());
             }
         }
+        
+//        sourceUnit.getSource().getReader().
+//        
+//        astNodes[0].get
         
         /*
         //
@@ -228,7 +233,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             currentScope = codeBuilder.declareMethod(
                     (ClassDeclaration) currentScope, convertModifiers(s.getModifiers()), new Type(s.getReturnType().getName(), true),
                     s.getName(), convertMethodParameters(s.getParameters()));
-            currentScope.setLocation(getNodeLocation(s));
+            currentScope.setRange(getNodeLocation(s));
         } else {
             throw new RuntimeException("method cannot be declared here! Scope: " + currentScope.getName() + ": " + currentScope.getType());
         }
@@ -255,7 +260,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         // predeclaration, ranges will be defined later
         currentScope = codeBuilder.declareFor(currentScope, s.getVariable().getName(), 0, 0, 0);
-        currentScope.setLocation(getNodeLocation(s));
+        currentScope.setRange(getNodeLocation(s));
 
         stateMachine.push("for-loop", true);
 
@@ -297,7 +302,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     public void visitWhileLoop(WhileStatement s) {
         System.out.println(" --> WHILE-LOOP: " + s.getBooleanExpression());
         currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
-        currentScope.setLocation(getNodeLocation(s));
+        currentScope.setRange(getNodeLocation(s));
         
         super.visitWhileLoop(s);
         currentScope = currentScope.getParent();
@@ -718,8 +723,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         return result;
     }
 
-    private Location getNodeLocation(ASTNode s) {
-        return new LocationImpl(s.getLineNumber(), s.getColumnNumber(), s.getLastLineNumber(), s.getLastColumnNumber());
+    private ICodeRange getNodeLocation(ASTNode s) {
+//        return new LocationImpl(s.getLineNumber(), s.getColumnNumber(), s.getLastLineNumber(), s.getLastColumnNumber());
+        
+        return null;
     }
 }
 

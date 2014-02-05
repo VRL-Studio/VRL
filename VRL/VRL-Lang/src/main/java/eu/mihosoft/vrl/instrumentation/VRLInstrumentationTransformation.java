@@ -83,7 +83,7 @@ class MethodCallExpressionTransformer extends ClassCodeExpressionTransformer {
             return exp;
         }
 
-        // instrument nested method calls inside cloruse blocks
+        // instrument nested method calls inside closure blocks
         if (exp instanceof ClosureExpression) {
             ClosureExpression cExp = (ClosureExpression) exp;
             if (cExp.getCode() instanceof BlockStatement) {

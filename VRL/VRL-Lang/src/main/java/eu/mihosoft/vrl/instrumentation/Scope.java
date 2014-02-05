@@ -4,6 +4,7 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.ICodeRange;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,7 +67,7 @@ class ScopeImpl implements Scope {
     private final List<Scope> scopes = new ArrayList<>();
     private String code;
     private List<Scope> readOnlyScopes;
-    private Location location;
+    private ICodeRange location;
 
     public ScopeImpl(String id, Scope parent, ScopeType type, String name, Object... scopeArgs) {
         this.id = id;
@@ -330,7 +331,7 @@ class ScopeImpl implements Scope {
      * @return the location
      */
     @Override
-    public Location getLocation() {
+    public ICodeRange getRange() {
         return location;
     }
 
@@ -338,7 +339,7 @@ class ScopeImpl implements Scope {
      * @param location the location to set
      */
     @Override
-    public void setLocation(Location location) {
+    public void setRange(ICodeRange location) {
         this.location = location;
     }
 
