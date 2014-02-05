@@ -1,3 +1,9 @@
+# blacklist
+branches:
+  except:
+    - playground-0.5
+
+
 language: java
 jdk:
   - oraclejdk8
