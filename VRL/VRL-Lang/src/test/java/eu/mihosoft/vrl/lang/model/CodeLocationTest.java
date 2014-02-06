@@ -54,10 +54,6 @@ public class CodeLocationTest {
         //   ^
         //   |
         //  (1)->(0,1)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestCharIndexToLineAndColumn(code, 1, 0, 1);
 
@@ -65,10 +61,6 @@ public class CodeLocationTest {
         //            ^ <- note: newline (\n) is a single char!
         //            |
         //           (10)->(0,10)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestCharIndexToLineAndColumn(code, 10, 0, 10);
 
@@ -77,10 +69,6 @@ public class CodeLocationTest {
         //  ^  <- note: newline (\n) is a single char!
         //  |
         // (11)->(1,0)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestCharIndexToLineAndColumn(code, 11, 1, 0);
 
@@ -90,10 +78,6 @@ public class CodeLocationTest {
         //  ^
         //  |
         // (12)->(2,0)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestCharIndexToLineAndColumn(code, 12, 2, 0);
 
@@ -103,10 +87,6 @@ public class CodeLocationTest {
         //           ^
         //           |
         //          (21)->(2,9)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestCharIndexToLineAndColumn(code, 21, 2, 9);
 
@@ -116,10 +96,6 @@ public class CodeLocationTest {
         //            ^ <- note: newline (\n) is a single char!
         //            |
         //           (22)->(2,10)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestCharIndexToLineAndColumn(code, 22, 2, 10);
     }
@@ -145,10 +121,6 @@ public class CodeLocationTest {
         //               ^ <- note: newline (\n) is a single char!
         //               |
         //              (23)->(2,-1)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestCharIndexToLineAndColumn(code, 23, -1, -1);
     }
@@ -171,10 +143,6 @@ public class CodeLocationTest {
         //   ^
         //   |
         // (0,1)->(1)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 0, 1, 1);
 
@@ -182,10 +150,6 @@ public class CodeLocationTest {
         //            ^ <- note: newline (\n) is a single char!
         //            |
         //          (0,10) -> (10)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 0, 10, 10);
 
@@ -194,10 +158,6 @@ public class CodeLocationTest {
         //  ^  <- note: newline (\n) is a single char!
         //  |
         // (1,0) -> (11)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 1, 0, 11);
 
@@ -207,10 +167,6 @@ public class CodeLocationTest {
         //  ^
         //  |
         // (2,0) -> (12)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 2, 0, 12);
 
@@ -220,10 +176,6 @@ public class CodeLocationTest {
         //           ^
         //           |
         //         (2,9) -> (21)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 2, 9, 21);
 
@@ -233,10 +185,6 @@ public class CodeLocationTest {
         //            ^ <- note: newline (\n) is a single char!
         //            |
         //          (2,10) -> (22)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 2, 10, 22);
     }
@@ -260,10 +208,6 @@ public class CodeLocationTest {
         //               ^
         //               |
         //             (0,11) -> (-1)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 0, 11, -1);
 
@@ -272,10 +216,6 @@ public class CodeLocationTest {
         //  ^
         //  |
         // (1,-1) -> (-1)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 1, -1, -1);
 
@@ -284,10 +224,6 @@ public class CodeLocationTest {
         //     ^
         //     |
         //   (1,1) -> (-1)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 1, 1, -1);
 
@@ -297,10 +233,6 @@ public class CodeLocationTest {
         //  ^
         //  |
         // (2,-1) -> (-1)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 2, -1, -1);
 
@@ -310,10 +242,6 @@ public class CodeLocationTest {
         //              ^
         //              |
         //            (2,11) -> (-1)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 2, 11, -1);
 
@@ -321,10 +249,6 @@ public class CodeLocationTest {
         //    ^
         //    |
         //  (-1,0) -> (-1)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, -1, 0, -1);
 
@@ -335,10 +259,6 @@ public class CodeLocationTest {
         //  ^
         //  |
         // (3,0) -> (-1)
-        code = String.join("\n",
-                "class A {}",
-                "",
-                "class B {}", "");
 
         parameterizedLocationTestLineAndColumnToCharIndex(code, 3, 0, -1);
     }
