@@ -202,6 +202,11 @@ class CodeLocation implements ICodeLocation {
         return true;
     }
 
+    @Override
+    public void setSource(Reader source) {
+        this.codeReader = source;
+    }
+
 }
 
 class ConvertingLineCodeReader {

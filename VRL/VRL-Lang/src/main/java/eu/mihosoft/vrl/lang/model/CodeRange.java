@@ -5,6 +5,7 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
+import java.io.Reader;
 import java.util.Objects;
 
 /**
@@ -15,6 +16,13 @@ public final class CodeRange implements ICodeRange {
 
     private final ICodeLocation begin;
     private final ICodeLocation end;
+    private Reader source;
+
+    public CodeRange(ICodeRange other) {
+        this.begin = other.getBegin();
+        this.end = other.getEnd();
+        this.source = other.getSource();
+    }
 
     /**
      * Constructor.
@@ -30,6 +38,18 @@ public final class CodeRange implements ICodeRange {
     public CodeRange(int begin, int end) {
         this.begin = new CodeLocation(begin);
         this.end = new CodeLocation(end);
+    }
+
+    public CodeRange(int begin, int end, Reader code) {
+        this.begin = new CodeLocation(begin, code);
+        this.end = new CodeLocation(end, code);
+        this.setSource(code);
+    }
+
+    public CodeRange(int lineBegin, int columnBegin, int lineEnd, int columnEnd, Reader code) {
+        this.begin = new CodeLocation(lineBegin, columnBegin, code);
+        this.end = new CodeLocation(lineEnd, columnEnd, code);
+        this.setSource(code);
     }
 
     @Override
@@ -93,7 +113,7 @@ public final class CodeRange implements ICodeRange {
     @Override
     public ICodeRange intersection(ICodeRange o) {
         return new CodeRange(Math.max(this.getBegin().getCharIndex(), o.getBegin().getCharIndex()),
-                Math.min(this.getEnd().getCharIndex(), o.getEnd().getCharIndex()));
+                Math.min(this.getEnd().getCharIndex(), o.getEnd().getCharIndex()), getSource());
     }
 
     @Override
@@ -104,6 +124,18 @@ public final class CodeRange implements ICodeRange {
     @Override
     public boolean isEmpty() {
         return size() <= 0;
+    }
+
+    @Override
+    public void setSource(Reader r) {
+        this.begin.setSource(r);
+        this.end.setSource(r);
+        this.source = r;
+    }
+
+    @Override
+    public Reader getSource() {
+        return this.source;
     }
 
 }

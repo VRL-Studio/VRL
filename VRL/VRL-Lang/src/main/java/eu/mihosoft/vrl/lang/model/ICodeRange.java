@@ -5,6 +5,8 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
+import java.io.Reader;
+
 /**
  * TODO example like string ('hamburger' substring 4,8)
  *
@@ -66,4 +68,7 @@ public interface ICodeRange extends Comparable<ICodeRange> {
      * otherwise
      */
     public boolean isEmpty();
+
+    public void setSource(Reader r);
+    public Reader getSource();
 }

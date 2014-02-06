@@ -5,6 +5,8 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
+import java.io.Reader;
+
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
@@ -39,4 +41,6 @@ public interface ICodeLocation extends Comparable<ICodeLocation>{
     boolean isLineValid();
     
     boolean isConvertible();
+    
+    public void setSource(Reader source);
 }
