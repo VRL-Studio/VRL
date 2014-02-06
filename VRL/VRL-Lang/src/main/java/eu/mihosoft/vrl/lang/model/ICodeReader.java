@@ -6,6 +6,7 @@
 package eu.mihosoft.vrl.lang.model;
 
 import java.io.IOException;
+import java.io.Reader;
 
 /**
  *

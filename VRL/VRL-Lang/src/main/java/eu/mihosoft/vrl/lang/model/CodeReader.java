@@ -23,14 +23,29 @@ public final class CodeReader implements ICodeReader {
 
     @Override
     public int read(StringBuilder sb, ICodeRange range) throws IOException {
+
+        if (reader.markSupported()) {
+            reader.mark(Integer.MAX_VALUE);
+        }
+
         char[] cbuf = new char[range.size()];
 
-        reader.skip(range.getBegin().getCharIndex());
+        int result = -1;
 
-        int result = reader.read(cbuf, 0, range.size());
+        IOException exception = null;
+        
+        try {
+            reader.skip(range.getBegin().getCharIndex());
 
-        for (char c : cbuf) {
-            System.out.println("cb: " + c);
+            result = reader.read(cbuf, 0, range.size());
+        } catch (IOException ex) {
+            exception = ex;
+        } finally {
+            reader.reset();
+        }
+
+        if (exception != null) {
+            throw exception;
         }
 
         sb.append(cbuf);
@@ -40,11 +55,27 @@ public final class CodeReader implements ICodeReader {
 
     @Override
     public String read(ICodeRange range) throws IOException {
+
+        if (reader.markSupported()) {
+            reader.mark(Integer.MAX_VALUE);
+        }
+
         char[] cbuf = new char[range.size()];
 
-        reader.skip(range.getBegin().getCharIndex());
+        IOException exception = null;
 
-        int result = reader.read(cbuf, 0, range.size());
+        try {
+            reader.skip(range.getBegin().getCharIndex());
+            int result = reader.read(cbuf, 0, range.size());
+        } catch (IOException ex) {
+            exception = ex;
+        } finally {
+            reader.reset();
+        }
+
+        if (exception != null) {
+            throw exception;
+        }
 
         StringBuilder sb = new StringBuilder();
         sb.append(cbuf);
