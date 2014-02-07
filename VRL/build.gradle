@@ -7,8 +7,6 @@ project.ext.set("skipMaven",["VRL-Lang:CommentParser"])
 
 subprojects {
     apply from: rootProject.file('common.gradle')
-
-    repairHeaders.licenseHeaderText = new File(rootDir,'LICENSE')
 }
 
 

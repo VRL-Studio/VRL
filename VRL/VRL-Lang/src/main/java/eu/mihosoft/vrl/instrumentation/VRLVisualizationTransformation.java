@@ -50,6 +50,7 @@
 
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.VCommentParser;
 import eu.mihosoft.vrl.lang.model.CodeLocation;
 import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
@@ -205,6 +206,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     private Stack<String> vIdStack = new Stack<>();
     private final StateMachine stateMachine = new StateMachine();
     private IdGenerator generator = FlowFactory.newIdGenerator();
+    private List<Comment> comments = new ArrayList<>();
 
     private Map<MethodCallExpression, String> returnValuesOfMethods
             = new HashMap<>();
@@ -225,6 +227,14 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         this.rootScope = codeBuilder.declareCompilationUnit(sourceUnit.getName(), "undefined");
 
         setRootCodeRange(rootScope, sourceUnit);
+        
+        try {
+            comments.addAll(VCommentParser.parse(sourceUnit.getSource().getReader()));
+        } catch (IOException ex) {
+            Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        addCommentsToScope(rootScope, comments);
 
         this.currentScope = rootScope;
     }
@@ -268,6 +278,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 convertImplements(s));
 
         setCodeRange(currentScope, s);
+        addCommentsToScope(currentScope, comments);
 
         super.visitClass(s);
 
@@ -287,6 +298,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                     (ClassDeclaration) currentScope, convertModifiers(s.getModifiers()), new Type(s.getReturnType().getName(), true),
                     s.getName(), convertMethodParameters(s.getParameters()));
             currentScope.setRange(getNodeLocation(s));
+            addCommentsToScope(currentScope, comments);
         } else {
             throw new RuntimeException("method cannot be declared here! Scope: " + currentScope.getName() + ": " + currentScope.getType());
         }
@@ -312,6 +324,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         // predeclaration, ranges will be defined later
         currentScope = codeBuilder.declareFor(currentScope, s.getVariable().getName(), 0, 0, 0);
         currentScope.setRange(getNodeLocation(s));
+        addCommentsToScope(currentScope, comments);
 
         stateMachine.push("for-loop", true);
 
@@ -352,6 +365,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         System.out.println(" --> WHILE-LOOP: " + s.getBooleanExpression());
         currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
         currentScope.setRange(getNodeLocation(s));
+        addCommentsToScope(currentScope, comments);
 
         super.visitWhileLoop(s);
         currentScope = currentScope.getParent();
@@ -372,6 +386,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         currentScope = codeBuilder.createScope(currentScope, ScopeType.ELSE, "else", new Object[0]);
         setCodeRange(currentScope, ifElse);
+        addCommentsToScope(currentScope, comments);
 
         Statement elseBlock = ifElse.getElseBlock();
         if (elseBlock instanceof EmptyStatement) {
@@ -463,12 +478,14 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 Invocation invocation = codeBuilder.invokeMethod(currentScope, objectName, s.getMethod().getText(), isVoid,
                         returnValueName, arguments);
                 setCodeRange(invocation, s);
+                addCommentsToScope(currentScope, comments);
             } else if (s.getMethod().getText().equals("println")) {
 //                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
 //                        returnValueName, arguments).setCode(getCode(s));
                 Invocation invocation = codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
                         returnValueName, arguments);
                 setCodeRange(invocation, s);
+                addCommentsToScope(currentScope, comments);
             }
         }
 
@@ -804,6 +821,14 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                     sourceUnit.getSource().getReader()));
         } catch (IOException ex) {
             Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void addCommentsToScope(Scope scope, List<Comment> comments) {
+        for(Comment comment : comments) {
+            if (scope.getRange().contains(comment.getRange())) {
+                scope.getComments().add(comment);
+            }
         }
     }
 }
