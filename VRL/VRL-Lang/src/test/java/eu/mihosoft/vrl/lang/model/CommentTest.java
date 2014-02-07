@@ -33,7 +33,7 @@ public class CommentTest {
         List<Comment> comments = new ArrayList<>();
 
         try {
-            comments = VCommentParser.parse(getResourceAsStringStream("RealCode02.txt"));
+            comments = VCommentParser.parse(getResourceAsStringReader("RealCode02.txt"));
             success = true;
         } catch (IOException ex) {
             Logger.getLogger(CommentTest.class.getName()).log(Level.SEVERE, null, ex);
@@ -49,7 +49,7 @@ public class CommentTest {
         return CommentTest.class.getResourceAsStream("/eu/mihosoft/vrl/lang/" + resourceName);
     }
 
-    public static Reader getResourceAsStringStream(String resourceName) {
+    public static Reader getResourceAsStringReader(String resourceName) {
 
         InputStream is = CommentTest.class.getResourceAsStream("/eu/mihosoft/vrl/lang/" + resourceName);
         
