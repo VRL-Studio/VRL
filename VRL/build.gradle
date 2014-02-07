@@ -2,13 +2,15 @@
 
 apply plugin: 'base' // To add "clean" task to the root project.
 
-
 // define projects that shall not be deployed via maven
 project.ext.set("skipMaven",["VRL-Lang:CommentParser"])
 
 subprojects {
     apply from: rootProject.file('common.gradle')
+
+    repairHeaders.licenseHeaderText = new File(rootDir,'LICENSE')
 }
+
 
 //task mergedJavadoc(type: Javadoc, description: 'Creates Javadoc from all the projects.') {
 //    title = 'All modules'

@@ -4,6 +4,8 @@
 //
 apply plugin: 'java'
 
+//apply from: 'http://gradle-plugins.mihosoft.eu/latest/vlicenseheader.gradle'
+
 // all projects must be comatible with the java version specified here
 // overriding this property in subprojects is not allowed
 sourceCompatibility = '1.8'

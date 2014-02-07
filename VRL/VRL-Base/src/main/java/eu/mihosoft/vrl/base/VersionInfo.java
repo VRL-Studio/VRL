@@ -1,10 +1,8 @@
 /* 
  * VersionInfo.java
- * 
- * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009–2012 Steinbeis Forschungszentrum (STZ Ölbronn),
- * Copyright (c) 2006–2012 by Michael Hoffer
+ * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
+ * Copyright (c) 2006–2014 by Michael Hoffer
  * 
  * This file is part of Visual Reflection Library (VRL).
  *
@@ -30,8 +28,8 @@
  * If you create derived work you must do three things regarding copyright
  * notice and author attribution.
  *
- * First, the following text must be displayed on the Canvas:
- * "based on VRL source code". In this case the VRL canvas icon must be removed.
+ * First, the following text must be displayed on the Canvas or an equivalent location:
+ * "based on VRL source code".
  * 
  * Second, the copyright notice must remain. It must be reproduced in any
  * program that uses VRL.
@@ -47,7 +45,7 @@
  *
  * M. Hoffer, C.Poliwoda, G.Wittum. Visual Reflection Library -
  * A Framework for Declarative GUI Programming on the Java Platform.
- * Computing and Visualization in Science, 2011, in press.
+ * Computing and Visualization in Science, in press.
  */
 
 package eu.mihosoft.vrl.base;
