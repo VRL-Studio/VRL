@@ -47,11 +47,15 @@ public interface Scope extends CodeEntity {
     public Variable createVariable(IType type);
 
     public DataFlow getDataFlow();
-    
+
     @Deprecated
     public void generateDataFlow();
 
     public Scope createScope(String id, ScopeType type, String name, Object[] args);
+
+    public List<Comment> getComments();
+
+    public void createComment(String id, ICodeRange range, String comment);
 }
 
 class ScopeImpl implements Scope {
@@ -68,6 +72,7 @@ class ScopeImpl implements Scope {
 //    private String code;
     private List<Scope> readOnlyScopes;
     private ICodeRange location;
+    private final List<Comment> comments = new ArrayList<>();
 
     public ScopeImpl(String id, Scope parent, ScopeType type, String name, Object... scopeArgs) {
         this.id = id;
@@ -118,13 +123,13 @@ class ScopeImpl implements Scope {
         }
 
         if (result == null) {
-            
+
             String parentName = "<unknown>";
-            
-            if (parent!=null) {
+
+            if (parent != null) {
                 parentName = parent.getName();
             }
-            
+
 //            throw new IllegalArgumentException(
 //                    "Variable '"
 //                    + name
@@ -275,7 +280,6 @@ class ScopeImpl implements Scope {
 //    public void setCode(String code) {
 //        this.code = code;
 //    }
-
     @Override
     public DataFlow getDataFlow() {
         return dataFlow;
@@ -343,5 +347,14 @@ class ScopeImpl implements Scope {
         this.location = location;
     }
 
+    @Override
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    @Override
+    public void createComment(String id, ICodeRange range, String comment) {
+        this.comments.add(new CommentImpl(id, range, comment));
+    }
 
 }

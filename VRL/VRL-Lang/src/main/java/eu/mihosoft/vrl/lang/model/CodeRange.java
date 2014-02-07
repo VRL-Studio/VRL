@@ -5,8 +5,12 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
+import java.io.IOException;
+import java.io.LineNumberReader;
 import java.io.Reader;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -22,6 +26,36 @@ public final class CodeRange implements ICodeRange {
         this.begin = other.getBegin();
         this.end = other.getEnd();
         this.source = other.getSource();
+    }
+
+    public CodeRange(ICodeLocation begin, Reader code) {
+        this.begin = begin;
+
+        ICodeLocation result = new CodeLocation(-1, code);
+
+        try {
+            if (code.markSupported()) {
+                code.mark(Integer.MAX_VALUE);
+            }
+            LineNumberReader lR = new LineNumberReader(code);
+            String line;
+            int numChars = 0;
+            while ((line = lR.readLine()) != null) {
+                numChars += line.length() + 1; // TODO: newline on windows is two;
+            }
+            result = new CodeLocation(numChars, code);
+        } catch (IOException ex) {
+            Logger.getLogger(CodeRange.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                code.reset();
+            } catch (IOException ex) {
+                Logger.getLogger(CodeRange.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        this.end = result;
+
     }
 
     /**

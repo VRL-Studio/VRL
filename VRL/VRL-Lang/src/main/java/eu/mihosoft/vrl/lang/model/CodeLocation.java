@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-class CodeLocation implements ICodeLocation {
+public class CodeLocation implements ICodeLocation {
 
     private int index = -1;
     private int line = -1;
