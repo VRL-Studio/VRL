@@ -4,15 +4,20 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.CodeLocation;
+import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 import org.codehaus.groovy.control.SourceUnit;
@@ -83,15 +88,13 @@ public class VRLVisualizationTransformation implements ASTTransformation {
                 System.out.println("method: " + m.getName());
             }
         }
-        
+
 //        sourceUnit.getSource().getReader().
 //        
 //        astNodes[0].get
-        
         /*
-        //
-        */
-
+         //
+         */
         for (String clazz : scopes.keySet()) {
             for (Scope s : scopes.get(clazz)) {
                 System.out.println(s.toString());
@@ -174,6 +177,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
 //        this.rootScope = codeBuilder.createScope(null, ScopeType.NONE, sourceUnit.getName(), new Object[0]);
         this.rootScope = codeBuilder.declareCompilationUnit(sourceUnit.getName(), "undefined");
+
+        setRootCodeRange(rootScope, sourceUnit);
+
         this.currentScope = rootScope;
     }
 
@@ -215,12 +221,13 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 convertExtends(s),
                 convertImplements(s));
 
+        setCodeRange(currentScope, s);
+
         super.visitClass(s);
 
         currentScope = currentScope.getParent();
 
-        currentScope.setCode(getCode(s));
-
+//        currentScope.setCode(getCode(s));
     }
 
     @Override
@@ -238,14 +245,12 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             throw new RuntimeException("method cannot be declared here! Scope: " + currentScope.getName() + ": " + currentScope.getType());
         }
 
-        currentScope.setCode(getCode(s));
-
+//        currentScope.setCode(getCode(s));
         super.visitMethod(s);
 
         currentScope = currentScope.getParent();
 
-        currentScope.setCode(getCode(s));
-
+//        currentScope.setCode(getCode(s));
     }
 
 //    @Override
@@ -276,7 +281,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                     + " expressions of the form 'a <= b' with a, b being"
                     + " constant integers!");
         }
-        
+
         if (!stateMachine.getBoolean("for-loop:incExpression")) {
             throw new IllegalStateException("for-loop: must contain binary"
                     + " expressions of the form 'a <= b' with a, b being"
@@ -288,13 +293,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                    + " expressions of the form 'a <= b' with a, b being"
 //                    + " constant integers!");
 //        }
-
         stateMachine.pop();
 
         currentScope = currentScope.getParent();
 
-        currentScope.setCode(getCode(s));
-
+//        currentScope.setCode(getCode(s));
 //        System.exit(1);
     }
 
@@ -303,11 +306,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         System.out.println(" --> WHILE-LOOP: " + s.getBooleanExpression());
         currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
         currentScope.setRange(getNodeLocation(s));
-        
+
         super.visitWhileLoop(s);
         currentScope = currentScope.getParent();
 
-        currentScope.setCode(getCode(s));
+//        currentScope.setCode(getCode(s));
     }
 
     @Override
@@ -322,6 +325,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         currentScope = currentScope.getParent();
 
         currentScope = codeBuilder.createScope(currentScope, ScopeType.ELSE, "else", new Object[0]);
+        setCodeRange(currentScope, ifElse);
 
         Statement elseBlock = ifElse.getElseBlock();
         if (elseBlock instanceof EmptyStatement) {
@@ -334,8 +338,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         currentScope = currentScope.getParent();
 
-        currentScope.setCode(getCode(ifElse));
-
+//        currentScope.setCode(getCode(ifElse));
     }
 
     @Override
@@ -352,6 +355,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 currentScope, new Type(s.getType().getName(), false),
                 codeBuilder.createVariable(currentScope, new Type(s.getType().getName(), false)).getName(),
                 arguments);
+
+        // TODO range
     }
 
     private String getCode(ASTNode n) {
@@ -407,11 +412,17 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         if (!isIdCall) {
             if (objectName != null) {
-                codeBuilder.invokeMethod(currentScope, objectName, s.getMethod().getText(), isVoid,
-                        returnValueName, arguments).setCode(getCode(s));
+//                codeBuilder.invokeMethod(currentScope, objectName, s.getMethod().getText(), isVoid,
+//                        returnValueName, arguments).setCode(getCode(s));
+                Invocation invocation = codeBuilder.invokeMethod(currentScope, objectName, s.getMethod().getText(), isVoid,
+                        returnValueName, arguments);
+                setCodeRange(invocation, s);
             } else if (s.getMethod().getText().equals("println")) {
-                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
-                        returnValueName, arguments).setCode(getCode(s));
+//                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
+//                        returnValueName, arguments).setCode(getCode(s));
+                Invocation invocation = codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
+                        returnValueName, arguments);
+                setCodeRange(invocation, s);
             }
         }
 
@@ -448,8 +459,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         } else {
 
-            codeBuilder.createVariable(currentScope, new Type(s.getVariableExpression().getType().getName(), true), s.getVariableExpression().getName());
-
+            Variable variable = codeBuilder.createVariable(currentScope, new Type(s.getVariableExpression().getType().getName(), true), s.getVariableExpression().getName());
+            
+            // TODO range
+            
             if (s.getRightExpression() instanceof ConstantExpression) {
                 ConstantExpression ce = (ConstantExpression) s.getRightExpression();
                 codeBuilder.assignConstant(currentScope, s.getVariableExpression().getName(), ce.getValue());
@@ -552,7 +565,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                            + " are not supported! Change '<=' to '>=' to prevent that."
 //                    );
 //                }
-
                 stateMachine.setBoolean("for-loop:incExpression", true);
 
                 //
@@ -725,8 +737,28 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     private ICodeRange getNodeLocation(ASTNode s) {
 //        return new LocationImpl(s.getLineNumber(), s.getColumnNumber(), s.getLastLineNumber(), s.getLastColumnNumber());
-        
+
         return null;
+    }
+
+    private void setCodeRange(CodeEntity codeEntity, ASTNode astNode) {
+        try {
+            codeEntity.setRange(new CodeRange(
+                    astNode.getLineNumber(), astNode.getColumnNumber(),
+                    astNode.getLastLineNumber(), astNode.getLastColumnNumber(),
+                    sourceUnit.getSource().getReader()));
+        } catch (IOException ex) {
+            Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void setRootCodeRange(Scope scope, SourceUnit sourceUnit) {
+        try {
+            scope.setRange(new CodeRange(new CodeLocation(0, sourceUnit.getSource().getReader()),
+                    sourceUnit.getSource().getReader()));
+        } catch (IOException ex) {
+            Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
 

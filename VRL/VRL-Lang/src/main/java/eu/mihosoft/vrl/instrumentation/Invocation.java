@@ -70,7 +70,7 @@ class InvocationImpl implements Invocation {
     private final List<Variable> arguments = new ArrayList<>();
     private final boolean constructor;
     private final boolean Void;
-    private String code;
+//    private String code;
     private final Scope parent;
     private boolean Static;
     private ICodeRange location;
@@ -183,21 +183,21 @@ class InvocationImpl implements Invocation {
         return false;
     }
 
-    /**
-     * @return the code
-     */
-    @Override
-    public String getCode() {
-        return code;
-    }
-
-    /**
-     * @param code the code to set
-     */
-    @Override
-    public void setCode(String code) {
-        this.code = code;
-    }
+//    /**
+//     * @return the code
+//     */
+//    @Override
+//    public String getCode() {
+//        return code;
+//    }
+//
+//    /**
+//     * @param code the code to set
+//     */
+//    @Override
+//    public void setCode(String code) {
+//        this.code = code;
+//    }
 
     /**
      * @return the Static

@@ -14,8 +14,8 @@ public interface CodeEntity {
     public void setId(String id);
     public String getId();
     
-    public void setCode(String code);
-    public String getCode();
+//    public void setCode(String code);
+//    public String getCode();
     
     public void setRange(ICodeRange location);
     public ICodeRange getRange();

@@ -65,7 +65,7 @@ class ScopeImpl implements Scope {
     ControlFlow controlFlow;
     DataFlow dataFlow;
     private final List<Scope> scopes = new ArrayList<>();
-    private String code;
+//    private String code;
     private List<Scope> readOnlyScopes;
     private ICodeRange location;
 
@@ -260,21 +260,21 @@ class ScopeImpl implements Scope {
         this.id = id;
     }
 
-    /**
-     * @return the code
-     */
-    @Override
-    public String getCode() {
-        return code;
-    }
-
-    /**
-     * @param code the code to set
-     */
-    @Override
-    public void setCode(String code) {
-        this.code = code;
-    }
+//    /**
+//     * @return the code
+//     */
+//    @Override
+//    public String getCode() {
+//        return code;
+//    }
+//
+//    /**
+//     * @param code the code to set
+//     */
+//    @Override
+//    public void setCode(String code) {
+//        this.code = code;
+//    }
 
     @Override
     public DataFlow getDataFlow() {
