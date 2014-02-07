@@ -43,4 +43,6 @@ public interface ICodeLocation extends Comparable<ICodeLocation>{
     boolean isConvertible();
     
     public void setSource(Reader source);
+    
+    public ICodeLocation distance(ICodeLocation other);
 }

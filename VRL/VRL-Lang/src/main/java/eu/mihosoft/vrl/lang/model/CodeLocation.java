@@ -207,6 +207,12 @@ class CodeLocation implements ICodeLocation {
         this.codeReader = source;
     }
 
+    @Override
+    public ICodeLocation distance(ICodeLocation other) {
+
+        return new CodeLocation(Math.abs(getCharIndex() - other.getCharIndex()), this.codeReader);
+    }
+
 }
 
 class ConvertingLineCodeReader {
