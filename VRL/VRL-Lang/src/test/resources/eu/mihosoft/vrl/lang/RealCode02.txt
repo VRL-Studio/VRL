@@ -1,0 +1,408 @@
+/* 
+ * VRL.java
+ * 
+ * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+ *
+ * Copyright (c) 2009–2012 Steinbeis Forschungszentrum (STZ Ölbronn),
+ * Copyright (c) 2006–2012 by Michael Hoffer
+ * 
+ * This file is part of Visual Reflection Library (VRL).
+ *
+ * VRL is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 3
+ * as published by the Free Software Foundation.
+ * 
+ * see: http://opensource.org/licenses/LGPL-3.0
+ *      file://path/to/VRL/src/eu/mihosoft/vrl/resources/license/lgplv3.txt
+ *
+ * VRL is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * This version of VRL includes copyright notice and attribution requirements.
+ * According to the LGPL this information must be displayed even if you modify
+ * the source code of VRL. Neither the VRL Canvas attribution icon nor any
+ * copyright statement/attribution may be removed.
+ *
+ * Attribution Requirements:
+ *
+ * If you create derived work you must do three things regarding copyright
+ * notice and author attribution.
+ *
+ * First, the following text must be displayed on the Canvas:
+ * "based on VRL source code". In this case the VRL canvas icon must be removed.
+ * 
+ * Second, the copyright notice must remain. It must be reproduced in any
+ * program that uses VRL.
+ *
+ * Third, add an additional notice, stating that you modified VRL. In addition
+ * you must cite the publications listed below. A suitable notice might read
+ * "VRL source code modified by YourName 2012".
+ * 
+ * Note, that these requirements are in full accordance with the LGPL v3
+ * (see 7. Additional Terms, b).
+ *
+ * Publications:
+ *
+ * M. Hoffer, C.Poliwoda, G.Wittum. Visual Reflection Library -
+ * A Framework for Declarative GUI Programming on the Java Platform.
+ * Computing and Visualization in Science, 2011, in press.
+ */
+package eu.mihosoft.vrl.system;
+
+import eu.mihosoft.vrl.io.*;
+import eu.mihosoft.vrl.reflection.VisualCanvas;
+import eu.mihosoft.vrl.visual.*;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Modifier;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.*;
+import java.util.jar.JarInputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.IIOException;
+import javax.swing.AbstractButton;
+import javax.swing.Box;
+import javax.swing.Icon;
+import javax.swing.JFrame;
+
+/**
+ * VRL class for managing initialization of the VRL run-time. This includes
+ * plugin management.
+ *
+ * @author Michael Hoffer <info@michaelhoffer.de>
+ */
+public class VRL {
+
+    /**
+     * Plugin configurators accessible via plugin name.
+     */
+    private static Map<String, PluginConfigurator> plugins =
+            new HashMap<String, PluginConfigurator>();
+    /**
+     * Names of all invalid plugins. All plugins listed here will be excluded
+     * from initialization.
+     */
+    private static List<String> invalidPlugins = new ArrayList<String>();
+    /**
+     * Plugin data controllers accessible through plugin name.
+     */
+    private static Map<String, PluginDataController> pluginsDataControllers =
+            new HashMap<String, PluginDataController>();
+    /**
+     * Plugin groups. A group is a jar file. All plugin names in the file can be
+     * accessed via this map
+     */
+    private static Map<String, List<String>> pluginGroups =
+            new HashMap<String, List<String>>();
+    /**
+     * Cached plugin configurators used for uninstall (also contains plugins
+     * that could not be loaded)
+     */
+    private static final List<PluginConfigurator> allPlugins =
+            new ArrayList<PluginConfigurator>();
+    /**
+     * Canvas list (uses weak references).
+     */
+    private static HashSet<WeakReference<Canvas>> canvasList =
+            new HashSet<WeakReference<Canvas>>();
+    /**
+     * Current/Active Project Controller.
+     */
+    private static VProjectController projectController;
+    /**
+     * Style list
+     */
+    private static HashMap<String, Style> styles = new HashMap<String, Style>();
+    /**
+     * Stores the provided entries of the registered plugins.
+     */
+    private static HashMap<String, String> providedEntry =
+            new HashMap<String, String>();
+    /**
+     * Defines how often the weak reference list shall be cleaned, i.e., how
+     * often
+     * <code>null</code>-references shall be removed from the canvas list.
+     */
+    private static final int REFRESH_INTERVAL = 3;
+    /**
+     * Registration error message.
+     */
+    private static String initPluginError = null;
+    /**
+     * Initialization error message.
+     */
+    private static String registrationError = null;
+    /**
+     * Action delegator used to delegate menu actions.
+     */
+    private static VActionDelegator actionDelegator = new VActionDelegator();
+    /**
+     * Menucontroller for style menu.
+     */
+    private static final MenuController styleMenuController =
+            new VMenuController();
+    /**
+     * Menucontroller for plugin menu.
+     */
+    private static final MenuController pluginMenuController =
+            new VMenuController();
+    /**
+     * Menucontroller for uninstall menu.
+     */
+    private static final MenuController uninstallPluginMenuController =
+            new VMenuController();
+    /**
+     * Menucontroller for file templates menu.
+     */
+    private static final MenuController fileTemplatesMenuController =
+            new VMenuController();
+    /**
+     * Plugin classloader. This classloader has access to all classloaders of
+     * the individual plugins. This classloader may be used for serialization/
+     * deserialization.
+     */
+    private static ClassLoader pluginClassLoader;
+    /**
+     * Manager for property folder. This instance contains locations of all
+     * official subfolders, such as tmp, plugins etc.
+     */
+    private static final VPropertyFolderManager propertyFolderManager =
+            new VPropertyFolderManager();
+    /**
+     * Menus used to register plugin actions.
+     */
+    private static Map<String, MenuAdapter> menus =
+            new HashMap<String, MenuAdapter>();
+    /**
+     * Commandline options that have been specified to the JVM.
+     */
+    private static String[] commandLineOptions;
+    /**
+     * A map with all external classloaders.
+     */
+    private static Map<String, ClassLoader> externalCLMap =
+            new HashMap<String, ClassLoader>();
+    /**
+     * Defines whether to install plugin help.
+     */
+    private static boolean installPluginHelp = true;
+    /**
+     * Defines whether to install payload plugins
+     */
+    private static boolean installPayloadPlugins = true;
+
+    static {
+
+        System.out.println(">> VRL Version: " + Constants.VERSION);
+        System.out.println(" --> running on Java Version: "
+                + System.getProperty("java.version")
+                + " (" + System.getProperty("java.vendor") + ")");
+        System.out.println(" --> OS: " + VSysUtil.getPlatformInfo());
+        System.out.println(" --> pid: " + VSysUtil.getPID());
+
+        addPlugin(new VRLPlugin(), null);
+    }
+
+    /**
+     * Plugin classloader. This classloader has access to all external
+     * classloaders of the individual plugins. This classloader may be used to
+     * access exported plugin functionality.
+     */
+    private static PluginClassLoader externalPluginClassLoader;
+
+
+    /**
+     * @return the actionDelegator
+     */
+    static VActionDelegator getActionDelegator() {
+        return actionDelegator;
+    }
+
+    /**
+     * Installs the specified plugin.
+     *
+     * @param f plugin to install
+     * @param installAction install action (usually a dialog based
+     * implementation)
+     */
+    public static void installPlugin(File f, InstallPluginAction installAction) {
+
+        if (installAction != null) {
+            installAction.analyzeStart(f);
+        }
+
+        File src = f;
+        File finalDest = new File(Constants.PLUGIN_DIR + "/" + f.getName());
+
+        boolean install = true;
+
+        if (installAction != null && finalDest.isFile()) {
+            installAction.analyzeStop(f);
+            install = installAction.overwrite(src, finalDest);
+            installAction.analyzeStart(f);
+        }
+
+        if (!install) {
+            installAction.analyzeStop(f);
+            return;
+        }
+
+        File dest = new File(
+                getPropertyFolderManager().getPluginUpdatesFolder().
+                getAbsoluteFile(),
+                f.getName());
+
+        if (!checkIfIsPluginAndCreateCacheFile(f)) {
+            if (installAction == null) {
+                throw new IllegalArgumentException(
+                        "The given file is no VRL plugin!");
+            } else {
+                installAction.isNoPlugin(f);
+                installAction.analyzeStop(f);
+
+                return;
+            }
+        }
+
+        // copy cachefile to updates folder
+        File cacheFileSrc = new File(
+                getPropertyFolderManager().getPluginFolder().
+                getAbsoluteFile(),
+                f.getName() + ".xml");
+
+        File cacheFileDst = new File(
+                getPropertyFolderManager().getPluginUpdatesFolder().
+                getAbsoluteFile(),
+                f.getName() + ".xml");
+        try {
+            IOUtil.copyFile(cacheFileSrc, cacheFileDst);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(VRL.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VRL.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+
+
+        if (installAction != null) {
+            installAction.analyzeStop(f);
+        }
+
+        try {
+            IOUtil.copyFile(src, dest);
+
+            if (installAction != null) {
+                installAction.installed(src);
+            }
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(VRL.class.getName()).
+                    log(Level.SEVERE, null, ex);
+            if (installAction != null) {
+                installAction.cannotInstall(ex);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(VRL.class.getName()).
+                    log(Level.SEVERE, null, ex);
+            if (installAction != null) {
+                installAction.cannotInstall(ex);
+            }
+        }
+    }
+
+    /**
+     * Installs plugin updates.
+     *
+     * @param action action that reacts on errors etc.
+     */
+    private static void installUpdates(UpdatePluginAction action) {
+
+        ArrayList<File> pluginFiles = IOUtil.listFiles(
+                getPropertyFolderManager().getPluginUpdatesFolder(),
+                new String[]{".jar"});
+
+        if (!pluginFiles.isEmpty()) {
+            SplashScreenGenerator.printBootMessage(">> updating plugins...");
+        }
+
+        for (File f : pluginFiles) {
+
+            String msg = "installing \"" + f.getName() + "\"";
+
+            SplashScreenGenerator.printBootMessage(">> " + msg);
+
+            System.out.println(" --> " + msg);
+
+            File destination = new File(
+                    getPropertyFolderManager().getPluginFolder(),
+                    f.getName());
+
+
+
+            // delete previous cache if it does not provide chache file:
+            File cacheFileDst = new File(destination.getAbsolutePath() + ".xml");
+            System.out.print(" --> deleting cachefile: " + cacheFileDst.getName() + " ");
+            if (!IOUtil.deleteDirectory(cacheFileDst)) {
+                System.out.println("[failed]");
+            } else {
+                System.out.println("[ok]");
+            }
+
+            File cacheFileSrc = new File(
+                    getPropertyFolderManager().getPluginUpdatesFolder().
+                    getAbsoluteFile(),
+                    f.getName() + ".xml");
+
+            if (!IOUtil.move(f, destination)) {
+
+                IOException ex = new IIOException(
+                        "Cannot move file: " + f + " to plugin folder!");
+
+                if (action != null) {
+                    action.updateFailed(ex);
+                } else {
+                    Logger.getLogger(VRL.class.getName()).
+                            log(Level.SEVERE, null, ex);
+                }
+            }
+
+            if (cacheFileSrc.exists()) {
+                if (!IOUtil.move(cacheFileSrc, cacheFileDst)) {
+
+                    IOException ex = new IIOException(
+                            "Cannot move file: " + cacheFileSrc + " to plugin folder!");
+
+                    if (action != null) {
+                        action.updateFailed(ex);
+                    } else {
+                        Logger.getLogger(VRL.class.getName()).
+                                log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Action that allows to react if plugin has been loaded.
+ *
+ * @author Michael Hoffer <info@michaelhoffer.de>
+ */
+interface PluginLoadAction {
+
+    /**
+     * Called if plugin has been loaded.
+     *
+     * @param pC plugin that has been loaded
+     */
+    void loaded(PluginConfigurator pC);
+}

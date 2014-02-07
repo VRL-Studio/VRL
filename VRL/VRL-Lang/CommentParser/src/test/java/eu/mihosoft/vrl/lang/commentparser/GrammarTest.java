@@ -202,14 +202,14 @@ public class GrammarTest {
                 @Override
                 public void enterPlainMultiLineComment(CommentsParser.PlainMultiLineCommentContext ctx) {
                     super.enterPlainMultiLineComment(ctx);
-                    
+
                     plainMultiLineComments.add(ctx.getText());
                 }
 
                 @Override
                 public void enterJavadocComment(CommentsParser.JavadocCommentContext ctx) {
                     super.enterJavadocComment(ctx);
-                    
+
                     javadocComments.add(ctx.getText());
                 }
 
@@ -222,7 +222,7 @@ public class GrammarTest {
         Assert.assertTrue("1 plain multiline comment expected, got " + plainMultiLineComments.size(), plainMultiLineComments.size() == 1);
         Assert.assertTrue("1 javadoc comment expected, got " + javadocComments.size(), javadocComments.size() == 1);
     }
-    
+
     @Test
     public void testRealCode02() {
 
@@ -242,14 +242,14 @@ public class GrammarTest {
                 @Override
                 public void enterPlainMultiLineComment(CommentsParser.PlainMultiLineCommentContext ctx) {
                     super.enterPlainMultiLineComment(ctx);
-                    
+
                     plainMultiLineComments.add(ctx.getText());
                 }
 
                 @Override
                 public void enterJavadocComment(CommentsParser.JavadocCommentContext ctx) {
                     super.enterJavadocComment(ctx);
-                    
+
                     javadocComments.add(ctx.getText());
                 }
 
@@ -261,6 +261,12 @@ public class GrammarTest {
         Assert.assertTrue("2 line comments expected, got " + lineComments.size(), lineComments.size() == 2);
         Assert.assertTrue("1 plain multiline comment expected, got " + plainMultiLineComments.size(), plainMultiLineComments.size() == 1);
         Assert.assertTrue("31 javadoc comment expected, got " + javadocComments.size(), javadocComments.size() == 31);
+    }
+
+    
+
+    public static InputStream getResourceAsStream(String resourceName) {
+        return GrammarTest.class.getResourceAsStream("/eu/mihosoft/vrl/lang/commentparser/" + resourceName);
     }
 
     public static void parse(String resourceName, CommentsListener l) throws IOException {

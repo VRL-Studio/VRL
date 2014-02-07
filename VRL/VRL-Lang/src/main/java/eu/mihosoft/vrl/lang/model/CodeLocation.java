@@ -55,8 +55,6 @@ public class CodeLocation implements ICodeLocation {
         // l,c -> index
         ConvertingLineCodeReader lR = new ConvertingLineCodeReader(codeReader);
         this.index = lR.lineColumnToCharIndex(line, column);
-
-        System.out.println("INDEX: " + index);
     }
 
     private void computeLineAndColumn() {
@@ -212,6 +210,11 @@ public class CodeLocation implements ICodeLocation {
 
         return new CodeLocation(Math.abs(getCharIndex() - other.getCharIndex()), this.codeReader);
     }
+    
+    @Override
+    public String toString() {
+        return "[idx: " + this.getCharIndex() + ", line: " + this.getLine() + ", column: " + this.getColumn() + "]";
+    }
 
 }
 
@@ -243,7 +246,7 @@ class ConvertingLineCodeReader {
         try {
             for (int i = 0; i <= line; i++) {
 
-                System.out.println("reading line: " + i);
+//                System.out.println("reading line: " + i);
 
                 String l = lR.readLine();
 
@@ -314,13 +317,13 @@ class ConvertingLineCodeReader {
             int lastPos = pos - numChars;
             int diffBetweenLastPosAndRequestedCharIndex = charIndex - lastPos;
 
-            System.out.println("pos: " + pos);
-            System.out.println("lastPos: " + lastPos);
-            System.out.println("diff:    " + diffBetweenLastPosAndRequestedCharIndex);
+//            System.out.println("pos: " + pos);
+//            System.out.println("lastPos: " + lastPos);
+//            System.out.println("diff:    " + diffBetweenLastPosAndRequestedCharIndex);
 
             int column = diffBetweenLastPosAndRequestedCharIndex;
 
-            System.out.println("ci:" + charIndex + " -> (l: " + line + ", c: " + column + ")");
+//            System.out.println("ci:" + charIndex + " -> (l: " + line + ", c: " + column + ")");
 
             return new int[]{line, column};
 

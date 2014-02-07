@@ -36,4 +36,6 @@ dependencies {
     //    compile ( 'eu.mihosoft.vrl.workflow:vworkflows-fx:0.1-r2-SNAPSHOT' ) { changing = true }
     
     compile project("CommentParser")
+    
+    compile project(":VRL-Base")
 }

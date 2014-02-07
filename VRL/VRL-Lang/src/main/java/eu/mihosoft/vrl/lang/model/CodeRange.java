@@ -57,6 +57,11 @@ public final class CodeRange implements ICodeRange {
         this.end = result;
 
     }
+    
+    @Override
+    public String toString() {
+        return "[begin: " + this.begin + ", end: " + this.end + ")";
+    }
 
     /**
      * Constructor.

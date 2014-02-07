@@ -8,7 +8,9 @@ package eu.mihosoft.vrl.lang.model;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
-import java.nio.CharBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.After;
@@ -166,6 +168,42 @@ public class CodeRangeTest {
         Assert.assertTrue("First result must not be empty", !firstResult.isEmpty());
         Assert.assertTrue("Second result must not be empty", !secondResult.isEmpty());
         Assert.assertTrue("First result must be equal to second result: [" + firstResult + "] == [" + secondResult + "]", firstResult.equals(secondResult));
+    }
+
+    @Test
+    public void rangeOrderTest() {
+
+        List<ICodeRange> ranges = new ArrayList<>();
+
+        for (int i = 0; i < 100; i++) {
+            ranges.add(new CodeRange(i, i * (int)(10*Math.random())));
+        }
+
+        Collections.shuffle(ranges);
+
+        boolean shuffled = false;
+
+        for (int i = 0; i < 100; i++) {
+            if (ranges.get(i).getBegin().getCharIndex() != i) {
+                shuffled = true;
+                break;
+            }
+        }
+
+        Assert.assertTrue("Range list must be shuffled", shuffled);
+
+        Collections.sort(ranges);
+
+        boolean sorted = true;
+
+        for (int i = 0; i < 100; i++) {
+            if (ranges.get(i).getBegin().getCharIndex() != i) {
+                sorted = false;
+                break;
+            }
+        }
+        
+        Assert.assertTrue("Range list must be sorted", sorted);
     }
 
     private void parameterizedValidReadRangeTestCharIndex(String code, int beginCharIdx, int endCharIdx, String expectedSubString) {

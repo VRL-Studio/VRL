@@ -16,11 +16,19 @@ public class CommentImpl implements Comment {
     private String id;
     private ICodeRange codeRange;
     private String comment;
+    private CommentType type = CommentType.UNDEFINED;
 
     public CommentImpl(String id, ICodeRange codeRange, String comment) {
         this.id = id;
         this.codeRange = codeRange;
         this.comment = comment;
+    }
+    
+    public CommentImpl(String id, ICodeRange codeRange, String comment, CommentType type) {
+        this.id = id;
+        this.codeRange = codeRange;
+        this.comment = comment;
+        this.type = type;
     }
 
     /**
@@ -58,6 +66,7 @@ public class CommentImpl implements Comment {
     /**
      * @return the comment
      */
+    @Override
     public String getComment() {
         return comment;
     }
@@ -65,8 +74,25 @@ public class CommentImpl implements Comment {
     /**
      * @param comment the comment to set
      */
+    @Override
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    /**
+     * @return the type
+     */
+    @Override
+    public CommentType getType() {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    @Override
+    public void setType(CommentType type) {
+        this.type = type;
     }
 
 }
