@@ -114,7 +114,7 @@ public class Scope2Code {
         UIBinding.scopes.clear();
 
         GroovyClassLoader gcl = new GroovyClassLoader();
-        gcl.parseClass(renderer.render(scope));
+        gcl.parseClass("// TEST123\n"+renderer.render(scope));
 
         if (UIBinding.scopes == null) {
             System.err.println("NO SCOPES");

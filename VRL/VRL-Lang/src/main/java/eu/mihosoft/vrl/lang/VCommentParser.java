@@ -143,7 +143,7 @@ public class VCommentParser {
                         range,
                         commentText, CommentType.PLAIN_MULTI_LINE);
 
-                //System.out.println("/* ... */ " + range + ", " + commentText);
+                System.out.println("/* ... */ " + range + ", " + commentText);
                 result.add(comment);
             }
 
@@ -163,7 +163,7 @@ public class VCommentParser {
                         range,
                         commentText, CommentType.LINE);
 
-//                System.out.println("// " + range);
+                System.out.println("// " + range);
                 result.add(comment);
             }
 
@@ -183,7 +183,7 @@ public class VCommentParser {
                         range,
                         commentText, CommentType.JAVADOC);
 
-//                System.out.println("/** ... */ " + range);
+                System.out.println("/** ... */ " + range);
                 result.add(comment);
             }
 
