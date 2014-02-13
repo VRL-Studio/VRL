@@ -1,7 +1,53 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * MainWindowController.java
+ *
+ * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
+ * Copyright (c) 2006–2014 by Michael Hoffer
+ * 
+ * This file is part of Visual Reflection Library (VRL).
+ *
+ * VRL is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 3
+ * as published by the Free Software Foundation.
+ * 
+ * see: http://opensource.org/licenses/LGPL-3.0
+ *      file://path/to/VRL/src/eu/mihosoft/vrl/resources/license/lgplv3.txt
+ *
+ * VRL is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * This version of VRL includes copyright notice and attribution requirements.
+ * According to the LGPL this information must be displayed even if you modify
+ * the source code of VRL. Neither the VRL Canvas attribution icon nor any
+ * copyright statement/attribution may be removed.
+ *
+ * Attribution Requirements:
+ *
+ * If you create derived work you must do three things regarding copyright
+ * notice and author attribution.
+ *
+ * First, the following text must be displayed on the Canvas or an equivalent location:
+ * "based on VRL source code".
+ * 
+ * Second, the copyright notice must remain. It must be reproduced in any
+ * program that uses VRL.
+ *
+ * Third, add an additional notice, stating that you modified VRL. In addition
+ * you must cite the publications listed below. A suitable notice might read
+ * "VRL source code modified by YourName 2012".
+ * 
+ * Note, that these requirements are in full accordance with the LGPL v3
+ * (see 7. Additional Terms, b).
+ *
+ * Publications:
+ *
+ * M. Hoffer, C.Poliwoda, G.Wittum. Visual Reflection Library -
+ * A Framework for Declarative GUI Programming on the Java Platform.
+ * Computing and Visualization in Science, in press.
  */
+
 package eu.mihosoft.vrl.ui.codevisualization;
 
 import eu.mihosoft.vrl.instrumentation.Scope2Code;
@@ -65,9 +111,9 @@ public class MainWindowController implements Initializable {
     Pane view;
     private Pane rootPane;
     private VFlow flow;
-    private Map<CodeEntity, VNode> invocationNodes = new HashMap<>();
-    private Map<VNode, Invocation> nodeInvocations = new HashMap<VNode, Invocation>();
-    private Map<String, Connector> variableConnectors = new HashMap<String, Connector>();
+    private final Map<CodeEntity, VNode> invocationNodes = new HashMap<>();
+    private final Map<VNode, Invocation> nodeInvocations = new HashMap<>();
+    private final Map<String, Connector> variableConnectors = new HashMap<>();
 
     /**
      * Initializes the controller class.
@@ -131,7 +177,8 @@ public class MainWindowController implements Initializable {
 
         if (askForLocationIfAlreadyOpened || currentDocument == null) {
             FileChooser.ExtensionFilter mdFilter
-                    = new FileChooser.ExtensionFilter("Text Files (*.groovy, *.txt)", "*.groovy", "*.txt");
+                    = new FileChooser.ExtensionFilter(
+                            "Text Files (*.groovy, *.txt)", "*.groovy", "*.txt");
 
             FileChooser.ExtensionFilter allFilesfilter
                     = new FileChooser.ExtensionFilter("All Files (*.*)", "*.*");
@@ -170,7 +217,8 @@ public class MainWindowController implements Initializable {
         try {
             if (f == null) {
                 FileChooser.ExtensionFilter mdFilter
-                        = new FileChooser.ExtensionFilter("Text Files (*.groovy, *.txt)", "*.groovy", "*.txt");
+                        = new FileChooser.ExtensionFilter(
+                                "Text Files (*.groovy, *.txt)", "*.groovy", "*.txt");
 
                 FileChooser.ExtensionFilter allFilesfilter
                         = new FileChooser.ExtensionFilter("All Files (*.*)", "*.*");
@@ -183,7 +231,8 @@ public class MainWindowController implements Initializable {
                 currentDocument = f;
             }
 
-            editor.setText(new String(Files.readAllBytes(Paths.get(currentDocument.getAbsolutePath())), "UTF-8"));
+            editor.setText(new String(Files.readAllBytes(
+                    Paths.get(currentDocument.getAbsolutePath())), "UTF-8"));
 
 //            CompilationUnitDeclaration cu = Scope2Code.demoScope();
 //            editor.setText(Scope2Code.getCode(cu));
@@ -294,7 +343,8 @@ public class MainWindowController implements Initializable {
 
         invocationNodes.put(scope, result.getModel());
 
-        String title = "" + scope.getType() + " " + scope.getName() + "(): " + scope.getId();
+        String title = "" + scope.getType() + " "
+                + scope.getName() + "(): " + scope.getId();
 
         if (isClassOrScript) {
             result.getModel().setWidth(550);
@@ -325,7 +375,8 @@ public class MainWindowController implements Initializable {
 
             } else {
                 n = result.newNode();
-                String mTitle = "" + i.getVariableName() + "." + i.getMethodName() + "(): " + i.getId();
+                String mTitle = "" + i.getVariableName() + "."
+                        + i.getMethodName() + "(): " + i.getId();
                 n.setTitle(mTitle);
 
                 invocationNodes.put(i, n);
@@ -355,7 +406,6 @@ public class MainWindowController implements Initializable {
             n.setWidth(400);
             n.setHeight(100);
 
-//            System.out.println("Node: " + i.getCode());
             prevNode = n;
         }
 
@@ -371,55 +421,48 @@ public class MainWindowController implements Initializable {
     }
 
     private void updateControlflow(Scope rootScope, VFlow result) {
-        result.getConnections("control").getConnections().addListener(new ListChangeListener<Connection>() {
+        result.getConnections("control").getConnections().addListener(
+                (ListChangeListener.Change<? extends Connection> change) -> {
+                    List<VNode> roots = result.getNodes().filtered(
+                            n -> n.getInputs().stream().filter(
+                                    (Connector c) -> {
+                                        return c.getType().equals("control")
+                                        && !c.getNode().getFlow().
+                                        getConnections("control").
+                                        getAllWith(c).isEmpty();
+                                    }).count() == 0);
 
-            @Override
-            public void onChanged(ListChangeListener.Change<? extends Connection> change) {
+                    // clear current control flow
+                    rootScope.getControlFlow().getInvocations().clear();
 
-                // find root nodes
-                List<VNode> roots = result.getNodes().filtered(
-                        n -> n.getInputs().stream().filter(
-                                (Connector c) -> {
-                                    return c.getType().equals("control")
-                                    && !c.getNode().getFlow().
-                                    getConnections("control").
-                                    getAllWith(c).isEmpty();
-                                }).count() == 0);
+                    List<List<VNode>> paths = new ArrayList<>();
 
-                // clear current control flow
-//                Scope rootScope = (Scope) nodeInvocations.get(result.getModel());
-                rootScope.getControlFlow().getInvocations().clear();
+                    // follow controlflow from roots to end
+                    roots.forEach(
+                            r -> {
+                                System.out.println("-- root " + r.getTitle() + " --");
 
-                List<List<VNode>> paths = new ArrayList<>();
+                                List<VNode> path = getPath(r, "control");
 
-                // follow controlflow from roots to end
-                roots.forEach(
-                        r -> {
-                            System.out.println("-- root " + r.getTitle() + " --");
+                                path.forEach(
+                                        n -> System.out.println("n->" + n.getTitle()));
 
-                            List<VNode> path = getPath(r, "control");
+                                paths.add(path);
+                            });
 
-                            path.forEach(
-                                    n -> System.out.println("n->" + n.getTitle()));
+                    paths.forEach(path
+                            -> path.forEach(node
+                                    -> rootScope.getControlFlow().
+                                    getInvocations().add(nodeInvocations.get(node))
+                            )
+                    );
 
-                            paths.add(path);
-                        });
+                    System.out.println("Scope: UPDATED");
 
-                paths.forEach(path
-                        -> path.forEach(node
-                                -> rootScope.getControlFlow().getInvocations().add(
-                                        nodeInvocations.get(node))
-                        )
-                );
-
-                System.out.println("Scope: UPDATED");
-
-                String code = Scope2Code.getCode((CompilationUnitDeclaration) getRootScope(rootScope));
-                editor.setText(code);
-            } // end onchanged
-
-        });
-
+                    String code = Scope2Code.getCode(
+                            (CompilationUnitDeclaration) getRootScope(rootScope));
+                    editor.setText(code);
+                });
     }
 
     private Scope getRootScope(Scope s) {
