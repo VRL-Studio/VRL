@@ -29,6 +29,7 @@ public class LangModelTest {
 
         String code = getResourceAsString("ModelCode01.groovy");
 
+        // checking whether sample code compiles and generate model
         boolean successCompile = false;
         try {
             GroovyClassLoader gcl = new GroovyClassLoader();
@@ -40,12 +41,11 @@ public class LangModelTest {
         }
 
         Assert.assertTrue("Sample code must compile", successCompile);
-
         Assert.assertTrue("UIBindings.scopes must be initialized", UIBinding.scopes != null);
         Assert.assertTrue("UIBindings must contain exactly one scope, got " + UIBinding.scopes.size(), UIBinding.scopes.size() == 1);
 
+        // generating new code from model
         String newCode = "";
-
         for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
             for (Scope s : scopeList) {
                 if (s instanceof CompilationUnitDeclaration) {
@@ -55,8 +55,9 @@ public class LangModelTest {
             }
         }
 
+        // checking whether new code compiles
         successCompile = false;
-
+        UIBinding.scopes.clear();
         try {
             GroovyClassLoader gcl = new GroovyClassLoader();
             gcl.parseClass(newCode, "MyFileClass.groovy");
@@ -65,8 +66,25 @@ public class LangModelTest {
         } catch (Exception ex) {
             Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-
         Assert.assertTrue("Sample code generated from model must compile", successCompile);
+
+        String newNewCode = "";
+        // checking whether code from new model is identical to new code
+        for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
+            for (Scope s : scopeList) {
+                if (s instanceof CompilationUnitDeclaration) {
+                    newNewCode = Scope2Code.getCode((CompilationUnitDeclaration) s);
+                    break;
+                }
+            }
+        }
+        
+        System.out.println("---- new code ----");
+        System.out.println(newNewCode);
+        
+        Assert.assertTrue("Code strings must be identical", newCode.equals(newNewCode));
+        
+        
 
     }
 

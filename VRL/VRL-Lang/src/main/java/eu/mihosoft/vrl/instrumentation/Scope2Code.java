@@ -69,14 +69,17 @@ import eu.mihosoft.vrl.lang.model.Parameters;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import com.google.common.io.Files;
 import eu.mihosoft.vrl.lang.VLangUtils;
-import eu.mihosoft.vrl.lang.model.CodeRange;
+import eu.mihosoft.vrl.lang.model.CodeEntity;
 import groovy.lang.GroovyClassLoader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -88,7 +91,11 @@ import java.util.logging.Logger;
  */
 public class Scope2Code {
 
+    static Set<Comment> renderedComments = new HashSet<Comment>();
+
     public static String getCode(CompilationUnitDeclaration scope) {
+
+        renderedComments.clear();
 
         CompilationUnitRenderer renderer
                 = new CompilationUnitRenderer(
@@ -101,6 +108,8 @@ public class Scope2Code {
 
     public static String getCode(ClassDeclaration scope) {
 
+        renderedComments.clear();
+
         ClassDeclarationRenderer renderer
                 = new ClassDeclarationRenderer(
                         new MethodDeclarationRenderer(
@@ -111,6 +120,8 @@ public class Scope2Code {
 
     public static String getCode(MethodDeclaration scope) {
 
+        renderedComments.clear();
+
         MethodDeclarationRenderer renderer
                 = new MethodDeclarationRenderer(
                         new InvocationCodeRenderer());
@@ -119,6 +130,8 @@ public class Scope2Code {
     }
 
     public static String getCode(Invocation invocation) {
+
+        renderedComments.clear();
 
         return new InvocationCodeRenderer().render(invocation);
     }
@@ -136,7 +149,7 @@ public class Scope2Code {
 
         UIBinding.scopes.clear();
 
-        String theCode = "/* TEST 123*/\n\n" + renderer.render(scope);
+        String theCode = renderer.render(scope);
 
         try {
             Files.write(theCode, new File("theCode.groovy"), Charset.forName("UTF-8"));
@@ -224,6 +237,7 @@ public class Scope2Code {
 //        builder.invokeMethod(forD2, "this", m1.getName(), true, "retM1b", m1.getVariable("v1"));
         return myFile;
     }
+
 }
 
 final class Utils {
@@ -248,6 +262,37 @@ final class Utils {
     public static String modifierToName(Modifier m) {
 
         return modifierNames.get(m);
+    }
+
+    static void renderComments(Set<Comment> rendered, List<? extends CodeEntity> entities, Scope e, CodeBuilder cb, RenderEventListener rel) {
+        CommentRenderer commentRenderer = new CommentRenderer();
+        for (CodeEntity ce : entities) {
+
+            for (Comment comment : e.getComments()) {
+
+                if (rendered.contains(comment)) {
+                    continue;
+                }
+
+                if (ce.getRange().contains(comment.getRange())) {
+                    continue;
+                }
+
+                if (comment.getRange().getEnd().getCharIndex() < ce.getRange().getBegin().getCharIndex()) {
+
+                    String commentString = comment.getComment();
+
+//                    System.out.println("commentstr: " + commentString);
+//                    cb.append(commentString).newLine();
+//                    System.out.println("code: " + cb.getCode());
+                    commentRenderer.render(comment, cb);
+                    rendered.add(comment);
+                }
+            }
+
+            // custom render
+            rel.render(ce);
+        }
     }
 }
 
@@ -318,9 +363,13 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                     cb.incIndentation();
                 }
 
-                for (Invocation j : forD.getControlFlow().getInvocations()) {
-                    render(j, cb);
-                }
+                Utils.renderComments(Scope2Code.renderedComments,
+                        forD.getControlFlow().getInvocations(), forD, cb, (CodeEntity ce) -> {
+
+                    if (ce instanceof Invocation) {
+                        render((Invocation) ce, cb);
+                    }
+                });
 
                 if (!s.getControlFlow().getInvocations().isEmpty()) {
                     cb.decIndentation();
@@ -396,10 +445,17 @@ class MethodDeclarationRenderer implements CodeRenderer<MethodDeclaration> {
         cb.append(") {").newLine();
         cb.incIndentation();
 
-        for (Invocation i : e.getControlFlow().getInvocations()) {
-            System.out.println(" --> inv: " + i);
-            invocationRenderer.render(i, cb);
-        }
+//        for (Invocation i : e.getControlFlow().getInvocations()) {
+//            System.out.println(" --> inv: " + i);
+//            invocationRenderer.render(i, cb);
+//        }
+//        
+        Utils.renderComments(Scope2Code.renderedComments, e.getControlFlow().getInvocations(), e, cb, (CodeEntity ce) -> {
+
+            if (ce instanceof Invocation) {
+                invocationRenderer.render((Invocation) ce, cb);
+            }
+        });
 
         cb.decIndentation().append("}").newLine();
     }
@@ -456,9 +512,12 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
 
         createDeclaredVariables(cd, cb);
 
-        for (MethodDeclaration md : cd.getDeclaredMethods()) {
-            methodDeclarationRenderer.render(md, cb);
-        }
+        Utils.renderComments(Scope2Code.renderedComments, cd.getDeclaredMethods(), cd, cb, (CodeEntity ce) -> {
+
+            if (ce instanceof MethodDeclaration) {
+                methodDeclarationRenderer.render((MethodDeclaration) ce, cb);
+            }
+        });
 
         cb.decIndentation();
         cb.append("}").newLine();
@@ -553,31 +612,15 @@ class CompilationUnitRenderer implements CodeRenderer<CompilationUnitDeclaration
                     newLine().newLine();
         }
 
-        CommentRenderer commentRenderer = new CommentRenderer();
+        List<? extends CodeEntity> entities = e.getDeclaredClasses();
 
-        for (ClassDeclaration cd : e.getDeclaredClasses()) {
+        Utils.renderComments(Scope2Code.renderedComments, entities, e, cb, (CodeEntity ce) -> {
 
-            for (Comment comment : e.getComments()) {
-
-                if (cd.getRange().contains(comment.getRange())) {
-                    continue;
-                }
-
-                if (comment.getRange().getEnd().getCharIndex() < cd.getRange().getBegin().getCharIndex()) {
-                    //commentRenderer.render(comment, cb);
-
-                    String commentString = new String(comment.getComment());
-
-                    System.out.println("commentstr: " + commentString);
-
-                    cb.append(commentString).newLine();
-
-                    System.out.println("code: " + cb.getCode());
-                }
+            if (ce instanceof ClassDeclaration) {
+                classDeclarationRenderer.render((ClassDeclaration) ce, cb);
             }
+        });
 
-            classDeclarationRenderer.render(cd, cb);
-        }
     }
 
     /**
@@ -596,6 +639,11 @@ class CompilationUnitRenderer implements CodeRenderer<CompilationUnitDeclaration
 
 }
 
+interface RenderEventListener {
+
+    public void render(CodeEntity ce);
+}
+
 class CommentRenderer implements CodeRenderer<Comment> {
 
     @Override
@@ -609,10 +657,9 @@ class CommentRenderer implements CodeRenderer<Comment> {
     @Override
     public void render(Comment e, CodeBuilder cb) {
 
-//        System.out.println("hallo" + e.getComment() + ", l: " + lines.length);
         String[] lines = e.getComment().split("\n");
         for (String l : lines) {
-            cb.append(l).newLine();
+            cb.addLine(l.trim());
         }
     }
 

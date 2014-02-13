@@ -22,10 +22,16 @@ public class MyFileClass {
      * method m2.
      */
     public int m2(double v1, my.testpackage.MyFileClass v2) {
-        this.m2(v1, v2);
         
-        // for loop 
+        // calling m2
+        this.m2(v1, v2); // abc
+        
+        // for loop
         for(int i = 1; i <= 3; i++) {
+            
+            /*
+             * for loop: another comment 
+             */
             for(int j = 10; j >= 9; j--) {
                 this.m1(j);
                 System.out.println("Hello!\"");
