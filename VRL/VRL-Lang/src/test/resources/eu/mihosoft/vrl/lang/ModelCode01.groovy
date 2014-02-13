@@ -16,6 +16,12 @@ public class MyFileClass {
     public int m1(int v1) {
         this.m1(v1);
         this.m1(v1);
+        
+        this.m3(this.m1(v1), this.m1(v1));
+    }
+    
+    public int m3(int v1, int v2) {
+        return v1+v2;
     }
     
     /**
