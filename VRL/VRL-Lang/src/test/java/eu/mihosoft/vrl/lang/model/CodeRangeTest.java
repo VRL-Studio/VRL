@@ -50,6 +50,8 @@
 
 package eu.mihosoft.vrl.lang.model;
 
+import eu.mihosoft.vrl.lang.ICodeReader;
+import eu.mihosoft.vrl.lang.CodeReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
