@@ -4,17 +4,20 @@
  */
 package eu.mihosoft.vrl.ui.codevisualization;
 
-
+import eu.mihosoft.vrl.instrumentation.Scope2Code;
 import eu.mihosoft.vrl.instrumentation.ScopeInvocation;
 import eu.mihosoft.vrl.instrumentation.ScopeType;
 import eu.mihosoft.vrl.instrumentation.UIBinding;
 import eu.mihosoft.vrl.instrumentation.Variable;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
+import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.DataFlow;
 import eu.mihosoft.vrl.lang.model.DataRelation;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.workflow.Connection;
 import eu.mihosoft.vrl.workflow.ConnectionResult;
+import eu.mihosoft.vrl.workflow.Connections;
 //import eu.mihosoft.vrl.worflow.layout.Layout;
 //import eu.mihosoft.vrl.worflow.layout.LayoutFactory;
 import eu.mihosoft.vrl.workflow.Connector;
@@ -30,6 +33,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +41,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -61,6 +66,7 @@ public class MainWindowController implements Initializable {
     private Pane rootPane;
     private VFlow flow;
     private Map<CodeEntity, VNode> invocationNodes = new HashMap<>();
+    private Map<VNode, Invocation> nodeInvocations = new HashMap<VNode, Invocation>();
     private Map<String, Connector> variableConnectors = new HashMap<String, Connector>();
 
     /**
@@ -73,10 +79,10 @@ public class MainWindowController implements Initializable {
 
         ScalableContentPane canvas = new ScalableContentPane();
         canvas.setStyle("-fx-background-color: rgb(0,0, 0)");
-        
+
         canvas.setMaxScaleX(1);
         canvas.setMaxScaleY(1);
-        
+
         view.getChildren().add(canvas);
 
         Pane root = new Pane();
@@ -178,10 +184,9 @@ public class MainWindowController implements Initializable {
             }
 
             editor.setText(new String(Files.readAllBytes(Paths.get(currentDocument.getAbsolutePath())), "UTF-8"));
-            
+
 //            CompilationUnitDeclaration cu = Scope2Code.demoScope();
 //            editor.setText(Scope2Code.getCode(cu));
-
             updateView();
 
         } catch (IOException ex) {
@@ -200,7 +205,7 @@ public class MainWindowController implements Initializable {
         UIBinding.scopes.clear();
 
         GroovyClassLoader gcl = new GroovyClassLoader();
-        gcl.parseClass(editor.getText());
+        gcl.parseClass(editor.getText(), "Script");
 
         System.out.println("UPDATE UI");
 
@@ -251,9 +256,9 @@ public class MainWindowController implements Initializable {
 
                 String retValueName
                         = dataRelation.getSender().getReturnValueName();
-                
+
                 System.out.println(" --> sender: " + retValueName);
-                
+
                 Connector senderConnector = getVariableById(sender, retValueName);
 
                 int inputIndex = 0;
@@ -265,7 +270,7 @@ public class MainWindowController implements Initializable {
 
                         ConnectionResult result = parent.connect(
                                 senderConnector, receiverConnector);
-                        
+
                         System.out.println(" -> connected: " + result.getStatus().isCompatible());
                         System.out.println(" -> " + result.getStatus().getMessage());
 
@@ -284,6 +289,8 @@ public class MainWindowController implements Initializable {
                 || scope.getType() == ScopeType.NONE;
 
         VFlow result = parent.newSubFlow();
+
+        updateControlflow(scope, result);
 
         invocationNodes.put(scope, result.getModel());
 
@@ -304,7 +311,10 @@ public class MainWindowController implements Initializable {
 
         VNode prevNode = null;
 
-        for (Invocation i : scope.getControlFlow().getInvocations()) {
+        List<Invocation> invocations = new ArrayList<>();
+        invocations.addAll(scope.getControlFlow().getInvocations());
+
+        for (Invocation i : invocations) {
 
             VNode n;
 
@@ -319,6 +329,7 @@ public class MainWindowController implements Initializable {
                 n.setTitle(mTitle);
 
                 invocationNodes.put(i, n);
+                nodeInvocations.put(n, i);
             }
 
             n.setMainInput(n.addInput("control"));
@@ -345,7 +356,6 @@ public class MainWindowController implements Initializable {
             n.setHeight(100);
 
 //            System.out.println("Node: " + i.getCode());
-
             prevNode = n;
         }
 
@@ -359,23 +369,124 @@ public class MainWindowController implements Initializable {
 
         return result;
     }
-    
+
+    private void updateControlflow(Scope rootScope, VFlow result) {
+        result.getConnections("control").getConnections().addListener(new ListChangeListener<Connection>() {
+
+            @Override
+            public void onChanged(ListChangeListener.Change<? extends Connection> change) {
+
+                // find root nodes
+                List<VNode> roots = result.getNodes().filtered(
+                        n -> n.getInputs().stream().filter(
+                                (Connector c) -> {
+                                    return c.getType().equals("control")
+                                    && !c.getNode().getFlow().
+                                    getConnections("control").
+                                    getAllWith(c).isEmpty();
+                                }).count() == 0);
+
+                // clear current control flow
+//                Scope rootScope = (Scope) nodeInvocations.get(result.getModel());
+                rootScope.getControlFlow().getInvocations().clear();
+
+                List<List<VNode>> paths = new ArrayList<>();
+
+                // follow controlflow from roots to end
+                roots.forEach(
+                        r -> {
+                            System.out.println("-- root " + r.getTitle() + " --");
+
+                            List<VNode> path = getPath(r, "control");
+
+                            path.forEach(
+                                    n -> System.out.println("n->" + n.getTitle()));
+
+                            paths.add(path);
+                        });
+
+                paths.forEach(path
+                        -> path.forEach(node
+                                -> rootScope.getControlFlow().getInvocations().add(
+                                        nodeInvocations.get(node))
+                        )
+                );
+
+                System.out.println("Scope: UPDATED");
+
+                String code = Scope2Code.getCode((CompilationUnitDeclaration) getRootScope(rootScope));
+                editor.setText(code);
+            } // end onchanged
+
+        });
+
+    }
+
+    private Scope getRootScope(Scope s) {
+        Scope root = s;
+
+        while (s.getParent() != null) {
+            root = s.getParent();
+            s = root;
+        }
+
+        return root;
+    }
+
+    private List<VNode> getPath(VNode sender, String connectionType) {
+
+        List<VNode> result = new ArrayList<>();
+        result.add(sender);
+
+        Connections connections = sender.getFlow().getConnections("control");
+        Collection<Connection> connectionsWithSender
+                = connections.getAllWith(sender.getMainOutput("control"));
+
+        while (!connectionsWithSender.isEmpty()) {
+
+            VNode newSender = null;
+
+            for (Connection c : connectionsWithSender) {
+
+                if (newSender == c.getReceiver().getNode()) {
+                    System.err.println("circular flow!");
+                    return result;
+                }
+
+                newSender = c.getReceiver().getNode();
+
+                result.add(newSender);
+                break; // we only support one connection per controlflow conector
+            }
+
+            if (newSender != null) {
+                connectionsWithSender
+                        = connections.getAllWith(
+                                newSender.getMainOutput("control"));
+            } else {
+                connectionsWithSender.clear();
+            }
+        }
+
+        return result;
+    }
+
     public static String getVariableId(VNode n, Variable v) {
         String id = n.getId() + ":" + v.getName();
-        
+
         System.out.println("id: " + id);
-        
+
         return id;
     }
-    
+
     public static String getVariableId(VNode n, String varName) {
         String id = n.getId() + ":" + varName;
-        
+
         System.out.println("id: " + id);
-        
+
         return id;
     }
-    
+
     public Connector getVariableById(VNode n, String varName) {
         return variableConnectors.get(getVariableId(n, varName));
     }
