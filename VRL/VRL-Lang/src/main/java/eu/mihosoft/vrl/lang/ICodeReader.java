@@ -1,5 +1,5 @@
 /* 
- * CodeReader.java
+ * ICodeReader.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,89 +48,21 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.lang.model;
+package eu.mihosoft.vrl.lang;
 
+import eu.mihosoft.vrl.lang.model.ICodeRange;
 import java.io.IOException;
 import java.io.Reader;
-import java.nio.CharBuffer;
 
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public final class CodeReader implements ICodeReader {
+public interface ICodeReader {
 
-    private final Reader reader;
+    public int read(StringBuilder cb, ICodeRange range) throws IOException;
 
-    public CodeReader(Reader reader) {
-        this.reader = reader;
-    }
+    public String read(ICodeRange range) throws IOException;
 
-    @Override
-    public int read(StringBuilder sb, ICodeRange range) throws IOException {
-
-//        if (reader.markSupported()) {
-//            reader.mark(Integer.MAX_VALUE);
-//        }
-
-        char[] cbuf = new char[range.size()];
-
-        int result = -1;
-
-        IOException exception = null;
-        
-        try {
-            reader.skip(range.getBegin().getCharIndex());
-
-            result = reader.read(cbuf, 0, range.size());
-        } catch (IOException ex) {
-            exception = ex;
-        } finally {
-            reader.reset();
-        }
-
-        if (exception != null) {
-            throw exception;
-        }
-
-        sb.append(cbuf);
-
-        return result;
-    }
-
-    @Override
-    public String read(ICodeRange range) throws IOException {
-
-//        if (reader.markSupported()) {
-//            reader.mark(Integer.MAX_VALUE);
-//        }
-
-        char[] cbuf = new char[range.size()];
-
-        IOException exception = null;
-
-        try {
-            reader.skip(range.getBegin().getCharIndex());
-            int result = reader.read(cbuf, 0, range.size());
-        } catch (IOException ex) {
-            exception = ex;
-        } finally {
-            reader.reset();
-        }
-
-        if (exception != null) {
-            throw exception;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append(cbuf);
-
-        return sb.toString();
-    }
-
-    @Override
-    public boolean canRead() throws IOException {
-        return reader.ready();
-    }
-
+    public boolean canRead() throws IOException;
 }

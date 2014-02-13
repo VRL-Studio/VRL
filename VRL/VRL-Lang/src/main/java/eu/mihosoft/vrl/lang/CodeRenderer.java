@@ -1,5 +1,5 @@
 /* 
- * ICodeReader.java
+ * CodeRenderer.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,20 +48,17 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.lang.model;
+package eu.mihosoft.vrl.lang;
 
-import java.io.IOException;
-import java.io.Reader;
+import eu.mihosoft.vrl.lang.model.CodeBuilder;
+import eu.mihosoft.vrl.lang.model.CodeEntity;
 
 /**
  *
- * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ * @author Michael Hoffer <info@michaelhoffer.de>
+ * @param <T> 
  */
-public interface ICodeReader {
-
-    public int read(StringBuilder cb, ICodeRange range) throws IOException;
-
-    public String read(ICodeRange range) throws IOException;
-
-    public boolean canRead() throws IOException;
+public interface CodeRenderer <T extends CodeEntity> {
+    public String render(T e);
+    public void render(T e, CodeBuilder cb);
 }

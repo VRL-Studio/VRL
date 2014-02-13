@@ -61,7 +61,7 @@ import eu.mihosoft.vrl.lang.model.CodeBuilder;
 import eu.mihosoft.vrl.lang.model.Modifiers;
 import eu.mihosoft.vrl.lang.model.Modifier;
 import eu.mihosoft.vrl.lang.model.ForDeclaration;
-import eu.mihosoft.vrl.lang.model.CodeRenderer;
+import eu.mihosoft.vrl.lang.CodeRenderer;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.IParameter;
 import eu.mihosoft.vrl.lang.model.Invocation;
