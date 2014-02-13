@@ -50,6 +50,7 @@
 
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.Patterns;
 import eu.mihosoft.vrl.lang.VLangUtils;
 import java.util.Objects;

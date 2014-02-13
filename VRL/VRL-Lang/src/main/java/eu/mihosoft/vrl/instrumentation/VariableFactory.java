@@ -50,6 +50,8 @@
 
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.Scope;
+
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>

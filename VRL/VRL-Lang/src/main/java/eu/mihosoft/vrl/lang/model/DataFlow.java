@@ -1,5 +1,5 @@
 /* 
- * CompilationUnitDeclaration.java
+ * DataFlow.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,20 +48,30 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
+import eu.mihosoft.vrl.instrumentation.ScopeInvocation;
+import eu.mihosoft.vrl.instrumentation.Variable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
- * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface CompilationUnitDeclaration extends Scope{
-//    public String getLocation();
-    
-    public String getFileName();
-    
-    public List<ClassDeclaration> getDeclaredClasses();
-    
-    public String getPackageName();
+public interface DataFlow {
+
+    public List<DataRelation> getRelations();
+
+    public List<DataRelation> getRelationsForSender(Invocation invocation);
+
+    public List<DataRelation> getRelationsForReceiver(Invocation invocation);
+
+//    public void addSender(String retValName, Invocation result);
+    public void create(ControlFlow controlflow);
 }
+

@@ -1,5 +1,5 @@
 /* 
- * Comment.java
+ * CodeRenderer.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,16 +48,14 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
-
+package eu.mihosoft.vrl.lang.model;
 
 /**
  *
- * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ * @author Michael Hoffer <info@michaelhoffer.de>
+ * @param <T> 
  */
-public interface Comment extends CodeEntity{
-    public void setComment(String comment);
-    public String getComment();
-    public void setType(CommentType type);
-    public CommentType getType();
+public interface CodeRenderer <T extends CodeEntity> {
+    public String render(T e);
+    public void render(T e, CodeBuilder cb);
 }

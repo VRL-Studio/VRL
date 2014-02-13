@@ -1,5 +1,5 @@
 /* 
- * CodeRenderer.java
+ * ControlFlow.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,14 +48,27 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
+
+import eu.mihosoft.vrl.instrumentation.ScopeInvocation;
+import eu.mihosoft.vrl.instrumentation.Variable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
- * @param <T> 
  */
-public interface CodeRenderer <T extends CodeEntity> {
-    public String render(T e);
-    public void render(T e, CodeBuilder cb);
+public interface ControlFlow {
+
+    public Invocation createInstance(String id, IType type, String varName, Variable... args);
+
+    public Invocation callMethod(String id, String varName, String mName, boolean isVoid, String retValueName, Variable... args);
+    
+    public Invocation callStaticMethod(String id, IType type, String mName, boolean isVoid, String retValueName, Variable... args);
+
+    public ScopeInvocation callScope(Scope scope);
+
+    public List<Invocation> getInvocations();
 }
+

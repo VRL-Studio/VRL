@@ -49,15 +49,28 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.Parameter;
+import eu.mihosoft.vrl.lang.model.Extends;
+import eu.mihosoft.vrl.lang.model.Comment;
+import eu.mihosoft.vrl.lang.model.IModifiers;
+import eu.mihosoft.vrl.lang.model.ClassDeclaration;
+import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.Modifiers;
+import eu.mihosoft.vrl.lang.model.Parameters;
+import eu.mihosoft.vrl.lang.model.Modifier;
+import eu.mihosoft.vrl.lang.model.CodeEntity;
+import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.VCommentParser;
 import eu.mihosoft.vrl.lang.model.CodeLocation;
 import eu.mihosoft.vrl.lang.model.CodeRange;
+import eu.mihosoft.vrl.lang.model.CodeReader;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -73,6 +86,7 @@ import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.PackageNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.BooleanExpression;
@@ -136,8 +150,6 @@ public class VRLVisualizationTransformation implements ASTTransformation {
                 System.out.println("method: " + m.getName());
             }
         }
-        
-        
 
 //        sourceUnit.getSource().getReader().
 //        
@@ -210,7 +222,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     private final StateMachine stateMachine = new StateMachine();
     private IdGenerator generator = FlowFactory.newIdGenerator();
     private List<Comment> comments = new ArrayList<>();
-    private StringReader codeReader;
+    private Reader codeReader;
 
     private Map<MethodCallExpression, String> returnValuesOfMethods
             = new HashMap<>();
@@ -227,41 +239,44 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             }
         });
 
-        
-//        try {
-//            BufferedReader br = new BufferedReader(sourceUnit.getSource().getReader());
-//
-//            String tmp = null;
-//            StringBuilder sb = new StringBuilder();
-//            while ((tmp = br.readLine()) != null) {
-//                sb.append(tmp).append("\n");
-//            }
-//            
-//            codeReader = new StringReader(sb.toString());
-//
-//        } catch (IOException ex) {
-//            Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
-//        } finally {
-//            try {
-//                sourceUnit.getSource().getReader().reset();
-//            } catch (IOException ex) {
-//                Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
+        try {
+            BufferedReader br = new BufferedReader(sourceUnit.getSource().getReader());
+
+            String tmp = null;
+            StringBuilder sb = new StringBuilder();
+            while ((tmp = br.readLine()) != null) {
+                sb.append(tmp).append("\n");
+            }
+
+            codeReader = sourceUnit.getSource().getReader();
+
+        } catch (IOException ex) {
+            Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
+        } finally {
+            try {
+                codeReader.reset();
+            } catch (IOException ex) {
+                Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        String packageName = sourceUnit.getAST().getPackage().getName();
+
+        if (packageName.endsWith(".")) {
+            packageName = packageName.substring(0, packageName.length() - 1);
+        }
 
 //        this.rootScope = codeBuilder.createScope(null, ScopeType.NONE, sourceUnit.getName(), new Object[0]);
-        this.rootScope = codeBuilder.declareCompilationUnit(sourceUnit.getName(), "undefined");
+        this.rootScope = codeBuilder.declareCompilationUnit(sourceUnit.getName(), packageName);
 
-        setRootCodeRange(rootScope, sourceUnit);
+        setRootCodeRange(rootScope, codeReader);
 
-//        try {
-////            comments.addAll(VCommentParser.parse(codeReader));
-//        } catch (IOException ex) {
-//            Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-
-//        addCommentsToScope(rootScope, comments);
-
+        try {
+            comments.addAll(VCommentParser.parse(codeReader, false));
+        } catch (IOException ex) {
+            Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        addCommentsToScope(rootScope, comments);
         this.currentScope = rootScope;
     }
 
@@ -323,7 +338,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             currentScope = codeBuilder.declareMethod(
                     (ClassDeclaration) currentScope, convertModifiers(s.getModifiers()), new Type(s.getReturnType().getName(), true),
                     s.getName(), convertMethodParameters(s.getParameters()));
-            currentScope.setRange(getNodeLocation(s));
+            setCodeRange(currentScope, s);
             addCommentsToScope(currentScope, comments);
         } else {
             throw new RuntimeException("method cannot be declared here! Scope: " + currentScope.getName() + ": " + currentScope.getType());
@@ -349,7 +364,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         // predeclaration, ranges will be defined later
         currentScope = codeBuilder.declareFor(currentScope, s.getVariable().getName(), 0, 0, 0);
-        currentScope.setRange(getNodeLocation(s));
+        setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
 
         stateMachine.push("for-loop", true);
@@ -390,7 +405,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     public void visitWhileLoop(WhileStatement s) {
         System.out.println(" --> WHILE-LOOP: " + s.getBooleanExpression());
         currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
-        currentScope.setRange(getNodeLocation(s));
+        setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
 
         super.visitWhileLoop(s);
@@ -823,41 +838,41 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         return result;
     }
 
-    private ICodeRange getNodeLocation(ASTNode s) {
-//        return new LocationImpl(s.getLineNumber(), s.getColumnNumber(), s.getLastLineNumber(), s.getLastColumnNumber());
-
-        return null;
-    }
-
     private void setCodeRange(CodeEntity codeEntity, ASTNode astNode) {
+
+        codeEntity.setRange(new CodeRange(
+                astNode.getLineNumber() - 1, astNode.getColumnNumber() - 1,
+                astNode.getLastLineNumber() - 1, astNode.getLastColumnNumber() - 1,
+                codeReader));
+
+        System.out.println("range: " + codeEntity.getRange());
+
+        CodeReader reader = new CodeReader(codeReader);
         try {
-            codeEntity.setRange(new CodeRange(
-                    astNode.getLineNumber(), astNode.getColumnNumber(),
-                    astNode.getLastLineNumber(), astNode.getLastColumnNumber(),
-                    sourceUnit.getSource().getReader()));
-            
-            System.out.println("range: " + codeEntity.getRange());
-            
+
+            System.out.println("----code:----\n" + reader.read(codeEntity.getRange()) + "\n-------------");
         } catch (IOException ex) {
             Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
         }
+
     }
 
-    private void setRootCodeRange(Scope scope, SourceUnit sourceUnit) {
-        try {
-            scope.setRange(new CodeRange(new CodeLocation(0, sourceUnit.getSource().getReader()),
-                    sourceUnit.getSource().getReader()));
-        } catch (IOException ex) {
-            Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    private void setRootCodeRange(Scope scope, Reader codeReader) {
+
+        scope.setRange(new CodeRange(new CodeLocation(0, codeReader),
+                codeReader));
+
+        System.out.println("range: " + scope.getRange());
+
     }
 
     private void addCommentsToScope(Scope scope, List<Comment> comments) {
-//        for (Comment comment : comments) {
-//            if (scope.getRange().contains(comment.getRange())) {
-//                scope.getComments().add(comment);
-//            }
-//        }
+        for (Comment comment : comments) {
+            System.out.println("comment: " + comment.getRange());
+            if (scope.getRange().contains(comment.getRange())) {
+                scope.getComments().add(comment);
+            }
+        }
     }
 }
 

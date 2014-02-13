@@ -1,5 +1,5 @@
 /* 
- * ClassDeclaration.java
+ * IParameter.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,26 +48,22 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
-
-import java.util.List;
+package eu.mihosoft.vrl.lang.model;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface ClassDeclaration extends Scope {
+public interface IParameter {
 
-    IModifiers getClassModifiers();
+    /**
+     * @return the name
+     */
+    String getName();
 
-    IType getClassType();
-
-    IExtends getExtends();
-
-    IExtends getImplements();
-    
-    List<MethodDeclaration> getDeclaredMethods();
-
-    MethodDeclaration declareMethod(String id, IModifiers modifiers, IType returnType, String methodName, IParameters params);
+    /**
+     * @return the type
+     */
+    IType getType();
     
 }

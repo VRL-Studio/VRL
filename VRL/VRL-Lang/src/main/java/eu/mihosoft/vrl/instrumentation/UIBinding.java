@@ -50,6 +50,7 @@
 
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.Scope;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

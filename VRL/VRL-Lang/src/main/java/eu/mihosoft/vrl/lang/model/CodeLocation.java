@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import java.io.IOException;
@@ -255,7 +254,7 @@ public class CodeLocation implements ICodeLocation {
 
         return new CodeLocation(Math.abs(getCharIndex() - other.getCharIndex()), this.codeReader);
     }
-    
+
     @Override
     public String toString() {
         return "[idx: " + this.getCharIndex() + ", line: " + this.getLine() + ", column: " + this.getColumn() + "]";
@@ -292,12 +291,11 @@ class ConvertingLineCodeReader {
             for (int i = 0; i <= line; i++) {
 
 //                System.out.println("reading line: " + i);
-
                 String l = lR.readLine();
 
                 if (l == null) {
                     throw new IndexOutOfBoundsException(
-                            "number of lines is less than line pos '"
+                            "number of lines " + lR.getLineNumber()+ " is less than line pos '"
                             + line
                             + "'");
                 }
@@ -365,11 +363,9 @@ class ConvertingLineCodeReader {
 //            System.out.println("pos: " + pos);
 //            System.out.println("lastPos: " + lastPos);
 //            System.out.println("diff:    " + diffBetweenLastPosAndRequestedCharIndex);
-
             int column = diffBetweenLastPosAndRequestedCharIndex;
 
 //            System.out.println("ci:" + charIndex + " -> (l: " + line + ", c: " + column + ")");
-
             return new int[]{line, column};
 
         } catch (IOException | IndexOutOfBoundsException ex) {

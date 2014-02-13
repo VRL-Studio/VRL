@@ -50,9 +50,9 @@
 
 package eu.mihosoft.vrl.lang;
 
-import eu.mihosoft.vrl.instrumentation.Comment;
+import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.instrumentation.CommentImpl;
-import eu.mihosoft.vrl.instrumentation.CommentType;
+import eu.mihosoft.vrl.lang.model.CommentType;
 import eu.mihosoft.vrl.lang.commentparser.antlr.CommentsBaseListener;
 import eu.mihosoft.vrl.lang.commentparser.antlr.CommentsLexer;
 import eu.mihosoft.vrl.lang.commentparser.antlr.CommentsListener;
@@ -118,13 +118,23 @@ public class VCommentParser {
         CommentsListener extractor = l;
         walker.walk(extractor, tree);
     }
-
+    
     public static List<Comment> parse(Reader is) throws IOException {
+        return parse(is, false);
+    }
+
+    public static List<Comment> parse(Reader is, boolean closeReader) throws IOException {
         final List<Comment> result = new ArrayList<>();
 
         final Reader reader = is;
 
-        final ANTLRInputStream input = new ANTLRInputStreamNoClose(is);
+        final ANTLRInputStream input;
+        
+        if (closeReader) {
+             input = new ANTLRInputStream(is);
+        } else {
+            input = new ANTLRInputStreamNoClose(is);
+        }
 
         final CommentsLexer lexer = new CommentsLexer(input);
         final CommonTokenStream tokens = new CommonTokenStream(lexer);
@@ -143,7 +153,7 @@ public class VCommentParser {
                         range,
                         commentText, CommentType.PLAIN_MULTI_LINE);
 
-                System.out.println("/* ... */ " + range + ", " + commentText);
+//                System.out.println("/* ... */ " + range + ", " + commentText);
                 result.add(comment);
             }
 
@@ -163,7 +173,8 @@ public class VCommentParser {
                         range,
                         commentText, CommentType.LINE);
 
-                System.out.println("// " + range);
+//                System.out.println("// " + range);
+
                 result.add(comment);
             }
 
@@ -183,7 +194,7 @@ public class VCommentParser {
                         range,
                         commentText, CommentType.JAVADOC);
 
-                System.out.println("/** ... */ " + range);
+//                System.out.println("/** ... */ " + range);
                 result.add(comment);
             }
 
@@ -280,7 +291,7 @@ class ANTLRInputStreamNoClose extends ANTLRInputStream {
             n = p + 1;
             //System.out.println("n="+n);
         } finally {
-            r.close();
+//            r.close();
         }
     }
 

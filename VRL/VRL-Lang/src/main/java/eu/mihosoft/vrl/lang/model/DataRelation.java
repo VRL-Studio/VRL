@@ -1,5 +1,5 @@
 /* 
- * MethodDeclaration.java
+ * DataRelation.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,21 +48,23 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
-
-import java.util.List;
+package eu.mihosoft.vrl.lang.model;
 
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface MethodDeclaration extends Scope{
+public interface DataRelation {
 
-    IModifiers getModifiers();
+    public void setSender(Invocation invocation);
 
-    IParameters getParameters();
-    Variable getParameterAsVariable(IParameter p);
+    public Invocation getSender();
 
-    IType getReturnType();
+    public void setReceiver(Invocation invocation);
+
+    public Invocation getReceiver();
     
+//    public String getInputVariable();
+//    public void setInputVariable(String name);
 }
+

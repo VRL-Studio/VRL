@@ -79,16 +79,16 @@ public final class CodeRange implements ICodeRange {
         ICodeLocation result = new CodeLocation(-1, code);
 
         try {
-            if (code.markSupported()) {
-                code.mark(Integer.MAX_VALUE);
-            }
+//            if (code.markSupported()) {
+//                code.mark(Integer.MAX_VALUE);
+//            }
             LineNumberReader lR = new LineNumberReader(code);
             String line;
             int numChars = 0;
             while ((line = lR.readLine()) != null) {
                 numChars += line.length() + 1; // TODO: newline on windows is two;
             }
-            result = new CodeLocation(numChars, code);
+            result = new CodeLocation(numChars-1, code);
         } catch (IOException ex) {
             Logger.getLogger(CodeRange.class.getName()).log(Level.SEVERE, null, ex);
         } finally {

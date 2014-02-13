@@ -51,7 +51,6 @@
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.base.IOUtil;
-import eu.mihosoft.vrl.instrumentation.Comment;
 import eu.mihosoft.vrl.lang.VCommentParser;
 import java.io.IOException;
 import java.io.InputStream;

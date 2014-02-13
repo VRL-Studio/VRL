@@ -1,5 +1,5 @@
 /* 
- * CommentType.java
+ * Scope.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,22 +48,56 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+import eu.mihosoft.vrl.instrumentation.ScopeType;
+import eu.mihosoft.vrl.instrumentation.Variable;
+import java.util.Collection;
+import java.util.List;
 
 /**
  *
- * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public enum CommentType {
-    LINE,
-    PLAIN_MULTI_LINE,
-    JAVADOC,
-    UNDEFINED
+public interface Scope extends CodeEntity {
+
+    public Scope getParent();
+
+    public ScopeType getType();
+
+    public String getName();
+
+    public Object[] getScopeArgs();
+
+    public Collection<Variable> getVariables();
+
+    public Variable getVariable(String name);
+
+    public Variable createVariable(IType type, String varName);
+
+    public Variable createStaticVariable(IType type);
+
+    public void assignConstant(String varName, Object constant);
+
+    public void assignVariable(String varNameDest, String varNameSrc);
+
+    public ControlFlow getControlFlow();
+
+    public List<Scope> getScopes();
+
+    public Scope getScopeById(String id);
+
+    public Variable createVariable(IType type);
+
+    public DataFlow getDataFlow();
+
+    @Deprecated
+    public void generateDataFlow();
+
+    public Scope createScope(String id, ScopeType type, String name, Object[] args);
+
+    public List<Comment> getComments();
+
+    public void createComment(String id, ICodeRange range, String comment);
 }
+

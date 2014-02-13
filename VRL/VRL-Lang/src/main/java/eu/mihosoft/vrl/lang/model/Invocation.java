@@ -1,5 +1,5 @@
 /* 
- * Modifiers.java
+ * Invocation.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,33 +48,31 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import eu.mihosoft.vrl.instrumentation.Variable;
 import java.util.List;
 
 /**
  *
- * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public final class Modifiers implements IModifiers {
+public interface Invocation extends CodeEntity {
 
-    private final List<Modifier> modifiers = new ArrayList<>();
-    private List<Modifier> readOnlyModifiers;
+    public String getVariableName();
 
-    public Modifiers(Modifier... modifiers) {
-        this.modifiers.addAll(Arrays.asList(modifiers));
-    }
+    public String getMethodName();
 
-    @Override
-    public List<Modifier> getModifiers() {
-        if (readOnlyModifiers == null) {
-            readOnlyModifiers = Collections.unmodifiableList(modifiers);
-        }
-        
-        return readOnlyModifiers;
-    }
+    public String getReturnValueName();
 
+    public List<Variable> getArguments();
+
+    public boolean isConstructor();
+
+    public boolean isVoid();
+
+    public boolean isScope();
+
+    public boolean isStatic();
 }
+

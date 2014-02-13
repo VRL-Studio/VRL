@@ -1,5 +1,5 @@
 /* 
- * ScopeInvocation.java
+ * WhileDeclaration.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,21 +48,13 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
-
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.Invocation;
+package eu.mihosoft.vrl.lang.model;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface ScopeInvocation extends Invocation{
-
-    /**
-     * @return the scope
-     */
-    Scope getScope();
-
-    
+public interface WhileDeclaration extends Scope{
+    Invocation getCheck();
 }
+

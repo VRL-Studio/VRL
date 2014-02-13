@@ -1,5 +1,5 @@
 /* 
- * Parameter.java
+ * Extends.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,46 +48,31 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.VLangUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class Parameter implements IParameter {
+public final class Extends implements IExtends {
+    private final List<IType> types = new ArrayList<>();
+    private List<IType> readOnlyTypes;
 
-    private final Type type;
-    private final String name;
-
-    public Parameter(Type type, String name) {
-        this.type = type;
-        this.name = name;
-
-        validate();
+    public Extends(IType... types) {
+        this.types.addAll(Arrays.asList(types));
     }
 
-    private void validate() {
-        if (!VLangUtils.isVariableNameValid(name)) {
-            throw new IllegalArgumentException("Specified name is not a valid parameter name: " + name);
+    @Override
+    public List<IType> getTypes() {
+        if (readOnlyTypes == null) {
+            readOnlyTypes = Collections.unmodifiableList(types);
         }
+        
+        return readOnlyTypes;
     }
-
-    /**
-     * @return the type
-     */
-    @Override
-    public Type getType() {
-        return type;
-    }
-
-    /**
-     * @return the name
-     */
-    @Override
-    public String getName() {
-        return name;
-    }
-
 }

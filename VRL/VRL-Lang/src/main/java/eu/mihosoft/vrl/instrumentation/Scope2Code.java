@@ -47,15 +47,38 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.instrumentation;
 
 //import org.stringtemplate.v4.ST;
+import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
+import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.IType;
+import eu.mihosoft.vrl.lang.model.Parameter;
+import eu.mihosoft.vrl.lang.model.Extends;
+import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.Comment;
+import eu.mihosoft.vrl.lang.model.CodeBuilder;
+import eu.mihosoft.vrl.lang.model.Modifiers;
+import eu.mihosoft.vrl.lang.model.Modifier;
+import eu.mihosoft.vrl.lang.model.ForDeclaration;
+import eu.mihosoft.vrl.lang.model.CodeRenderer;
+import eu.mihosoft.vrl.lang.model.ClassDeclaration;
+import eu.mihosoft.vrl.lang.model.IParameter;
+import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.Parameters;
+import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import com.google.common.io.Files;
 import eu.mihosoft.vrl.lang.VLangUtils;
+import eu.mihosoft.vrl.lang.model.CodeRange;
 import groovy.lang.GroovyClassLoader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //import org.stringtemplate.v4.STGroup;
 //import org.stringtemplate.v4.STGroupString;
@@ -113,8 +136,18 @@ public class Scope2Code {
 
         UIBinding.scopes.clear();
 
+        String theCode = "/* TEST 123*/\n\n" + renderer.render(scope);
+
+        try {
+            Files.write(theCode, new File("theCode.groovy"), Charset.forName("UTF-8"));
+        } catch (IOException ex) {
+            Logger.getLogger(Scope2Code.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        System.out.println("processing code: ");
+
         GroovyClassLoader gcl = new GroovyClassLoader();
-        gcl.parseClass("// TEST123\n"+renderer.render(scope));
+        gcl.parseClass(theCode);
 
         if (UIBinding.scopes == null) {
             System.err.println("NO SCOPES");
@@ -131,10 +164,12 @@ public class Scope2Code {
             }
         }
 
-        System.out.println("code from compiler:\n" + code);
+        System.out.println("code from compiler 1:\n" + code);
+
+        UIBinding.scopes.clear();
 
         gcl = new GroovyClassLoader();
-        gcl.parseClass(renderer.render(scope));
+        gcl.parseClass(code);
 
         for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
             for (Scope s : scopeList) {
@@ -178,10 +213,10 @@ public class Scope2Code {
         ForDeclaration forD2 = builder.declareFor(forD1, "j", 10, 9, -1);
 
         builder.invokeMethod(forD2, "this", m1.getName(), true, "retM1c", forD2.getVariable("j"));
-        
+
         Variable var = forD2.createVariable(new Type("java.lang.String"));
         forD2.assignConstant(var.getName(), "Hello!\"");
-        
+
         builder.invokeStaticMethod(forD2, new Type("System"), "out.println", true, "", var);
 
 //        builder.invokeMethod(forD2, "this", m2.getName(), true,
@@ -316,17 +351,17 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             }
 
             if (v.isConstant()) {
-                
+
                 String constString = null;
-                
+
                 if (v.getType().equals(new Type("java.lang.String"))) {
-                    constString = "\""+VLangUtils.addEscapeCharsToCode(v.getValue().toString())+"\"";
+                    constString = "\"" + VLangUtils.addEscapeCharsToCode(v.getValue().toString()) + "\"";
                 } else {
                     constString = v.getValue().toString();
                 }
-                
+
                 cb.append(constString);
-                
+
             } else {
                 cb.append(v.getName());
             }
@@ -518,7 +553,29 @@ class CompilationUnitRenderer implements CodeRenderer<CompilationUnitDeclaration
                     newLine().newLine();
         }
 
+        CommentRenderer commentRenderer = new CommentRenderer();
+
         for (ClassDeclaration cd : e.getDeclaredClasses()) {
+
+            for (Comment comment : e.getComments()) {
+
+                if (cd.getRange().contains(comment.getRange())) {
+                    continue;
+                }
+
+                if (comment.getRange().getEnd().getCharIndex() < cd.getRange().getBegin().getCharIndex()) {
+                    //commentRenderer.render(comment, cb);
+
+                    String commentString = new String(comment.getComment());
+
+                    System.out.println("commentstr: " + commentString);
+
+                    cb.append(commentString).newLine();
+
+                    System.out.println("code: " + cb.getCode());
+                }
+            }
+
             classDeclarationRenderer.render(cd, cb);
         }
     }
@@ -535,6 +592,28 @@ class CompilationUnitRenderer implements CodeRenderer<CompilationUnitDeclaration
      */
     public void setClassDeclarationRenderer(CodeRenderer<ClassDeclaration> classDeclarationRenderer) {
         this.classDeclarationRenderer = classDeclarationRenderer;
+    }
+
+}
+
+class CommentRenderer implements CodeRenderer<Comment> {
+
+    @Override
+    public String render(Comment e) {
+        CodeBuilder cb = new CodeBuilder();
+        render(e, cb);
+
+        return cb.toString();
+    }
+
+    @Override
+    public void render(Comment e, CodeBuilder cb) {
+
+//        System.out.println("hallo" + e.getComment() + ", l: " + lines.length);
+        String[] lines = e.getComment().split("\n");
+        for (String l : lines) {
+            cb.append(l).newLine();
+        }
     }
 
 }

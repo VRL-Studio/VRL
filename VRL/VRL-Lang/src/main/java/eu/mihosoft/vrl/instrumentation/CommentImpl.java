@@ -50,6 +50,8 @@
 
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.CommentType;
+import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 
 /**

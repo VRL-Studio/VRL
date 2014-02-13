@@ -1,5 +1,5 @@
 /* 
- * Parameters.java
+ * VisualCodeBuilder.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,33 +48,47 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import eu.mihosoft.vrl.instrumentation.Type;
+import eu.mihosoft.vrl.instrumentation.Variable;
+import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.IType;
+import eu.mihosoft.vrl.lang.model.WhileDeclaration;
+import eu.mihosoft.vrl.lang.model.IModifiers;
+import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.ClassDeclaration;
+import eu.mihosoft.vrl.lang.model.IParameters;
+import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.IExtends;
+import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.model.ForDeclaration;
 
 /**
  *
- * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public final class Parameters implements IParameters {
+public interface VisualCodeBuilder {
+    
+    CompilationUnitDeclaration declareCompilationUnit(String name, String packageName);
 
-    private final List<IParameter> arguments = new ArrayList<>();
-    private List<IParameter> readOnlyParams;
+    void assignConstant(Scope scope, String varName, Object constant);
 
-    public Parameters(IParameter... params) {
-        this.arguments.addAll(Arrays.asList(params));
-    }
+    void assignVariable(Scope scope, String varNameDest, String varNameSrc);
 
-    @Override
-    public List<IParameter> getParamenters() {
-        if (readOnlyParams == null) {
-            readOnlyParams = Collections.unmodifiableList(arguments);
-        }
-        
-        return readOnlyParams;
-    }
+    void createInstance(Scope scope, IType type, String varName, Variable... args);
 
+    Variable createVariable(Scope scope, IType type, String varName);
+
+    ForDeclaration declareFor(Scope scope, String varName, int from, int to, int inc);
+    
+    ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type, IModifiers modifiers, IExtends extendz, IExtends implementz);
+
+    MethodDeclaration declareMethod(ClassDeclaration scope, IModifiers modifiers, Type returnType, String methodName, IParameters params);
+
+    WhileDeclaration declareWhile(Scope scope, Invocation check);
+
+    Invocation invokeMethod(Scope scope, String varName, String mName, boolean isVoid, String retValName, Variable... args);
+    
+    Invocation invokeStaticMethod(Scope scope, IType type, String mName, boolean isVoid, String retValName, Variable... args);
 }

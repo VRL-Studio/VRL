@@ -1,5 +1,5 @@
 /* 
- * IParameter.java
+ * ForDeclaration.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,22 +48,15 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface IParameter {
-
-    /**
-     * @return the name
-     */
-    String getName();
-
-    /**
-     * @return the type
-     */
-    IType getType();
-    
+public interface ForDeclaration extends Scope{
+   String getVarName();
+   int getFrom();
+   int getTo();
+   int getInc();
 }

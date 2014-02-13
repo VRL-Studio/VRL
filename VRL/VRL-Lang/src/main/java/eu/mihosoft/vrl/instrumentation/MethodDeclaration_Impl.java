@@ -50,6 +50,13 @@
 
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.IType;
+import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.IModifiers;
+import eu.mihosoft.vrl.lang.model.IParameters;
+import eu.mihosoft.vrl.lang.model.IParameter;
+
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;

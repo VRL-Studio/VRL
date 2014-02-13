@@ -1,5 +1,5 @@
 /* 
- * WhileDeclaration.java
+ * Parameter.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,13 +48,47 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
+
+import eu.mihosoft.vrl.instrumentation.Type;
+import eu.mihosoft.vrl.lang.VLangUtils;
 
 /**
  *
- * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface WhileDeclaration extends Scope{
-    Invocation getCheck();
-}
+public class Parameter implements IParameter {
 
+    private final Type type;
+    private final String name;
+
+    public Parameter(Type type, String name) {
+        this.type = type;
+        this.name = name;
+
+        validate();
+    }
+
+    private void validate() {
+        if (!VLangUtils.isVariableNameValid(name)) {
+            throw new IllegalArgumentException("Specified name is not a valid parameter name: " + name);
+        }
+    }
+
+    /**
+     * @return the type
+     */
+    @Override
+    public Type getType() {
+        return type;
+    }
+
+    /**
+     * @return the name
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
+
+}

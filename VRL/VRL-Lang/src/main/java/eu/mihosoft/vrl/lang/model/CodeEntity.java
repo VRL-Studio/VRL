@@ -1,5 +1,5 @@
 /* 
- * IParameters.java
+ * CodeEntity.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,16 +48,22 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
-import java.util.List;
+import eu.mihosoft.vrl.lang.model.ICodeRange;
 
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface IParameters {
-
-    List<IParameter> getParamenters();
+public interface CodeEntity {
+    public void setId(String id);
+    public String getId();
+    
+//    public void setCode(String code);
+//    public String getCode();
+    
+    public void setRange(ICodeRange location);
+    public ICodeRange getRange();
     
 }

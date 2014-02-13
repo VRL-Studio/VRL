@@ -1,5 +1,5 @@
 /* 
- * CodeEntity.java
+ * Modifier.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,22 +48,17 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
-
-import eu.mihosoft.vrl.lang.model.ICodeRange;
+package eu.mihosoft.vrl.lang.model;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface CodeEntity {
-    public void setId(String id);
-    public String getId();
-    
-//    public void setCode(String code);
-//    public String getCode();
-    
-    public void setRange(ICodeRange location);
-    public ICodeRange getRange();
-    
+public enum Modifier {
+    PRIVATE,
+    PUBLIC,
+    STATIC,
+    FINAL,
+    ABSTRACT,
+    PROTECTED
 }

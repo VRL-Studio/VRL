@@ -1,5 +1,5 @@
 /* 
- * IModifiers.java
+ * ClassDeclaration.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,7 +48,7 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
 import java.util.List;
 
@@ -56,8 +56,18 @@ import java.util.List;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface IModifiers {
+public interface ClassDeclaration extends Scope {
 
-    List<Modifier> getModifiers();
+    IModifiers getClassModifiers();
+
+    IType getClassType();
+
+    IExtends getExtends();
+
+    IExtends getImplements();
+    
+    List<MethodDeclaration> getDeclaredMethods();
+
+    MethodDeclaration declareMethod(String id, IModifiers modifiers, IType returnType, String methodName, IParameters params);
     
 }

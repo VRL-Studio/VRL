@@ -1,5 +1,5 @@
 /* 
- * ScopeInvocation.java
+ * Parameters.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,21 +48,33 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.Invocation;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface ScopeInvocation extends Invocation{
+public final class Parameters implements IParameters {
 
-    /**
-     * @return the scope
-     */
-    Scope getScope();
+    private final List<IParameter> arguments = new ArrayList<>();
+    private List<IParameter> readOnlyParams;
 
-    
+    public Parameters(IParameter... params) {
+        this.arguments.addAll(Arrays.asList(params));
+    }
+
+    @Override
+    public List<IParameter> getParamenters() {
+        if (readOnlyParams == null) {
+            readOnlyParams = Collections.unmodifiableList(arguments);
+        }
+        
+        return readOnlyParams;
+    }
+
 }

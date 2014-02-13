@@ -69,9 +69,9 @@ public final class CodeReader implements ICodeReader {
     @Override
     public int read(StringBuilder sb, ICodeRange range) throws IOException {
 
-        if (reader.markSupported()) {
-            reader.mark(Integer.MAX_VALUE);
-        }
+//        if (reader.markSupported()) {
+//            reader.mark(Integer.MAX_VALUE);
+//        }
 
         char[] cbuf = new char[range.size()];
 
@@ -101,9 +101,9 @@ public final class CodeReader implements ICodeReader {
     @Override
     public String read(ICodeRange range) throws IOException {
 
-        if (reader.markSupported()) {
-            reader.mark(Integer.MAX_VALUE);
-        }
+//        if (reader.markSupported()) {
+//            reader.mark(Integer.MAX_VALUE);
+//        }
 
         char[] cbuf = new char[range.size()];
 

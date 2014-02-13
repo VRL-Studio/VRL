@@ -1,5 +1,5 @@
 /* 
- * Extends.java
+ * Modifiers.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,7 +48,7 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -59,20 +59,22 @@ import java.util.List;
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public final class Extends implements IExtends {
-    private final List<IType> types = new ArrayList<>();
-    private List<IType> readOnlyTypes;
+public final class Modifiers implements IModifiers {
 
-    public Extends(IType... types) {
-        this.types.addAll(Arrays.asList(types));
+    private final List<Modifier> modifiers = new ArrayList<>();
+    private List<Modifier> readOnlyModifiers;
+
+    public Modifiers(Modifier... modifiers) {
+        this.modifiers.addAll(Arrays.asList(modifiers));
     }
 
     @Override
-    public List<IType> getTypes() {
-        if (readOnlyTypes == null) {
-            readOnlyTypes = Collections.unmodifiableList(types);
+    public List<Modifier> getModifiers() {
+        if (readOnlyModifiers == null) {
+            readOnlyModifiers = Collections.unmodifiableList(modifiers);
         }
         
-        return readOnlyTypes;
+        return readOnlyModifiers;
     }
+
 }
