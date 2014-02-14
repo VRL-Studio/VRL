@@ -81,11 +81,13 @@ import javax.swing.JFrame;
  */
 public class VRL {
 
+    public static boolean firstStart = true;
+
     /**
      * Plugin configurators accessible via plugin name.
      */
-    private static Map<String, PluginConfigurator> plugins =
-            new HashMap<String, PluginConfigurator>();
+    private static Map<String, PluginConfigurator> plugins
+            = new HashMap<String, PluginConfigurator>();
     /**
      * Names of all invalid plugins. All plugins listed here will be excluded
      * from initialization.
@@ -94,25 +96,25 @@ public class VRL {
     /**
      * Plugin data controllers accessible through plugin name.
      */
-    private static Map<String, PluginDataController> pluginsDataControllers =
-            new HashMap<String, PluginDataController>();
+    private static Map<String, PluginDataController> pluginsDataControllers
+            = new HashMap<String, PluginDataController>();
     /**
      * Plugin groups. A group is a jar file. All plugin names in the file can be
      * accessed via this map
      */
-    private static Map<String, List<String>> pluginGroups =
-            new HashMap<String, List<String>>();
+    private static Map<String, List<String>> pluginGroups
+            = new HashMap<String, List<String>>();
     /**
      * Cached plugin configurators used for uninstall (also contains plugins
      * that could not be loaded)
      */
-    private static final List<PluginConfigurator> allPlugins =
-            new ArrayList<PluginConfigurator>();
+    private static final List<PluginConfigurator> allPlugins
+            = new ArrayList<PluginConfigurator>();
     /**
      * Canvas list (uses weak references).
      */
-    private static HashSet<WeakReference<Canvas>> canvasList =
-            new HashSet<WeakReference<Canvas>>();
+    private static HashSet<WeakReference<Canvas>> canvasList
+            = new HashSet<WeakReference<Canvas>>();
     /**
      * Current/Active Project Controller.
      */
@@ -124,8 +126,8 @@ public class VRL {
     /**
      * Stores the provided entries of the registered plugins.
      */
-    private static HashMap<String, String> providedEntry =
-            new HashMap<String, String>();
+    private static HashMap<String, String> providedEntry
+            = new HashMap<String, String>();
     /**
      * Defines how often the weak reference list shall be cleaned, i.e., how
      * often
@@ -147,23 +149,23 @@ public class VRL {
     /**
      * Menucontroller for style menu.
      */
-    private static final MenuController styleMenuController =
-            new VMenuController();
+    private static final MenuController styleMenuController
+            = new VMenuController();
     /**
      * Menucontroller for plugin menu.
      */
-    private static final MenuController pluginMenuController =
-            new VMenuController();
+    private static final MenuController pluginMenuController
+            = new VMenuController();
     /**
      * Menucontroller for uninstall menu.
      */
-    private static final MenuController uninstallPluginMenuController =
-            new VMenuController();
+    private static final MenuController uninstallPluginMenuController
+            = new VMenuController();
     /**
      * Menucontroller for file templates menu.
      */
-    private static final MenuController fileTemplatesMenuController =
-            new VMenuController();
+    private static final MenuController fileTemplatesMenuController
+            = new VMenuController();
     /**
      * Plugin classloader. This classloader has access to all classloaders of
      * the individual plugins. This classloader may be used for serialization/
@@ -174,13 +176,13 @@ public class VRL {
      * Manager for property folder. This instance contains locations of all
      * official subfolders, such as tmp, plugins etc.
      */
-    private static final VPropertyFolderManager propertyFolderManager =
-            new VPropertyFolderManager();
+    private static final VPropertyFolderManager propertyFolderManager
+            = new VPropertyFolderManager();
     /**
      * Menus used to register plugin actions.
      */
-    private static Map<String, MenuAdapter> menus =
-            new HashMap<String, MenuAdapter>();
+    private static Map<String, MenuAdapter> menus
+            = new HashMap<String, MenuAdapter>();
     /**
      * Commandline options that have been specified to the JVM.
      */
@@ -188,8 +190,8 @@ public class VRL {
     /**
      * A map with all external classloaders.
      */
-    private static Map<String, ClassLoader> externalCLMap =
-            new HashMap<String, ClassLoader>();
+    private static Map<String, ClassLoader> externalCLMap
+            = new HashMap<String, ClassLoader>();
     /**
      * Defines whether to install plugin help.
      */
@@ -251,7 +253,7 @@ public class VRL {
                         + "', valid arguments are: [yes/no]");
             }
         }
-        
+
     }
 
     private static void checkAndInstallProjectPluginPayload() {
@@ -265,9 +267,9 @@ public class VRL {
         Class<?> projectMainClass = null;
 
         try {
-            projectMainClass =
-                    VRL.class.getClassLoader().loadClass(
-                    "eu.mihosoft.vrl.user.Main");
+            projectMainClass
+                    = VRL.class.getClassLoader().loadClass(
+                            "eu.mihosoft.vrl.user.Main");
         } catch (Throwable tr) {
             //
         }
@@ -309,16 +311,14 @@ public class VRL {
         evaluateArgs(args);
 
 //        List<String> invalidPlugins = new ArrayList<String>();
-
         getPropertyFolderManager().evalueteArgs(args);
 
         checkAndInstallProjectPluginPayload();
 
         SplashScreenGenerator.setProgress(5);
 
-        Constants.PLUGIN_DIR =
-                getPropertyFolderManager().getPluginFolder().getAbsolutePath();
-
+        Constants.PLUGIN_DIR
+                = getPropertyFolderManager().getPluginFolder().getAbsolutePath();
 
         // load libraries and plugins
         VRL.initLibs();
@@ -389,14 +389,14 @@ public class VRL {
      * @return the available plugins as collection of plugin dependencies
      */
     public static Collection<AbstractPluginDependency> getAvailablePlugins() {
-        Collection<AbstractPluginDependency> dependencies =
-                new ArrayList<AbstractPluginDependency>();
+        Collection<AbstractPluginDependency> dependencies
+                = new ArrayList<AbstractPluginDependency>();
 
         for (PluginConfigurator p : plugins.values()) {
             dependencies.add(new AbstractPluginDependency(
                     p.getIdentifier().getName(),
                     p.getIdentifier().getVersion().toString(),
-                    VersionInfo.UNDEFINED, /*optional*/false));
+                    VersionInfo.UNDEFINED, /*optional*/ false));
         }
 
         return dependencies;
@@ -445,14 +445,12 @@ public class VRL {
             }
         } // end for pC
 
-
         // remove invalid plugins
         for (String name : invalidPlugins) {
             plugins.remove(name);
         }
 
         invalidPlugins.clear();
-
 
         PluginManager graph = new PluginManager();
         int counter = 0;
@@ -469,7 +467,6 @@ public class VRL {
 
         List<PluginConfigurator> bootOrder = result.getOrder();
 
-
         // root classloader 
         ClassLoader root_parent = ClassLoader.getSystemClassLoader();
 
@@ -485,16 +482,15 @@ public class VRL {
         //   the parentage relation is defined as classloader relation, where
         //   the group element with the lowest bootorder index is the root
         //   parent of the group
-        Map<String, String> pluginParentageMap =
-                graph.computeClassLoaderParentageMap(
-                pluginGroupsRootElements, bootOrder);
+        Map<String, String> pluginParentageMap
+                = graph.computeClassLoaderParentageMap(
+                        pluginGroupsRootElements, bootOrder);
 
         // plugin classloaders connected as defined by the graph
         Collection<ClassLoader> classLoaders = new ArrayList<ClassLoader>();
 
         // plugin classloaders connected as defined by the graph
         Collection<ClassLoader> externalLoaders = new ArrayList<ClassLoader>();
-
 
         double incProgress = 80.0 / plugins.size();
         double progressValue = SplashScreenGenerator.getProgress();
@@ -517,7 +513,6 @@ public class VRL {
                 SplashScreenGenerator.printBootMessage(
                         ">> plugin (" + counter + "): "
                         + plugin.getIdentifier());
-
 
                 String pluginID = plugin.getIdentifier().getName();
                 String parentPluginID = pluginParentageMap.get(pluginID);
@@ -557,8 +552,8 @@ public class VRL {
                 // update plugin map entry
                 plugins.put(pluginID, plugin);
 
-                PluginDataController dataController =
-                        new PluginDataController(plugin);
+                PluginDataController dataController
+                        = new PluginDataController(plugin);
 
                 // update plugin data controller map entry
                 pluginsDataControllers.put(
@@ -589,7 +584,6 @@ public class VRL {
                     performConfiguratorInstall(plugin, dataController, initAPI);
                 }
 
-
                 try {
                     // initialize the plugin
                     plugin.init(initAPI);
@@ -600,7 +594,6 @@ public class VRL {
                             + " since VRL-0.4.0.");
                 }
 
-
             } catch (Throwable tr) {
 
                 invalidPlugins.add(plugin.getIdentifier().getName());
@@ -608,8 +601,8 @@ public class VRL {
                 Logger.getLogger(
                         VRL.class.getName()).log(Level.SEVERE, null, tr);
 
-                String errorMsg =
-                        " --> Error: cannot add plugin \""
+                String errorMsg
+                        = " --> Error: cannot add plugin \""
                         + plugin.getIdentifier().toString()
                         + "\" because initialization failed. Cause: <br>"
                         + tr.toString();
@@ -620,7 +613,6 @@ public class VRL {
                 }
             }
         } // end for p in bootorder
-
 
         if (updatedOrInstalledPlugins) {
             updateHelpIndex();
@@ -636,8 +628,8 @@ public class VRL {
         for (int i = 0; i < allPlugins.size(); i++) {
 
             PluginConfigurator tmpPC = allPlugins.get(i);
-            PluginConfigurator newPC =
-                    plugins.get(tmpPC.getIdentifier().getName());
+            PluginConfigurator newPC
+                    = plugins.get(tmpPC.getIdentifier().getName());
 
             if (newPC != null) {
                 allPlugins.set(i, newPC);
@@ -659,10 +651,10 @@ public class VRL {
 
         TextSaver textSaver = new TextSaver();
 
-        HTMLMenuGenerator menuGenerator =
-                new HTMLMenuGenerator("VRL Plugin Help Index",
-                "<p>The list below contains all installed VRL plugins."
-                + " Click on an item to open the desired help page.</p>\n");
+        HTMLMenuGenerator menuGenerator
+                = new HTMLMenuGenerator("VRL Plugin Help Index",
+                        "<p>The list below contains all installed VRL plugins."
+                        + " Click on an item to open the desired help page.</p>\n");
 
         for (PluginConfigurator pC : plugins.values()) {
 
@@ -719,7 +711,7 @@ public class VRL {
         boolean notInstalled = !loaded || !config.containsProperty(
                 PluginConfigurator.VERSION_KEY)
                 || !config.containsProperty(
-                PluginConfigurator.TIMESTAMP_KEY);
+                        PluginConfigurator.TIMESTAMP_KEY);
 
         if (notInstalled) {
             return true;
@@ -767,8 +759,8 @@ public class VRL {
     private static boolean performConfiguratorInstall(
             PluginConfigurator p, PluginDataController pD, InitPluginAPI iApi) {
 
-        String msg =
-                " --> " + p.getIdentifier().getName()
+        String msg
+                = " --> " + p.getIdentifier().getName()
                 + ": installing/updating:";
 
         File pluginLocation = VJarUtil.getClassLocation(p.getClass());
@@ -828,8 +820,8 @@ public class VRL {
      */
     private static void createInitialIndexFile(
             PluginConfigurator p, PluginDataController pD) {
-        InitialIndexPageGenerator indexGen =
-                new InitialIndexPageGenerator(p, pD);
+        InitialIndexPageGenerator indexGen
+                = new InitialIndexPageGenerator(p, pD);
         String initialIndexPage = indexGen.render();
 
         File index = new File(pD.getHelpFolder(), "index.html");
@@ -886,7 +878,6 @@ public class VRL {
                     VRL.getVRLPlugin().getIdentifier().getName())) {
                 finalResourceName = "/eu/mihosoft/vrl/rootplugin/content/" + contentName + "/";
             }
-
 
             if (platformSpecific) {
                 finalResourceName += VSysUtil.getPlatformSpecificPath() + "/" + archiveName;
@@ -1005,10 +996,10 @@ public class VRL {
             Class<?> cls, ClassLoader parent) {
         URLClassLoader pluginClsLoader = null;
         try {
-            pluginClsLoader =
-                    new URLClassLoader(
-                    new URL[]{VJarUtil.getClassLocation(cls).
-                toURI().toURL()}, parent);
+            pluginClsLoader
+                    = new URLClassLoader(
+                            new URL[]{VJarUtil.getClassLocation(cls).
+                                toURI().toURL()}, parent);
         } catch (MalformedURLException ex) {
             Logger.getLogger(VRL.class.getName()).
                     log(Level.SEVERE, null, ex);
@@ -1070,8 +1061,10 @@ public class VRL {
      */
     public static void addCanvas(Canvas c, Collection<PluginDependency> usedPlugins) {
 
-
-        registrationError = null; // we don't want to show old error messages
+        if (!firstStart) {
+            registrationError = null; // we don't want to show old error messages
+            firstStart = false;
+        }
 
         clearMenus();
 
@@ -1216,8 +1209,8 @@ public class VRL {
      * Cleans up the weak ref canvas list.
      */
     private static void cleanupCanvasList() {
-        ArrayList<WeakReference<Canvas>> delList =
-                new ArrayList<WeakReference<Canvas>>();
+        ArrayList<WeakReference<Canvas>> delList
+                = new ArrayList<WeakReference<Canvas>>();
 
         for (WeakReference<Canvas> c : canvasList) {
             if (c.get() == null) {
@@ -1261,15 +1254,11 @@ public class VRL {
             }
         }
 
-
 //        if (!file.exists()) {
 //            System.err.println(" --> Error: the file \"" + file.getName()
 //                    + "\" does not exist!");
 //            return;
 //        }
-
-
-
 //        if (file.isDirectory()) {
 //            String message = ">> searching for plugins in \""
 //                    + file.getAbsolutePath() + "\".";
@@ -1299,10 +1288,11 @@ public class VRL {
      * Adds a plugin to the plugin set.
      *
      * @param plugin the plugin to add
+     * @param f
      */
     static void addPlugin(final PluginConfigurator plugin, File f) {
-        PluginConfigurator registeredPlugin =
-                plugins.get(plugin.getIdentifier().getName());
+        PluginConfigurator registeredPlugin
+                = plugins.get(plugin.getIdentifier().getName());
 
         allPlugins.add(plugin);
 
@@ -1313,14 +1303,18 @@ public class VRL {
                     + " the already exiting plugin \""
                     + registeredPlugin.getIdentifier()
                     + "\".";
+//                    + "\". \n"
+//                    + "Plesase see \"" 
+//                    + VJarUtil.getClassLocation(plugin.getClass()).getAbsolutePath()
+//                    + "\".";
 
             // TODO enable this again, this was just done to prevent ugly errors
             // when running from netbeans
-//            if (registrationError != null) {
-//                registrationError += "<br>" + errorMsg;
-//            } else {
-//                registrationError = errorMsg;
-//            }
+            if (registrationError != null) {
+                registrationError += "<br>" + errorMsg;
+            } else {
+                registrationError = errorMsg;
+            }
 
             System.err.println(VTerminalUtil.red(errorMsg));
         } else {
@@ -1434,8 +1428,8 @@ public class VRL {
             SplashScreenGenerator.printBootMessage(message);
 
             // retrieve all classes in this jar file via urlclassloader
-            Collection<Class<?>> classes =
-                    VJarUtil.loadClasses(f, searchClassLoader);
+            Collection<Class<?>> classes
+                    = VJarUtil.loadClasses(f, searchClassLoader);
 
             boolean platformSupported = isPlatformSupported(f);
 
@@ -1449,21 +1443,21 @@ public class VRL {
 
                         boolean interfaceOrAbstract = cls.isInterface()
                                 || Modifier.isAbstract(cls.getModifiers());
-                        boolean isVrlPluginClass =
-                                cls.getClass().equals(VRLPlugin.class);
+                        boolean isVrlPluginClass
+                                = cls.getClass().equals(VRLPlugin.class);
 
                         if (!interfaceOrAbstract && !isVrlPluginClass) {
                             isPlugin = true;
 
-                            PluginConfigurator pC =
-                                    (PluginConfigurator) cls.newInstance();
+                            PluginConfigurator pC
+                                    = (PluginConfigurator) cls.newInstance();
 
                             if (platformSupported) {
                                 pA.loaded(pC);
                             } else {
                                 invalidPlugins.add(pC.getIdentifier().getName());
-                                String errorMsg =
-                                        " --> Error: cannot add plugin \""
+                                String errorMsg
+                                        = " --> Error: cannot add plugin \""
                                         + pC.getIdentifier().toString()
                                         + "\" because it depends on native"
                                         + " libraries that are not"
@@ -1490,9 +1484,9 @@ public class VRL {
 
             if (isPlugin) {
                 try {
-                    Collection<String> entries =
-                            VJarUtil.getEntryNamesFromStream(
-                            new JarInputStream(new FileInputStream(f)));
+                    Collection<String> entries
+                            = VJarUtil.getEntryNamesFromStream(
+                                    new JarInputStream(new FileInputStream(f)));
                     addProvidedEntries(f.getName(), entries);
                 } catch (IOException ex) {
                     Logger.getLogger(VRL.class.getName()).
@@ -1519,8 +1513,8 @@ public class VRL {
 
         String archiveName = PluginDataController.NATIVELIB + ".zip";
 
-        String platformLocation =
-                nativeFolderPath + "/"
+        String platformLocation
+                = nativeFolderPath + "/"
                 + VSysUtil.getPlatformSpecificPath() + "/" + archiveName;
 
         System.out.println(">> platform location: " + platformLocation);
@@ -1552,8 +1546,8 @@ public class VRL {
 
         String archiveName = PluginDataController.NATIVELIB + ".zip";
 
-        String platformLocation =
-                nativeFolderPath
+        String platformLocation
+                = nativeFolderPath
                 + VSysUtil.getPlatformSpecificPath() + "/" + archiveName;
 
         platformLocation = platformLocation.replace("//", "/");
@@ -1801,179 +1795,178 @@ public class VRL {
         for (final PluginConfigurator p : plugins.values()) {
             pluginMenuController.addAction(
                     new VAction(p.getIdentifier().toString(), null) {
-                @Override
-                public void actionPerformed(ActionEvent e, Object owner) {
-                    System.out.println(
-                            "Plugin: " + p.getIdentifier().toString());
+                        @Override
+                        public void actionPerformed(ActionEvent e, Object owner) {
+                            System.out.println(
+                                    "Plugin: " + p.getIdentifier().toString());
 
-                    Canvas canvas = null;
+                            Canvas canvas = null;
 
-                    if (!getCanvases().isEmpty()) {
-
-                        for (Canvas c : getCanvases()) {
-                            if (VSwingUtil.isWindowChild(c)) {
-                                canvas = c;
-                                break;
-                            }
-                        }
-
-                        String copyrightStatementText =
-                                p.getCopyrightInfo().
-                                getCopyrightStatement();
-
-                        if (copyrightStatementText == null
-                                || copyrightStatementText.isEmpty()) {
-                            copyrightStatementText = "info missing";
-                        }
-
-                        String description = p.getDescription();
-
-                        if (description == null
-                                || description.isEmpty()) {
-                            description = "description missing";
-                        }
-
-                        Box container = Box.createVerticalBox();
-
-                        HTMLLabel label = new HTMLLabel(
-                                "<html><body color=white><div align=Center>"
-                                + "<p><b><font size=10>&nbsp;&nbsp;&nbsp;&nbsp;"
-                                + p.getIdentifier().getName()
-                                + "&nbsp;&nbsp;&nbsp;&nbsp;</b></p><br>"
-                                + "<p><font size=4>"
-                                + p.getIdentifier().getVersion().toString()
-                                + "</p><br><br>"
-                                + "<p><b>Description:</b></p><br>"
-                                + description + "<br><br>"
-                                + "<p><b>Copyright:</b></p><br>"
-                                + copyrightStatementText
-                                + "<br>"
-                                + "</div></body></html>");
-
-                        label.setAlignmentX(0.5f);
-
-                        container.add(label);
-
-                        VButton copyrightBtn =
-                                new VButton("Copyright Information");
-
-                        copyrightBtn.setAlignmentX(0.5f);
-
-                        copyrightBtn.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                Canvas currentCanvas = null;
+                            if (!getCanvases().isEmpty()) {
 
                                 for (Canvas c : getCanvases()) {
                                     if (VSwingUtil.isWindowChild(c)) {
-                                        currentCanvas = c;
+                                        canvas = c;
                                         break;
                                     }
                                 }
-                                CopyrightDialog.showCopyrightDialog(
-                                        currentCanvas, p.getCopyrightInfo());
-                            }
-                        });
 
-                        if (!p.getCopyrightInfo().isPlainText()
+                                String copyrightStatementText
+                                = p.getCopyrightInfo().
+                                getCopyrightStatement();
+
+                                if (copyrightStatementText == null
+                                || copyrightStatementText.isEmpty()) {
+                                    copyrightStatementText = "info missing";
+                                }
+
+                                String description = p.getDescription();
+
+                                if (description == null
+                                || description.isEmpty()) {
+                                    description = "description missing";
+                                }
+
+                                Box container = Box.createVerticalBox();
+
+                                HTMLLabel label = new HTMLLabel(
+                                        "<html><body color=white><div align=Center>"
+                                        + "<p><b><font size=10>&nbsp;&nbsp;&nbsp;&nbsp;"
+                                        + p.getIdentifier().getName()
+                                        + "&nbsp;&nbsp;&nbsp;&nbsp;</b></p><br>"
+                                        + "<p><font size=4>"
+                                        + p.getIdentifier().getVersion().toString()
+                                        + "</p><br><br>"
+                                        + "<p><b>Description:</b></p><br>"
+                                        + description + "<br><br>"
+                                        + "<p><b>Copyright:</b></p><br>"
+                                        + copyrightStatementText
+                                        + "<br>"
+                                        + "</div></body></html>");
+
+                                label.setAlignmentX(0.5f);
+
+                                container.add(label);
+
+                                VButton copyrightBtn
+                                = new VButton("Copyright Information");
+
+                                copyrightBtn.setAlignmentX(0.5f);
+
+                                copyrightBtn.addActionListener(new ActionListener() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent e) {
+                                        Canvas currentCanvas = null;
+
+                                        for (Canvas c : getCanvases()) {
+                                            if (VSwingUtil.isWindowChild(c)) {
+                                                currentCanvas = c;
+                                                break;
+                                            }
+                                        }
+                                        CopyrightDialog.showCopyrightDialog(
+                                                currentCanvas, p.getCopyrightInfo());
+                                    }
+                                });
+
+                                if (!p.getCopyrightInfo().isPlainText()
                                 && (p.getCopyrightInfo().getCopyrightStatement() == null
                                 || p.getCopyrightInfo().getLicense() == null
                                 || p.getCopyrightInfo().getProjectName() == null
                                 || p.getCopyrightInfo().getProjectPage() == null)) {
-                            copyrightBtn.setEnabled(false);
-                        }
+                                    copyrightBtn.setEnabled(false);
+                                }
 
-                        VButton preferencesBtn =
-                                new VButton("Preferences");
+                                VButton preferencesBtn
+                                = new VButton("Preferences");
 
-                        preferencesBtn.setAlignmentX(0.5f);
+                                preferencesBtn.setAlignmentX(0.5f);
 
-                        container.add(Box.createVerticalStrut(5));
-                        container.add(copyrightBtn);
-                        container.add(Box.createVerticalStrut(20));
-                        container.add(preferencesBtn);
-                        container.add(Box.createVerticalStrut(20));
+                                container.add(Box.createVerticalStrut(5));
+                                container.add(copyrightBtn);
+                                container.add(Box.createVerticalStrut(20));
+                                container.add(preferencesBtn);
+                                container.add(Box.createVerticalStrut(20));
 
-                        if (p.getPreferencePane() == null
+                                if (p.getPreferencePane() == null
                                 || p.getPreferencePane().getInterface() == null) {
-                            preferencesBtn.setEnabled(false);
-                        }
+                                    preferencesBtn.setEnabled(false);
+                                }
 
-                        preferencesBtn.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                final JFrame f = new JFrame(
-                                        "Preferences: "
-                                        + p.getIdentifier().getName());
-                                f.setDefaultCloseOperation(
-                                        JFrame.DISPOSE_ON_CLOSE);
-
-                                PreferencePane pane = p.getPreferencePane();
-                                pane.setControl(new PreferencePaneControl() {
+                                preferencesBtn.addActionListener(new ActionListener() {
                                     @Override
-                                    public void close() {
-                                        f.setVisible(false);
-                                        f.dispose();
+                                    public void actionPerformed(ActionEvent e) {
+                                        final JFrame f = new JFrame(
+                                                "Preferences: "
+                                                + p.getIdentifier().getName());
+                                        f.setDefaultCloseOperation(
+                                                JFrame.DISPOSE_ON_CLOSE);
+
+                                        PreferencePane pane = p.getPreferencePane();
+                                        pane.setControl(new PreferencePaneControl() {
+                                            @Override
+                                            public void close() {
+                                                f.setVisible(false);
+                                                f.dispose();
+                                            }
+                                        });
+
+                                        f.add(pane.getInterface());
+                                        f.setMinimumSize(new Dimension(400, 300));
+                                        f.pack();
+
+                                        f.setVisible(true);
+
+                                        Canvas currentCanvas = null;
+
+                                        for (Canvas c : getCanvases()) {
+                                            if (VSwingUtil.isWindowChild(c)) {
+                                                currentCanvas = c;
+                                                break;
+                                            }
+                                        }
+
+                                        VGraphicsUtil.centerOnWindow(
+                                                VSwingUtil.getTopmostParent(
+                                                        currentCanvas), f);
                                     }
                                 });
 
-                                f.add(pane.getInterface());
-                                f.setMinimumSize(new Dimension(400, 300));
-                                f.pack();
+                                VButton helpBtn
+                                = new VButton("Help");
+                                helpBtn.setMinimumSize(
+                                        new Dimension(100,
+                                                helpBtn.getMinimumSize().height));
+                                helpBtn.setAlignmentX(0.5f);
+                                container.add(helpBtn);
 
-                                f.setVisible(true);
+                                // help
+                                final File helpIndex = new File(
+                                        pluginsDataControllers.get(
+                                                p.getIdentifier().getName()).
+                                        getHelpFolder(), "index.html");
 
-                                Canvas currentCanvas = null;
-
-                                for (Canvas c : getCanvases()) {
-                                    if (VSwingUtil.isWindowChild(c)) {
-                                        currentCanvas = c;
-                                        break;
-                                    }
+                                if (!helpIndex.exists()) {
+                                    helpBtn.setEnabled(false);
                                 }
 
-                                VGraphicsUtil.centerOnWindow(
-                                        VSwingUtil.getTopmostParent(
-                                        currentCanvas), f);
-                            }
-                        });
-
-                        VButton helpBtn =
-                                new VButton("Help");
-                        helpBtn.setMinimumSize(
-                                new Dimension(100,
-                                helpBtn.getMinimumSize().height));
-                        helpBtn.setAlignmentX(0.5f);
-                        container.add(helpBtn);
-
-                        // help
-                        final File helpIndex = new File(
-                                pluginsDataControllers.get(
-                                p.getIdentifier().getName()).
-                                getHelpFolder(), "index.html");
-
-                        if (!helpIndex.exists()) {
-                            helpBtn.setEnabled(false);
-                        }
-
-                        helpBtn.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent ae) {
-                                VSysUtil.openURI(helpIndex.toURI());
-                            }
-                        });
+                                helpBtn.addActionListener(new ActionListener() {
+                                    @Override
+                                    public void actionPerformed(ActionEvent ae) {
+                                        VSysUtil.openURI(helpIndex.toURI());
+                                    }
+                                });
 
 //                                new CanvasLabel(new CopyrightInfo2HTML(p.getCopyrightInfo()).toString())
-
-                        VDialog.showDialogWindow(
-                                canvas, "Plugin Information",
-                                container, "Close", false);
+                                VDialog.showDialogWindow(
+                                        canvas, "Plugin Information",
+                                        container, "Close", false);
 
 //                                VDialog.showMessageDialog(canvas, "Plugin Information",
 //                                        container);
-                    }
-                }
-            });
+                            }
+                        }
+                    });
         }
 
         pluginMenuController.buildMenu(infoMenu, null);
@@ -1987,77 +1980,76 @@ public class VRL {
 
             uninstallPluginMenuController.addAction(
                     new VAction(p.getIdentifier().toString(), null) {
-                @Override
-                public void actionPerformed(ActionEvent e, Object owner) {
-                    System.out.println(
-                            "Uninstall Plugin?: "
-                            + p.getIdentifier().toString());
+                        @Override
+                        public void actionPerformed(ActionEvent e, Object owner) {
+                            System.out.println(
+                                    "Uninstall Plugin?: "
+                                    + p.getIdentifier().toString());
 
-                    Canvas canvas = null;
+                            Canvas canvas = null;
 
-                    if (!getCanvases().isEmpty()) {
+                            if (!getCanvases().isEmpty()) {
 
-                        for (Canvas c : getCanvases()) {
-                            if (VSwingUtil.isWindowChild(c)) {
-                                canvas = c;
-                                break;
-                            }
-                        }
+                                for (Canvas c : getCanvases()) {
+                                    if (VSwingUtil.isWindowChild(c)) {
+                                        canvas = c;
+                                        break;
+                                    }
+                                }
 
-                        if (VDialog.showConfirmDialog(
-                                canvas, "Uninstall Plugin?",
-                                "<html><div align=Center>"
-                                + "<p>Shall the plugin "
-                                + Message.EMPHASIZE_BEGIN
-                                + p.getIdentifier()
-                                + Message.EMPHASIZE_END
-                                + " be uninstalled?</p>"
-                                + "</div></html>",
-                                VDialog.DialogType.YES_NO)
+                                if (VDialog.showConfirmDialog(
+                                        canvas, "Uninstall Plugin?",
+                                        "<html><div align=Center>"
+                                        + "<p>Shall the plugin "
+                                        + Message.EMPHASIZE_BEGIN
+                                        + p.getIdentifier()
+                                        + Message.EMPHASIZE_END
+                                        + " be uninstalled?</p>"
+                                        + "</div></html>",
+                                        VDialog.DialogType.YES_NO)
                                 == VDialog.AnswerType.YES) {
 
-                            if (e.getSource() instanceof AbstractButton) {
-                                AbstractButton item =
-                                        (AbstractButton) e.getSource();
-                                item.setEnabled(false);
+                                    if (e.getSource() instanceof AbstractButton) {
+                                        AbstractButton item
+                                        = (AbstractButton) e.getSource();
+                                        item.setEnabled(false);
+                                    }
+
+                                    // call uninstall method
+                                    // check whether to install/update this plugin
+                                    System.out.println(
+                                            " --> " + p.getIdentifier().getName()
+                                            + ": calling uninstall()");
+                                    try {
+
+                                        InitPluginAPI initAPI
+                                        = new InitPluginAPIImpl(
+                                                pluginsDataControllers.get(
+                                                        p.getIdentifier().getName()));
+
+                                        // uninstall the plugin
+                                        p.uninstall(initAPI);
+                                    } catch (Throwable tr) {
+                                        System.err.println(
+                                                "--> Error: cannot call uninstall() method!");
+                                        tr.printStackTrace(System.err);
+                                    }
+
+                                    UninstallPluginController.addRequest(p);
+
+                                    canvas.getMessageBox().addMessage(
+                                            "Uninstalled Plugin:",
+                                            ">> the plugin "
+                                            + p.getIdentifier()
+                                            + " has been uninstalled. "
+                                            + "Restart VRL-Studio to complete "
+                                            + "this operation.",
+                                            MessageType.INFO);
+
+                                }
                             }
-
-                            // call uninstall method
-                            // check whether to install/update this plugin
-                            System.out.println(
-                                    " --> " + p.getIdentifier().getName()
-                                    + ": calling uninstall()");
-                            try {
-
-                                InitPluginAPI initAPI =
-                                        new InitPluginAPIImpl(
-                                        pluginsDataControllers.get(
-                                        p.getIdentifier().getName()));
-
-                                // uninstall the plugin
-                                p.uninstall(initAPI);
-                            } catch (Throwable tr) {
-                                System.err.println(
-                                        "--> Error: cannot call uninstall() method!");
-                                tr.printStackTrace(System.err);
-                            }
-
-
-                            UninstallPluginController.addRequest(p);
-
-                            canvas.getMessageBox().addMessage(
-                                    "Uninstalled Plugin:",
-                                    ">> the plugin "
-                                    + p.getIdentifier()
-                                    + " has been uninstalled. "
-                                    + "Restart VRL-Studio to complete "
-                                    + "this operation.",
-                                    MessageType.INFO);
-
                         }
-                    }
-                }
-            });
+                    });
         }
 
         uninstallPluginMenuController.buildMenu(uninstallMenu, null);
@@ -2135,8 +2127,6 @@ public class VRL {
             Logger.getLogger(VRL.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-
-
         if (installAction != null) {
             installAction.analyzeStop(f);
         }
@@ -2189,8 +2179,6 @@ public class VRL {
             File destination = new File(
                     getPropertyFolderManager().getPluginFolder(),
                     f.getName());
-
-
 
             // delete previous cache if it does not provide chache file:
             File cacheFileDst = new File(destination.getAbsolutePath() + ".xml");
@@ -2247,22 +2235,22 @@ public class VRL {
                 getPropertyFolderManager().getPluginUpdatesFolder(),
                 new String[]{".jar"});
 
-        final ArrayList<PluginConfigurator> result =
-                new ArrayList<PluginConfigurator>();
+        final ArrayList<PluginConfigurator> result
+                = new ArrayList<PluginConfigurator>();
 
         for (File f : jarFiles) {
             try {
-                final VURLClassLoader clsLoader =
-                        new VURLClassLoader(new URL[]{f.toURI().toURL()});
+                final VURLClassLoader clsLoader
+                        = new VURLClassLoader(new URL[]{f.toURI().toURL()});
 
                 loadPlugin(
                         f, new PluginLoadAction() {
-                    @Override
-                    public void loaded(PluginConfigurator pC) {
-                        result.add(pC);
-                        clsLoader.close();
-                    }
-                },
+                            @Override
+                            public void loaded(PluginConfigurator pC) {
+                                result.add(pC);
+                                clsLoader.close();
+                            }
+                        },
                         clsLoader);
             } catch (MalformedURLException ex) {
                 Logger.getLogger(VRL.class.getName()).
@@ -2280,17 +2268,17 @@ public class VRL {
      * @return plugin configurators in the plugin file
      */
     public static Collection<PluginConfigurator> loadPlugins(File f) {
-        final ArrayList<PluginConfigurator> result =
-                new ArrayList<PluginConfigurator>();
+        final ArrayList<PluginConfigurator> result
+                = new ArrayList<PluginConfigurator>();
 
         try {
             loadPlugin(
                     f, new PluginLoadAction() {
-                @Override
-                public void loaded(PluginConfigurator pC) {
-                    result.add(pC);
-                }
-            },
+                        @Override
+                        public void loaded(PluginConfigurator pC) {
+                            result.add(pC);
+                        }
+                    },
                     new URLClassLoader(new URL[]{f.toURI().toURL()}));
         } catch (MalformedURLException ex) {
             Logger.getLogger(VRL.class.getName()).

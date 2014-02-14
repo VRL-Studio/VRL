@@ -54,6 +54,7 @@ package eu.mihosoft.vrl.lang;
 
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 import eu.mihosoft.vrl.visual.MessageType;
+import java.lang.reflect.Constructor;
 
 /**
  *
