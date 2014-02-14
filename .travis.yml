@@ -1,10 +1,14 @@
+branches:
+  except:
+    - playground-0.5
+
 language: java
 jdk:
   - oraclejdk7
   - oraclejdk8
   
 before_install:
-  - "export DISPLAY=:0"
+  - "export DISPLAY=:99.0"
   - "export TERM=dumb"
   - "sh -e /etc/init.d/xvfb start"
   - "cd VRL"

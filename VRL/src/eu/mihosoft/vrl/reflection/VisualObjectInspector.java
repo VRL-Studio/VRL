@@ -194,7 +194,7 @@ public class VisualObjectInspector extends ObjectInspector {
     /**
      * Returns an object specified by method identifier.
      *
-     * @param oRep method identifier
+     * @param mId method identifier
      * @return the requested object or <code>null</code> if no such object
      * exists
      */

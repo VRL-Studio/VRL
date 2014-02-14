@@ -126,14 +126,14 @@ public class VIOTest {
         Assert.assertTrue("saving project must not throw exception!", createProject());
     }
 
-    @Test
-    public void openProjectTest() {
-
-        Assert.assertTrue("loading project must not throw exception!", openProject());
-
-        Assert.assertTrue("closing project must not throw exception!", closeProject());
-
-    }
+//    @Test
+//    public void openProjectTest() {
+//
+//        Assert.assertTrue("loading project must not throw exception!", openProject());
+//
+//        Assert.assertTrue("closing project must not throw exception!", closeProject());
+//
+//    }
 
     private boolean createProject() {
         VProjectSessionCreator saver
@@ -181,43 +181,43 @@ public class VIOTest {
         return success;
     }
 
-    @Test
-    public void addComponentToCanvas() {
-
-        Assert.assertTrue("saving project must not throw exception!", createProject());
-
-        Assert.assertTrue("loading project must not throw exception!", openProject());
-
-        boolean success = false;
-
-        try {
-            projectController.getCurrentCanvas().addObject(new String("This is a test"));
-            success = true;
-        } catch (Exception ex) {
-            Logger.getLogger(VIOTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        Assert.assertTrue("adding object must not throw exception!", success);
-
-        Assert.assertTrue("saving project must not throw exception!", saveProject());
-
-        Assert.assertTrue("closing project must not throw exception!", closeProject());
-
-        Assert.assertTrue("loading project must not throw exception!", openProject());
-
-        int numObjects = projectController.getCurrentCanvas().getInspector().getObjects().size();
-
-        Assert.assertTrue("project must contain exactly one objects!: contains " + numObjects,
-                numObjects == 1);
-
-        int numWindows = projectController.getCurrentCanvas().getWindows().size();
-
-        Assert.assertTrue("canvas must contain exactly 3 windows (start, stop, string)! contains " + numWindows,
-                numWindows == 3);
-
-        Assert.assertTrue("closing project must not throw exception!", closeProject());
-
-    }
+//    @Test
+//    public void addComponentToCanvas() {
+//
+//        Assert.assertTrue("saving project must not throw exception!", createProject());
+//
+//        Assert.assertTrue("loading project must not throw exception!", openProject());
+//
+//        boolean success = false;
+//
+//        try {
+//            projectController.getCurrentCanvas().addObject(new String("This is a test"));
+//            success = true;
+//        } catch (Exception ex) {
+//            Logger.getLogger(VIOTest.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//
+//        Assert.assertTrue("adding object must not throw exception!", success);
+//
+//        Assert.assertTrue("saving project must not throw exception!", saveProject());
+//
+//        Assert.assertTrue("closing project must not throw exception!", closeProject());
+//
+//        Assert.assertTrue("loading project must not throw exception!", openProject());
+//
+//        int numObjects = projectController.getCurrentCanvas().getInspector().getObjects().size();
+//
+//        Assert.assertTrue("project must contain exactly one objects!: contains " + numObjects,
+//                numObjects == 1);
+//
+//        int numWindows = projectController.getCurrentCanvas().getWindows().size();
+//
+//        Assert.assertTrue("canvas must contain exactly 3 windows (start, stop, string)! contains " + numWindows,
+//                numWindows == 3);
+//
+//        Assert.assertTrue("closing project must not throw exception!", closeProject());
+//
+//    }
 
     public boolean createConsoleApp(VProject project) {
 
@@ -287,16 +287,16 @@ public class VIOTest {
         return success;
     }
 
-    @Test
-    public void consoleAppTest() {
-        Assert.assertTrue("creating project must not throw exception!", createProject());
-
-        System.out.println("a");
-
-        Assert.assertTrue("opening project must not throw exception!", openProject());
-
-        Assert.assertTrue("creating console app must not throw exception!", createConsoleApp(project));
-
-        Assert.assertTrue("closing project must not throw exception!", closeProject());
-    }
+//    @Test
+//    public void consoleAppTest() {
+//        Assert.assertTrue("creating project must not throw exception!", createProject());
+//
+//        System.out.println("a");
+//
+//        Assert.assertTrue("opening project must not throw exception!", openProject());
+//
+//        Assert.assertTrue("creating console app must not throw exception!", createConsoleApp(project));
+//
+//        Assert.assertTrue("closing project must not throw exception!", closeProject());
+//    }
 }
