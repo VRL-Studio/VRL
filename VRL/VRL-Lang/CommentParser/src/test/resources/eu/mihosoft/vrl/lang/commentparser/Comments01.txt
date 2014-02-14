@@ -16,3 +16,9 @@ plain multiline comment
 /**
  * JavaDoc comment
  */
+
+/*<!VRL!>This is a vrl comment*/
+
+/*<!VRL!>
+This is a vrl comment
+*/

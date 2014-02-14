@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.commentparser;
 
 import eu.mihosoft.vrl.lang.commentparser.antlr.CommentsBaseListener;
@@ -120,16 +119,25 @@ public class GrammarTest {
 
                     types.add(CommentsParser.RULE_javadocComment);
                 }
+
+                @Override
+                public void enterVrlComment(CommentsParser.VrlCommentContext ctx) {
+                    super.enterVrlComment(ctx);
+
+                    types.add(CommentsParser.RULE_vrlComment);
+                }
             });
         } catch (IOException ex) {
             Logger.getLogger(GrammarTest.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Assert.assertTrue("3 comments expected, got " + types.size(), types.size() == 3);
+        Assert.assertTrue("5 comments expected, got " + types.size(), types.size() == 5);
 
         Assert.assertTrue("line comment expected", types.get(0) == CommentsParser.RULE_lineComment);
         Assert.assertTrue("plain multiline comment expected", types.get(1) == CommentsParser.RULE_plainMultiLineComment);
         Assert.assertTrue("javadoc comment expected", types.get(2) == CommentsParser.RULE_javadocComment);
+        Assert.assertTrue("vrl comment expected", types.get(3) == CommentsParser.RULE_vrlComment);
+        Assert.assertTrue("vrl comment expected", types.get(4) == CommentsParser.RULE_vrlComment);
     }
 
     @Test
@@ -307,8 +315,6 @@ public class GrammarTest {
         Assert.assertTrue("1 plain multiline comment expected, got " + plainMultiLineComments.size(), plainMultiLineComments.size() == 1);
         Assert.assertTrue("31 javadoc comment expected, got " + javadocComments.size(), javadocComments.size() == 31);
     }
-
-    
 
     public static InputStream getResourceAsStream(String resourceName) {
         return GrammarTest.class.getResourceAsStream("/eu/mihosoft/vrl/lang/commentparser/" + resourceName);
