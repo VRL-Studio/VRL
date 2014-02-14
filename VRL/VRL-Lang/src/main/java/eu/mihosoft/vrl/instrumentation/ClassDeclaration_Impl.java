@@ -112,6 +112,15 @@ class ClassDeclaration_Impl extends ScopeImpl implements ClassDeclaration {
         
         return methodScope;
     }
+    
+    @Override
+    public boolean removeScope(Scope s) {
+        if(!super.removeScope(s)) {
+            return false;
+        }
+        
+        return getDeclaredMethods().remove(s);
+    }
 }
 
 final class ClassDeclarationMetaData {

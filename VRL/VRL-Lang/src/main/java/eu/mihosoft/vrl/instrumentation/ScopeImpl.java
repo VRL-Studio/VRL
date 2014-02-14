@@ -323,4 +323,9 @@ class ScopeImpl implements Scope {
         this.comments.add(new CommentImpl(id, range, comment));
     }
 
+    @Override
+    public boolean removeScope(Scope s) {
+        return scopes.remove(s);
+    }
+
 }

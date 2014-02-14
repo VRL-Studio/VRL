@@ -99,5 +99,7 @@ public interface Scope extends CodeEntity {
     public List<Comment> getComments();
 
     public void createComment(String id, ICodeRange range, String comment);
+    
+    public boolean removeScope(Scope s);
 }
 

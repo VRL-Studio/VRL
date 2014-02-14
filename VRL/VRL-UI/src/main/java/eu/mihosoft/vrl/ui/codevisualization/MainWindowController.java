@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.ui.codevisualization;
 
 import eu.mihosoft.vrl.instrumentation.Scope2Code;
@@ -69,6 +68,7 @@ import eu.mihosoft.vrl.workflow.Connections;
 import eu.mihosoft.vrl.workflow.Connector;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.VFlow;
+import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScalableContentPane;
@@ -112,7 +112,8 @@ public class MainWindowController implements Initializable {
     private Pane rootPane;
     private VFlow flow;
     private final Map<CodeEntity, VNode> invocationNodes = new HashMap<>();
-    private final Map<VNode, Invocation> nodeInvocations = new HashMap<>();
+    private final Map<String, Invocation> nodeInvocations = new HashMap<>();
+    private final Map<String, Scope> nodeToScopes = new HashMap<>();
     private final Map<String, Connector> variableConnectors = new HashMap<>();
 
     /**
@@ -294,34 +295,34 @@ public class MainWindowController implements Initializable {
 //            Variable retValue = scope.getVariable(i.getReturnValueName());
             List<DataRelation> relations = dataflow.getRelationsForReceiver(i);
 
-            System.out.println("relations: " + relations.size());
+//            System.out.println("relations: " + relations.size());
 
             for (DataRelation dataRelation : relations) {
 
                 VNode sender = invocationNodes.get(dataRelation.getSender());
                 VNode receiver = invocationNodes.get(dataRelation.getReceiver());
 
-                System.out.println("SENDER: " + sender.getId() + ", receiver: " + receiver.getId());
+//                System.out.println("SENDER: " + sender.getId() + ", receiver: " + receiver.getId());
 
                 String retValueName
                         = dataRelation.getSender().getReturnValueName();
 
-                System.out.println(" --> sender: " + retValueName);
+//                System.out.println(" --> sender: " + retValueName);
 
                 Connector senderConnector = getVariableById(sender, retValueName);
 
                 int inputIndex = 0;
 
                 for (Variable var : dataRelation.getReceiver().getArguments()) {
-                    System.out.println(" --> receiver: " + var.getName() + ", (possible receiver)");
+//                    System.out.println(" --> receiver: " + var.getName() + ", (possible receiver)");
                     if (var.getName().equals(retValueName)) {
                         Connector receiverConnector = getVariableById(receiver, var.getName());
 
                         ConnectionResult result = parent.connect(
                                 senderConnector, receiverConnector);
 
-                        System.out.println(" -> connected: " + result.getStatus().isCompatible());
-                        System.out.println(" -> " + result.getStatus().getMessage());
+//                        System.out.println(" -> connected: " + result.getStatus().isCompatible());
+//                        System.out.println(" -> " + result.getStatus().getMessage());
 
 //                        System.out.println(inputIndex + " = connect: " + senderConnector.getType() + ":" + senderConnector.isOutput() + " -> " + receiverConnector.getType() + ":" + receiverConnector.isInput());
                     }
@@ -339,9 +340,10 @@ public class MainWindowController implements Initializable {
 
         VFlow result = parent.newSubFlow();
 
-        updateControlflow(scope, result);
-
-        invocationNodes.put(scope, result.getModel());
+        addCloseNodeListener(result.getModel());
+        addControlflowListener(scope, result);
+//        invocationNodes.put(scope, result.getModel());
+        nodeToScopes.put(result.getModel().getId(), scope);
 
         String title = "" + scope.getType() + " "
                 + scope.getName() + "(): " + scope.getId();
@@ -357,7 +359,7 @@ public class MainWindowController implements Initializable {
 
         result.getModel().setTitle(title);
 
-        System.out.println("Title: " + title + ", " + scope.getType());
+//        System.out.println("Title: " + title + ", " + scope.getType());
 
         VNode prevNode = null;
 
@@ -380,7 +382,7 @@ public class MainWindowController implements Initializable {
                 n.setTitle(mTitle);
 
                 invocationNodes.put(i, n);
-                nodeInvocations.put(n, i);
+                nodeInvocations.put(n.getId(), i);
             }
 
             n.setMainInput(n.addInput("control"));
@@ -392,14 +394,14 @@ public class MainWindowController implements Initializable {
 
             for (Variable v : i.getArguments()) {
                 Connector input = n.addInput("data");
-                System.out.println(" > Write Connector: ");
+//                System.out.println(" > Write Connector: ");
                 variableConnectors.put(getVariableId(n, v), input);
             }
 
             if (!i.isVoid()) {
                 Connector output = n.addOutput("data");
                 Variable v = scope.getVariable(i.getReturnValueName());
-                System.out.println(" > Write Connector: ");
+//                System.out.println(" > Write Connector: ");
                 variableConnectors.put(getVariableId(n, v), output);
             }
 
@@ -420,9 +422,33 @@ public class MainWindowController implements Initializable {
         return result;
     }
 
-    private void updateControlflow(Scope rootScope, VFlow result) {
+    private void addCloseNodeListener(VFlowModel flow) {
+        flow.getNodes().addListener(
+                (ListChangeListener.Change<? extends VNode> change) -> {
+                    while (change.next()) {
+
+                        change.getRemoved().forEach(removedN -> {
+
+                            Scope s = nodeToScopes.get(removedN.getId());
+
+                            if (s.getParent() != null) {
+                                s.getParent().removeScope(s);
+                            }
+                        });
+
+                        if (change.wasRemoved()) {
+                            Scope rootScope = nodeToScopes.get(flow.getId());
+                            updateCode(rootScope);
+                        }
+                    }
+                }
+        );
+    }
+
+    private void addControlflowListener(Scope rootScope, VFlow result) {
         result.getConnections("control").getConnections().addListener(
                 (ListChangeListener.Change<? extends Connection> change) -> {
+
                     List<VNode> roots = result.getNodes().filtered(
                             n -> n.getInputs().stream().filter(
                                     (Connector c) -> {
@@ -440,12 +466,12 @@ public class MainWindowController implements Initializable {
                     // follow controlflow from roots to end
                     roots.forEach(
                             r -> {
-                                System.out.println("-- root " + r.getTitle() + " --");
+//                                System.out.println("-- root " + r.getTitle() + " --");
 
                                 List<VNode> path = getPath(r, "control");
 
-                                path.forEach(
-                                        n -> System.out.println("n->" + n.getTitle()));
+//                                path.forEach(
+//                                        n -> System.out.println("n->" + n.getTitle()));
 
                                 paths.add(path);
                             });
@@ -453,16 +479,18 @@ public class MainWindowController implements Initializable {
                     paths.forEach(path
                             -> path.forEach(node
                                     -> rootScope.getControlFlow().
-                                    getInvocations().add(nodeInvocations.get(node))
+                                    getInvocations().add(nodeInvocations.get(node.getId()))
                             )
                     );
-
-                    System.out.println("Scope: UPDATED");
-
-                    String code = Scope2Code.getCode(
-                            (CompilationUnitDeclaration) getRootScope(rootScope));
-                    editor.setText(code);
+                    updateCode(rootScope);
                 });
+    }
+
+    private void updateCode(Scope rootScope) {
+        System.out.println("Scope: UPDATED");
+        String code = Scope2Code.getCode(
+                (CompilationUnitDeclaration) getRootScope(rootScope));
+        editor.setText(code);
     }
 
     private Scope getRootScope(Scope s) {
@@ -481,9 +509,9 @@ public class MainWindowController implements Initializable {
         List<VNode> result = new ArrayList<>();
         result.add(sender);
 
-        Connections connections = sender.getFlow().getConnections("control");
+        Connections connections = sender.getFlow().getConnections(connectionType);
         Collection<Connection> connectionsWithSender
-                = connections.getAllWith(sender.getMainOutput("control"));
+                = connections.getAllWith(sender.getMainOutput(connectionType));
 
         while (!connectionsWithSender.isEmpty()) {
 
@@ -505,7 +533,7 @@ public class MainWindowController implements Initializable {
             if (newSender != null) {
                 connectionsWithSender
                         = connections.getAllWith(
-                                newSender.getMainOutput("control"));
+                                newSender.getMainOutput(connectionType));
             } else {
                 connectionsWithSender.clear();
             }
