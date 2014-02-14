@@ -74,11 +74,11 @@ import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScalableContentPane;
-import eu.mihosoft.vrl.workflow.io.PersistentNode;
 import groovy.lang.GroovyClassLoader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -92,8 +92,10 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -101,6 +103,11 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooserBuilder;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
 
 /**
  * FXML Controller class
@@ -109,11 +116,11 @@ import javafx.stage.FileChooserBuilder;
  */
 public class MainWindowController implements Initializable {
 
-    File currentDocument;
+    private File currentDocument;
     @FXML
-    TextArea editor;
+    private TextArea editor;
     @FXML
-    Pane view;
+    private Pane view;
     private Pane rootPane;
     private VFlow flow;
     private final Map<CodeEntity, String> invocationNodes = new HashMap<>();
@@ -121,6 +128,11 @@ public class MainWindowController implements Initializable {
     private final Map<String, Scope> nodeToScopes = new HashMap<>();
     private final Map<String, Connector> variableConnectors = new HashMap<>();
     private final Map<String, LayoutData> layoutData = new HashMap<>();
+
+    private FileAlterationMonitor fileMonitor;
+    private FileAlterationObserver observer;
+    
+    private Stage mainWindow;
 
     /**
      * Initializes the controller class.
@@ -145,6 +157,14 @@ public class MainWindowController implements Initializable {
         rootPane = root;
 
         flow = FlowFactory.newFlow();
+
+        fileMonitor = new FileAlterationMonitor(3000);
+
+        try {
+            fileMonitor.start();
+        } catch (Exception ex) {
+            Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @FXML
@@ -249,6 +269,36 @@ public class MainWindowController implements Initializable {
             Logger.getLogger(MainWindowController.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
+
+        if (observer != null) {
+            fileMonitor.removeObserver(observer);
+        }
+
+        observer = new FileAlterationObserver(currentDocument.getAbsoluteFile().getParentFile());
+        observer.addListener(new FileAlterationListenerAdaptor() {
+            @Override
+            public void onFileChange(File file) {
+
+                if (file.equals(currentDocument.getAbsoluteFile())) {
+
+                    Platform.runLater(() -> {
+                        try {
+                            editor.setText(new String(Files.readAllBytes(
+                                    Paths.get(currentDocument.getAbsolutePath())), "UTF-8"));
+                            updateView();
+                        } catch (UnsupportedEncodingException ex) {
+                            Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                        } catch (IOException ex) {
+                            Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+
+                    });
+                }
+            }
+        });
+
+        fileMonitor.addObserver(observer);
+
     }
 
     private void updateView() {
@@ -259,7 +309,7 @@ public class MainWindowController implements Initializable {
             System.err.println("UI NOT READY");
             return;
         }
-        
+
         nodeInvocations.clear();
         invocationNodes.clear();
         nodeToScopes.clear();
@@ -416,8 +466,8 @@ public class MainWindowController implements Initializable {
             }
 
 //            if (!applyPosition(n)) {
-                n.setWidth(400);
-                n.setHeight(100);
+            n.setWidth(400);
+            n.setHeight(100);
 //            }
 
             prevNode = n;
@@ -435,9 +485,9 @@ public class MainWindowController implements Initializable {
     }
 
     private void savePositions() {
-        
+
         layoutData.clear();
-        
+
         nodeToScopes.keySet().
                 forEach(id -> savePosition(flow.getNodeLookup().getById(id)));
         nodeInvocations.keySet().
@@ -464,7 +514,6 @@ public class MainWindowController implements Initializable {
         }
 
 //        System.out.println("ce: " + cE.getId());
-
         return cE;
     }
 
@@ -477,8 +526,8 @@ public class MainWindowController implements Initializable {
         }
 
         LayoutData d = layoutData.get(codeId(cE));
-        
-        if (d==null) {
+
+        if (d == null) {
             System.out.println("cannot load pos for " + cE.getId());
             return false;
         }
@@ -525,7 +574,6 @@ public class MainWindowController implements Initializable {
         String str = String.join(":", parts);
 
 //        System.out.println("id " + cE.getId() + " -> " + str);
-
         return str;
     }
 
@@ -690,6 +738,29 @@ public class MainWindowController implements Initializable {
 
     public Connector getVariableById(VNode n, String varName) {
         return variableConnectors.get(getVariableId(n, varName));
+    }
+
+    /**
+     * @return the mainWindow
+     */
+    public Stage getMainWindow() {
+        return mainWindow;
+    }
+
+    /**
+     * @param mainWindow the mainWindow to set
+     */
+    public void setMainWindow(Stage mainWindow) {
+        this.mainWindow = mainWindow;
+        
+        mainWindow.setOnCloseRequest((WindowEvent event) -> {
+            try {
+                fileMonitor.stop();
+            } catch (Exception ex) {
+                Logger.getLogger(MainWindowController.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            }
+        });
     }
 }
 

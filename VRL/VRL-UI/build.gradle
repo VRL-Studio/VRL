@@ -37,7 +37,9 @@ dependencies {
 
     compile "eu.mihosoft.vrl.workflow-8.0:vworkflows-fx:0.1-r2-SNAPSHOT"
     
-    compile "com.fifesoft:rsyntaxtextarea:2.5.0"
+//    compile "com.fifesoft:rsyntaxtextarea:2.5.0"
+    
+    compile "commons-io:commons-io:2.4"
 
     compile project(":VRL-Lang")
 }

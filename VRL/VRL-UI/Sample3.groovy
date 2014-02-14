@@ -17,6 +17,7 @@ public class MyFileClass {
         this.m3(v1, v2, v3);
     }
 }
+
 @eu.mihosoft.vrl.instrumentation.VRLVisualization
 public class MyFileClass2 {
     

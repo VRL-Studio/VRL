@@ -96,6 +96,7 @@ public class Main extends Application {
         }
 
         controller = fxmlLoader.getController();
+        controller.setMainWindow(primaryStage);
         
         Scene scene = new Scene((Parent) fxmlLoader.getRoot(), 1200, 800);
 
