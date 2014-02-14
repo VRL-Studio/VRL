@@ -81,7 +81,7 @@ import javax.swing.JFrame;
  */
 public class VRL {
 
-    public static boolean firstStart = true;
+    public static boolean firstCanvas = true;
 
     /**
      * Plugin configurators accessible via plugin name.
@@ -1061,9 +1061,9 @@ public class VRL {
      */
     public static void addCanvas(Canvas c, Collection<PluginDependency> usedPlugins) {
 
-        if (!firstStart) {
+        if (!firstCanvas) {
             registrationError = null; // we don't want to show old error messages
-            firstStart = false;
+            firstCanvas = false;
         }
 
         clearMenus();
