@@ -10,7 +10,7 @@
 // prefer. In this case NetBeans will not add these tasks but you may rely on
 // your own implementation.
 if (!hasProperty('mainClass')) {
-    ext.mainClass = 'eu.mihosoft.vrl.Main'
+    ext.mainClass = 'eu.mihosoft.vrl.ui.codevisualization.Main'
 }
 
 dependencies {

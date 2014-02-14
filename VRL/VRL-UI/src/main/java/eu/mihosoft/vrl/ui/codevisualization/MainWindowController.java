@@ -296,19 +296,16 @@ public class MainWindowController implements Initializable {
             List<DataRelation> relations = dataflow.getRelationsForReceiver(i);
 
 //            System.out.println("relations: " + relations.size());
-
             for (DataRelation dataRelation : relations) {
 
                 VNode sender = invocationNodes.get(dataRelation.getSender());
                 VNode receiver = invocationNodes.get(dataRelation.getReceiver());
 
 //                System.out.println("SENDER: " + sender.getId() + ", receiver: " + receiver.getId());
-
                 String retValueName
                         = dataRelation.getSender().getReturnValueName();
 
 //                System.out.println(" --> sender: " + retValueName);
-
                 Connector senderConnector = getVariableById(sender, retValueName);
 
                 int inputIndex = 0;
@@ -323,7 +320,6 @@ public class MainWindowController implements Initializable {
 
 //                        System.out.println(" -> connected: " + result.getStatus().isCompatible());
 //                        System.out.println(" -> " + result.getStatus().getMessage());
-
 //                        System.out.println(inputIndex + " = connect: " + senderConnector.getType() + ":" + senderConnector.isOutput() + " -> " + receiverConnector.getType() + ":" + receiverConnector.isInput());
                     }
                     inputIndex++;
@@ -360,7 +356,6 @@ public class MainWindowController implements Initializable {
         result.getModel().setTitle(title);
 
 //        System.out.println("Title: " + title + ", " + scope.getType());
-
         VNode prevNode = null;
 
         List<Invocation> invocations = new ArrayList<>();
@@ -445,18 +440,22 @@ public class MainWindowController implements Initializable {
         );
     }
 
+    private boolean isRoot(VNode n, String connectionType) {
+        return n.getInputs().stream().filter(
+                (Connector c) -> {
+                    return c.getType().equals(connectionType)
+                    && !c.getNode().getFlow().
+                    getConnections(connectionType).
+                    getAllWith(c).isEmpty();
+                }).count() == 0;
+    }
+
     private void addControlflowListener(Scope rootScope, VFlow result) {
         result.getConnections("control").getConnections().addListener(
                 (ListChangeListener.Change<? extends Connection> change) -> {
 
                     List<VNode> roots = result.getNodes().filtered(
-                            n -> n.getInputs().stream().filter(
-                                    (Connector c) -> {
-                                        return c.getType().equals("control")
-                                        && !c.getNode().getFlow().
-                                        getConnections("control").
-                                        getAllWith(c).isEmpty();
-                                    }).count() == 0);
+                            n -> isRoot(n, "control"));
 
                     // clear current control flow
                     rootScope.getControlFlow().getInvocations().clear();
@@ -472,7 +471,6 @@ public class MainWindowController implements Initializable {
 
 //                                path.forEach(
 //                                        n -> System.out.println("n->" + n.getTitle()));
-
                                 paths.add(path);
                             });
 
@@ -507,6 +505,12 @@ public class MainWindowController implements Initializable {
     private List<VNode> getPath(VNode sender, String connectionType) {
 
         List<VNode> result = new ArrayList<>();
+
+        if (!isRoot(sender, connectionType)) {
+            System.err.println("sender is no root!");
+            return result;
+        }
+
         result.add(sender);
 
         Connections connections = sender.getFlow().getConnections(connectionType);
