@@ -1288,7 +1288,7 @@ public class VRL {
      * Adds a plugin to the plugin set.
      *
      * @param plugin the plugin to add
-     * @param f
+     * @param f plugin file
      */
     static void addPlugin(final PluginConfigurator plugin, File f) {
         PluginConfigurator registeredPlugin
@@ -1297,25 +1297,44 @@ public class VRL {
         allPlugins.add(plugin);
 
         if (registeredPlugin != null) {
-            String errorMsg = " --> Error: cannot add plugin \""
-                    + plugin.getIdentifier().toString()
-                    + "\" because, according to its name, it is a duplicate of"
-                    + " the already exiting plugin \""
-                    + registeredPlugin.getIdentifier()
-                    + "\". \n"
-                    + "Plesase see \"" 
-                    + VJarUtil.getClassLocation(plugin.getClass()).getAbsolutePath()
-                    + "\".";
+
+            String regPluginPath = VJarUtil.getClassLocation(registeredPlugin.getClass()).getAbsolutePath();
+            String pluginPath = VJarUtil.getClassLocation(plugin.getClass()).getAbsolutePath();
+
+            if (regPluginPath.equals(pluginPath)) {
+//              TODO
+//            if the file/plugin path are equals we would add the same plugin twice if we continue
+//            so we know that we already have installed this plugin. 
+//            see issue on github refer to VRL-Tutorial-Plugin dublicate installation
+//            therefore we skip all the normal stuff
+//            if the reason for this behavior is know fix the code
+                System.out.println("--> plugin = \""
+                        + plugin.getIdentifier().toString()
+                        + "\" already installed skipping second try.");
+            } else {
+
+                String errorMsg = " --> Error: cannot add plugin \""
+                        + plugin.getIdentifier().toString()
+                        + "\" because, according to its name, it is a duplicate of"
+                        + " the already exiting plugin \""
+                        + registeredPlugin.getIdentifier()
+                        + "\". <br>"
+                        + "Plesase see <br>\""
+                        + VJarUtil.getClassLocation(plugin.getClass()).getAbsolutePath()
+                        //                    + "\" and <br> \""
+                        //                    + VJarUtil.getClassLocation(registeredPlugin.getClass()).getAbsolutePath()
+                        + "\".";
 
             // TODO enable this again, this was just done to prevent ugly errors
-            // when running from netbeans
-            if (registrationError != null) {
-                registrationError += "<br>" + errorMsg;
-            } else {
-                registrationError = errorMsg;
-            }
+                // when running from netbeans
+                if (registrationError != null) {
+                    registrationError += "<br>" + errorMsg;
+                } else {
+                    registrationError = errorMsg;
+                }
 
-            System.err.println(VTerminalUtil.red(errorMsg));
+                System.err.println(VTerminalUtil.red(errorMsg));
+            }
         } else {
 
             if (!plugin.getIdentifier().getName().equals("VRL")) {
