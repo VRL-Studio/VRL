@@ -1302,11 +1302,10 @@ public class VRL {
                     + "\" because, according to its name, it is a duplicate of"
                     + " the already exiting plugin \""
                     + registeredPlugin.getIdentifier()
+                    + "\". \n"
+                    + "Plesase see \"" 
+                    + VJarUtil.getClassLocation(plugin.getClass()).getAbsolutePath()
                     + "\".";
-//                    + "\". \n"
-//                    + "Plesase see \"" 
-//                    + VJarUtil.getClassLocation(plugin.getClass()).getAbsolutePath()
-//                    + "\".";
 
             // TODO enable this again, this was just done to prevent ugly errors
             // when running from netbeans
