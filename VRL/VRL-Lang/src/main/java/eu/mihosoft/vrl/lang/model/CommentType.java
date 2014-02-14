@@ -65,5 +65,6 @@ public enum CommentType {
     LINE,
     PLAIN_MULTI_LINE,
     JAVADOC,
+    VRL,
     UNDEFINED
 }

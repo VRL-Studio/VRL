@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang;
 
 import eu.mihosoft.vrl.lang.model.Comment;
@@ -81,9 +80,9 @@ public class VCommentParser {
 
     public static void parse(InputStream is, CommentsListener l, boolean closeStream) throws IOException {
         final ANTLRInputStream input;
-        
+
         if (closeStream) {
-             input = new ANTLRInputStream(is);
+            input = new ANTLRInputStream(is);
         } else {
             input = new ANTLRInputStreamNoClose(is);
         }
@@ -101,9 +100,9 @@ public class VCommentParser {
 
     public static void parse(Reader is, CommentsListener l, boolean closeStream) throws IOException {
         final ANTLRInputStream input;
-        
+
         if (closeStream) {
-             input = new ANTLRInputStream(is);
+            input = new ANTLRInputStream(is);
         } else {
             input = new ANTLRInputStreamNoClose(is);
         }
@@ -118,7 +117,7 @@ public class VCommentParser {
         CommentsListener extractor = l;
         walker.walk(extractor, tree);
     }
-    
+
     public static List<Comment> parse(Reader is) throws IOException {
         return parse(is, false);
     }
@@ -129,9 +128,9 @@ public class VCommentParser {
         final Reader reader = is;
 
         final ANTLRInputStream input;
-        
+
         if (closeReader) {
-             input = new ANTLRInputStream(is);
+            input = new ANTLRInputStream(is);
         } else {
             input = new ANTLRInputStreamNoClose(is);
         }
@@ -174,7 +173,6 @@ public class VCommentParser {
                         commentText, CommentType.LINE);
 
 //                System.out.println("// " + range);
-
                 result.add(comment);
             }
 
@@ -200,6 +198,26 @@ public class VCommentParser {
 
             @Override
             public void exitJavadocComment(CommentsParser.JavadocCommentContext ctx) {
+                //
+            }
+
+            @Override
+            public void enterVrlComment(CommentsParser.VrlCommentContext ctx) {
+                String commentText = parser.getTokenStream().getText(ctx.start, ctx.stop);
+
+                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), reader);
+
+                Comment comment = new CommentImpl(
+                        "COMMENT:UNDEFINED",
+                        range,
+                        commentText, CommentType.VRL);
+
+//                System.out.println("/** ... */ " + range);
+                result.add(comment);
+            }
+
+            @Override
+            public void exitVrlComment(CommentsParser.VrlCommentContext ctx) {
                 //
             }
         };
