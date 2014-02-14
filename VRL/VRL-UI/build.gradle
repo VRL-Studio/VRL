@@ -2,6 +2,8 @@
 //   for this project. This initialization is applied in the "build.gradle"
 //   of the root project.
 
+//apply from: 'https://repository-javafx-gradle-plugin.forge.cloudbees.com/snapshot/javafx.plugin'
+
 // NetBeans will automatically add "run" and "debug" tasks relying on the
 // "mainClass" property. You may however define the property prior executing
 // tasks by passing a "-PmainClass=<QUALIFIED_CLASS_NAME>" argument.
@@ -12,6 +14,16 @@
 if (!hasProperty('mainClass')) {
     ext.mainClass = 'eu.mihosoft.vrl.ui.codevisualization.Main'
 }
+
+manifest.mainAttributes("Main-Class" : ext.mainClass)
+
+//javafx {
+//    mainClass = "eu.mihosoft.vrl.ui.codevisualization.Main"
+//}
+//
+//jfxDeploy {
+//    packaging = "image"
+//}
 
 dependencies {
     // TODO: Add dependencies here
@@ -24,6 +36,8 @@ dependencies {
     
 
     compile "eu.mihosoft.vrl.workflow-8.0:vworkflows-fx:0.1-r2-SNAPSHOT"
+    
+    compile "com.fifesoft:rsyntaxtextarea:2.5.0"
 
     compile project(":VRL-Lang")
 }
