@@ -49,12 +49,15 @@
  */
 package eu.mihosoft.vrl.ui.codevisualization;
 
+import com.thoughtworks.xstream.XStream;
 import eu.mihosoft.vrl.instrumentation.Scope2Code;
 import eu.mihosoft.vrl.instrumentation.ScopeInvocation;
 import eu.mihosoft.vrl.instrumentation.ScopeType;
 import eu.mihosoft.vrl.instrumentation.UIBinding;
 import eu.mihosoft.vrl.instrumentation.Variable;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
+import eu.mihosoft.vrl.lang.model.Comment;
+import eu.mihosoft.vrl.lang.model.CommentType;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.DataFlow;
 import eu.mihosoft.vrl.lang.model.DataRelation;
@@ -81,7 +84,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -89,13 +91,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -131,7 +134,7 @@ public class MainWindowController implements Initializable {
 
     private FileAlterationMonitor fileMonitor;
     private FileAlterationObserver observer;
-    
+
     private Stage mainWindow;
 
     /**
@@ -196,8 +199,11 @@ public class MainWindowController implements Initializable {
 
     @FXML
     public void onSaveAction(ActionEvent e) {
-        saveDocument(false);
+        updateCode(UIBinding.scopes.values().iterator().next().get(0));
+
         updateView();
+
+        saveDocument(false);
     }
 
     private void saveDocument(boolean askForLocationIfAlreadyOpened) {
@@ -320,6 +326,8 @@ public class MainWindowController implements Initializable {
         GroovyClassLoader gcl = new GroovyClassLoader();
         gcl.parseClass(editor.getText(), "Script");
 
+        loadUIData();
+
         System.out.println("UPDATE UI");
 
         flow.clear();
@@ -345,6 +353,8 @@ public class MainWindowController implements Initializable {
         flow.setSkinFactories(skinFactory);
 
         applyPositions();
+
+        saveUIData();
 
 //        Layout layout = LayoutFactory.newDefaultLayout();
 //        layout.doLayout(flow);
@@ -550,12 +560,68 @@ public class MainWindowController implements Initializable {
 
     }
 
-    private void saveUIData(Path p) {
+    private void saveUIData() {
+        XStream xstream = new XStream();
+        xstream.alias("layout", LayoutData.class);
+        String data = xstream.toXML(layoutData);
+//        if (nodeToScopes.get(flow.getModel().getId()) != null) {
+//            System.out.println("saving!");
+//        } else {
+//            System.out.println("cannot save");
+//            return;
+//        }
+//        CompilationUnitDeclaration cud = (CompilationUnitDeclaration) nodeToScopes.get(flow.getModel().getId());
+        CompilationUnitDeclaration cud = (CompilationUnitDeclaration) UIBinding.scopes.values().iterator().next().get(0);
 
+//        Optional<Comment> vrlC = cud.getComments().stream().filter(c -> c.getType() == CommentType.VRL).findFirst();
+//
+//        if (vrlC.isPresent()) {
+//            cud.getComments().remove(vrlC.get());
+//        }
+        cud.getComments().stream().forEach(c -> System.out.println(c.getComment()));
+
+        List<Comment> toBeRemoved = cud.getComments().stream().filter(
+                c -> (c.getType() == CommentType.LINE
+                && (c.getComment().contains("<editor-fold")
+                || c.getComment().contains("</editor-fold"))) || c.getType() == CommentType.VRL
+        ).collect(Collectors.toList());
+
+        for (Comment comment : cud.getComments()) {
+            if (comment.getType() == CommentType.VRL) {
+                toBeRemoved.add(comment);
+            } else if (
+                    comment.getType() == CommentType.LINE
+                    && (comment.getComment().contains("<editor-fold")
+                    || comment.getComment().contains("</editor-fold"))) {
+                toBeRemoved.add(comment);
+            }
+        }
+
+        toBeRemoved.removeAll(toBeRemoved);
+
+        updateCode(cud);
+        editor.setText(editor.getText()
+                + "// <editor-fold defaultstate=\"collapsed\" desc=\"VRL-Data\">\n"
+                + "/*<!VRL!>\n" + data + "\n*/\n"
+                + "// </editor-fold>");
     }
 
-    private void loadUIData(Path p) {
+    private void loadUIData() {
+        try {
+            CompilationUnitDeclaration cud = (CompilationUnitDeclaration) UIBinding.scopes.values().iterator().next().get(0);
+            Optional<Comment> vrlC = cud.getComments().stream().filter(c -> c.getType() == CommentType.VRL).findFirst();
 
+            if (vrlC.isPresent()) {
+                String vrlComment = vrlC.get().getComment();
+                vrlComment = vrlComment.substring(9, vrlComment.length() - 2);
+                XStream xstream = new XStream();
+                xstream.alias("layout", LayoutData.class);
+                layoutData.clear();
+                layoutData.putAll((Map<String, LayoutData>) xstream.fromXML(vrlComment));
+            }
+        } catch (Exception ex) {
+            System.err.println("-> cannot load layout!");
+        }
     }
 
     private String codeId(CodeEntity cE) {
@@ -752,7 +818,7 @@ public class MainWindowController implements Initializable {
      */
     public void setMainWindow(Stage mainWindow) {
         this.mainWindow = mainWindow;
-        
+
         mainWindow.setOnCloseRequest((WindowEvent event) -> {
             try {
                 fileMonitor.stop();
@@ -851,9 +917,3 @@ class LayoutData {
         n.setHeight(height);
     }
 }
-
-
-/*<Type:VRL>
-
-
-*/

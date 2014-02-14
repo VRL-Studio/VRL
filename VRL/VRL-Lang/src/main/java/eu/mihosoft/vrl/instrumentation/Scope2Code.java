@@ -366,10 +366,10 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                 Utils.renderComments(Scope2Code.renderedComments,
                         forD.getControlFlow().getInvocations(), forD, cb, (CodeEntity ce) -> {
 
-                    if (ce instanceof Invocation) {
-                        render((Invocation) ce, cb);
-                    }
-                });
+                            if (ce instanceof Invocation) {
+                                render((Invocation) ce, cb);
+                            }
+                        });
 
                 if (!s.getControlFlow().getInvocations().isEmpty()) {
                     cb.decIndentation();
@@ -620,6 +620,16 @@ class CompilationUnitRenderer implements CodeRenderer<CompilationUnitDeclaration
                 classDeclarationRenderer.render((ClassDeclaration) ce, cb);
             }
         });
+
+        CommentRenderer cR = new CommentRenderer();
+
+        for (Comment c : e.getComments()) {
+            if (Scope2Code.renderedComments.contains(c)) {
+                continue;
+            }
+            cR.render(c, cb);
+            Scope2Code.renderedComments.add(c);
+        }
 
     }
 
