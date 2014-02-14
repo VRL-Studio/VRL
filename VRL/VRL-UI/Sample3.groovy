@@ -44,314 +44,11 @@ public class MyFileClass2 {
 // <editor-fold defaultstate="collapsed" desc="VRL-Data">
 /*<!VRL!>
 <map>
-<entry>
-<string>Script:my.testpackage.MyFileClass:m1:inv:m1</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>550.0</width>
-<height>800.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass:m1</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>300.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:abc1234</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>300.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass:m2:inv:m2</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass:m3:inv:m3</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:m3:inv:m1</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass:m3:inv:m1</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:m1</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>300.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass:m3:inv:m2</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:m3:inv:m2</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass:m2</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>300.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:m2:inv:m1</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass:m2:inv:m1</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass:m3</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>300.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:m1:inv:m1</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:abc123</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>300.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:m2:inv:m2</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:m3:inv:m3</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>100.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>550.0</width>
-<height>800.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:abc</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>300.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:m2</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>300.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2:m3</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>400.0</width>
-<height>300.0</height>
-</layout>
-</entry>
-<entry>
-<string>Script:my.testpackage.MyFileClass2</string>
-<layout>
-<x>0.0</x>
-<y>0.0</y>
-<width>550.0</width>
-<height>800.0</height>
-</layout>
-</entry>
-</map>
-*/
-// </editor-fold>
-// <editor-fold defaultstate="collapsed" desc="VRL-Data">
-/*<!VRL!>
-<map>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass:m1:inv:m1</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>100.0</height>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>550.0</width>
-      <height>800.0</height>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass:m1</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>300.0</height>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass2:abc1234</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>300.0</height>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass:m2:inv:m2</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>100.0</height>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass:m3:inv:m3</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>100.0</height>
-    </layout>
-  </entry>
   <entry>
     <string>Script:my.testpackage.MyFileClass2:m3:inv:m1</string>
     <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>100.0</height>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass:m3:inv:m1</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>100.0</height>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass2:m1</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>300.0</height>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass:m3:inv:m2</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
+      <x>187.08402828892693</x>
+      <y>229.1253829605959</y>
       <width>400.0</width>
       <height>100.0</height>
     </layout>
@@ -366,39 +63,12 @@ public class MyFileClass2 {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MyFileClass:m2</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>300.0</height>
-    </layout>
-  </entry>
-  <entry>
     <string>Script:my.testpackage.MyFileClass2:m2:inv:m1</string>
     <layout>
       <x>0.0</x>
       <y>0.0</y>
       <width>400.0</width>
       <height>100.0</height>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass:m2:inv:m1</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>100.0</height>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass:m3</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>300.0</height>
     </layout>
   </entry>
   <entry>
@@ -431,10 +101,91 @@ public class MyFileClass2 {
   <entry>
     <string>Script:my.testpackage.MyFileClass2:m3:inv:m3</string>
     <layout>
+      <x>76.17200265017132</x>
+      <y>114.25800397525698</y>
+      <width>400.0</width>
+      <height>100.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass2:abc</string>
+    <layout>
+      <x>423.37108952951377</x>
+      <y>448.52184732334626</y>
+      <width>400.0</width>
+      <height>300.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>550.0</width>
+      <height>800.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass:m1</string>
+    <layout>
+      <x>0.0</x>
+      <y>55.457178546364716</y>
+      <width>400.0</width>
+      <height>300.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass:m2:inv:m2</string>
+    <layout>
       <x>0.0</x>
       <y>0.0</y>
       <width>400.0</width>
       <height>100.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass:m2</string>
+    <layout>
+      <x>781.5724847164374</x>
+      <y>0.0</y>
+      <width>400.0</width>
+      <height>300.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass:m2:inv:m1</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>400.0</width>
+      <height>100.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass:m3</string>
+    <layout>
+      <x>497.0208761085538</x>
+      <y>731.7851486800416</y>
+      <width>400.0</width>
+      <height>300.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass2:abc1234</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>400.0</width>
+      <height>300.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass2:m1</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>400.0</width>
+      <height>300.0</height>
     </layout>
   </entry>
   <entry>
@@ -444,15 +195,6 @@ public class MyFileClass2 {
       <y>0.0</y>
       <width>550.0</width>
       <height>800.0</height>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass2:abc</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>300.0</height>
     </layout>
   </entry>
   <entry>
@@ -467,7 +209,7 @@ public class MyFileClass2 {
   <entry>
     <string>Script:my.testpackage.MyFileClass2:m3</string>
     <layout>
-      <x>0.0</x>
+      <x>726.4184408526169</x>
       <y>0.0</y>
       <width>400.0</width>
       <height>300.0</height>
@@ -476,10 +218,46 @@ public class MyFileClass2 {
   <entry>
     <string>Script:my.testpackage.MyFileClass2</string>
     <layout>
-      <x>0.0</x>
-      <y>0.0</y>
+      <x>810.8980753759207</x>
+      <y>449.4284201399479</y>
       <width>550.0</width>
       <height>800.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass:m1:inv:m1</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>400.0</width>
+      <height>100.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass:m3:inv:m3</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>400.0</width>
+      <height>100.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass:m3:inv:m1</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>400.0</width>
+      <height>100.0</height>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass:m3:inv:m2</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>400.0</width>
+      <height>100.0</height>
     </layout>
   </entry>
 </map>

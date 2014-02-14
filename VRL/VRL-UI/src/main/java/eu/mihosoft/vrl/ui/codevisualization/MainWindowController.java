@@ -211,7 +211,7 @@ public class MainWindowController implements Initializable {
         if (askForLocationIfAlreadyOpened || currentDocument == null) {
             FileChooser.ExtensionFilter mdFilter
                     = new FileChooser.ExtensionFilter(
-                            "Text Files (*.groovy, *.txt)", "*.groovy", "*.txt");
+                            "Text Files (*.groovy, *.java, *.txt)", "*.groovy", "*.txt", "*.java");
 
             FileChooser.ExtensionFilter allFilesfilter
                     = new FileChooser.ExtensionFilter("All Files (*.*)", "*.*");
@@ -251,7 +251,7 @@ public class MainWindowController implements Initializable {
             if (f == null) {
                 FileChooser.ExtensionFilter mdFilter
                         = new FileChooser.ExtensionFilter(
-                                "Text Files (*.groovy, *.txt)", "*.groovy", "*.txt");
+                                "Text Files (*.groovy, *.java, *.txt)", "*.groovy", "*.txt", "*.java");
 
                 FileChooser.ExtensionFilter allFilesfilter
                         = new FileChooser.ExtensionFilter("All Files (*.*)", "*.*");
@@ -586,18 +586,18 @@ public class MainWindowController implements Initializable {
                 || c.getComment().contains("</editor-fold"))) || c.getType() == CommentType.VRL
         ).collect(Collectors.toList());
 
-        for (Comment comment : cud.getComments()) {
-            if (comment.getType() == CommentType.VRL) {
-                toBeRemoved.add(comment);
-            } else if (
-                    comment.getType() == CommentType.LINE
-                    && (comment.getComment().contains("<editor-fold")
-                    || comment.getComment().contains("</editor-fold"))) {
-                toBeRemoved.add(comment);
-            }
-        }
+//        for (Comment comment : cud.getComments()) {
+//            if (comment.getType() == CommentType.VRL) {
+//                toBeRemoved.add(comment);
+//            } else if (
+//                    comment.getType() == CommentType.LINE
+//                    && (comment.getComment().contains("<editor-fold")
+//                    || comment.getComment().contains("</editor-fold"))) {
+//                toBeRemoved.add(comment);
+//            }
+//        }
 
-        toBeRemoved.removeAll(toBeRemoved);
+        cud.getComments().removeAll(toBeRemoved);
 
         updateCode(cud);
         editor.setText(editor.getText()
