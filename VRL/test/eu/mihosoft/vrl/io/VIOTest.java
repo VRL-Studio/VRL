@@ -40,9 +40,9 @@ public class VIOTest {
     private static VProject project;
     private static VProjectController projectController;
 
-    @BeforeClass
+ /*   @BeforeClass
     public static void setUpClass() throws Exception {
-        
+       
         setLAF();
 
         Toolkit.getDefaultToolkit();
@@ -72,7 +72,7 @@ public class VIOTest {
         projectController = new VProjectController(canvasParent, null);
 
         projectFile = new File(projectDir, "project-01.vrlp");
-    }
+    }*/
 
     public static void setLAF() {
 
@@ -104,12 +104,12 @@ public class VIOTest {
 
     }
 
-    @AfterClass
-    public static void tearDownClass() throws Exception {
-
-        Assert.assertTrue("closing project must not throw exception!", closeProject());
-        IOUtil.deleteContainedFilesAndDirs(testDir);
-    }
+ //   @AfterClass
+ //   public static void tearDownClass() throws Exception {
+//
+//        Assert.assertTrue("closing project must not throw exception!", closeProject());
+//        IOUtil.deleteContainedFilesAndDirs(testDir);
+//    }
 
     @Before
     public void setUp() {
@@ -120,11 +120,11 @@ public class VIOTest {
     public void tearDown() {
     }
 
-    @Test
-    public void createProjectTest() {
+//    @Test
+//    public void createProjectTest() {
 
-        Assert.assertTrue("saving project must not throw exception!", createProject());
-    }
+//        Assert.assertTrue("saving project must not throw exception!", createProject());
+//    }
 
 //    @Test
 //    public void openProjectTest() {
