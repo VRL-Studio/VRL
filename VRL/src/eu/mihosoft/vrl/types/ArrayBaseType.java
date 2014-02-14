@@ -381,9 +381,10 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
         updateConnectorIds();
 
-        for (TypeRepresentationContainer tCont : typeContainers) {
-            tCont.getTypeRepresentation().addedToMethodRepresentation();
-        }
+        // This is already (and should better be) done in updateView.
+        //for (TypeRepresentationContainer tCont : typeContainers) {
+        //    tCont.getTypeRepresentation().addedToMethodRepresentation();
+        //}
     }
 
     private void updateConnectorIds() {
@@ -594,7 +595,9 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
                 mRep.getConnectors().remove(
                         tC.getTypeRepresentation().getConnector());
-
+                
+                tC.getTypeRepresentation().dispose();
+                
                 if (getElementTypeValueOptions().size() > getTypeContainers().size()) {
                     getElementTypeValueOptions().remove(
                             getElementTypeValueOptions().size() - 1);
@@ -736,8 +739,8 @@ public class ArrayBaseType extends TypeRepresentationBase {
         if (o.getClass().equals(getType())) {
             updateView(getParentMethod(), o, true);
         }
-
-        setElementViewValues(o);
+        // if: elemViewValues are set at the end of updateView; else: do it here
+        else setElementViewValues(o);
     }
 
     @Override
@@ -1184,6 +1187,8 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
     @Override
     public void dispose() {
+        for (TypeRepresentationContainer tc: typeContainers)
+            tc.getTypeRepresentation().dispose();
         layout.removeAllFrameListeners();
     }
 
