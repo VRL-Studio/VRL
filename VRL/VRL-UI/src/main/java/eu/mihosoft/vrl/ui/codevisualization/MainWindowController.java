@@ -116,7 +116,7 @@ public class MainWindowController implements Initializable {
     Pane view;
     private Pane rootPane;
     private VFlow flow;
-    private final Map<CodeEntity, VNode> invocationNodes = new HashMap<>();
+    private final Map<CodeEntity, String> invocationNodes = new HashMap<>();
     private final Map<String, Invocation> nodeInvocations = new HashMap<>();
     private final Map<String, Scope> nodeToScopes = new HashMap<>();
     private final Map<String, Connector> variableConnectors = new HashMap<>();
@@ -259,6 +259,11 @@ public class MainWindowController implements Initializable {
             System.err.println("UI NOT READY");
             return;
         }
+        
+        nodeInvocations.clear();
+        invocationNodes.clear();
+        nodeToScopes.clear();
+        variableConnectors.clear();
 
         UIBinding.scopes.clear();
 
@@ -308,8 +313,8 @@ public class MainWindowController implements Initializable {
 //            System.out.println("relations: " + relations.size());
             for (DataRelation dataRelation : relations) {
 
-                VNode sender = invocationNodes.get(dataRelation.getSender());
-                VNode receiver = invocationNodes.get(dataRelation.getReceiver());
+                VNode sender = flow.getNodeLookup().getById(invocationNodes.get(dataRelation.getSender()));
+                VNode receiver = flow.getNodeLookup().getById(invocationNodes.get(dataRelation.getReceiver()));
 
 //                System.out.println("SENDER: " + sender.getId() + ", receiver: " + receiver.getId());
                 String retValueName
@@ -386,7 +391,7 @@ public class MainWindowController implements Initializable {
                         + i.getMethodName() + "(): " + i.getId();
                 n.setTitle(mTitle);
 
-                invocationNodes.put(i, n);
+                invocationNodes.put(i, n.getId());
                 nodeInvocations.put(n.getId(), i);
             }
 
@@ -410,10 +415,10 @@ public class MainWindowController implements Initializable {
                 variableConnectors.put(getVariableId(n, v), output);
             }
 
-            if (!applyPosition(n)) {
+//            if (!applyPosition(n)) {
                 n.setWidth(400);
                 n.setHeight(100);
-            }
+//            }
 
             prevNode = n;
         }
@@ -430,12 +435,19 @@ public class MainWindowController implements Initializable {
     }
 
     private void savePositions() {
+        
+        layoutData.clear();
+        
         nodeToScopes.keySet().
+                forEach(id -> savePosition(flow.getNodeLookup().getById(id)));
+        nodeInvocations.keySet().
                 forEach(id -> savePosition(flow.getNodeLookup().getById(id)));
     }
 
     private void applyPositions() {
         nodeToScopes.keySet().
+                forEach(id -> applyPosition(flow.getNodeLookup().getById(id)));
+        nodeInvocations.keySet().
                 forEach(id -> applyPosition(flow.getNodeLookup().getById(id)));
     }
 
@@ -444,14 +456,14 @@ public class MainWindowController implements Initializable {
         boolean isInvocation = nodeInvocations.get(n.getId()) != null;
 
         CodeEntity cE = null;
-        
+
         if (isScope) {
             cE = nodeToScopes.get(n.getId());
         } else if (isInvocation) {
-            cE =  nodeInvocations.get(n.getId());
+            cE = nodeInvocations.get(n.getId());
         }
-        
-        System.out.println("ce: " + cE.getId());
+
+//        System.out.println("ce: " + cE.getId());
 
         return cE;
     }
@@ -465,8 +477,9 @@ public class MainWindowController implements Initializable {
         }
 
         LayoutData d = layoutData.get(codeId(cE));
-
-        if (d == null) {
+        
+        if (d==null) {
+            System.out.println("cannot load pos for " + cE.getId());
             return false;
         }
 
@@ -480,6 +493,7 @@ public class MainWindowController implements Initializable {
         CodeEntity cE = nodeToCodeEntity(n);
 
         if (cE == null) {
+            System.out.println("cannot save pos for " + n.getTitle());
             return;
         }
 
@@ -510,14 +524,14 @@ public class MainWindowController implements Initializable {
 
         String str = String.join(":", parts);
 
-        System.out.println("id " + cE.getId() + " -> " + str);
+//        System.out.println("id " + cE.getId() + " -> " + str);
 
         return str;
     }
 
     private String entityId(CodeEntity cE) {
         if (cE instanceof Invocation) {
-            return "inv:"+((Invocation) cE).getMethodName();
+            return "inv:" + ((Invocation) cE).getMethodName();
         } else if (cE instanceof ForDeclaration) {
             return "for";
         } else if (cE instanceof WhileDeclaration) {
