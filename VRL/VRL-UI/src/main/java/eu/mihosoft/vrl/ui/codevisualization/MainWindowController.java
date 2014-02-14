@@ -58,8 +58,10 @@ import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.DataFlow;
 import eu.mihosoft.vrl.lang.model.DataRelation;
+import eu.mihosoft.vrl.lang.model.ForDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.WhileDeclaration;
 import eu.mihosoft.vrl.workflow.Connection;
 import eu.mihosoft.vrl.workflow.ConnectionResult;
 import eu.mihosoft.vrl.workflow.Connections;
@@ -72,15 +74,18 @@ import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScalableContentPane;
+import eu.mihosoft.vrl.workflow.io.PersistentNode;
 import groovy.lang.GroovyClassLoader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +120,7 @@ public class MainWindowController implements Initializable {
     private final Map<String, Invocation> nodeInvocations = new HashMap<>();
     private final Map<String, Scope> nodeToScopes = new HashMap<>();
     private final Map<String, Connector> variableConnectors = new HashMap<>();
+    private final Map<String, LayoutData> layoutData = new HashMap<>();
 
     /**
      * Initializes the controller class.
@@ -247,6 +253,8 @@ public class MainWindowController implements Initializable {
 
     private void updateView() {
 
+        savePositions();
+
         if (rootPane == null) {
             System.err.println("UI NOT READY");
             return;
@@ -280,6 +288,8 @@ public class MainWindowController implements Initializable {
 
         FXSkinFactory skinFactory = new FXSkinFactory(rootPane);
         flow.setSkinFactories(skinFactory);
+
+        applyPositions();
 
 //        Layout layout = LayoutFactory.newDefaultLayout();
 //        layout.doLayout(flow);
@@ -400,8 +410,10 @@ public class MainWindowController implements Initializable {
                 variableConnectors.put(getVariableId(n, v), output);
             }
 
-            n.setWidth(400);
-            n.setHeight(100);
+            if (!applyPosition(n)) {
+                n.setWidth(400);
+                n.setHeight(100);
+            }
 
             prevNode = n;
         }
@@ -415,6 +427,106 @@ public class MainWindowController implements Initializable {
         dataFlowToFlow(scope, result);
 
         return result;
+    }
+
+    private void savePositions() {
+        nodeToScopes.keySet().
+                forEach(id -> savePosition(flow.getNodeLookup().getById(id)));
+    }
+
+    private void applyPositions() {
+        nodeToScopes.keySet().
+                forEach(id -> applyPosition(flow.getNodeLookup().getById(id)));
+    }
+
+    private CodeEntity nodeToCodeEntity(VNode n) {
+        boolean isScope = nodeToScopes.get(n.getId()) != null;
+        boolean isInvocation = nodeInvocations.get(n.getId()) != null;
+
+        CodeEntity cE = null;
+        
+        if (isScope) {
+            cE = nodeToScopes.get(n.getId());
+        } else if (isInvocation) {
+            cE =  nodeInvocations.get(n.getId());
+        }
+        
+        System.out.println("ce: " + cE.getId());
+
+        return cE;
+    }
+
+    private boolean applyPosition(VNode n) {
+
+        CodeEntity cE = nodeToCodeEntity(n);
+
+        if (cE == null) {
+            return false;
+        }
+
+        LayoutData d = layoutData.get(codeId(cE));
+
+        if (d == null) {
+            return false;
+        }
+
+        d.apply(n);
+
+        return true;
+    }
+
+    private void savePosition(VNode n) {
+
+        CodeEntity cE = nodeToCodeEntity(n);
+
+        if (cE == null) {
+            return;
+        }
+
+        layoutData.put(codeId(cE), new LayoutData(n));
+
+    }
+
+    private void saveUIData(Path p) {
+
+    }
+
+    private void loadUIData(Path p) {
+
+    }
+
+    private String codeId(CodeEntity cE) {
+
+        List<String> parts = new ArrayList<>();
+
+        parts.add(entityId(cE));
+
+        while (cE.getParent() != null) {
+            cE = cE.getParent();
+            parts.add(entityId(cE));
+        }
+
+        Collections.reverse(parts);
+
+        String str = String.join(":", parts);
+
+        System.out.println("id " + cE.getId() + " -> " + str);
+
+        return str;
+    }
+
+    private String entityId(CodeEntity cE) {
+        if (cE instanceof Invocation) {
+            return "inv:"+((Invocation) cE).getMethodName();
+        } else if (cE instanceof ForDeclaration) {
+            return "for";
+        } else if (cE instanceof WhileDeclaration) {
+            return "while";
+        } else if (cE instanceof Scope) {
+            return ((Scope) cE).getName();
+        }
+
+        return "";
     }
 
     private void addCloseNodeListener(VFlowModel flow) {
@@ -564,5 +676,93 @@ public class MainWindowController implements Initializable {
 
     public Connector getVariableById(VNode n, String varName) {
         return variableConnectors.get(getVariableId(n, varName));
+    }
+}
+
+class LayoutData {
+
+    private double x;
+    private double y;
+    private double width;
+    private double height;
+
+    public LayoutData() {
+    }
+
+    public LayoutData(VNode n) {
+        this.x = n.getX();
+        this.y = n.getY();
+        this.width = n.getWidth();
+        this.height = n.getHeight();
+    }
+
+    public LayoutData(double x, double y, double width, double height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
+    /**
+     * @return the x
+     */
+    public double getX() {
+        return x;
+    }
+
+    /**
+     * @param x the x to set
+     */
+    public void setX(double x) {
+        this.x = x;
+    }
+
+    /**
+     * @return the y
+     */
+    public double getY() {
+        return y;
+    }
+
+    /**
+     * @param y the y to set
+     */
+    public void setY(double y) {
+        this.y = y;
+    }
+
+    /**
+     * @return the width
+     */
+    public double getWidth() {
+        return width;
+    }
+
+    /**
+     * @param width the width to set
+     */
+    public void setWidth(double width) {
+        this.width = width;
+    }
+
+    /**
+     * @return the height
+     */
+    public double getHeight() {
+        return height;
+    }
+
+    /**
+     * @param height the height to set
+     */
+    public void setHeight(double height) {
+        this.height = height;
+    }
+
+    public void apply(VNode n) {
+        n.setX(x);
+        n.setY(y);
+        n.setWidth(width);
+        n.setHeight(height);
     }
 }

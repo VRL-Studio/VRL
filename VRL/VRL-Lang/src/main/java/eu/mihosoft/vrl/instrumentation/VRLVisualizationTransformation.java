@@ -870,6 +870,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         for (Comment comment : comments) {
             System.out.println("comment: " + comment.getRange());
             if (scope.getRange().contains(comment.getRange())) {
+                ((CommentImpl) comment).setParent(scope);
                 scope.getComments().add(comment);
             }
         }

@@ -53,6 +53,7 @@ package eu.mihosoft.vrl.instrumentation;
 import eu.mihosoft.vrl.lang.model.CommentType;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
+import eu.mihosoft.vrl.lang.model.Scope;
 
 /**
  *
@@ -64,6 +65,7 @@ public class CommentImpl implements Comment {
     private ICodeRange codeRange;
     private String comment;
     private CommentType type = CommentType.UNDEFINED;
+    private Scope parent;
 
     public CommentImpl(String id, ICodeRange codeRange, String comment) {
         this.id = id;
@@ -140,6 +142,21 @@ public class CommentImpl implements Comment {
     @Override
     public void setType(CommentType type) {
         this.type = type;
+    }
+
+    /**
+     * @return the parent
+     */
+    @Override
+    public Scope getParent() {
+        return parent;
+    }
+
+    /**
+     * @param parent the parent to set
+     */
+    public void setParent(Scope parent) {
+        this.parent = parent;
     }
 
 }

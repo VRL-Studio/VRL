@@ -66,4 +66,6 @@ public interface CodeEntity {
     public void setRange(ICodeRange location);
     public ICodeRange getRange();
     
+    public Scope getParent();
+    
 }

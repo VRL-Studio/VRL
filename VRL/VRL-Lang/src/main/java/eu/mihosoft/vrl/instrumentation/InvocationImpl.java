@@ -173,15 +173,25 @@ class InvocationImpl implements Invocation {
     /**
      * @return the location
      */
+    @Override
     public ICodeRange getRange() {
-        return location;
+        return this.location;
     }
 
     /**
      * @param location the location to set
      */
+    @Override
     public void setRange(ICodeRange location) {
         this.location = location;
+    }
+
+    /**
+     * @return the parent
+     */
+    @Override
+    public Scope getParent() {
+        return this.parent;
     }
 
 }
