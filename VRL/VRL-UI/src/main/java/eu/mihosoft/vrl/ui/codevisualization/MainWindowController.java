@@ -4,23 +4,23 @@
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
  * 
- * This file is part of Visual Reflection Library (VRL).
+ * This file is part of Visual Reflection Library (VRL_LINE).
  *
- * VRL is free software: you can redistribute it and/or modify
+ * VRL_LINE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 3
  * as published by the Free Software Foundation.
  * 
  * see: http://opensource.org/licenses/LGPL-3.0
  *      file://path/to/VRL/src/eu/mihosoft/vrl/resources/license/lgplv3.txt
  *
- * VRL is distributed in the hope that it will be useful,
+ * VRL_LINE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
- * This version of VRL includes copyright notice and attribution requirements.
+ * This version of VRL_LINE includes copyright notice and attribution requirements.
  * According to the LGPL this information must be displayed even if you modify
- * the source code of VRL. Neither the VRL Canvas attribution icon nor any
+ * the source code of VRL_LINE. Neither the VRL_LINE Canvas attribution icon nor any
  * copyright statement/attribution may be removed.
  *
  * Attribution Requirements:
@@ -29,14 +29,14 @@
  * notice and author attribution.
  *
  * First, the following text must be displayed on the Canvas or an equivalent location:
- * "based on VRL source code".
+ * "based on VRL_LINE source code".
  * 
  * Second, the copyright notice must remain. It must be reproduced in any
- * program that uses VRL.
+ * program that uses VRL_LINE.
  *
- * Third, add an additional notice, stating that you modified VRL. In addition
+ * Third, add an additional notice, stating that you modified VRL_LINE. In addition
  * you must cite the publications listed below. A suitable notice might read
- * "VRL source code modified by YourName 2012".
+ * "VRL_LINE source code modified by YourName 2012".
  * 
  * Note, that these requirements are in full accordance with the LGPL v3
  * (see 7. Additional Terms, b).
@@ -93,9 +93,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
@@ -201,7 +203,7 @@ public class MainWindowController implements Initializable {
     public void onSaveAction(ActionEvent e) {
         updateCode(UIBinding.scopes.values().iterator().next().get(0));
 
-        updateView();
+        updateView(false);
 
         saveDocument(false);
     }
@@ -238,7 +240,7 @@ public class MainWindowController implements Initializable {
     @FXML
     public void onSaveAsAction(ActionEvent e) {
         saveDocument(true);
-        updateView();
+        updateView(false);
     }
 
     @FXML
@@ -269,7 +271,7 @@ public class MainWindowController implements Initializable {
 
 //            CompilationUnitDeclaration cu = Scope2Code.demoScope();
 //            editor.setText(Scope2Code.getCode(cu));
-            updateView();
+            updateView(false);
 
         } catch (IOException ex) {
             Logger.getLogger(MainWindowController.class.getName()).
@@ -291,7 +293,7 @@ public class MainWindowController implements Initializable {
                         try {
                             editor.setText(new String(Files.readAllBytes(
                                     Paths.get(currentDocument.getAbsolutePath())), "UTF-8"));
-                            updateView();
+                            updateView(true);
                         } catch (UnsupportedEncodingException ex) {
                             Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
                         } catch (IOException ex) {
@@ -307,7 +309,7 @@ public class MainWindowController implements Initializable {
 
     }
 
-    private void updateView() {
+    private void updateView(boolean refresh) {
 
         savePositions();
 
@@ -326,7 +328,9 @@ public class MainWindowController implements Initializable {
         GroovyClassLoader gcl = new GroovyClassLoader();
         gcl.parseClass(editor.getText(), "Script");
 
-        loadUIData();
+        if (!refresh) {
+            loadUIData();
+        }
 
         System.out.println("UPDATE UI");
 
@@ -573,7 +577,7 @@ public class MainWindowController implements Initializable {
 //        CompilationUnitDeclaration cud = (CompilationUnitDeclaration) nodeToScopes.get(flow.getModel().getId());
         CompilationUnitDeclaration cud = (CompilationUnitDeclaration) UIBinding.scopes.values().iterator().next().get(0);
 
-//        Optional<Comment> vrlC = cud.getComments().stream().filter(c -> c.getType() == CommentType.VRL).findFirst();
+//        Optional<Comment> vrlC = cud.getComments().stream().filter(c -> c.getType() == CommentType.VRL_LINE).findFirst();
 //
 //        if (vrlC.isPresent()) {
 //            cud.getComments().remove(vrlC.get());
@@ -581,13 +585,13 @@ public class MainWindowController implements Initializable {
         cud.getComments().stream().forEach(c -> System.out.println(c.getComment()));
 
         List<Comment> toBeRemoved = cud.getComments().stream().filter(
-                c -> (c.getType() == CommentType.LINE
+                c -> (c.getType() == CommentType.PLAIN_LINE
                 && (c.getComment().contains("<editor-fold")
-                || c.getComment().contains("</editor-fold"))) || c.getType() == CommentType.VRL
+                || c.getComment().contains("</editor-fold"))) || c.getType() == CommentType.VRL_LINE
         ).collect(Collectors.toList());
 
 //        for (Comment comment : cud.getComments()) {
-//            if (comment.getType() == CommentType.VRL) {
+//            if (comment.getType() == CommentType.VRL_LINE) {
 //                toBeRemoved.add(comment);
 //            } else if (
 //                    comment.getType() == CommentType.LINE
@@ -596,31 +600,42 @@ public class MainWindowController implements Initializable {
 //                toBeRemoved.add(comment);
 //            }
 //        }
-
         cud.getComments().removeAll(toBeRemoved);
 
         updateCode(cud);
         editor.setText(editor.getText()
                 + "// <editor-fold defaultstate=\"collapsed\" desc=\"VRL-Data\">\n"
-                + "/*<!VRL!>\n" + data + "\n*/\n"
+                + "/*<!VRL!><Type:VRL-Layout>\n" + data + "\n*/\n"
                 + "// </editor-fold>");
     }
 
     private void loadUIData() {
         try {
             CompilationUnitDeclaration cud = (CompilationUnitDeclaration) UIBinding.scopes.values().iterator().next().get(0);
-            Optional<Comment> vrlC = cud.getComments().stream().filter(c -> c.getType() == CommentType.VRL).findFirst();
+
+            Predicate<Comment> vrlCommentType = (Comment c) -> {
+                return c.getType() == CommentType.VRL_MULTI_LINE;
+            };
+
+            Predicate<Comment> vrlLayoutType = (Comment c) -> {
+                System.out.println("c: " + c.getType());
+                return c.getType() == CommentType.VRL_MULTI_LINE && c.getComment().contains("<!VRL!><Type:VRL-Layout>");
+            };
+
+            Optional<Comment> vrlC = cud.getComments().stream().filter(vrlLayoutType).findFirst();
 
             if (vrlC.isPresent()) {
                 String vrlComment = vrlC.get().getComment();
-                vrlComment = vrlComment.substring(9, vrlComment.length() - 2);
+                vrlComment = vrlComment.substring(26, vrlComment.length() - 2);
                 XStream xstream = new XStream();
                 xstream.alias("layout", LayoutData.class);
                 layoutData.clear();
                 layoutData.putAll((Map<String, LayoutData>) xstream.fromXML(vrlComment));
+            } else {
+                System.err.println("-> cannot load layout - not present!");
             }
         } catch (Exception ex) {
-            System.err.println("-> cannot load layout!");
+            System.err.println("-> cannot load layout - exception while loading!");
         }
     }
 
@@ -836,6 +851,7 @@ class LayoutData {
     private double y;
     private double width;
     private double height;
+    private boolean contentVisible;
 
     public LayoutData() {
     }
@@ -845,13 +861,20 @@ class LayoutData {
         this.y = n.getY();
         this.width = n.getWidth();
         this.height = n.getHeight();
+
+        if (n instanceof VFlowModel) {
+            this.contentVisible = ((VFlowModel) n).isVisible();
+        } else {
+            this.contentVisible = true;
+        }
     }
 
-    public LayoutData(double x, double y, double width, double height) {
+    public LayoutData(double x, double y, double width, double height, boolean contentVisible) {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.contentVisible = contentVisible;
     }
 
     /**
@@ -915,5 +938,9 @@ class LayoutData {
         n.setY(y);
         n.setWidth(width);
         n.setHeight(height);
+
+        if (n instanceof VFlowModel) {
+            ((VFlowModel) n).setVisible(contentVisible);
+        }
     }
 }

@@ -4,23 +4,23 @@
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
  * 
- * This file is part of Visual Reflection Library (VRL).
+ * This file is part of Visual Reflection Library (VRL_LINE).
  *
- * VRL is free software: you can redistribute it and/or modify
+ * VRL_LINE is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License version 3
  * as published by the Free Software Foundation.
  * 
  * see: http://opensource.org/licenses/LGPL-3.0
  *      file://path/to/VRL/src/eu/mihosoft/vrl/resources/license/lgplv3.txt
  *
- * VRL is distributed in the hope that it will be useful,
+ * VRL_LINE is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Lesser General Public License for more details.
  *
- * This version of VRL includes copyright notice and attribution requirements.
+ * This version of VRL_LINE includes copyright notice and attribution requirements.
  * According to the LGPL this information must be displayed even if you modify
- * the source code of VRL. Neither the VRL Canvas attribution icon nor any
+ * the source code of VRL_LINE. Neither the VRL_LINE Canvas attribution icon nor any
  * copyright statement/attribution may be removed.
  *
  * Attribution Requirements:
@@ -29,14 +29,14 @@
  * notice and author attribution.
  *
  * First, the following text must be displayed on the Canvas or an equivalent location:
- * "based on VRL source code".
+ * "based on VRL_LINE source code".
  * 
  * Second, the copyright notice must remain. It must be reproduced in any
- * program that uses VRL.
+ * program that uses VRL_LINE.
  *
- * Third, add an additional notice, stating that you modified VRL. In addition
+ * Third, add an additional notice, stating that you modified VRL_LINE. In addition
  * you must cite the publications listed below. A suitable notice might read
- * "VRL source code modified by YourName 2012".
+ * "VRL_LINE source code modified by YourName 2012".
  * 
  * Note, that these requirements are in full accordance with the LGPL v3
  * (see 7. Additional Terms, b).
@@ -162,7 +162,7 @@ public class VCommentParser {
             }
 
             @Override
-            public void enterLineComment(CommentsParser.LineCommentContext ctx) {
+            public void enterPlainLineComment(CommentsParser.PlainLineCommentContext ctx) {
                 String commentText = parser.getTokenStream().getText(ctx.start, ctx.stop);
 
                 CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), reader);
@@ -170,14 +170,14 @@ public class VCommentParser {
                 Comment comment = new CommentImpl(
                         "COMMENT:UNDEFINED",
                         range,
-                        commentText, CommentType.LINE);
+                        commentText, CommentType.PLAIN_LINE);
 
 //                System.out.println("// " + range);
                 result.add(comment);
             }
 
             @Override
-            public void exitLineComment(CommentsParser.LineCommentContext ctx) {
+            public void exitPlainLineComment(CommentsParser.PlainLineCommentContext ctx) {
                 //
             }
 
@@ -200,9 +200,9 @@ public class VCommentParser {
             public void exitJavadocComment(CommentsParser.JavadocCommentContext ctx) {
                 //
             }
-
+            
             @Override
-            public void enterVrlComment(CommentsParser.VrlCommentContext ctx) {
+            public void enterVrlLineComment(CommentsParser.VrlLineCommentContext ctx) {
                 String commentText = parser.getTokenStream().getText(ctx.start, ctx.stop);
 
                 CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), reader);
@@ -210,14 +210,34 @@ public class VCommentParser {
                 Comment comment = new CommentImpl(
                         "COMMENT:UNDEFINED",
                         range,
-                        commentText, CommentType.VRL);
+                        commentText, CommentType.VRL_LINE);
 
 //                System.out.println("/** ... */ " + range);
                 result.add(comment);
             }
 
             @Override
-            public void exitVrlComment(CommentsParser.VrlCommentContext ctx) {
+            public void exitVrlLineComment(CommentsParser.VrlLineCommentContext ctx) {
+                //
+            }
+
+            @Override
+            public void enterVrlMultiLineComment(CommentsParser.VrlMultiLineCommentContext ctx) {
+                String commentText = parser.getTokenStream().getText(ctx.start, ctx.stop);
+
+                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), reader);
+
+                Comment comment = new CommentImpl(
+                        "COMMENT:UNDEFINED",
+                        range,
+                        commentText, CommentType.VRL_MULTI_LINE);
+
+//                System.out.println("/** ... */ " + range);
+                result.add(comment);
+            }
+
+            @Override
+            public void exitVrlMultiLineComment(CommentsParser.VrlMultiLineCommentContext ctx) {
                 //
             }
         };
