@@ -168,7 +168,8 @@ public class MainWindowController implements Initializable {
         try {
             fileMonitor.start();
         } catch (Exception ex) {
-            Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(MainWindowController.class.getName()).
+                    log(Level.SEVERE, null, ex);
         }
     }
 
@@ -213,7 +214,8 @@ public class MainWindowController implements Initializable {
         if (askForLocationIfAlreadyOpened || currentDocument == null) {
             FileChooser.ExtensionFilter mdFilter
                     = new FileChooser.ExtensionFilter(
-                            "Text Files (*.groovy, *.java, *.txt)", "*.groovy", "*.txt", "*.java");
+                            "Text Files (*.groovy, *.java, *.txt)",
+                            "*.groovy", "*.txt", "*.java");
 
             FileChooser.ExtensionFilter allFilesfilter
                     = new FileChooser.ExtensionFilter("All Files (*.*)", "*.*");
@@ -253,10 +255,12 @@ public class MainWindowController implements Initializable {
             if (f == null) {
                 FileChooser.ExtensionFilter mdFilter
                         = new FileChooser.ExtensionFilter(
-                                "Text Files (*.groovy, *.java, *.txt)", "*.groovy", "*.txt", "*.java");
+                                "Text Files (*.groovy, *.java, *.txt)",
+                                "*.groovy", "*.txt", "*.java");
 
                 FileChooser.ExtensionFilter allFilesfilter
-                        = new FileChooser.ExtensionFilter("All Files (*.*)", "*.*");
+                        = new FileChooser.ExtensionFilter(
+                                "All Files (*.*)", "*.*");
 
                 currentDocument
                         = FileChooserBuilder.create().title("Open Groovy File").
@@ -269,8 +273,6 @@ public class MainWindowController implements Initializable {
             editor.setText(new String(Files.readAllBytes(
                     Paths.get(currentDocument.getAbsolutePath())), "UTF-8"));
 
-//            CompilationUnitDeclaration cu = Scope2Code.demoScope();
-//            editor.setText(Scope2Code.getCode(cu));
             updateView(false);
 
         } catch (IOException ex) {
@@ -282,7 +284,8 @@ public class MainWindowController implements Initializable {
             fileMonitor.removeObserver(observer);
         }
 
-        observer = new FileAlterationObserver(currentDocument.getAbsoluteFile().getParentFile());
+        observer = new FileAlterationObserver(
+                currentDocument.getAbsoluteFile().getParentFile());
         observer.addListener(new FileAlterationListenerAdaptor() {
             @Override
             public void onFileChange(File file) {
@@ -291,13 +294,17 @@ public class MainWindowController implements Initializable {
 
                     Platform.runLater(() -> {
                         try {
-                            editor.setText(new String(Files.readAllBytes(
-                                    Paths.get(currentDocument.getAbsolutePath())), "UTF-8"));
+                            editor.setText(new String(
+                                    Files.readAllBytes(
+                                    Paths.get(currentDocument.getAbsolutePath())),
+                                    "UTF-8"));
                             updateView(true);
                         } catch (UnsupportedEncodingException ex) {
-                            Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                            Logger.getLogger(MainWindowController.class.getName()).
+                                    log(Level.SEVERE, null, ex);
                         } catch (IOException ex) {
-                            Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+                            Logger.getLogger(MainWindowController.class.getName()).
+                                    log(Level.SEVERE, null, ex);
                         }
 
                     });
@@ -377,8 +384,10 @@ public class MainWindowController implements Initializable {
 //            System.out.println("relations: " + relations.size());
             for (DataRelation dataRelation : relations) {
 
-                VNode sender = flow.getNodeLookup().getById(invocationNodes.get(dataRelation.getSender()));
-                VNode receiver = flow.getNodeLookup().getById(invocationNodes.get(dataRelation.getReceiver()));
+                VNode sender = flow.getNodeLookup().getById(
+                        invocationNodes.get(dataRelation.getSender()));
+                VNode receiver = flow.getNodeLookup().getById(
+                        invocationNodes.get(dataRelation.getReceiver()));
 
 //                System.out.println("SENDER: " + sender.getId() + ", receiver: " + receiver.getId());
                 String retValueName
@@ -568,21 +577,12 @@ public class MainWindowController implements Initializable {
         XStream xstream = new XStream();
         xstream.alias("layout", LayoutData.class);
         String data = xstream.toXML(layoutData);
-//        if (nodeToScopes.get(flow.getModel().getId()) != null) {
-//            System.out.println("saving!");
-//        } else {
-//            System.out.println("cannot save");
-//            return;
-//        }
-//        CompilationUnitDeclaration cud = (CompilationUnitDeclaration) nodeToScopes.get(flow.getModel().getId());
-        CompilationUnitDeclaration cud = (CompilationUnitDeclaration) UIBinding.scopes.values().iterator().next().get(0);
 
-//        Optional<Comment> vrlC = cud.getComments().stream().filter(c -> c.getType() == CommentType.VRL_LINE).findFirst();
-//
-//        if (vrlC.isPresent()) {
-//            cud.getComments().remove(vrlC.get());
-//        }
-//        cud.getComments().stream().forEach(c -> System.out.println(c.getComment()));
+        CompilationUnitDeclaration cud = 
+                (CompilationUnitDeclaration) UIBinding.scopes.values().
+                        iterator().next().get(0);
+
+
         Predicate<Comment> vrlLayoutType = (Comment c) -> {
             return c.getType() == CommentType.VRL_MULTI_LINE
                     && c.getComment().contains("<!VRL!><Type:VRL-Layout>");
@@ -696,14 +696,21 @@ public class MainWindowController implements Initializable {
         );
     }
 
-    private boolean isRoot(VNode n, String connectionType) {
-        return n.getInputs().stream().filter(
-                (Connector c) -> {
-                    return c.getType().equals(connectionType)
+    private boolean isRoot(VNode node, String connectionType) {
+        
+        Predicate<Connector> notConnected = (Connector c) -> {
+            return c.getType().equals(connectionType)
                     && !c.getNode().getFlow().
                     getConnections(connectionType).
                     getAllWith(c).isEmpty();
-                }).count() == 0;
+        };
+        
+        Predicate<VNode> rootNode = (VNode n) -> {
+            return n.getInputs().filtered(notConnected).isEmpty();
+        };
+        
+        
+        return rootNode.test(node);
     }
 
     private void addControlflowListener(Scope rootScope, VFlow result) {
