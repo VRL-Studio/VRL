@@ -102,9 +102,9 @@ public class GrammarTest {
             parse("Comments01.txt", new CommentsBaseListener() {
 
                 @Override
-                public void enterLineComment(CommentsParser.LineCommentContext ctx) {
-                    super.enterLineComment(ctx);
-                    types.add(CommentsParser.RULE_lineComment);
+                public void enterPlainLineComment(CommentsParser.PlainLineCommentContext ctx) {
+                    super.enterPlainLineComment(ctx);
+                    types.add(CommentsParser.RULE_plainLineComment);
                 }
 
                 @Override
@@ -121,23 +121,31 @@ public class GrammarTest {
                 }
 
                 @Override
-                public void enterVrlComment(CommentsParser.VrlCommentContext ctx) {
-                    super.enterVrlComment(ctx);
+                public void enterVrlMultiLineComment(CommentsParser.VrlMultiLineCommentContext ctx) {
+                    super.enterVrlMultiLineComment(ctx);
 
-                    types.add(CommentsParser.RULE_vrlComment);
+                    types.add(CommentsParser.RULE_vrlMultiLineComment);
+                }
+
+                @Override
+                public void enterVrlLineComment(CommentsParser.VrlLineCommentContext ctx) {
+                    super.enterVrlLineComment(ctx);
+
+                    types.add(CommentsParser.RULE_vrlLineComment);
                 }
             });
         } catch (IOException ex) {
             Logger.getLogger(GrammarTest.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Assert.assertTrue("5 comments expected, got " + types.size(), types.size() == 5);
+        Assert.assertTrue("6 comments expected, got " + types.size(), types.size() == 6);
 
-        Assert.assertTrue("line comment expected", types.get(0) == CommentsParser.RULE_lineComment);
+        Assert.assertTrue("plain line comment expected", types.get(0) == CommentsParser.RULE_plainLineComment);
         Assert.assertTrue("plain multiline comment expected", types.get(1) == CommentsParser.RULE_plainMultiLineComment);
         Assert.assertTrue("javadoc comment expected", types.get(2) == CommentsParser.RULE_javadocComment);
-        Assert.assertTrue("vrl comment expected", types.get(3) == CommentsParser.RULE_vrlComment);
-        Assert.assertTrue("vrl comment expected", types.get(4) == CommentsParser.RULE_vrlComment);
+        Assert.assertTrue("vrl multiline comment expected", types.get(3) == CommentsParser.RULE_vrlMultiLineComment);
+        Assert.assertTrue("vrl multiline comment expected", types.get(4) == CommentsParser.RULE_vrlMultiLineComment);
+        Assert.assertTrue("vrl line comment expected", types.get(5) == CommentsParser.RULE_vrlLineComment);
     }
 
     @Test

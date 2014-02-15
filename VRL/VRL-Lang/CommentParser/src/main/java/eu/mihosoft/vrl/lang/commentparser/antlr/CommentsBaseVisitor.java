@@ -42,7 +42,7 @@ public class CommentsBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx) { return visitChildren(ctx); }
+	@Override public T visitUnknowns(@NotNull CommentsParser.UnknownsContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}
@@ -50,7 +50,15 @@ public class CommentsBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitUnknowns(@NotNull CommentsParser.UnknownsContext ctx) { return visitChildren(ctx); }
+	@Override public T visitProgram(@NotNull CommentsParser.ProgramContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}
@@ -66,7 +74,7 @@ public class CommentsBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitProgram(@NotNull CommentsParser.ProgramContext ctx) { return visitChildren(ctx); }
+	@Override public T visitVrlMultiLineComment(@NotNull CommentsParser.VrlMultiLineCommentContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}
@@ -90,7 +98,15 @@ public class CommentsBaseVisitor<T> extends AbstractParseTreeVisitor<T> implemen
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitVrlComment(@NotNull CommentsParser.VrlCommentContext ctx) { return visitChildren(ctx); }
+	@Override public T visitVrlLineComment(@NotNull CommentsParser.VrlLineCommentContext ctx) { return visitChildren(ctx); }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitPlainLineComment(@NotNull CommentsParser.PlainLineCommentContext ctx) { return visitChildren(ctx); }
 
 	/**
 	 * {@inheritDoc}

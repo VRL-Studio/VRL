@@ -33,18 +33,25 @@ public interface CommentsVisitor<T> extends ParseTreeVisitor<T> {
 	T visitStringSingleQuote(@NotNull CommentsParser.StringSingleQuoteContext ctx);
 
 	/**
-	 * Visit a parse tree produced by {@link CommentsParser#plainMultiLineComment}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx);
-
-	/**
 	 * Visit a parse tree produced by {@link CommentsParser#unknowns}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitUnknowns(@NotNull CommentsParser.UnknownsContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link CommentsParser#program}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProgram(@NotNull CommentsParser.ProgramContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link CommentsParser#plainMultiLineComment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link CommentsParser#comment}.
@@ -54,11 +61,11 @@ public interface CommentsVisitor<T> extends ParseTreeVisitor<T> {
 	T visitComment(@NotNull CommentsParser.CommentContext ctx);
 
 	/**
-	 * Visit a parse tree produced by {@link CommentsParser#program}.
+	 * Visit a parse tree produced by {@link CommentsParser#vrlMultiLineComment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitProgram(@NotNull CommentsParser.ProgramContext ctx);
+	T visitVrlMultiLineComment(@NotNull CommentsParser.VrlMultiLineCommentContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link CommentsParser#lineComment}.
@@ -75,11 +82,18 @@ public interface CommentsVisitor<T> extends ParseTreeVisitor<T> {
 	T visitJavadocComment(@NotNull CommentsParser.JavadocCommentContext ctx);
 
 	/**
-	 * Visit a parse tree produced by {@link CommentsParser#vrlComment}.
+	 * Visit a parse tree produced by {@link CommentsParser#vrlLineComment}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitVrlComment(@NotNull CommentsParser.VrlCommentContext ctx);
+	T visitVrlLineComment(@NotNull CommentsParser.VrlLineCommentContext ctx);
+
+	/**
+	 * Visit a parse tree produced by {@link CommentsParser#plainLineComment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPlainLineComment(@NotNull CommentsParser.PlainLineCommentContext ctx);
 
 	/**
 	 * Visit a parse tree produced by {@link CommentsParser#stringDoubleQuotes}.

@@ -52,11 +52,13 @@ grammar Comments;
 program: (comment | string | unknowns)*;
 
 comment: multiLineComment | lineComment;
-multiLineComment: plainMultiLineComment | javadocComment | vrlComment;
+multiLineComment: plainMultiLineComment | javadocComment | vrlMultiLineComment;
 plainMultiLineComment: MULTILINE_COMMENT;
 javadocComment: JAVADOC_COMMENT;
-vrlComment: VRL_COMMENT;
-lineComment:	LINE_COMMENT;
+vrlMultiLineComment: VRL_MULTILINE_COMMENT;
+vrlLineComment: VRL_LINE_COMMENT;
+lineComment: plainLineComment|vrlLineComment;
+plainLineComment: LINE_COMMENT;
 
 string: stringDoubleQuotes | stringSingleQuote;
 stringDoubleQuotes : STRING_DOUBLE;
@@ -79,8 +81,12 @@ JAVADOC_COMMENT
     :   '/**' .*? '*/'
     ;
 
-VRL_COMMENT
+VRL_MULTILINE_COMMENT
     :   '/*<!VRL!>' .*? '*/'
+    ;
+
+VRL_LINE_COMMENT
+    :   '//<!VRL!>' ~[\r\n]*
     ;
 
 MULTILINE_COMMENT

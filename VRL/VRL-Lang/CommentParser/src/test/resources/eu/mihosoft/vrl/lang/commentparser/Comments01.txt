@@ -22,3 +22,5 @@ plain multiline comment
 /*<!VRL!>
 This is a vrl comment
 */
+
+//<!VRL!>VRL Line comment

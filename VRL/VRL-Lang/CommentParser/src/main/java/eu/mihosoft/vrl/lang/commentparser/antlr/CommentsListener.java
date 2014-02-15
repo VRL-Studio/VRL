@@ -42,17 +42,6 @@ public interface CommentsListener extends ParseTreeListener {
 	void exitStringSingleQuote(@NotNull CommentsParser.StringSingleQuoteContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link CommentsParser#plainMultiLineComment}.
-	 * @param ctx the parse tree
-	 */
-	void enterPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CommentsParser#plainMultiLineComment}.
-	 * @param ctx the parse tree
-	 */
-	void exitPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx);
-
-	/**
 	 * Enter a parse tree produced by {@link CommentsParser#unknowns}.
 	 * @param ctx the parse tree
 	 */
@@ -62,6 +51,28 @@ public interface CommentsListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitUnknowns(@NotNull CommentsParser.UnknownsContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link CommentsParser#program}.
+	 * @param ctx the parse tree
+	 */
+	void enterProgram(@NotNull CommentsParser.ProgramContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CommentsParser#program}.
+	 * @param ctx the parse tree
+	 */
+	void exitProgram(@NotNull CommentsParser.ProgramContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link CommentsParser#plainMultiLineComment}.
+	 * @param ctx the parse tree
+	 */
+	void enterPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CommentsParser#plainMultiLineComment}.
+	 * @param ctx the parse tree
+	 */
+	void exitPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link CommentsParser#comment}.
@@ -75,15 +86,15 @@ public interface CommentsListener extends ParseTreeListener {
 	void exitComment(@NotNull CommentsParser.CommentContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link CommentsParser#program}.
+	 * Enter a parse tree produced by {@link CommentsParser#vrlMultiLineComment}.
 	 * @param ctx the parse tree
 	 */
-	void enterProgram(@NotNull CommentsParser.ProgramContext ctx);
+	void enterVrlMultiLineComment(@NotNull CommentsParser.VrlMultiLineCommentContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CommentsParser#program}.
+	 * Exit a parse tree produced by {@link CommentsParser#vrlMultiLineComment}.
 	 * @param ctx the parse tree
 	 */
-	void exitProgram(@NotNull CommentsParser.ProgramContext ctx);
+	void exitVrlMultiLineComment(@NotNull CommentsParser.VrlMultiLineCommentContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link CommentsParser#lineComment}.
@@ -108,15 +119,26 @@ public interface CommentsListener extends ParseTreeListener {
 	void exitJavadocComment(@NotNull CommentsParser.JavadocCommentContext ctx);
 
 	/**
-	 * Enter a parse tree produced by {@link CommentsParser#vrlComment}.
+	 * Enter a parse tree produced by {@link CommentsParser#vrlLineComment}.
 	 * @param ctx the parse tree
 	 */
-	void enterVrlComment(@NotNull CommentsParser.VrlCommentContext ctx);
+	void enterVrlLineComment(@NotNull CommentsParser.VrlLineCommentContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CommentsParser#vrlComment}.
+	 * Exit a parse tree produced by {@link CommentsParser#vrlLineComment}.
 	 * @param ctx the parse tree
 	 */
-	void exitVrlComment(@NotNull CommentsParser.VrlCommentContext ctx);
+	void exitVrlLineComment(@NotNull CommentsParser.VrlLineCommentContext ctx);
+
+	/**
+	 * Enter a parse tree produced by {@link CommentsParser#plainLineComment}.
+	 * @param ctx the parse tree
+	 */
+	void enterPlainLineComment(@NotNull CommentsParser.PlainLineCommentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link CommentsParser#plainLineComment}.
+	 * @param ctx the parse tree
+	 */
+	void exitPlainLineComment(@NotNull CommentsParser.PlainLineCommentContext ctx);
 
 	/**
 	 * Enter a parse tree produced by {@link CommentsParser#stringDoubleQuotes}.

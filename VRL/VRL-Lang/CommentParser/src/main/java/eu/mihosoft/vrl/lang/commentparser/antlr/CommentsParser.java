@@ -15,20 +15,21 @@ public class CommentsParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		STRING_DOUBLE=1, STRING_SINGLE=2, JAVADOC_COMMENT=3, VRL_COMMENT=4, MULTILINE_COMMENT=5, 
-		LINE_COMMENT=6, UNKNOWN=7;
+		STRING_DOUBLE=1, STRING_SINGLE=2, JAVADOC_COMMENT=3, VRL_MULTILINE_COMMENT=4, 
+		VRL_LINE_COMMENT=5, MULTILINE_COMMENT=6, LINE_COMMENT=7, UNKNOWN=8;
 	public static final String[] tokenNames = {
-		"<INVALID>", "STRING_DOUBLE", "STRING_SINGLE", "JAVADOC_COMMENT", "VRL_COMMENT", 
-		"MULTILINE_COMMENT", "LINE_COMMENT", "UNKNOWN"
+		"<INVALID>", "STRING_DOUBLE", "STRING_SINGLE", "JAVADOC_COMMENT", "VRL_MULTILINE_COMMENT", 
+		"VRL_LINE_COMMENT", "MULTILINE_COMMENT", "LINE_COMMENT", "UNKNOWN"
 	};
 	public static final int
 		RULE_program = 0, RULE_comment = 1, RULE_multiLineComment = 2, RULE_plainMultiLineComment = 3, 
-		RULE_javadocComment = 4, RULE_vrlComment = 5, RULE_lineComment = 6, RULE_string = 7, 
-		RULE_stringDoubleQuotes = 8, RULE_stringSingleQuote = 9, RULE_unknowns = 10;
+		RULE_javadocComment = 4, RULE_vrlMultiLineComment = 5, RULE_vrlLineComment = 6, 
+		RULE_lineComment = 7, RULE_plainLineComment = 8, RULE_string = 9, RULE_stringDoubleQuotes = 10, 
+		RULE_stringSingleQuote = 11, RULE_unknowns = 12;
 	public static final String[] ruleNames = {
 		"program", "comment", "multiLineComment", "plainMultiLineComment", "javadocComment", 
-		"vrlComment", "lineComment", "string", "stringDoubleQuotes", "stringSingleQuote", 
-		"unknowns"
+		"vrlMultiLineComment", "vrlLineComment", "lineComment", "plainLineComment", 
+		"string", "stringDoubleQuotes", "stringSingleQuote", "unknowns"
 	};
 
 	@Override
@@ -95,37 +96,38 @@ public class CommentsParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(27);
+			setState(31);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_DOUBLE) | (1L << STRING_SINGLE) | (1L << JAVADOC_COMMENT) | (1L << VRL_COMMENT) | (1L << MULTILINE_COMMENT) | (1L << LINE_COMMENT) | (1L << UNKNOWN))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << STRING_DOUBLE) | (1L << STRING_SINGLE) | (1L << JAVADOC_COMMENT) | (1L << VRL_MULTILINE_COMMENT) | (1L << VRL_LINE_COMMENT) | (1L << MULTILINE_COMMENT) | (1L << LINE_COMMENT) | (1L << UNKNOWN))) != 0)) {
 				{
-				setState(25);
+				setState(29);
 				switch (_input.LA(1)) {
 				case JAVADOC_COMMENT:
-				case VRL_COMMENT:
+				case VRL_MULTILINE_COMMENT:
+				case VRL_LINE_COMMENT:
 				case MULTILINE_COMMENT:
 				case LINE_COMMENT:
 					{
-					setState(22); comment();
+					setState(26); comment();
 					}
 					break;
 				case STRING_DOUBLE:
 				case STRING_SINGLE:
 					{
-					setState(23); string();
+					setState(27); string();
 					}
 					break;
 				case UNKNOWN:
 					{
-					setState(24); unknowns();
+					setState(28); unknowns();
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
 				}
-				setState(29);
+				setState(33);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
@@ -172,20 +174,21 @@ public class CommentsParser extends Parser {
 		CommentContext _localctx = new CommentContext(_ctx, getState());
 		enterRule(_localctx, 2, RULE_comment);
 		try {
-			setState(32);
+			setState(36);
 			switch (_input.LA(1)) {
 			case JAVADOC_COMMENT:
-			case VRL_COMMENT:
+			case VRL_MULTILINE_COMMENT:
 			case MULTILINE_COMMENT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(30); multiLineComment();
+				setState(34); multiLineComment();
 				}
 				break;
+			case VRL_LINE_COMMENT:
 			case LINE_COMMENT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(31); lineComment();
+				setState(35); lineComment();
 				}
 				break;
 			default:
@@ -210,8 +213,8 @@ public class CommentsParser extends Parser {
 		public JavadocCommentContext javadocComment() {
 			return getRuleContext(JavadocCommentContext.class,0);
 		}
-		public VrlCommentContext vrlComment() {
-			return getRuleContext(VrlCommentContext.class,0);
+		public VrlMultiLineCommentContext vrlMultiLineComment() {
+			return getRuleContext(VrlMultiLineCommentContext.class,0);
 		}
 		public MultiLineCommentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -236,24 +239,24 @@ public class CommentsParser extends Parser {
 		MultiLineCommentContext _localctx = new MultiLineCommentContext(_ctx, getState());
 		enterRule(_localctx, 4, RULE_multiLineComment);
 		try {
-			setState(37);
+			setState(41);
 			switch (_input.LA(1)) {
 			case MULTILINE_COMMENT:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(34); plainMultiLineComment();
+				setState(38); plainMultiLineComment();
 				}
 				break;
 			case JAVADOC_COMMENT:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(35); javadocComment();
+				setState(39); javadocComment();
 				}
 				break;
-			case VRL_COMMENT:
+			case VRL_MULTILINE_COMMENT:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(36); vrlComment();
+				setState(40); vrlMultiLineComment();
 				}
 				break;
 			default:
@@ -298,7 +301,7 @@ public class CommentsParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(39); match(MULTILINE_COMMENT);
+			setState(43); match(MULTILINE_COMMENT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -339,7 +342,7 @@ public class CommentsParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(41); match(JAVADOC_COMMENT);
+			setState(45); match(JAVADOC_COMMENT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -353,34 +356,75 @@ public class CommentsParser extends Parser {
 		return _localctx;
 	}
 
-	public static class VrlCommentContext extends ParserRuleContext {
-		public TerminalNode VRL_COMMENT() { return getToken(CommentsParser.VRL_COMMENT, 0); }
-		public VrlCommentContext(ParserRuleContext parent, int invokingState) {
+	public static class VrlMultiLineCommentContext extends ParserRuleContext {
+		public TerminalNode VRL_MULTILINE_COMMENT() { return getToken(CommentsParser.VRL_MULTILINE_COMMENT, 0); }
+		public VrlMultiLineCommentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_vrlComment; }
+		@Override public int getRuleIndex() { return RULE_vrlMultiLineComment; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CommentsListener ) ((CommentsListener)listener).enterVrlComment(this);
+			if ( listener instanceof CommentsListener ) ((CommentsListener)listener).enterVrlMultiLineComment(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CommentsListener ) ((CommentsListener)listener).exitVrlComment(this);
+			if ( listener instanceof CommentsListener ) ((CommentsListener)listener).exitVrlMultiLineComment(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof CommentsVisitor ) return ((CommentsVisitor<? extends T>)visitor).visitVrlComment(this);
+			if ( visitor instanceof CommentsVisitor ) return ((CommentsVisitor<? extends T>)visitor).visitVrlMultiLineComment(this);
 			else return visitor.visitChildren(this);
 		}
 	}
 
-	public final VrlCommentContext vrlComment() throws RecognitionException {
-		VrlCommentContext _localctx = new VrlCommentContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_vrlComment);
+	public final VrlMultiLineCommentContext vrlMultiLineComment() throws RecognitionException {
+		VrlMultiLineCommentContext _localctx = new VrlMultiLineCommentContext(_ctx, getState());
+		enterRule(_localctx, 10, RULE_vrlMultiLineComment);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(43); match(VRL_COMMENT);
+			setState(47); match(VRL_MULTILINE_COMMENT);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class VrlLineCommentContext extends ParserRuleContext {
+		public TerminalNode VRL_LINE_COMMENT() { return getToken(CommentsParser.VRL_LINE_COMMENT, 0); }
+		public VrlLineCommentContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_vrlLineComment; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof CommentsListener ) ((CommentsListener)listener).enterVrlLineComment(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof CommentsListener ) ((CommentsListener)listener).exitVrlLineComment(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CommentsVisitor ) return ((CommentsVisitor<? extends T>)visitor).visitVrlLineComment(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final VrlLineCommentContext vrlLineComment() throws RecognitionException {
+		VrlLineCommentContext _localctx = new VrlLineCommentContext(_ctx, getState());
+		enterRule(_localctx, 12, RULE_vrlLineComment);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(49); match(VRL_LINE_COMMENT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -395,7 +439,12 @@ public class CommentsParser extends Parser {
 	}
 
 	public static class LineCommentContext extends ParserRuleContext {
-		public TerminalNode LINE_COMMENT() { return getToken(CommentsParser.LINE_COMMENT, 0); }
+		public VrlLineCommentContext vrlLineComment() {
+			return getRuleContext(VrlLineCommentContext.class,0);
+		}
+		public PlainLineCommentContext plainLineComment() {
+			return getRuleContext(PlainLineCommentContext.class,0);
+		}
 		public LineCommentContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -417,11 +466,65 @@ public class CommentsParser extends Parser {
 
 	public final LineCommentContext lineComment() throws RecognitionException {
 		LineCommentContext _localctx = new LineCommentContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_lineComment);
+		enterRule(_localctx, 14, RULE_lineComment);
+		try {
+			setState(53);
+			switch (_input.LA(1)) {
+			case LINE_COMMENT:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(51); plainLineComment();
+				}
+				break;
+			case VRL_LINE_COMMENT:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(52); vrlLineComment();
+				}
+				break;
+			default:
+				throw new NoViableAltException(this);
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class PlainLineCommentContext extends ParserRuleContext {
+		public TerminalNode LINE_COMMENT() { return getToken(CommentsParser.LINE_COMMENT, 0); }
+		public PlainLineCommentContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_plainLineComment; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof CommentsListener ) ((CommentsListener)listener).enterPlainLineComment(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof CommentsListener ) ((CommentsListener)listener).exitPlainLineComment(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof CommentsVisitor ) return ((CommentsVisitor<? extends T>)visitor).visitPlainLineComment(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final PlainLineCommentContext plainLineComment() throws RecognitionException {
+		PlainLineCommentContext _localctx = new PlainLineCommentContext(_ctx, getState());
+		enterRule(_localctx, 16, RULE_plainLineComment);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(45); match(LINE_COMMENT);
+			setState(55); match(LINE_COMMENT);
 			}
 		}
 		catch (RecognitionException re) {
@@ -463,20 +566,20 @@ public class CommentsParser extends Parser {
 
 	public final StringContext string() throws RecognitionException {
 		StringContext _localctx = new StringContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_string);
+		enterRule(_localctx, 18, RULE_string);
 		try {
-			setState(49);
+			setState(59);
 			switch (_input.LA(1)) {
 			case STRING_DOUBLE:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(47); stringDoubleQuotes();
+				setState(57); stringDoubleQuotes();
 				}
 				break;
 			case STRING_SINGLE:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(48); stringSingleQuote();
+				setState(58); stringSingleQuote();
 				}
 				break;
 			default:
@@ -517,11 +620,11 @@ public class CommentsParser extends Parser {
 
 	public final StringDoubleQuotesContext stringDoubleQuotes() throws RecognitionException {
 		StringDoubleQuotesContext _localctx = new StringDoubleQuotesContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_stringDoubleQuotes);
+		enterRule(_localctx, 20, RULE_stringDoubleQuotes);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(51); match(STRING_DOUBLE);
+			setState(61); match(STRING_DOUBLE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -558,11 +661,11 @@ public class CommentsParser extends Parser {
 
 	public final StringSingleQuoteContext stringSingleQuote() throws RecognitionException {
 		StringSingleQuoteContext _localctx = new StringSingleQuoteContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_stringSingleQuote);
+		enterRule(_localctx, 22, RULE_stringSingleQuote);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(53); match(STRING_SINGLE);
+			setState(63); match(STRING_SINGLE);
 			}
 		}
 		catch (RecognitionException re) {
@@ -602,29 +705,29 @@ public class CommentsParser extends Parser {
 
 	public final UnknownsContext unknowns() throws RecognitionException {
 		UnknownsContext _localctx = new UnknownsContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_unknowns);
+		enterRule(_localctx, 24, RULE_unknowns);
 		try {
 			int _alt;
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(56); 
+			setState(66); 
 			_errHandler.sync(this);
-			_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
+			_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
 			do {
 				switch (_alt) {
 				case 1:
 					{
 					{
-					setState(55); match(UNKNOWN);
+					setState(65); match(UNKNOWN);
 					}
 					}
 					break;
 				default:
 					throw new NoViableAltException(this);
 				}
-				setState(58); 
+				setState(68); 
 				_errHandler.sync(this);
-				_alt = getInterpreter().adaptivePredict(_input,5,_ctx);
+				_alt = getInterpreter().adaptivePredict(_input,6,_ctx);
 			} while ( _alt!=2 && _alt!=-1 );
 			}
 		}
@@ -640,22 +743,24 @@ public class CommentsParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\t?\4\2\t\2\4\3\t"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\nI\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4"+
-		"\f\t\f\3\2\3\2\3\2\7\2\34\n\2\f\2\16\2\37\13\2\3\3\3\3\5\3#\n\3\3\4\3"+
-		"\4\3\4\5\4(\n\4\3\5\3\5\3\6\3\6\3\7\3\7\3\b\3\b\3\t\3\t\5\t\64\n\t\3\n"+
-		"\3\n\3\13\3\13\3\f\6\f;\n\f\r\f\16\f<\3\f\2\2\r\2\4\6\b\n\f\16\20\22\24"+
-		"\26\2\2;\2\35\3\2\2\2\4\"\3\2\2\2\6\'\3\2\2\2\b)\3\2\2\2\n+\3\2\2\2\f"+
-		"-\3\2\2\2\16/\3\2\2\2\20\63\3\2\2\2\22\65\3\2\2\2\24\67\3\2\2\2\26:\3"+
-		"\2\2\2\30\34\5\4\3\2\31\34\5\20\t\2\32\34\5\26\f\2\33\30\3\2\2\2\33\31"+
-		"\3\2\2\2\33\32\3\2\2\2\34\37\3\2\2\2\35\33\3\2\2\2\35\36\3\2\2\2\36\3"+
-		"\3\2\2\2\37\35\3\2\2\2 #\5\6\4\2!#\5\16\b\2\" \3\2\2\2\"!\3\2\2\2#\5\3"+
-		"\2\2\2$(\5\b\5\2%(\5\n\6\2&(\5\f\7\2\'$\3\2\2\2\'%\3\2\2\2\'&\3\2\2\2"+
-		"(\7\3\2\2\2)*\7\7\2\2*\t\3\2\2\2+,\7\5\2\2,\13\3\2\2\2-.\7\6\2\2.\r\3"+
-		"\2\2\2/\60\7\b\2\2\60\17\3\2\2\2\61\64\5\22\n\2\62\64\5\24\13\2\63\61"+
-		"\3\2\2\2\63\62\3\2\2\2\64\21\3\2\2\2\65\66\7\3\2\2\66\23\3\2\2\2\678\7"+
-		"\4\2\28\25\3\2\2\29;\7\t\2\2:9\3\2\2\2;<\3\2\2\2<:\3\2\2\2<=\3\2\2\2="+
-		"\27\3\2\2\2\b\33\35\"\'\63<";
+		"\f\t\f\4\r\t\r\4\16\t\16\3\2\3\2\3\2\7\2 \n\2\f\2\16\2#\13\2\3\3\3\3\5"+
+		"\3\'\n\3\3\4\3\4\3\4\5\4,\n\4\3\5\3\5\3\6\3\6\3\7\3\7\3\b\3\b\3\t\3\t"+
+		"\5\t8\n\t\3\n\3\n\3\13\3\13\5\13>\n\13\3\f\3\f\3\r\3\r\3\16\6\16E\n\16"+
+		"\r\16\16\16F\3\16\2\2\17\2\4\6\b\n\f\16\20\22\24\26\30\32\2\2D\2!\3\2"+
+		"\2\2\4&\3\2\2\2\6+\3\2\2\2\b-\3\2\2\2\n/\3\2\2\2\f\61\3\2\2\2\16\63\3"+
+		"\2\2\2\20\67\3\2\2\2\229\3\2\2\2\24=\3\2\2\2\26?\3\2\2\2\30A\3\2\2\2\32"+
+		"D\3\2\2\2\34 \5\4\3\2\35 \5\24\13\2\36 \5\32\16\2\37\34\3\2\2\2\37\35"+
+		"\3\2\2\2\37\36\3\2\2\2 #\3\2\2\2!\37\3\2\2\2!\"\3\2\2\2\"\3\3\2\2\2#!"+
+		"\3\2\2\2$\'\5\6\4\2%\'\5\20\t\2&$\3\2\2\2&%\3\2\2\2\'\5\3\2\2\2(,\5\b"+
+		"\5\2),\5\n\6\2*,\5\f\7\2+(\3\2\2\2+)\3\2\2\2+*\3\2\2\2,\7\3\2\2\2-.\7"+
+		"\b\2\2.\t\3\2\2\2/\60\7\5\2\2\60\13\3\2\2\2\61\62\7\6\2\2\62\r\3\2\2\2"+
+		"\63\64\7\7\2\2\64\17\3\2\2\2\658\5\22\n\2\668\5\16\b\2\67\65\3\2\2\2\67"+
+		"\66\3\2\2\28\21\3\2\2\29:\7\t\2\2:\23\3\2\2\2;>\5\26\f\2<>\5\30\r\2=;"+
+		"\3\2\2\2=<\3\2\2\2>\25\3\2\2\2?@\7\3\2\2@\27\3\2\2\2AB\7\4\2\2B\31\3\2"+
+		"\2\2CE\7\n\2\2DC\3\2\2\2EF\3\2\2\2FD\3\2\2\2FG\3\2\2\2G\33\3\2\2\2\t\37"+
+		"!&+\67=F";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

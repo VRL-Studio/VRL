@@ -56,19 +56,6 @@ public class CommentsBaseListener implements CommentsListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx) { }
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterUnknowns(@NotNull CommentsParser.UnknownsContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -76,6 +63,32 @@ public class CommentsBaseListener implements CommentsListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitUnknowns(@NotNull CommentsParser.UnknownsContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterProgram(@NotNull CommentsParser.ProgramContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitProgram(@NotNull CommentsParser.ProgramContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPlainMultiLineComment(@NotNull CommentsParser.PlainMultiLineCommentContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
@@ -95,13 +108,13 @@ public class CommentsBaseListener implements CommentsListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterProgram(@NotNull CommentsParser.ProgramContext ctx) { }
+	@Override public void enterVrlMultiLineComment(@NotNull CommentsParser.VrlMultiLineCommentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitProgram(@NotNull CommentsParser.ProgramContext ctx) { }
+	@Override public void exitVrlMultiLineComment(@NotNull CommentsParser.VrlMultiLineCommentContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
@@ -134,13 +147,26 @@ public class CommentsBaseListener implements CommentsListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterVrlComment(@NotNull CommentsParser.VrlCommentContext ctx) { }
+	@Override public void enterVrlLineComment(@NotNull CommentsParser.VrlLineCommentContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitVrlComment(@NotNull CommentsParser.VrlCommentContext ctx) { }
+	@Override public void exitVrlLineComment(@NotNull CommentsParser.VrlLineCommentContext ctx) { }
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterPlainLineComment(@NotNull CommentsParser.PlainLineCommentContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitPlainLineComment(@NotNull CommentsParser.PlainLineCommentContext ctx) { }
 
 	/**
 	 * {@inheritDoc}
