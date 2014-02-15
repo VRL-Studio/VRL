@@ -48,7 +48,7 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 import eu.mihosoft.vrl.lang.model.Scope;
@@ -87,7 +87,8 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         return variables.pop();
     }
 
-    Scope createScope(Scope parent, ScopeType type, String name, Object... args) {
+    @Deprecated
+    public Scope createScope(Scope parent, ScopeType type, String name, Object... args) {
         if (parent != null) {
             return parent.createScope(idRequest.request(), type, name, args);
         } else {
@@ -199,7 +200,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         scope.assignConstant(varName, constant);
     }
 
-    void setIdRequest(IdRequest idRequest) {
+    public void setIdRequest(IdRequest idRequest) {
         this.idRequest = idRequest;
     }
 

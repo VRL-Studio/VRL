@@ -50,8 +50,6 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.instrumentation.ScopeInvocation;
-import eu.mihosoft.vrl.instrumentation.Variable;
 import java.util.ArrayList;
 import java.util.List;
 

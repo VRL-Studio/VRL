@@ -50,7 +50,6 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.instrumentation.Type;
 import eu.mihosoft.vrl.lang.VLangUtils;
 
 /**

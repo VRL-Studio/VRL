@@ -52,8 +52,6 @@ package eu.mihosoft.vrl.lang.model;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import eu.mihosoft.vrl.instrumentation.ScopeInvocation;
-import eu.mihosoft.vrl.instrumentation.Variable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

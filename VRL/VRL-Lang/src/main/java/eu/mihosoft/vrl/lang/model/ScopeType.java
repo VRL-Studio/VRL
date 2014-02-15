@@ -1,5 +1,5 @@
 /* 
- * UIBinding.java
+ * ScopeType.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,17 +48,21 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
-
-import eu.mihosoft.vrl.lang.model.Scope;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+package eu.mihosoft.vrl.lang.model;
 
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public class UIBinding {
-    public static Map<String, List<Scope>> scopes = new HashMap<>();;
+public enum ScopeType {
+    COMPILATION_UNIT,
+    CLASS,
+    INTERFACE,
+    METHOD,
+    CLOSURE,
+    FOR,
+    WHILE,
+    IF,
+    ELSE,
+    NONE
 }

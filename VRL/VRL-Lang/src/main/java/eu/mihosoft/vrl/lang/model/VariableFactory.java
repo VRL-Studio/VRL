@@ -1,5 +1,5 @@
 /* 
- * ScopeInvocation.java
+ * VariableFactory.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,21 +48,21 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.Invocation;
 
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface ScopeInvocation extends Invocation{
+public class VariableFactory {
 
-    /**
-     * @return the scope
-     */
-    Scope getScope();
+    public static Variable createObjectVariable(Scope scope, Type type, String varName) {
+        return new VariableImpl(scope, type, varName, null, false);
+    }
 
-    
+    public static Variable createConstantVariable(Scope scope, Type type, String varName, Object constant) {
+        return new VariableImpl(scope, type, varName, constant, true);
+    }
 }

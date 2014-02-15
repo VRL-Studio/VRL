@@ -1,5 +1,5 @@
 /* 
- * DataRelationImpl.java
+ * ScopeInvocation.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,54 +48,21 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.DataRelation;
+import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Invocation;
 
 /**
  *
- * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ * @author Michael Hoffer <info@michaelhoffer.de>
  */
-class DataRelationImpl implements DataRelation {
-    
-    private Invocation sender;
-    private Invocation receiver;
+public interface ScopeInvocation extends Invocation{
 
-    public DataRelationImpl(Invocation sender, Invocation receiver) {
-        this.sender = sender;
-        this.receiver = receiver;
-    }
+    /**
+     * @return the scope
+     */
+    Scope getScope();
 
-
-    @Override
-    public void setSender(Invocation invocation) {
-        this.sender = invocation;
-    }
-
-    @Override
-    public Invocation getSender() {
-        return sender;
-    }
-
-    @Override
-    public void setReceiver(Invocation invocation) {
-        this.receiver = invocation;
-    }
-
-    @Override
-    public Invocation getReceiver() {
-        return receiver;
-    }
-
-//    @Override
-//    public String getInputVariable() {
-//        return 
-//    }
-//
-//    @Override
-//    public void setInputVariable(String name) {
-//        throw new UnsupportedOperationException("Not supported yet."); // TODO NB-AUTOGEN
-//    }
     
 }

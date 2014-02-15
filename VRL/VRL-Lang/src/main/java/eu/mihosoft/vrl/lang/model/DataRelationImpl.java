@@ -1,5 +1,5 @@
 /* 
- * VariableFactory.java
+ * DataRelationImpl.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,21 +48,54 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.DataRelation;
+import eu.mihosoft.vrl.lang.model.Invocation;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class VariableFactory {
+class DataRelationImpl implements DataRelation {
+    
+    private Invocation sender;
+    private Invocation receiver;
 
-    public static Variable createObjectVariable(Scope scope, Type type, String varName) {
-        return new VariableImpl(scope, type, varName, null, false);
+    public DataRelationImpl(Invocation sender, Invocation receiver) {
+        this.sender = sender;
+        this.receiver = receiver;
     }
 
-    public static Variable createConstantVariable(Scope scope, Type type, String varName, Object constant) {
-        return new VariableImpl(scope, type, varName, constant, true);
+
+    @Override
+    public void setSender(Invocation invocation) {
+        this.sender = invocation;
     }
+
+    @Override
+    public Invocation getSender() {
+        return sender;
+    }
+
+    @Override
+    public void setReceiver(Invocation invocation) {
+        this.receiver = invocation;
+    }
+
+    @Override
+    public Invocation getReceiver() {
+        return receiver;
+    }
+
+//    @Override
+//    public String getInputVariable() {
+//        return 
+//    }
+//
+//    @Override
+//    public void setInputVariable(String name) {
+//        throw new UnsupportedOperationException("Not supported yet."); // TODO NB-AUTOGEN
+//    }
+    
 }

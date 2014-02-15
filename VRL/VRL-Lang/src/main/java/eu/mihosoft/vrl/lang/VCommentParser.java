@@ -51,7 +51,7 @@
 package eu.mihosoft.vrl.lang;
 
 import eu.mihosoft.vrl.lang.model.Comment;
-import eu.mihosoft.vrl.instrumentation.CommentImpl;
+import eu.mihosoft.vrl.lang.model.CommentImpl;
 import eu.mihosoft.vrl.lang.model.CommentType;
 import eu.mihosoft.vrl.lang.commentparser.antlr.CommentsBaseListener;
 import eu.mihosoft.vrl.lang.commentparser.antlr.CommentsLexer;

@@ -1,5 +1,5 @@
 /* 
- * CommentImpl.java
+ * CompilationUnitDeclaration_Impl.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,115 +48,78 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.CommentType;
-import eu.mihosoft.vrl.lang.model.Comment;
-import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.ClassDeclaration;
+import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.VLangUtils;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class CommentImpl implements Comment {
+public class CompilationUnitDeclaration_Impl extends ScopeImpl implements CompilationUnitDeclaration{
+    
+    private CompilationUnitMetaData metadata;
 
-    private String id;
-    private ICodeRange codeRange;
-    private String comment;
-    private CommentType type = CommentType.UNDEFINED;
-    private Scope parent;
+    public CompilationUnitDeclaration_Impl(String id, Scope parent, String name, String packageName) {
+        super(id, parent, ScopeType.COMPILATION_UNIT, name, new Object[0]);
+        
+        if (!VLangUtils.isPackageNameValid(packageName)) {
+            throw new IllegalArgumentException("Specified package name is invalid: ' " + packageName + "'");
+        }
+        
+        metadata = new CompilationUnitMetaData(packageName);
+    }
 
-    public CommentImpl(String id, ICodeRange codeRange, String comment) {
-        this.id = id;
-        this.codeRange = codeRange;
-        this.comment = comment;
+    @Override
+    public String getFileName() {
+        return super.getName();
     }
     
-    public CommentImpl(String id, ICodeRange codeRange, String comment, CommentType type) {
-        this.id = id;
-        this.codeRange = codeRange;
-        this.comment = comment;
-        this.type = type;
-    }
-
-    /**
-     * @return the id
-     */
     @Override
-    public String getId() {
-        return id;
+    public String getPackageName() {
+        return metadata.getPackageName();
     }
 
-    /**
-     * @param id the id to set
-     */
     @Override
-    public void setId(String id) {
-        this.id = id;
+    public List<ClassDeclaration> getDeclaredClasses() {
+//        List<ClassDeclaration> result = new ArrayList<>();
+//        for (Scope cls : getScopes()) {
+//            if (cls instanceof ClassDeclaration) {
+//                result.add((ClassDeclaration)cls);
+//            } 
+//        }
+//        
+//        return result;
+        
+        return getScopes().stream().
+                filter(it -> it instanceof ClassDeclaration).
+                map(it->(ClassDeclaration)it).
+                collect(Collectors.toList());
+    }
+    
+    
+}
+
+final class CompilationUnitMetaData {
+    private final String packageName;
+
+    public CompilationUnitMetaData(String packageName) {
+        this.packageName = packageName;
     }
 
     /**
-     * @return the codeRange
+     * @return the packageName
      */
-    @Override
-    public ICodeRange getRange() {
-        return codeRange;
+    public String getPackageName() {
+        return packageName;
     }
-
-    /**
-     * @param codeRange the codeRange to set
-     */
-    @Override
-    public void setRange(ICodeRange codeRange) {
-        this.codeRange = codeRange;
-    }
-
-    /**
-     * @return the comment
-     */
-    @Override
-    public String getComment() {
-        return comment;
-    }
-
-    /**
-     * @param comment the comment to set
-     */
-    @Override
-    public void setComment(String comment) {
-        this.comment = comment;
-    }
-
-    /**
-     * @return the type
-     */
-    @Override
-    public CommentType getType() {
-        return type;
-    }
-
-    /**
-     * @param type the type to set
-     */
-    @Override
-    public void setType(CommentType type) {
-        this.type = type;
-    }
-
-    /**
-     * @return the parent
-     */
-    @Override
-    public Scope getParent() {
-        return parent;
-    }
-
-    /**
-     * @param parent the parent to set
-     */
-    public void setParent(Scope parent) {
-        this.parent = parent;
-    }
-
+    
+    
 }

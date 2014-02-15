@@ -1,5 +1,5 @@
 /* 
- * VisualCodeBuilder.java
+ * MethodDeclaration_Impl.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -52,41 +52,86 @@ package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.IType;
-import eu.mihosoft.vrl.lang.model.WhileDeclaration;
-import eu.mihosoft.vrl.lang.model.IModifiers;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
-import eu.mihosoft.vrl.lang.model.ClassDeclaration;
+import eu.mihosoft.vrl.lang.model.IModifiers;
 import eu.mihosoft.vrl.lang.model.IParameters;
-import eu.mihosoft.vrl.lang.model.Invocation;
-import eu.mihosoft.vrl.lang.model.IExtends;
-import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
-import eu.mihosoft.vrl.lang.model.ForDeclaration;
+import eu.mihosoft.vrl.lang.model.IParameter;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface VisualCodeBuilder {
-    
-    CompilationUnitDeclaration declareCompilationUnit(String name, String packageName);
+class MethodDeclaration_Impl extends ScopeImpl implements MethodDeclaration {
 
-    void assignConstant(Scope scope, String varName, Object constant);
+    private final MethodDeclarationMetaData metadata;
 
-    void assignVariable(Scope scope, String varNameDest, String varNameSrc);
+    public MethodDeclaration_Impl(String id, String methodName, Scope parent, IType returnType, IModifiers modifiers, IParameters params) {
+        super(id, parent, ScopeType.METHOD, methodName, new MethodDeclarationMetaData(returnType, modifiers, params));
+        metadata = (MethodDeclarationMetaData) getScopeArgs()[0];
 
-    void createInstance(Scope scope, IType type, String varName, Variable... args);
+        createParamVariables();
+    }
 
-    Variable createVariable(Scope scope, IType type, String varName);
+    private void createParamVariables() {
+        for (IParameter p : metadata.getParams().getParamenters()) {
 
-    ForDeclaration declareFor(Scope scope, String varName, int from, int to, int inc);
-    
-    ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type, IModifiers modifiers, IExtends extendz, IExtends implementz);
+            createVariable(p.getType(), p.getName());
+        }
+        
+    }
 
-    MethodDeclaration declareMethod(ClassDeclaration scope, IModifiers modifiers, Type returnType, String methodName, IParameters params);
+    @Override
+    public IType getReturnType() {
+        return metadata.getType();
+    }
 
-    WhileDeclaration declareWhile(Scope scope, Invocation check);
+    @Override
+    public IModifiers getModifiers() {
+        return metadata.getModifiers();
+    }
 
-    Invocation invokeMethod(Scope scope, String varName, String mName, boolean isVoid, String retValName, Variable... args);
-    
-    Invocation invokeStaticMethod(Scope scope, IType type, String mName, boolean isVoid, String retValName, Variable... args);
+    @Override
+    public IParameters getParameters() {
+        return metadata.getParams();
+    }
+
+    @Override
+    public Variable getParameterAsVariable(IParameter p) {
+        return getVariable(p.getName());
+    }
+}
+
+final class MethodDeclarationMetaData {
+
+    private final IType type;
+    private final IModifiers modifiers;
+    private final IParameters params;
+
+    public MethodDeclarationMetaData(IType type, IModifiers modifiers, IParameters params) {
+        this.type = type;
+        this.modifiers = modifiers;
+        this.params = params;
+    }
+
+    /**
+     * @return the type
+     */
+    public IType getType() {
+        return type;
+    }
+
+    /**
+     * @return the modifiers
+     */
+    public IModifiers getModifiers() {
+        return modifiers;
+    }
+
+    /**
+     * @return the params
+     */
+    public IParameters getParams() {
+        return params;
+    }
+
 }

@@ -48,7 +48,7 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.Patterns;

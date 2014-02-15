@@ -1,5 +1,5 @@
 /* 
- * WhileDeclaration_Impl.java
+ * UIBinding.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,42 +48,17 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.WhileDeclaration;
-import eu.mihosoft.vrl.lang.model.Invocation;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
- * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ * @author Michael Hoffer <info@michaelhoffer.de>
  */
-class WhileDeclaration_Impl extends ScopeImpl implements WhileDeclaration{
-    private final WhileDeclarationMetaData metadata;
-
-    public WhileDeclaration_Impl(String id, Scope parent, Invocation invocation) {
-        super(id, parent, ScopeType.WHILE, ScopeType.WHILE.name(), new WhileDeclarationMetaData(invocation));
-        metadata = (WhileDeclarationMetaData) getScopeArgs()[0];
-    }
-
-    @Override
-    public Invocation getCheck() {
-        return metadata.getCheck();
-    } 
-}
-
-class WhileDeclarationMetaData {
-    private final Invocation check;
-
-    public WhileDeclarationMetaData(Invocation check) {
-        this.check = check;
-    }
-
-    /**
-     * @return the check
-     */
-    public Invocation getCheck() {
-        return check;
-    }
-    
+public class UIBinding {
+    public static Map<String, List<Scope>> scopes = new HashMap<>();;
 }

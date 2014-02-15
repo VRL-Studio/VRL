@@ -50,8 +50,6 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.instrumentation.ScopeType;
-import eu.mihosoft.vrl.instrumentation.Variable;
 import java.util.Collection;
 import java.util.List;
 

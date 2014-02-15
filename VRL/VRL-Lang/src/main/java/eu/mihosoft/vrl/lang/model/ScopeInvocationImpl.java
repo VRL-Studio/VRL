@@ -1,5 +1,5 @@
 /* 
- * ControlFlowImpl.java
+ * ScopeInvocationImpl.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,77 +48,40 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
+import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.ControlFlow;
-import eu.mihosoft.vrl.lang.model.IType;
-import eu.mihosoft.vrl.lang.model.Invocation;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-class ControlFlowImpl implements ControlFlow {
+class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
 
-    private final List<Invocation> invocations = new ArrayList<>();
-    
-    private final Scope parent;
+    private final Scope scope;
 
-    public ControlFlowImpl(Scope parent) {
-        this.parent = parent;
-    }
-
-    
-
-    @Override
-    public Invocation createInstance(String id, IType type, String varName, Variable... args) {
-        Invocation result = new InvocationImpl(parent,id, type.getFullClassName(), "<init>", true, false, true, varName, args);
-        getInvocations().add(result);
-        return result;
-    }
-
-    @Override
-    public Invocation callMethod(String id, String varName, String mName, boolean isVoid, String retValueName, Variable... args) {
-        Invocation result = new InvocationImpl(parent, id, varName, mName, false, isVoid, false, retValueName, args);
-        getInvocations().add(result);
-        return result;
-    }
-    
-    @Override
-    public Invocation callStaticMethod(String id, IType type, String mName, boolean isVoid, String retValueName, Variable... args) {
-        Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), mName, false, isVoid, true, retValueName, args);
-        getInvocations().add(result);
-        return result;
-    }
-
-    @Override
-    public ScopeInvocation callScope(Scope scope) {
-        ScopeInvocation result = new ScopeInvocationImpl(scope);
-        getInvocations().add(result);
-        return result;
-    }
-
-    @Override
-    public String toString() {
-        String result = "[\n";
-        for (Invocation invocation : getInvocations()) {
-            result += invocation.toString() + "\n";
-        }
-
-        result += "]";
-
-        return result;
+    public ScopeInvocationImpl(Scope s) {
+        super(s, "", null, "scope", false, true, true, "", new Variable[0]);
+        this.scope = s;
     }
 
     /**
-     * @return the invocations
+     * @return the scope
      */
     @Override
-    public List<Invocation> getInvocations() {
-        return invocations;
+    public Scope getScope() {
+        return scope;
+    }
+
+    @Override
+    public boolean isScope() {
+        return true;
+    }
+
+    @Override
+    public ICodeRange getRange() {
+        return scope.getRange();
     }
 
 }

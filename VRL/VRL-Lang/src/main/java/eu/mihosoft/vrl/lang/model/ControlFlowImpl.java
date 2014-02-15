@@ -1,5 +1,5 @@
 /* 
- * MethodDeclaration_Impl.java
+ * ControlFlowImpl.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -48,90 +48,78 @@
  * Computing and Visualization in Science, in press.
  */
 
-package eu.mihosoft.vrl.instrumentation;
+package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.IType;
-import eu.mihosoft.vrl.lang.model.MethodDeclaration;
-import eu.mihosoft.vrl.lang.model.IModifiers;
-import eu.mihosoft.vrl.lang.model.IParameters;
-import eu.mihosoft.vrl.lang.model.IParameter;
+import eu.mihosoft.vrl.lang.model.Invocation;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-class MethodDeclaration_Impl extends ScopeImpl implements MethodDeclaration {
+class ControlFlowImpl implements ControlFlow {
 
-    private final MethodDeclarationMetaData metadata;
+    private final List<Invocation> invocations = new ArrayList<>();
+    
+    private final Scope parent;
 
-    public MethodDeclaration_Impl(String id, String methodName, Scope parent, IType returnType, IModifiers modifiers, IParameters params) {
-        super(id, parent, ScopeType.METHOD, methodName, new MethodDeclarationMetaData(returnType, modifiers, params));
-        metadata = (MethodDeclarationMetaData) getScopeArgs()[0];
-
-        createParamVariables();
+    public ControlFlowImpl(Scope parent) {
+        this.parent = parent;
     }
 
-    private void createParamVariables() {
-        for (IParameter p : metadata.getParams().getParamenters()) {
+    
 
-            createVariable(p.getType(), p.getName());
+    @Override
+    public Invocation createInstance(String id, IType type, String varName, Variable... args) {
+        Invocation result = new InvocationImpl(parent,id, type.getFullClassName(), "<init>", true, false, true, varName, args);
+        getInvocations().add(result);
+        return result;
+    }
+
+    @Override
+    public Invocation callMethod(String id, String varName, String mName, boolean isVoid, String retValueName, Variable... args) {
+        Invocation result = new InvocationImpl(parent, id, varName, mName, false, isVoid, false, retValueName, args);
+        getInvocations().add(result);
+        return result;
+    }
+    
+    @Override
+    public Invocation callStaticMethod(String id, IType type, String mName, boolean isVoid, String retValueName, Variable... args) {
+        Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), mName, false, isVoid, true, retValueName, args);
+        getInvocations().add(result);
+        return result;
+    }
+
+    @Override
+    public ScopeInvocation callScope(Scope scope) {
+        ScopeInvocation result = new ScopeInvocationImpl(scope);
+        getInvocations().add(result);
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        String result = "[\n";
+        for (Invocation invocation : getInvocations()) {
+            result += invocation.toString() + "\n";
         }
-        
-    }
 
-    @Override
-    public IType getReturnType() {
-        return metadata.getType();
-    }
+        result += "]";
 
-    @Override
-    public IModifiers getModifiers() {
-        return metadata.getModifiers();
-    }
-
-    @Override
-    public IParameters getParameters() {
-        return metadata.getParams();
-    }
-
-    @Override
-    public Variable getParameterAsVariable(IParameter p) {
-        return getVariable(p.getName());
-    }
-}
-
-final class MethodDeclarationMetaData {
-
-    private final IType type;
-    private final IModifiers modifiers;
-    private final IParameters params;
-
-    public MethodDeclarationMetaData(IType type, IModifiers modifiers, IParameters params) {
-        this.type = type;
-        this.modifiers = modifiers;
-        this.params = params;
+        return result;
     }
 
     /**
-     * @return the type
+     * @return the invocations
      */
-    public IType getType() {
-        return type;
-    }
-
-    /**
-     * @return the modifiers
-     */
-    public IModifiers getModifiers() {
-        return modifiers;
-    }
-
-    /**
-     * @return the params
-     */
-    public IParameters getParams() {
-        return params;
+    @Override
+    public List<Invocation> getInvocations() {
+        return invocations;
     }
 
 }
+

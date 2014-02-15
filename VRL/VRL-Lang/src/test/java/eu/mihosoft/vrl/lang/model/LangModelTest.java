@@ -51,8 +51,6 @@
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.base.IOUtil;
-import eu.mihosoft.vrl.instrumentation.Scope2Code;
-import eu.mihosoft.vrl.instrumentation.UIBinding;
 import groovy.lang.GroovyClassLoader;
 import java.io.InputStream;
 import java.io.Reader;
