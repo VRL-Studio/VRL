@@ -56,6 +56,8 @@ import eu.mihosoft.vrl.lang.model.Invocation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  *
@@ -66,7 +68,6 @@ class InvocationImpl implements Invocation {
     private String id;
     private final String varName;
     private final String methodName;
-    private final String returnValueName;
     private final List<Variable> arguments = new ArrayList<>();
     private final boolean constructor;
     private final boolean Void;
@@ -74,22 +75,31 @@ class InvocationImpl implements Invocation {
     private final Scope parent;
     private boolean Static;
     private ICodeRange location;
+    private final IType returnType;
+    private final Variable returnValue;
 
     public InvocationImpl(
             Scope parent,
             String id,
-            String varName, String methodName,
-            boolean constructor, boolean isVoid, boolean isStatic, String retValName, Variable... args) {
+            String varName, String methodName, IType returnType,
+            boolean constructor, boolean isVoid, boolean isStatic, Variable... args) {
         this.parent = parent;
         this.id = id;
         this.varName = varName;
         this.methodName = methodName;
         this.constructor = constructor;
         this.Void = isVoid;
-        this.returnValueName = retValName;
+        
         this.Static = isStatic;
+        this.returnType = returnType;
 
         arguments.addAll(Arrays.asList(args));
+        
+        if (isVoid) {
+            returnValue = null;
+        } else {
+            returnValue = parent.createVariable(this);
+        }
 
         Variable var = null;
         
@@ -122,11 +132,6 @@ class InvocationImpl implements Invocation {
     }
 
     @Override
-    public String getReturnValueName() {
-        return returnValueName;
-    }
-
-    @Override
     public List<Variable> getArguments() {
         return arguments;
     }
@@ -151,7 +156,7 @@ class InvocationImpl implements Invocation {
             result += "scopeType: " + scopeInvocation.getScope().getType() + ", ";
         }
 
-        result += "constructor=" + constructor + ", var=" + varName + ", mName=" + methodName + ", retValName=" + returnValueName + ", args=[";
+        result += "constructor=" + constructor + ", var=" + varName + ", mName=" + methodName + ", retVal=" + returnValue + ", args=[";
 
         for (Variable a : arguments) {
             result += a + ", ";
@@ -237,5 +242,55 @@ class InvocationImpl implements Invocation {
     public Scope getParent() {
         return this.parent;
     }
+
+    @Override
+    public Optional<Variable> getReturnValue() {
+        return Optional.of(returnValue);
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final InvocationImpl other = (InvocationImpl) obj;
+        if (!Objects.equals(this.id, other.id)) {
+            return false;
+        }
+        if (!Objects.equals(this.varName, other.varName)) {
+            return false;
+        }
+        if (!Objects.equals(this.methodName, other.methodName)) {
+            return false;
+        }
+        if (!Objects.equals(this.arguments, other.arguments)) {
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 23 * hash + Objects.hashCode(this.id);
+        hash = 23 * hash + Objects.hashCode(this.varName);
+        hash = 23 * hash + Objects.hashCode(this.methodName);
+        hash = 23 * hash + Objects.hashCode(this.arguments);
+        return hash;
+    }
+
+    /**
+     * @return the returnType
+     */
+    public IType getReturnType() {
+        return returnType;
+    }
+
+    
+   
 
 }

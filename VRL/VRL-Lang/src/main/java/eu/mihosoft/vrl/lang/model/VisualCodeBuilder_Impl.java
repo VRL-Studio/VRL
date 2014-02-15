@@ -72,7 +72,7 @@ import java.util.Stack;
  */
 public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 
-    private final Stack<String> variables = new Stack<>();
+//    private final Stack<String> variables = new Stack<>();
     private IdRequest idRequest = new IdRequest() {
         
         private IdGenerator generator = FlowFactory.newIdGenerator();
@@ -83,9 +83,9 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         }
     };
 
-    String popVariable() {
-        return variables.pop();
-    }
+//    String popVariable() {
+//        return variables.pop();
+//    }
 
     @Deprecated
     public Scope createScope(Scope parent, ScopeType type, String name, Object... args) {
@@ -110,7 +110,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     public Variable createVariable(Scope scope, IType type, String varName) {
         Variable result = scope.createVariable(type, varName);
 
-        variables.push(varName);
+//        variables.push(varName);
 
         return result;
     }
@@ -119,7 +119,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         
         Variable result = scope.createVariable(type);
 
-        variables.push(result.getName());
+//        variables.push(result.getName());
 
         return result;
     }
@@ -169,23 +169,24 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 
         scope.getControlFlow().createInstance(id, type, varName, args);
 
-        variables.push(varName);
+//        variables.push(varName);
     }
+    
 
     @Override
-    public Invocation invokeMethod(Scope scope, String varName, String mName, boolean isVoid, String retValName, Variable... args) {
+    public Invocation invokeMethod(Scope scope, String varName, String mName, IType returnType, boolean isVoid, Variable... args) {
         String id = idRequest.request();
 
-        Invocation result = scope.getControlFlow().callMethod(id, varName, mName, isVoid, retValName, args);
+        Invocation result = scope.getControlFlow().callMethod(id, varName, mName, returnType, isVoid, args);
 
         return result;
     }
     
     @Override
-    public Invocation invokeStaticMethod(Scope scope, IType type, String mName, boolean isVoid, String retValName, Variable... args) {
+    public Invocation invokeStaticMethod(Scope scope, IType type, String mName, IType returnType, boolean isVoid, Variable... args) {
         String id = idRequest.request();
 
-        Invocation result = scope.getControlFlow().callStaticMethod(id, type, mName, isVoid, retValName, args);
+        Invocation result = scope.getControlFlow().callStaticMethod(id, type, mName, returnType, isVoid, args);
 
         return result;
     }
@@ -209,6 +210,15 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         String id = idRequest.request();
         
         ClassDeclaration result = new ClassDeclaration_Impl(id, scope, type, modifiers, extendz, implementz);
+        
+        return result;
+    }
+
+    @Override
+    public Invocation invokeMethod(Scope scope, String varName, MethodDeclaration mDec, Variable... args) {
+        String id = idRequest.request();
+
+        Invocation result = scope.getControlFlow().callMethod(id, varName, mDec, args);
         
         return result;
     }

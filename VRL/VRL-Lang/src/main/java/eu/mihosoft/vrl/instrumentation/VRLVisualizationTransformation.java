@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.instrumentation;
 
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
@@ -75,7 +74,7 @@ import eu.mihosoft.vrl.lang.VCommentParser;
 import eu.mihosoft.vrl.lang.model.CodeLocation;
 import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.CodeReader;
-import eu.mihosoft.vrl.lang.model.ICodeRange;
+import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
 import java.io.BufferedReader;
@@ -96,7 +95,6 @@ import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
-import org.codehaus.groovy.ast.PackageNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.BooleanExpression;
@@ -517,24 +515,33 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             System.out.println("TYPECHECKED!!!");
         }
 
+        IType returnType;
+        
         if (!isVoid) {
-            returnValueName = codeBuilder.createVariable(currentScope, new Type(mTarget.getReturnType().getName(), true)).getName();
-            returnValuesOfMethods.put(s, returnValueName);
+            returnType = new Type(mTarget.getReturnType().getName());
+        } else {
+            returnType = Type.VOID;
         }
-
+        
         if (!isIdCall) {
             if (objectName != null) {
 //                codeBuilder.invokeMethod(currentScope, objectName, s.getMethod().getText(), isVoid,
 //                        returnValueName, arguments).setCode(getCode(s));
-                Invocation invocation = codeBuilder.invokeMethod(currentScope, objectName, s.getMethod().getText(), isVoid,
-                        returnValueName, arguments);
+                Invocation invocation = codeBuilder.invokeMethod(
+                        currentScope, objectName,
+                        s.getMethod().getText(),
+                       returnType,
+                        isVoid,
+                        arguments);
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
             } else if (s.getMethod().getText().equals("println")) {
 //                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
 //                        returnValueName, arguments).setCode(getCode(s));
-                Invocation invocation = codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
-                        returnValueName, arguments);
+                Invocation invocation = codeBuilder.invokeStaticMethod(
+                        currentScope, new Type("System.out"),
+                        s.getMethod().getText(), Type.VOID, isVoid,
+                        arguments);
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
             }

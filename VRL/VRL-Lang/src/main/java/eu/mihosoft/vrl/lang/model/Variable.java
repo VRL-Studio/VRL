@@ -47,12 +47,10 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.IType;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  *
@@ -65,7 +63,7 @@ public interface Variable {
     public IType getType();
 
     public Object getValue();
-    
+
     public boolean isStatic();
 
     public boolean isConstant();
@@ -75,6 +73,10 @@ public interface Variable {
     public void setValue(Object value);
 
     public void setConstant(boolean b);
+
+    public boolean isReturnValue();
+
+    public Optional<Invocation> getInvocation();
 }
 
 class VariableImpl implements Variable {
@@ -85,6 +87,7 @@ class VariableImpl implements Variable {
     private Object value;
     private boolean constant;
     private boolean staticVar;
+    private Invocation invocation;
 
     public VariableImpl(Scope scope, IType type, String varName, Object value, boolean constant) {
         this.scope = scope;
@@ -93,14 +96,21 @@ class VariableImpl implements Variable {
         this.value = value;
         this.constant = constant;
     }
-    
+
     private VariableImpl(Scope scope, IType type) {
         this.scope = scope;
         this.type = type;
         this.varName = type.getFullClassName();
         this.staticVar = true;
     }
-    
+
+    public VariableImpl(Scope scope, String varName, Invocation invocation) {
+        this.scope = scope;
+        this.type = invocation.getReturnType();
+        this.invocation = invocation;
+        this.varName = varName;
+    }
+
     public static VariableImpl createStaticVar(Scope scope, IType type) {
         return new VariableImpl(scope, type);
     }
@@ -160,6 +170,11 @@ class VariableImpl implements Variable {
         if (!Objects.equals(this.varName, other.varName)) {
             return false;
         }
+        
+        if (!Objects.equals(this.invocation, other.invocation)) {
+            return false;
+        }
+        
         return true;
     }
 
@@ -177,6 +192,19 @@ class VariableImpl implements Variable {
     @Override
     public boolean isStatic() {
         return staticVar;
+    }
+
+    /**
+     * @return the invocation
+     */
+    @Override
+    public Optional<Invocation> getInvocation() {
+        return Optional.of(invocation);
+    }
+
+    @Override
+    public boolean isReturnValue() {
+        return invocation!=null;
     }
 
 }

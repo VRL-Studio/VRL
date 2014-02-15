@@ -51,6 +51,7 @@
 package eu.mihosoft.vrl.lang.model;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -62,7 +63,9 @@ public interface Invocation extends CodeEntity {
 
     public String getMethodName();
 
-    public String getReturnValueName();
+    public Optional<Variable> getReturnValue();
+    
+    public IType getReturnType();
 
     public List<Variable> getArguments();
 

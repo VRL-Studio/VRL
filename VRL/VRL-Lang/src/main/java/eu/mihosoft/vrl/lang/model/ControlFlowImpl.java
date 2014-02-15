@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.Scope;
@@ -64,32 +63,30 @@ import java.util.List;
 class ControlFlowImpl implements ControlFlow {
 
     private final List<Invocation> invocations = new ArrayList<>();
-    
+
     private final Scope parent;
 
     public ControlFlowImpl(Scope parent) {
         this.parent = parent;
     }
 
-    
-
     @Override
     public Invocation createInstance(String id, IType type, String varName, Variable... args) {
-        Invocation result = new InvocationImpl(parent,id, type.getFullClassName(), "<init>", true, false, true, varName, args);
+        Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), "<init>", type, true, false, true, args);
         getInvocations().add(result);
         return result;
     }
 
     @Override
-    public Invocation callMethod(String id, String varName, String mName, boolean isVoid, String retValueName, Variable... args) {
-        Invocation result = new InvocationImpl(parent, id, varName, mName, false, isVoid, false, retValueName, args);
+    public Invocation callMethod(String id, String varName, String mName, IType returnType, boolean isVoid, Variable... args) {
+        Invocation result = new InvocationImpl(parent, id, varName, mName, returnType, false, isVoid, false, args);
         getInvocations().add(result);
         return result;
     }
-    
+
     @Override
-    public Invocation callStaticMethod(String id, IType type, String mName, boolean isVoid, String retValueName, Variable... args) {
-        Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), mName, false, isVoid, true, retValueName, args);
+    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType, boolean isVoid, Variable... args) {
+        Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), mName, returnType, false, isVoid, true, args);
         getInvocations().add(result);
         return result;
     }
@@ -121,5 +118,18 @@ class ControlFlowImpl implements ControlFlow {
         return invocations;
     }
 
-}
+    @Override
+    public Invocation callMethod(String id, String varName, MethodDeclaration mDec, Variable... args) {
 
+        
+
+        if (mDec.getModifiers().getModifiers().contains(Modifier.STATIC)) {
+            return callStaticMethod(id, mDec.getClassDeclaration().getClassType(), varName, mDec.getReturnType(), true, args);
+        } else {
+            return callMethod(id, varName, mDec.getName(), mDec.getReturnType(), Type.VOID.equals(mDec.getReturnType()), args);
+        }
+
+        
+    }
+
+}

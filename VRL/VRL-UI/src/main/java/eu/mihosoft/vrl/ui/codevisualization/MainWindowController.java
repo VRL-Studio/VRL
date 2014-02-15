@@ -50,11 +50,11 @@
 package eu.mihosoft.vrl.ui.codevisualization;
 
 import com.thoughtworks.xstream.XStream;
-import eu.mihosoft.vrl.instrumentation.Scope2Code;
-import eu.mihosoft.vrl.instrumentation.ScopeInvocation;
-import eu.mihosoft.vrl.instrumentation.ScopeType;
-import eu.mihosoft.vrl.instrumentation.UIBinding;
-import eu.mihosoft.vrl.instrumentation.Variable;
+import eu.mihosoft.vrl.lang.model.Scope2Code;
+import eu.mihosoft.vrl.lang.model.ScopeInvocation;
+import eu.mihosoft.vrl.lang.model.ScopeType;
+import eu.mihosoft.vrl.lang.model.UIBinding;
+import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.CommentType;
@@ -391,7 +391,7 @@ public class MainWindowController implements Initializable {
 
 //                System.out.println("SENDER: " + sender.getId() + ", receiver: " + receiver.getId());
                 String retValueName
-                        = dataRelation.getSender().getReturnValueName();
+                        = dataRelation.getSender().getReturnValue().get().getName();
 
 //                System.out.println(" --> sender: " + retValueName);
                 Connector senderConnector = getVariableById(sender, retValueName);
@@ -483,7 +483,7 @@ public class MainWindowController implements Initializable {
 
             if (!i.isVoid()) {
                 Connector output = n.addOutput("data");
-                Variable v = scope.getVariable(i.getReturnValueName());
+                Variable v = scope.getVariable(i.getReturnValue().get().getName());
 //                System.out.println(" > Write Connector: ");
                 variableConnectors.put(getVariableId(n, v), output);
             }

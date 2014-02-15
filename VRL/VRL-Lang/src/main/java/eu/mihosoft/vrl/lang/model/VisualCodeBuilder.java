@@ -50,18 +50,6 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.IType;
-import eu.mihosoft.vrl.lang.model.WhileDeclaration;
-import eu.mihosoft.vrl.lang.model.IModifiers;
-import eu.mihosoft.vrl.lang.model.MethodDeclaration;
-import eu.mihosoft.vrl.lang.model.ClassDeclaration;
-import eu.mihosoft.vrl.lang.model.IParameters;
-import eu.mihosoft.vrl.lang.model.Invocation;
-import eu.mihosoft.vrl.lang.model.IExtends;
-import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
-import eu.mihosoft.vrl.lang.model.ForDeclaration;
-
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
@@ -86,7 +74,9 @@ public interface VisualCodeBuilder {
 
     WhileDeclaration declareWhile(Scope scope, Invocation check);
 
-    Invocation invokeMethod(Scope scope, String varName, String mName, boolean isVoid, String retValName, Variable... args);
+    Invocation invokeMethod(Scope scope, String varName, String mName, IType returnType, boolean isVoid, Variable... args);
     
-    Invocation invokeStaticMethod(Scope scope, IType type, String mName, boolean isVoid, String retValName, Variable... args);
+    Invocation invokeStaticMethod(Scope scope, IType type, String mName, IType returnType, boolean isVoid, Variable... args);
+
+    Invocation invokeMethod(Scope scope, String varName, MethodDeclaration mDec, Variable... args);
 }

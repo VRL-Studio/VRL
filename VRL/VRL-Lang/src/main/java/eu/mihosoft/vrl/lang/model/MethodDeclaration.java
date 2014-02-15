@@ -65,4 +65,6 @@ public interface MethodDeclaration extends Scope{
 
     IType getReturnType();
     
+    ClassDeclaration getClassDeclaration();
+    
 }

@@ -61,9 +61,11 @@ public interface ControlFlow {
 
     public Invocation createInstance(String id, IType type, String varName, Variable... args);
 
-    public Invocation callMethod(String id, String varName, String mName, boolean isVoid, String retValueName, Variable... args);
+    public Invocation callMethod(String id, String varName, String mName, IType returnType, boolean isVoid, Variable... args);
     
-    public Invocation callStaticMethod(String id, IType type, String mName, boolean isVoid, String retValueName, Variable... args);
+    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType, boolean isVoid, Variable... args);
+    
+    public Invocation callMethod(String id, String varName, MethodDeclaration mDec, Variable... args);
 
     public ScopeInvocation callScope(Scope scope);
 

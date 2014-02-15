@@ -65,7 +65,7 @@ class MethodDeclaration_Impl extends ScopeImpl implements MethodDeclaration {
 
     private final MethodDeclarationMetaData metadata;
 
-    public MethodDeclaration_Impl(String id, String methodName, Scope parent, IType returnType, IModifiers modifiers, IParameters params) {
+    public MethodDeclaration_Impl(String id, String methodName, ClassDeclaration parent, IType returnType, IModifiers modifiers, IParameters params) {
         super(id, parent, ScopeType.METHOD, methodName, new MethodDeclarationMetaData(returnType, modifiers, params));
         metadata = (MethodDeclarationMetaData) getScopeArgs()[0];
 
@@ -99,6 +99,13 @@ class MethodDeclaration_Impl extends ScopeImpl implements MethodDeclaration {
     public Variable getParameterAsVariable(IParameter p) {
         return getVariable(p.getName());
     }
+
+    @Override
+    public ClassDeclaration getClassDeclaration() {
+        return (ClassDeclaration) getParent();
+    }
+    
+    
 }
 
 final class MethodDeclarationMetaData {

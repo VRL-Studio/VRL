@@ -108,8 +108,8 @@ class DataFlowImpl implements DataFlow {
         for (Invocation i : controlFlow.getInvocations()) {
             System.out.println(" --> i:" + i.getMethodName());
             if (!i.isVoid()) {
-                System.out.println("  |--> potential sender with var " + i.getReturnValueName());
-                senders.put(i.getReturnValueName(), i);
+                System.out.println("  |--> potential sender with var " + i.getReturnValue().get().getName());
+                senders.put(i.getReturnValue().get().getName(), i);
             }
         }
 

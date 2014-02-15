@@ -64,6 +64,9 @@ public final class Type implements IType {
     private final String packageName;
     private final String shortName;
     private final boolean isReturnOrParamType;
+    public static final IType VOID = new Type("void");
+    public static final IType INT = new Type("int");
+    public static final IType LONG = new Type("long");
 
     public Type(String packageName, String shortName, boolean isReturnOrParamType) {
         this.packageName = packageName;

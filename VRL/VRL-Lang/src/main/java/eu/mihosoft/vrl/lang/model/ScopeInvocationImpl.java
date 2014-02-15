@@ -62,7 +62,7 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
     private final Scope scope;
 
     public ScopeInvocationImpl(Scope s) {
-        super(s, "", null, "scope", false, true, true, "", new Variable[0]);
+        super(s, "", null, "scope", Type.VOID, false, true, true, new Variable[0]);
         this.scope = s;
     }
 

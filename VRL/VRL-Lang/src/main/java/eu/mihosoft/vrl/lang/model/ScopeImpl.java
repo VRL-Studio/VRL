@@ -170,6 +170,24 @@ class ScopeImpl implements Scope {
 
         return createVariable(type, varName);
     }
+    
+    
+    @Override
+    public Variable createVariable(Invocation invocation) {
+        String varNamePrefix = "vrlInvocationVar";
+
+        int counter = 0;
+        String varName = varNamePrefix + counter;
+
+        while (getVariable(varName) != null) {
+            counter++;
+            varName = varNamePrefix + counter;
+        }
+
+        Variable variable = new VariableImpl(this, varName, invocation);
+        variables.put(varName, variable);
+        return variable;
+    }
 
     @Override
     public Variable createStaticVariable(IType type) {
@@ -371,5 +389,7 @@ class ScopeImpl implements Scope {
     public boolean removeScope(Scope s) {
         return scopes.remove(s);
     }
+
+   
 
 }
