@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.ui.codevisualization;
 
 import com.thoughtworks.xstream.XStream;
@@ -583,24 +582,23 @@ public class MainWindowController implements Initializable {
 //        if (vrlC.isPresent()) {
 //            cud.getComments().remove(vrlC.get());
 //        }
-        cud.getComments().stream().forEach(c -> System.out.println(c.getComment()));
+//        cud.getComments().stream().forEach(c -> System.out.println(c.getComment()));
+        Predicate<Comment> vrlLayoutType = (Comment c) -> {
+            return c.getType() == CommentType.VRL_MULTI_LINE
+                    && c.getComment().contains("<!VRL!><Type:VRL-Layout>");
+        };
 
-        List<Comment> toBeRemoved = cud.getComments().stream().filter(
-                c -> (c.getType() == CommentType.PLAIN_LINE
-                && (c.getComment().contains("<editor-fold")
-                || c.getComment().contains("</editor-fold"))) || c.getType() == CommentType.VRL_LINE
-        ).collect(Collectors.toList());
+        Predicate<Comment> editorFoldType = (Comment c) -> {
+            return c.getComment().contains("<editor-fold")
+                    || c.getComment().contains("</editor-fold");
+        };
 
-//        for (Comment comment : cud.getComments()) {
-//            if (comment.getType() == CommentType.VRL_LINE) {
-//                toBeRemoved.add(comment);
-//            } else if (
-//                    comment.getType() == CommentType.LINE
-//                    && (comment.getComment().contains("<editor-fold")
-//                    || comment.getComment().contains("</editor-fold"))) {
-//                toBeRemoved.add(comment);
-//            }
-//        }
+        List<Comment> toBeRemoved = cud.getComments().stream().
+                filter(vrlLayoutType.or(editorFoldType)).
+                collect(Collectors.toList());
+
+        toBeRemoved.forEach(c -> System.out.println("out: " + c.getType()));
+
         cud.getComments().removeAll(toBeRemoved);
 
         updateCode(cud);
@@ -612,18 +610,18 @@ public class MainWindowController implements Initializable {
 
     private void loadUIData() {
         try {
-            CompilationUnitDeclaration cud = (CompilationUnitDeclaration) UIBinding.scopes.values().iterator().next().get(0);
-
-            Predicate<Comment> vrlCommentType = (Comment c) -> {
-                return c.getType() == CommentType.VRL_MULTI_LINE;
-            };
+            CompilationUnitDeclaration cud
+                    = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                    iterator().next().get(0);
 
             Predicate<Comment> vrlLayoutType = (Comment c) -> {
-                System.out.println("c: " + c.getType());
-                return c.getType() == CommentType.VRL_MULTI_LINE && c.getComment().contains("<!VRL!><Type:VRL-Layout>");
+                return c.getType()
+                        == CommentType.VRL_MULTI_LINE
+                        && c.getComment().contains("<!VRL!><Type:VRL-Layout>");
             };
 
-            Optional<Comment> vrlC = cud.getComments().stream().filter(vrlLayoutType).findFirst();
+            Optional<Comment> vrlC = cud.getComments().stream().
+                    filter(vrlLayoutType).findFirst();
 
             if (vrlC.isPresent()) {
                 String vrlComment = vrlC.get().getComment();
@@ -631,12 +629,14 @@ public class MainWindowController implements Initializable {
                 XStream xstream = new XStream();
                 xstream.alias("layout", LayoutData.class);
                 layoutData.clear();
-                layoutData.putAll((Map<String, LayoutData>) xstream.fromXML(vrlComment));
+                layoutData.putAll(
+                        (Map<String, LayoutData>) xstream.fromXML(vrlComment));
             } else {
                 System.err.println("-> cannot load layout - not present!");
             }
         } catch (Exception ex) {
-            System.err.println("-> cannot load layout - exception while loading!");
+            System.err.println(
+                    "-> cannot load layout - exception while loading!");
         }
     }
 
