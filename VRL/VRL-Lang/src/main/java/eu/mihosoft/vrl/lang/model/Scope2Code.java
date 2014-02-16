@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 //import org.stringtemplate.v4.ST;
@@ -310,6 +309,15 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
     @Override
     public void render(Invocation i, CodeBuilder cb) {
+        render(i, cb, false);
+    }
+
+    private void render(Invocation i, CodeBuilder cb, boolean inParam) {
+
+        if (!inParam && i.getParent().getControlFlow().isUsedAsInput(i)) {
+
+            return;
+        }
 
         if (i.isConstructor()) {
 //            cb.append("new ").append(i.getReturnValueName()).
@@ -319,13 +327,18 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 //            cb.append(");");
 
         } else if (!i.isScope()) {
-            cb.
-                    append(i.getVariableName()).
-                    append(".").
-                    append(i.getMethodName()).append("(");
-            renderParams(i, cb);
 
-            cb.append(");");
+            if (!i.getVariableName().equals("this")) {
+                cb.
+                        append(i.getVariableName()).
+                        append(".");
+            }
+            cb.append(i.getMethodName()).append("(");
+            renderParams(i, cb);
+            cb.append(")");
+            if (!inParam) {
+                cb.append(";");
+            }
         } else {
 
             ScopeInvocation si = (ScopeInvocation) i;
@@ -386,7 +399,9 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 //            }
         }
 
-        cb.newLine();
+        if (!inParam) {
+            cb.newLine();
+        }
     }
 
     private void renderParams(Invocation e, CodeBuilder cb) {
@@ -411,6 +426,8 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
                 cb.append(constString);
 
+            } else if (v.getInvocation().isPresent()) {
+                render(v.getInvocation().get(), cb, true);
             } else {
                 cb.append(v.getName());
             }

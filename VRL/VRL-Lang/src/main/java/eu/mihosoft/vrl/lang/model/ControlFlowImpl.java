@@ -121,15 +121,28 @@ class ControlFlowImpl implements ControlFlow {
     @Override
     public Invocation callMethod(String id, String varName, MethodDeclaration mDec, Variable... args) {
 
-        
-
         if (mDec.getModifiers().getModifiers().contains(Modifier.STATIC)) {
             return callStaticMethod(id, mDec.getClassDeclaration().getClassType(), varName, mDec.getReturnType(), true, args);
         } else {
             return callMethod(id, varName, mDec.getName(), mDec.getReturnType(), Type.VOID.equals(mDec.getReturnType()), args);
         }
 
-        
+    }
+
+    @Override
+    public boolean isUsedAsInput(Invocation invocation) {
+       
+        for (Invocation inv : invocations) {
+            for (Variable arg : inv.getArguments()) {
+                if (arg.getInvocation().isPresent()) {
+                    if (arg.getInvocation().get().equals(invocation)) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
 }

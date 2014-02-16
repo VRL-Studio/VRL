@@ -199,7 +199,7 @@ class VariableImpl implements Variable {
      */
     @Override
     public Optional<Invocation> getInvocation() {
-        return Optional.of(invocation);
+        return Optional.ofNullable(invocation);
     }
 
     @Override

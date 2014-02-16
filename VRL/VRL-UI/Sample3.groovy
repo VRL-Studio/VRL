@@ -4,17 +4,17 @@ package my.testpackage;
 public class MyFileClass {
     
     public int m1(int v1) {
-        this.m1(v1);
+        m1(v1);
     }
     public int m2(int v1, int v2) {
-        this.m1(v1);
-        this.m1(v2);
-        this.m2(v1, v2);
+        m1(v1);
+        m1(v2);
+        m2(v1, v2);
     }
     public int m3(int v1, int v2, int v3) {
-        this.m1(v1);
-        this.m2(v1, v2);
-        this.m3(v1, v2, v3);
+        m1(v1);
+        m2(v1, v2);
+        m3(v1, v2, v3);
     }
 }
 @eu.mihosoft.vrl.instrumentation.VRLVisualization
@@ -25,19 +25,19 @@ public class MyFileClass2 {
     public int abc1234(int a) {
     }
     public int m1(int v1) {
-        this.m1(v1);
+        m1(v1);
     }
     public int m2(int v1, int v2) {
-        this.m1(v1);
-        this.m1(v2);
-        this.m2(v1, v2);
+        m1(v1);
+        m1(v2);
+        m2(v1, v2);
     }
     //<!VRL!> my special comment
     public int m3(int v1, int v2, int v3) {
-        this.m2(v1, v2);
-        this.m3(v1, v2, v3);
-        this.m1(v1);
-        this.println("1");
+        m2(v1, v2);
+        m3(v1, v2, v3);
+        m1(v1);
+        println("1");
     }
     public int abc(int a) {
     }
@@ -104,8 +104,8 @@ public class B {
   <entry>
     <string>Script:my.testpackage.MyFileClass2:m2:inv:m1</string>
     <layout>
-      <x>0.0</x>
-      <y>0.0</y>
+      <x>240.95727678113042</x>
+      <y>126.81961935848969</y>
       <width>400.0</width>
       <height>100.0</height>
       <contentVisible>true</contentVisible>
@@ -134,8 +134,8 @@ public class B {
   <entry>
     <string>Script:my.testpackage.MyFileClass2:m2:inv:m2</string>
     <layout>
-      <x>0.0</x>
-      <y>0.0</y>
+      <x>396.40381892627045</x>
+      <y>338.76855633964607</y>
       <width>400.0</width>
       <height>100.0</height>
       <contentVisible>true</contentVisible>
@@ -172,16 +172,6 @@ public class B {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MyFileClass2:abc</string>
-    <layout>
-      <x>423.37108952951377</x>
-      <y>448.52184732334626</y>
-      <width>400.0</width>
-      <height>300.0</height>
-      <contentVisible>false</contentVisible>
-    </layout>
-  </entry>
-  <entry>
     <string>Script:my.testpackage.MyFileClass</string>
     <layout>
       <x>120.63564847878511</x>
@@ -189,6 +179,16 @@ public class B {
       <width>728.1025562102036</width>
       <height>713.9038297285963</height>
       <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass2:abc</string>
+    <layout>
+      <x>423.37108952951377</x>
+      <y>448.52184732334626</y>
+      <width>400.0</width>
+      <height>300.0</height>
+      <contentVisible>false</contentVisible>
     </layout>
   </entry>
   <entry>
@@ -208,7 +208,7 @@ public class B {
       <y>0.0</y>
       <width>400.0</width>
       <height>300.0</height>
-      <contentVisible>false</contentVisible>
+      <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
@@ -312,9 +312,9 @@ public class B {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.A:abc</string>
+    <string>Script:my.testpackage.MyFileClass:m2</string>
     <layout>
-      <x>0.0</x>
+      <x>781.5724847164374</x>
       <y>0.0</y>
       <width>400.0</width>
       <height>300.0</height>
@@ -322,9 +322,9 @@ public class B {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MyFileClass:m2</string>
+    <string>Script:my.testpackage.A:abc</string>
     <layout>
-      <x>781.5724847164374</x>
+      <x>0.0</x>
       <y>0.0</y>
       <width>400.0</width>
       <height>300.0</height>

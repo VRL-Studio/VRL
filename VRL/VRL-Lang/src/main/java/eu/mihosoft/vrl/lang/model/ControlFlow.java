@@ -70,5 +70,7 @@ public interface ControlFlow {
     public ScopeInvocation callScope(Scope scope);
 
     public List<Invocation> getInvocations();
+    
+    public boolean isUsedAsInput(Invocation invocation);
 }
 

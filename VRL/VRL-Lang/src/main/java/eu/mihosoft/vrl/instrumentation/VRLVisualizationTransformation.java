@@ -232,7 +232,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     private List<Comment> comments = new ArrayList<>();
     private Reader codeReader;
 
-    private Map<MethodCallExpression, String> returnValuesOfMethods
+    private Map<MethodCallExpression, Variable> returnVariables
             = new HashMap<>();
 
     public VGroovyCodeVisitor(SourceUnit sourceUnit, VisualCodeBuilder_Impl codeBuilder) {
@@ -516,13 +516,13 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         }
 
         IType returnType;
-        
+
         if (!isVoid) {
             returnType = new Type(mTarget.getReturnType().getName());
         } else {
             returnType = Type.VOID;
         }
-        
+
         if (!isIdCall) {
             if (objectName != null) {
 //                codeBuilder.invokeMethod(currentScope, objectName, s.getMethod().getText(), isVoid,
@@ -530,11 +530,14 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 Invocation invocation = codeBuilder.invokeMethod(
                         currentScope, objectName,
                         s.getMethod().getText(),
-                       returnType,
+                        returnType,
                         isVoid,
                         arguments);
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
+                if (invocation.getReturnValue().isPresent()) {
+                    returnVariables.put(s, invocation.getReturnValue().get());
+                }
             } else if (s.getMethod().getText().equals("println")) {
 //                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
 //                        returnValueName, arguments).setCode(getCode(s));
@@ -544,6 +547,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                         arguments);
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
+                if (invocation.getReturnValue().isPresent()) {
+                    returnVariables.put(s, invocation.getReturnValue().get());
+                }
             }
         }
 
@@ -779,11 +785,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
             if (e instanceof MethodCallExpression) {
                 System.out.println("TYPE: " + e);
-                v = currentScope.getVariable(returnValuesOfMethods.get(e));
+                v = returnVariables.get(e);
             }
 
             if (v == null) {
-                System.out.println("TYPE: " + e);
+                System.out.println("NULLTYPE: " + e);
                 v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.unknown", true), "don't know");
             }
 

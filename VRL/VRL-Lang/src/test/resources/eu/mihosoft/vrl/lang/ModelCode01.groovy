@@ -17,11 +17,11 @@ public class MyFileClass {
         this.m1(v1);
         this.m1(v1);
         
-        this.m3(this.m1(v1), this.m1(v1));
+        this.m3(m1(v1), m1(v1));
     }
     
     public int m3(int v1, int v2) {
-        return v1+v2;
+        return 0;
     }
     
     /**

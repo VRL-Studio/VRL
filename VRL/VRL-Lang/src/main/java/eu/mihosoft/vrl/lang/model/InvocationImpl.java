@@ -245,7 +245,7 @@ class InvocationImpl implements Invocation {
 
     @Override
     public Optional<Variable> getReturnValue() {
-        return Optional.of(returnValue);
+        return Optional.ofNullable(returnValue);
     }
 
 
