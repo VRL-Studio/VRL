@@ -489,9 +489,13 @@ class MethodDeclarationRenderer implements CodeRenderer<MethodDeclaration> {
             } else {
                 cb.append(", ");
             }
-
-            cb.append(v.getType().getFullClassName()).append(" ").
-                    append(v.getName());
+            if (v.getType().getPackageName().equals("java.lang")) {
+                cb.append(v.getType().getShortName()).append(" ").
+                        append(v.getName());
+            } else {
+                cb.append(v.getType().getFullClassName()).append(" ").
+                        append(v.getName());
+            }
         }
     }
 }

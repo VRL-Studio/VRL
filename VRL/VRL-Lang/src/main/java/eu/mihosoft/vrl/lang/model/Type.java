@@ -67,6 +67,11 @@ public final class Type implements IType {
     public static final IType VOID = new Type("void");
     public static final IType INT = new Type("int");
     public static final IType LONG = new Type("long");
+    public static final IType SHORT = new Type("short");
+    public static final IType FLOAT = new Type("float");
+    public static final IType DOUBLE = new Type("double");
+    public static final IType CHAR = new Type("char");
+    public static final IType STRING = new Type("java.lang.String");
 
     public Type(String packageName, String shortName, boolean isReturnOrParamType) {
         this.packageName = packageName;

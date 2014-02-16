@@ -132,6 +132,7 @@ public class MainWindowController implements Initializable {
     private final Map<String, Invocation> nodeInvocations = new HashMap<>();
     private final Map<String, Scope> nodeToScopes = new HashMap<>();
     private final Map<String, Connector> variableConnectors = new HashMap<>();
+    private final Map<String, Integer> variableArgumentIndex = new HashMap<>();
     private final Map<String, LayoutData> layoutData = new HashMap<>();
 
     private FileAlterationMonitor fileMonitor;
@@ -296,7 +297,7 @@ public class MainWindowController implements Initializable {
                         try {
                             editor.setText(new String(
                                     Files.readAllBytes(
-                                    Paths.get(currentDocument.getAbsolutePath())),
+                                            Paths.get(currentDocument.getAbsolutePath())),
                                     "UTF-8"));
                             updateView(true);
                         } catch (UnsupportedEncodingException ex) {
@@ -426,6 +427,7 @@ public class MainWindowController implements Initializable {
 
         addCloseNodeListener(result.getModel());
         addControlflowListener(scope, result);
+        addDataflowListener(scope, result);
 //        invocationNodes.put(scope, result.getModel());
         nodeToScopes.put(result.getModel().getId(), scope);
 
@@ -475,10 +477,13 @@ public class MainWindowController implements Initializable {
                 result.connect(prevNode, n, "control");
             }
 
+            int index = 0;
             for (Variable v : i.getArguments()) {
                 Connector input = n.addInput("data");
 //                System.out.println(" > Write Connector: ");
                 variableConnectors.put(getVariableId(n, v), input);
+                variableArgumentIndex.put(getVariableId(n, v), index);
+                index++;
             }
 
             if (!i.isVoid()) {
@@ -578,10 +583,9 @@ public class MainWindowController implements Initializable {
         xstream.alias("layout", LayoutData.class);
         String data = xstream.toXML(layoutData);
 
-        CompilationUnitDeclaration cud = 
-                (CompilationUnitDeclaration) UIBinding.scopes.values().
-                        iterator().next().get(0);
-
+        CompilationUnitDeclaration cud
+                = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                iterator().next().get(0);
 
         Predicate<Comment> vrlLayoutType = (Comment c) -> {
             return c.getType() == CommentType.VRL_MULTI_LINE
@@ -697,19 +701,18 @@ public class MainWindowController implements Initializable {
     }
 
     private boolean isRoot(VNode node, String connectionType) {
-        
+
         Predicate<Connector> notConnected = (Connector c) -> {
             return c.getType().equals(connectionType)
                     && !c.getNode().getFlow().
                     getConnections(connectionType).
                     getAllWith(c).isEmpty();
         };
-        
+
         Predicate<VNode> rootNode = (VNode n) -> {
             return n.getInputs().filtered(notConnected).isEmpty();
         };
-        
-        
+
         return rootNode.test(node);
     }
 
@@ -743,6 +746,65 @@ public class MainWindowController implements Initializable {
                                     getInvocations().add(nodeInvocations.get(node.getId()))
                             )
                     );
+                    updateCode(rootScope);
+                });
+    }
+
+    private void addDataflowListener(Scope rootScope, VFlow result) {
+        result.getConnections("data").getConnections().addListener(
+                (ListChangeListener.Change<? extends Connection> change) -> {
+
+//                    List<VNode> roots = result.getNodes().filtered(
+//                            n -> isRoot(n, "data"));
+//
+//                    // clear current control flow
+//                    rootScope.getControlFlow().getInvocations().clear();
+//
+//                    List<List<VNode>> paths = new ArrayList<>();
+//
+//                    // follow controlflow from roots to end
+//                    roots.forEach(
+//                            r -> {
+////                                System.out.println("-- root " + r.getTitle() + " --");
+//
+//                                List<VNode> path = getPath(r, "data");
+//
+////                                path.forEach(
+////                                        n -> System.out.println("n->" + n.getTitle()));
+//                                paths.add(path);
+//                            });
+//
+//                    paths.forEach(path
+//                            -> path.forEach(node
+//                                    -> rootScope.getControlFlow().
+//                                    getInvocations().add(nodeInvocations.get(node.getId()))
+//                            )
+//                    );
+//                    while (change.next()) {
+//                        if (change.wasAdded()) {
+//                            for (Connection conn : change.getAddedSubList()) {
+//                                VNode senderN = conn.getSender().getNode();
+//                                VNode receiverN = conn.getReceiver().getNode();
+//
+//                                Invocation senderInv = nodeInvocations.get(senderN.getId());
+//                                Invocation receiverInv = nodeInvocations.get(receiverN.getId());
+//
+////                                Connector output = variableConnectors.get(
+////                                        getVariableId(senderN, senderInv.getReturnValue().get().getName()));
+////                                Connector input = variableConnectors.get(
+////                                        getVariableId(receiverN, senderInv.getReturnValue().get().getName()));
+//
+//                                System.out.println("rgument: " + senderInv + ", recInv: " + receiverInv);
+//                                
+//                                receiverInv.getArguments().set(
+//                                        variableArgumentIndex.get(getVariableId(receiverN,
+//                                                senderInv.getReturnValue().get().getName())),
+//                                        senderInv.getReturnValue().get());
+//
+//                            }
+//                        }
+//                    }
+
                     updateCode(rootScope);
                 });
     }

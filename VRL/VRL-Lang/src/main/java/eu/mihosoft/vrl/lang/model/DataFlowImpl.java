@@ -50,13 +50,8 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import eu.mihosoft.vrl.lang.model.ControlFlow;
-import eu.mihosoft.vrl.lang.model.DataFlow;
-import eu.mihosoft.vrl.lang.model.DataRelation;
-import eu.mihosoft.vrl.lang.model.Invocation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
