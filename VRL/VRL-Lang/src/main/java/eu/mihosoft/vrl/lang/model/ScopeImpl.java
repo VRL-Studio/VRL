@@ -47,9 +47,9 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
+import com.google.common.base.Objects;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -163,8 +163,7 @@ class ScopeImpl implements Scope {
 
         return createVariable(type, varName);
     }
-    
-    
+
     @Override
     public Variable createVariable(Invocation invocation) {
         String varNamePrefix = "vrlInvocationVar";
@@ -380,9 +379,9 @@ class ScopeImpl implements Scope {
 
     @Override
     public boolean removeScope(Scope s) {
-        return scopes.remove(s);
-    }
+        boolean result = scopes.remove(s);
 
-   
+        return result;
+    }
 
 }
