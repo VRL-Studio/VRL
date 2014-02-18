@@ -47,11 +47,7 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
-
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.ForDeclaration;
 
 /**
  *
@@ -66,7 +62,7 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
 
         boolean forceIncrement = from < to;
         boolean equal = from == to;
-        
+
         if (forceIncrement && !equal && inc <= 0) {
             throw new IllegalArgumentException("For loop cannot have negative or zero increment!");
         } else if (!forceIncrement && !equal && inc >= 0) {
@@ -75,7 +71,7 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
 
         metadata = (ForDeclarationMetaData) getScopeArgs()[0];
 
-        createVariable(new Type("int"), varName);
+        setVarName(varName);
     }
 
     @Override
@@ -97,12 +93,15 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
     public int getInc() {
         return metadata.getInc();
     }
-    
-     /**
-     * @param varName the varName to set
+
+    /**
+     * @param varName the varName to set (creates var if not null or empty)
      */
-    public void setVarName(String varName) {
+    public final void setVarName(String varName) {
         metadata.setVarName(varName);
+        if (varName != null && !varName.isEmpty()) {
+            Variable v = createVariable(Type.INT, varName);
+        }
     }
 
     /**

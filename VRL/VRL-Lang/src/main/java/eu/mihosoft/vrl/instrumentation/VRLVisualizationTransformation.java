@@ -370,10 +370,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //    }
     @Override
     public void visitForLoop(ForStatement s) {
-        System.out.println(" --> FOR-LOOP: " + s.getVariable().getName());
+        System.out.println(" --> FOR-LOOP: " + s.getVariable());
 
         // predeclaration, ranges will be defined later
-        currentScope = codeBuilder.declareFor(currentScope, s.getVariable().getName(), 0, 0, 0);
+        currentScope = codeBuilder.declareFor(currentScope, null, 0, 0, 0);
         setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
 
@@ -782,9 +782,13 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             if (e instanceof VariableExpression) {
                 VariableExpression ve = (VariableExpression) e;
 
-                // TODO reference variable instead of creating it!!! 18.02.2014
-                Variable v = VariableFactory.createObjectVariable(currentScope, new Type(ve.getType().getName(), true), ve.getName());
-
+                Variable v = currentScope.getVariable(ve.getName());
+                
+//                if (v==null) {
+//                    System.out.println("WARNING: creating variable that should already exist: " + ve.getName());
+//                    v = VariableFactory.createObjectVariable(currentScope, new Type(ve.getType().getName(), true), ve.getName());
+//                }
+                
                 arguments[i] = Argument.newVarArg(v);
 
             }
@@ -800,13 +804,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
             if (e instanceof MethodCallExpression) {
                 System.out.println("TYPE: " + e);
-                arguments[i] = Argument.newInvArg(returnVariables.get(e));
+                arguments[i] = Argument.newInvArg(returnVariables.get((MethodCallExpression)e));
             }
 
             if (arguments[i] == null) {
                 arguments[i] = Argument.NULL;
-                System.out.println("NULLTYPE: " + e);
-//                v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.unknown", true), "don't know");
             }
 
 //            arguments[i] = v;
