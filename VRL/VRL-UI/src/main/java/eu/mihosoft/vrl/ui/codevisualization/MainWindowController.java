@@ -686,9 +686,21 @@ public class MainWindowController implements Initializable {
 
                             Scope s = nodeToScopes.get(removedN.getId());
 
-                            if (s.getParent() != null) {
-                                s.getParent().removeScope(s);
+                            if (s != null) {
+                                if (s.getParent() != null) {
+                                    s.getParent().removeScope(s);
+                                }
+                            } else {
+                                Invocation i = nodeInvocations.get(removedN.getId());
+                                
+                                if (i!=null) {
+                                     if (i.getParent() != null) {
+                                         i.getParent().getControlFlow().
+                                                 getInvocations().remove(i);
+                                     }
+                                }
                             }
+
                         });
 
                         if (change.wasRemoved()) {
@@ -804,7 +816,6 @@ public class MainWindowController implements Initializable {
 //                            }
 //                        }
 //                    }
-
                     updateCode(rootScope);
                 });
     }
