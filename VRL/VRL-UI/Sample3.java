@@ -89,6 +89,11 @@ public class MyFileClass4 {
     public int abc(int a) {
     }
 }
+
+class MyNewClass {
+    
+}
+
 // <editor-fold defaultstate="collapsed" desc="VRL-Data">
 /*<!VRL!>
 <map>

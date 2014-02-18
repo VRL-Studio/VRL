@@ -50,14 +50,9 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.ClassDeclaration;
-import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.VLangUtils;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  *

@@ -50,13 +50,6 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Comment;
-import eu.mihosoft.vrl.lang.model.ControlFlow;
-import eu.mihosoft.vrl.lang.model.DataFlow;
-import eu.mihosoft.vrl.lang.model.ICodeRange;
-import eu.mihosoft.vrl.lang.model.IType;
-import eu.mihosoft.vrl.lang.model.Invocation;
-import eu.mihosoft.vrl.lang.model.Scope;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -355,7 +348,7 @@ class ScopeImpl implements Scope {
         return null;
     }
 
-    private void addScope(ScopeImpl s) {
+    void addScope(ScopeImpl s) {
         scopes.add(s);
     }
 

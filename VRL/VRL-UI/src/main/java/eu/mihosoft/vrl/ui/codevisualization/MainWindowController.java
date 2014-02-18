@@ -132,6 +132,7 @@ public class MainWindowController implements Initializable {
     private final Map<String, Invocation> nodeInvocations = new HashMap<>();
     private final Map<String, Scope> nodeToScopes = new HashMap<>();
     private final Map<String, Connector> variableConnectors = new HashMap<>();
+    private final Map<String, Integer> connectorsToArgIndex = new HashMap<>();
     private final Map<String, Integer> variableArgumentIndex = new HashMap<>();
     private final Map<String, LayoutData> layoutData = new HashMap<>();
 
@@ -330,6 +331,8 @@ public class MainWindowController implements Initializable {
         invocationNodes.clear();
         nodeToScopes.clear();
         variableConnectors.clear();
+        connectorsToArgIndex.clear();
+        variableArgumentIndex.clear();
 
         UIBinding.scopes.clear();
 
@@ -482,7 +485,9 @@ public class MainWindowController implements Initializable {
                 Connector input = n.addInput("data");
 //                System.out.println(" > Write Connector: ");
                 variableConnectors.put(getVariableId(n, v), input);
+//                System.out.println("-> adding input: " + getVariableId(n, v));
                 variableArgumentIndex.put(getVariableId(n, v), index);
+                connectorsToArgIndex.put(input.getId(), index);
                 index++;
             }
 
@@ -491,6 +496,7 @@ public class MainWindowController implements Initializable {
                 Variable v = scope.getVariable(i.getReturnValue().get().getName());
 //                System.out.println(" > Write Connector: ");
                 variableConnectors.put(getVariableId(n, v), output);
+                
             }
 
 //            if (!applyPosition(n)) {
@@ -692,12 +698,12 @@ public class MainWindowController implements Initializable {
                                 }
                             } else {
                                 Invocation i = nodeInvocations.get(removedN.getId());
-                                
-                                if (i!=null) {
-                                     if (i.getParent() != null) {
-                                         i.getParent().getControlFlow().
-                                                 getInvocations().remove(i);
-                                     }
+
+                                if (i != null) {
+                                    if (i.getParent() != null) {
+                                        i.getParent().getControlFlow().
+                                        getInvocations().remove(i);
+                                    }
                                 }
                             }
 
@@ -792,30 +798,78 @@ public class MainWindowController implements Initializable {
 //                                    getInvocations().add(nodeInvocations.get(node.getId()))
 //                            )
 //                    );
-//                    while (change.next()) {
-//                        if (change.wasAdded()) {
-//                            for (Connection conn : change.getAddedSubList()) {
-//                                VNode senderN = conn.getSender().getNode();
-//                                VNode receiverN = conn.getReceiver().getNode();
-//
-//                                Invocation senderInv = nodeInvocations.get(senderN.getId());
-//                                Invocation receiverInv = nodeInvocations.get(receiverN.getId());
-//
-////                                Connector output = variableConnectors.get(
-////                                        getVariableId(senderN, senderInv.getReturnValue().get().getName()));
-////                                Connector input = variableConnectors.get(
-////                                        getVariableId(receiverN, senderInv.getReturnValue().get().getName()));
-//
-//                                System.out.println("rgument: " + senderInv + ", recInv: " + receiverInv);
-//                                
-//                                receiverInv.getArguments().set(
-//                                        variableArgumentIndex.get(getVariableId(receiverN,
-//                                                senderInv.getReturnValue().get().getName())),
-//                                        senderInv.getReturnValue().get());
-//
-//                            }
-//                        }
-//                    }
+                    while (change.next()) {
+                        if (change.wasAdded()) {
+                            for (Connection conn : change.getAddedSubList()) {
+                                VNode senderN = conn.getSender().getNode();
+                                VNode receiverN = conn.getReceiver().getNode();
+
+                                Invocation senderInv = nodeInvocations.get(senderN.getId());
+                                Invocation receiverInv = nodeInvocations.get(receiverN.getId());
+
+//                                Connector output = variableConnectors.get(
+//                                        getVariableId(senderN, senderInv.getReturnValue().get().getName()));
+//                                Connector input = variableConnectors.get(
+//                                        getVariableId(receiverN, senderInv.getReturnValue().get().getName()));
+                                try {
+
+//                                    Variable retVal = senderInv.getReturnValue().get();
+
+//                                    String varId = getVariableId(receiverN, retVal.getName());
+                                    
+//                                    System.out.println("varId: " + varId);
+                                    
+                                    int argIndex = connectorsToArgIndex.get(conn.getReceiver().getId());
+
+                                    receiverInv.getArguments().set(
+                                            argIndex,
+                                            senderInv.getReturnValue().get());
+
+                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
+
+                                    senderInv.getParent().generateDataFlow();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+
+                            }
+                        } 
+                        if (change.wasRemoved()) {
+                            for (Connection conn : change.getRemoved()) {
+                                VNode senderN = conn.getSender().getNode();
+                                VNode receiverN = conn.getReceiver().getNode();
+
+                                Invocation senderInv = nodeInvocations.get(senderN.getId());
+                                Invocation receiverInv = nodeInvocations.get(receiverN.getId());
+
+//                                Connector output = variableConnectors.get(
+//                                        getVariableId(senderN, senderInv.getReturnValue().get().getName()));
+//                                Connector input = variableConnectors.get(
+//                                        getVariableId(receiverN, senderInv.getReturnValue().get().getName()));
+                                try {
+
+//                                    Variable retVal = senderInv.getReturnValue().get();
+
+//                                    String varId = getVariableId(receiverN, retVal.getName());
+                                    
+//                                    System.out.println("varId: " + varId);
+                                    
+                                    int argIndex = connectorsToArgIndex.get(conn.getReceiver().getId());
+
+                                    receiverInv.getArguments().set(
+                                            argIndex,
+                                            nullsenderInv.getReturnValue().get());
+
+                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
+
+                                    senderInv.getParent().generateDataFlow();
+                                } catch (Exception ex) {
+                                    ex.printStackTrace();
+                                }
+
+                            }
+                        }
+                    }
                     updateCode(rootScope);
                 });
     }

@@ -50,6 +50,7 @@
 
 package eu.mihosoft.vrl.lang.model;
 
+import eu.mihosoft.vrl.workflow.VFlow;
 import java.util.Collection;
 import java.util.List;
 
@@ -58,8 +59,6 @@ import java.util.List;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public interface Scope extends CodeEntity {
-
-    public Scope getParent();
 
     public ScopeType getType();
 
@@ -100,5 +99,7 @@ public interface Scope extends CodeEntity {
     public void createComment(String id, ICodeRange range, String comment);
     
     public boolean removeScope(Scope s);
+    
+//    public VFlow getFlow();
 }
 
