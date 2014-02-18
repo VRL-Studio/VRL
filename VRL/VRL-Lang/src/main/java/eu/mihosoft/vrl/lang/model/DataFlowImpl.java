@@ -98,34 +98,36 @@ class DataFlowImpl implements DataFlow {
         
         System.out.println(">> creating dataflow: ");
         
-        Map<String, Invocation> senders = new HashMap<>();
+//        Map<Integer, Invocation> senders = new HashMap<>();
 
-        for (Invocation i : controlFlow.getInvocations()) {
-            System.out.println(" --> i:" + i.getMethodName());
-            if (!i.isVoid()) {
-                System.out.println("  |--> potential sender with var " + i.getReturnValue().get().getName());
-                senders.put(i.getReturnValue().get().getName(), i);
-            }
-        }
+//        for (Invocation i : controlFlow.getInvocations()) {
+//            System.out.println(" --> i:" + i.getMethodName());
+//            if (!i.isVoid()) {
+//                System.out.println("  |--> potential sender with var " + i.getReturnValue().get().getName());
+//                senders.put(i.getReturnValue().get().getName(), i);
+//            }
+//        }
 
         for (Invocation receiver : controlFlow.getInvocations()) {
             for (IArgument a : receiver.getArguments()) {
                 
-                if (a.getArgType() != ArgumentType.VARIABLE) {
+                if (a.getArgType() != ArgumentType.INVOCATION) {
                     continue;
                 }
                 
-                Variable v = a.getVariable().get();
+//                Variable v = a.getVariable().get();
 
-                Invocation sender = senders.get(v.getName());
+//                Invocation sender = senders.get(v.getName());
 
-                System.out.println(">> searching sender for " + v.getName() + " with type " + v.getType());
+//                System.out.println(">> searching sender for " + v.getName() + " with type " + v.getType());
+
+                 Invocation sender = a.getInvocation().get();
                 
                 if (sender != null) {
-                    System.out.println(
-                            " --> sender found for '"
-                            + v.getName()
-                            + "', " + sender.getMethodName());
+//                    System.out.println(
+//                            " --> sender found for '"
+//                            + v.getName()
+//                            + "', " + sender.getMethodName());
                     
                     createDataRelation(sender, receiver);
                 }

@@ -63,7 +63,7 @@ public interface Invocation extends CodeEntity {
 
     public String getMethodName();
 
-    public Optional<Variable> getReturnValue();
+//    public Optional<Variable> getReturnValue();
     
     public IType getReturnType();
 

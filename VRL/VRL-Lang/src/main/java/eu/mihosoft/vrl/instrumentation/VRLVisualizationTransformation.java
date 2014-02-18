@@ -539,9 +539,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                         arguments);
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
-                if (invocation.getReturnValue().isPresent()) {
+//                if (invocation.getReturnValue().isPresent()) {
                     returnVariables.put(s, invocation);
-                }
+//                
             } else if (s.getMethod().getText().equals("println")) {
 //                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
 //                        returnValueName, arguments).setCode(getCode(s));
@@ -551,9 +551,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                         arguments);
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
-                if (invocation.getReturnValue().isPresent()) {
+//                if (invocation.getReturnValue().isPresent()) {
                     returnVariables.put(s, invocation);
-                }
+//                }
             }
         }
 

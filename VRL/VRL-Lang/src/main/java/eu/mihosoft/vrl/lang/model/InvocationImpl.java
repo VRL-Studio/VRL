@@ -76,7 +76,7 @@ class InvocationImpl implements Invocation {
     private boolean Static;
     private ICodeRange location;
     private final IType returnType;
-    private final Variable returnValue;
+//    private final Variable returnValue;
 
     public InvocationImpl(
             Scope parent,
@@ -95,11 +95,11 @@ class InvocationImpl implements Invocation {
 
         arguments.addAll(Arrays.asList(args));
         
-        if (isVoid) {
-            returnValue = null;
-        } else {
-            returnValue = parent.createVariable(this);
-        }
+//        if (isVoid) {
+//            returnValue = null;
+//        } else {
+//            returnValue = parent.createVariable(this);
+//        }
 
         Variable var = null;
         
@@ -156,7 +156,7 @@ class InvocationImpl implements Invocation {
             result += "scopeType: " + scopeInvocation.getScope().getType() + ", ";
         }
 
-        result += "constructor=" + constructor + ", var=" + varName + ", mName=" + methodName + ", retVal=" + returnValue + ", args=[";
+        result += "constructor=" + constructor + ", var=" + varName + ", mName=" + methodName /*+ ", retVal=" + returnValue*/ + ", args=[";
 
         for (IArgument a : arguments) {
             result += a + ", ";
@@ -243,10 +243,10 @@ class InvocationImpl implements Invocation {
         return this.parent;
     }
 
-    @Override
-    public Optional<Variable> getReturnValue() {
-        return Optional.ofNullable(returnValue);
-    }
+//    @Override
+//    public Optional<Variable> getReturnValue() {
+//        return Optional.ofNullable(returnValue);
+//    }
 
 
     @Override

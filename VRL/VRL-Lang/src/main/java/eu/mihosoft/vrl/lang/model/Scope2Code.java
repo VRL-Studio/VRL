@@ -179,6 +179,7 @@ public class Scope2Code {
 
         System.out.println("code from compiler 2:\n" + code);
 
+        scope.generateDataFlow();
     }
 
     public static CompilationUnitDeclaration demoScope() {
@@ -201,12 +202,19 @@ public class Scope2Code {
 
         MethodDeclaration m2 = builder.declareMethod(myFileClass,
                 new Modifiers(Modifier.PUBLIC), new Type("int"), "m2",
-                new Parameters(new Parameter(new Type("double"), "v1"),
+                new Parameters(new Parameter(new Type("int"), "v1"),
                         new Parameter(
                                 new Type("my.testpackage.MyFileClass"), "v2")));
 
         builder.invokeMethod(
-                m2, "this", m2, Argument.newVarArg(m2.getVariable("v1")), 
+                m2, "this", m2, Argument.newVarArg(m2.getVariable("v1")),
+                Argument.newVarArg(m2.getVariable("v2")));
+
+        builder.invokeMethod(
+                m2, "this", m2,
+                Argument.newInvArg(builder.invokeMethod(
+                                m2, "this", m1,
+                                Argument.newVarArg(m2.getVariable("v1")))),
                 Argument.newVarArg(m2.getVariable("v2")));
 
         ForDeclaration forD1 = builder.declareFor(m2, "i", 1, 3, 1);
@@ -216,13 +224,15 @@ public class Scope2Code {
 
 //        Variable var = forD2.createVariable(new Type("java.lang.String"));
 //        forD2.assignConstant(var.getName(), "Hello!\"");
-
         builder.invokeStaticMethod(
-                forD2, new Type("System"), "out.println", Type.VOID, true, Argument.newConstArg(new Type("java.lang.String"),"Hello"));
+                forD2, new Type("System"), "out.println", 
+                Type.VOID, true, Argument.newConstArg(Type.STRING, "Hello"));
+       
 
 //        builder.callMethod(forD2, "this", m2.getName(), true,
 //                "retM2", forD2.getVariable("v1"), m2.getVariable("v2"));
 //        builder.callMethod(forD2, "this", m1.getName(), true, "retM1b", m1.getVariable("v1"));
+
         return myFile;
     }
 
