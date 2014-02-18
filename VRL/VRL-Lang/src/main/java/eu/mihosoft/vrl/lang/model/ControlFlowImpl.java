@@ -134,7 +134,7 @@ class ControlFlowImpl implements ControlFlow {
        
         for (Invocation inv : invocations) {
             for (IArgument arg : inv.getArguments()) {
-                if (arg.getInvocation().isPresent()) {
+                if (arg.getArgType() == ArgumentType.INVOCATION) {
                     if (arg.getInvocation().get().equals(invocation)) {
                         return true;
                     }

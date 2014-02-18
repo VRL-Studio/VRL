@@ -501,7 +501,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 System.out.println(">> VSource: push");
                 for (IArgument arg : arguments) {
                     System.out.println(" -->" + arg.toString());
-                    
+
                     // TODO is this still in use? 18.02.2014
                     vIdStack.push(arg.toString());
                 }
@@ -540,7 +540,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
 //                if (invocation.getReturnValue().isPresent()) {
-                    returnVariables.put(s, invocation);
+                returnVariables.put(s, invocation);
 //                
             } else if (s.getMethod().getText().equals("println")) {
 //                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
@@ -552,7 +552,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
 //                if (invocation.getReturnValue().isPresent()) {
-                    returnVariables.put(s, invocation);
+                returnVariables.put(s, invocation);
 //                }
             }
         }
@@ -770,8 +770,12 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             if (e instanceof ConstantExpression) {
                 ConstantExpression ce = (ConstantExpression) e;
 
-                arguments[i] = Argument.newConstArg(new Type(ce.getType().getName(), true),ce.getValue());
+                if (ce.isNullExpression()) {
+                    arguments[i] = Argument.NULL;
+                } else {
+                    arguments[i] = Argument.newConstArg(new Type(ce.getType().getName(), true), ce.getValue());
 
+                }
 //                v = VariableFactory.createConstantVariable(currentScope, new Type(ce.getArgType().getName(), true), "", ce.getValue());
             }
 
@@ -789,10 +793,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 PropertyExpression pe = (PropertyExpression) e;
 
                 Variable v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.PROPERTYEXPR", true), "don't know");
-                
+
                 arguments[i] = Argument.newVarArg(v);
-                
-                
+
             }
 
             if (e instanceof MethodCallExpression) {

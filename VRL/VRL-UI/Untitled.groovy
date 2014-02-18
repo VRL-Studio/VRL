@@ -81,16 +81,6 @@ public class B {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MyFileClass2:m3:inv:m2</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>100.0</height>
-      <contentVisible>true</contentVisible>
-    </layout>
-  </entry>
-  <entry>
     <string>Script:my.testpackage.MyFileClass2:m1</string>
     <layout>
       <x>0.0</x>
@@ -101,7 +91,7 @@ public class B {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MyFileClass2:m2:inv:m1</string>
+    <string>Script:my.testpackage.MyFileClass2:m3:inv:m2</string>
     <layout>
       <x>0.0</x>
       <y>0.0</y>
@@ -111,13 +101,13 @@ public class B {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.C:main</string>
+    <string>Script:my.testpackage.MyFileClass2:m2:inv:m1</string>
     <layout>
       <x>0.0</x>
       <y>0.0</y>
       <width>400.0</width>
-      <height>300.0</height>
-      <contentVisible>false</contentVisible>
+      <height>100.0</height>
+      <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
@@ -181,16 +171,6 @@ public class B {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.C</string>
-    <layout>
-      <x>2636.9791378547734</x>
-      <y>524.1200770891475</y>
-      <width>550.0</width>
-      <height>800.0</height>
-      <contentVisible>true</contentVisible>
-    </layout>
-  </entry>
-  <entry>
     <string>Script:my.testpackage.MyFileClass2:abc</string>
     <layout>
       <x>423.37108952951377</x>
@@ -221,16 +201,6 @@ public class B {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.C:main2</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>300.0</height>
-      <contentVisible>false</contentVisible>
-    </layout>
-  </entry>
-  <entry>
     <string>Script:my.testpackage.MyFileClass2:m2</string>
     <layout>
       <x>0.0</x>
@@ -251,22 +221,22 @@ public class B {
     </layout>
   </entry>
   <entry>
+    <string>Script:my.testpackage.MyFileClass2</string>
+    <layout>
+      <x>1630.7309348930557</x>
+      <y>260.39230344174496</y>
+      <width>1220.421598292887</width>
+      <height>860.236342502569</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
     <string>Script:my.testpackage.MyFileClass2:m3:inv:println</string>
     <layout>
       <x>1395.211771290391</x>
       <y>788.7401451111365</y>
       <width>400.0</width>
       <height>100.0</height>
-      <contentVisible>true</contentVisible>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass2</string>
-    <layout>
-      <x>1026.7187904742657</x>
-      <y>848.291569406082</y>
-      <width>1220.421598292887</width>
-      <height>860.236342502569</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
@@ -303,8 +273,8 @@ public class B {
   <entry>
     <string>Script:my.testpackage.MyFileClass:m2:inv:m2</string>
     <layout>
-      <x>761.5245745383697</x>
-      <y>0.0</y>
+      <x>540.8039544257325</x>
+      <y>113.68950667897775</y>
       <width>400.0</width>
       <height>100.0</height>
       <contentVisible>true</contentVisible>
@@ -351,16 +321,6 @@ public class B {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MyFileClass:m2:inv:m1</string>
-    <layout>
-      <x>0.0</x>
-      <y>110.95912993478679</y>
-      <width>400.0</width>
-      <height>100.0</height>
-      <contentVisible>true</contentVisible>
-    </layout>
-  </entry>
-  <entry>
     <string>Script:my.testpackage.A:abc</string>
     <layout>
       <x>0.0</x>
@@ -368,6 +328,16 @@ public class B {
       <width>400.0</width>
       <height>300.0</height>
       <contentVisible>false</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MyFileClass:m2:inv:m1</string>
+    <layout>
+      <x>1.2251807485805883</x>
+      <y>216.2587807213784</y>
+      <width>400.0</width>
+      <height>100.0</height>
+      <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
