@@ -62,7 +62,7 @@ public interface VisualCodeBuilder {
 
     void assignVariable(Scope scope, String varNameDest, String varNameSrc);
 
-    void createInstance(Scope scope, IType type, String varName, Variable... args);
+    void createInstance(Scope scope, IType type, String varName, IArgument... args);
 
     Variable createVariable(Scope scope, IType type, String varName);
 
@@ -74,9 +74,9 @@ public interface VisualCodeBuilder {
 
     WhileDeclaration declareWhile(Scope scope, Invocation check);
 
-    Invocation invokeMethod(Scope scope, String varName, String mName, IType returnType, boolean isVoid, Variable... args);
+    Invocation invokeMethod(Scope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args);
     
-    Invocation invokeStaticMethod(Scope scope, IType type, String mName, IType returnType, boolean isVoid, Variable... args);
+    Invocation invokeStaticMethod(Scope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args);
 
-    Invocation invokeMethod(Scope scope, String varName, MethodDeclaration mDec, Variable... args);
+    Invocation invokeMethod(Scope scope, String varName, MethodDeclaration mDec, IArgument... args);
 }

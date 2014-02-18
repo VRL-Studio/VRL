@@ -109,7 +109,13 @@ class DataFlowImpl implements DataFlow {
         }
 
         for (Invocation receiver : controlFlow.getInvocations()) {
-            for (Variable v : receiver.getArguments()) {
+            for (IArgument a : receiver.getArguments()) {
+                
+                if (a.getArgType() != ArgumentType.VARIABLE) {
+                    continue;
+                }
+                
+                Variable v = a.getVariable().get();
 
                 Invocation sender = senders.get(v.getName());
 
@@ -150,7 +156,7 @@ class DataFlowImpl implements DataFlow {
 //            }
 //        }
 //
-//        boolean isClassOrScript = getType() == ScopeType.CLASS || getType() == ScopeType.NONE;
+//        boolean isClassOrScript = getArgType() == ScopeType.CLASS || getArgType() == ScopeType.NONE;
 //
 //        if (isClassOrScript) {
 //            for (Scope s : getScopes()) {

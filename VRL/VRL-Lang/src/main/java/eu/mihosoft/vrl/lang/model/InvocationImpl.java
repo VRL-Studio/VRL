@@ -68,7 +68,7 @@ class InvocationImpl implements Invocation {
     private String id;
     private final String varName;
     private final String methodName;
-    private final List<Variable> arguments = new ArrayList<>();
+    private final List<IArgument> arguments = new ArrayList<>();
     private final boolean constructor;
     private final boolean Void;
 //    private String code;
@@ -82,7 +82,7 @@ class InvocationImpl implements Invocation {
             Scope parent,
             String id,
             String varName, String methodName, IType returnType,
-            boolean constructor, boolean isVoid, boolean isStatic, Variable... args) {
+            boolean constructor, boolean isVoid, boolean isStatic, IArgument... args) {
         this.parent = parent;
         this.id = id;
         this.varName = varName;
@@ -132,7 +132,7 @@ class InvocationImpl implements Invocation {
     }
 
     @Override
-    public List<Variable> getArguments() {
+    public List<IArgument> getArguments() {
         return arguments;
     }
 
@@ -158,7 +158,7 @@ class InvocationImpl implements Invocation {
 
         result += "constructor=" + constructor + ", var=" + varName + ", mName=" + methodName + ", retVal=" + returnValue + ", args=[";
 
-        for (Variable a : arguments) {
+        for (IArgument a : arguments) {
             result += a + ", ";
         }
 

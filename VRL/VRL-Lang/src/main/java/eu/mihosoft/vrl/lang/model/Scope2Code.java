@@ -74,7 +74,7 @@ import java.util.logging.Logger;
  */
 public class Scope2Code {
 
-    static Set<Comment> renderedComments = new HashSet<Comment>();
+    static Set<Comment> renderedComments = new HashSet<>();
 
     public static String getCode(CompilationUnitDeclaration scope) {
 
@@ -196,8 +196,8 @@ public class Scope2Code {
                 new Modifiers(Modifier.PUBLIC), new Type("int"), "m1",
                 new Parameters(new Parameter(new Type("int"), "v1")));
 
-        builder.invokeMethod(m1, "this", m1, m1.getVariable("v1"));
-        builder.invokeMethod(m1, "this", m1, m1.getVariable("v1"));
+        builder.invokeMethod(m1, "this", m1, Argument.newVarArg(m1.getVariable("v1")));
+        builder.invokeMethod(m1, "this", m1, Argument.newVarArg(m1.getVariable("v1")));
 
         MethodDeclaration m2 = builder.declareMethod(myFileClass,
                 new Modifiers(Modifier.PUBLIC), new Type("int"), "m2",
@@ -206,18 +206,19 @@ public class Scope2Code {
                                 new Type("my.testpackage.MyFileClass"), "v2")));
 
         builder.invokeMethod(
-                m2, "this", m2, m2.getVariable("v1"), m2.getVariable("v2"));
+                m2, "this", m2, Argument.newVarArg(m2.getVariable("v1")), 
+                Argument.newVarArg(m2.getVariable("v2")));
 
         ForDeclaration forD1 = builder.declareFor(m2, "i", 1, 3, 1);
         ForDeclaration forD2 = builder.declareFor(forD1, "j", 10, 9, -1);
 
-        builder.invokeMethod(forD2, "this", m1, forD2.getVariable("j"));
+        builder.invokeMethod(forD2, "this", m1, Argument.newVarArg(forD2.getVariable("j")));
 
-        Variable var = forD2.createVariable(new Type("java.lang.String"));
-        forD2.assignConstant(var.getName(), "Hello!\"");
+//        Variable var = forD2.createVariable(new Type("java.lang.String"));
+//        forD2.assignConstant(var.getName(), "Hello!\"");
 
         builder.invokeStaticMethod(
-                forD2, new Type("System"), "out.println", Type.VOID, true, var);
+                forD2, new Type("System"), "out.println", Type.VOID, true, Argument.newConstArg(new Type("java.lang.String"),"Hello"));
 
 //        builder.callMethod(forD2, "this", m2.getName(), true,
 //                "retM2", forD2.getVariable("v1"), m2.getVariable("v2"));
@@ -325,7 +326,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                         append(".");
             }
             cb.append(i.getMethodName()).append("(");
-            renderParams(i, cb);
+            renderArguments(i, cb);
             cb.append(")");
             if (!inParam) {
                 cb.append(";");
@@ -397,9 +398,9 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         }
     }
 
-    private void renderParams(Invocation e, CodeBuilder cb) {
+    private void renderArguments(Invocation e, CodeBuilder cb) {
         boolean firstCall = true;
-        for (Variable v : e.getArguments()) {
+        for (IArgument a : e.getArguments()) {
 
             if (firstCall) {
                 firstCall = false;
@@ -407,24 +408,26 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                 cb.append(", ");
             }
 
-            if (v.isConstant()) {
+            if (a.getArgType() == ArgumentType.CONSTANT) {
 
                 String constString = null;
 
-                if (v.getType().equals(new Type("java.lang.String"))) {
+                if (a.getType().equals(Type.STRING)) {
                     constString = "\""
-                            + VLangUtils.addEscapeCharsToCode(v.getValue().
+                            + VLangUtils.addEscapeCharsToCode(a.getConstant().get().
                                     toString()) + "\"";
                 } else {
-                    constString = v.getValue().toString();
+                    constString = a.getConstant().get().toString();
                 }
 
                 cb.append(constString);
 
-            } else if (v.getInvocation().isPresent()) {
-                render(v.getInvocation().get(), cb, true);
-            } else {
-                cb.append(v.getName());
+            } else if (a.getArgType() == ArgumentType.INVOCATION) {
+                render(a.getInvocation().get(), cb, true);
+            } else if (a.getArgType() == ArgumentType.VARIABLE) {
+                cb.append(a.getVariable().get().getName());
+            } else if (a.getArgType() == ArgumentType.NULL) {
+                cb.append("null");
             }
         }
     }

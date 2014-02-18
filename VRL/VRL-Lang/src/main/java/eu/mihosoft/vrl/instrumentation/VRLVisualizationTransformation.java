@@ -74,6 +74,8 @@ import eu.mihosoft.vrl.lang.VCommentParser;
 import eu.mihosoft.vrl.lang.model.CodeLocation;
 import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.CodeReader;
+import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
@@ -232,7 +234,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     private List<Comment> comments = new ArrayList<>();
     private Reader codeReader;
 
-    private Map<MethodCallExpression, Variable> returnVariables
+    private Map<MethodCallExpression, Invocation> returnVariables
             = new HashMap<>();
 
     public VGroovyCodeVisitor(SourceUnit sourceUnit, VisualCodeBuilder_Impl codeBuilder) {
@@ -459,7 +461,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
 
-        Variable[] arguments = convertArguments(args);
+        IArgument[] arguments = convertArguments(args);
 
         codeBuilder.createInstance(
                 currentScope, new Type(s.getType().getName(), false),
@@ -481,7 +483,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         super.visitMethodCallExpression(s);
 
         ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
-        Variable[] arguments = convertArguments(args);
+        IArgument[] arguments = convertArguments(args);
 
         String objectName = null;
 
@@ -497,9 +499,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             if (ce.getType().getName().equals(VSource.class.getName())) {
                 isIdCall = true;
                 System.out.println(">> VSource: push");
-                for (Variable arg : arguments) {
-                    System.out.println(" -->" + arg.getValue().toString());
-                    vIdStack.push(arg.getValue().toString());
+                for (IArgument arg : arguments) {
+                    System.out.println(" -->" + arg.toString());
+                    
+                    // TODO is this still in use? 18.02.2014
+                    vIdStack.push(arg.toString());
                 }
             }
         }
@@ -536,7 +540,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
                 if (invocation.getReturnValue().isPresent()) {
-                    returnVariables.put(s, invocation.getReturnValue().get());
+                    returnVariables.put(s, invocation);
                 }
             } else if (s.getMethod().getText().equals("println")) {
 //                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
@@ -548,7 +552,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
                 if (invocation.getReturnValue().isPresent()) {
-                    returnVariables.put(s, invocation.getReturnValue().get());
+                    returnVariables.put(s, invocation);
                 }
             }
         }
@@ -758,42 +762,51 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         this.rootScope = rootScope;
     }
 
-    private Variable[] convertArguments(ArgumentListExpression args) {
-        Variable[] arguments = new Variable[args.getExpressions().size()];
+    private IArgument[] convertArguments(ArgumentListExpression args) {
+        IArgument[] arguments = new IArgument[args.getExpressions().size()];
         for (int i = 0; i < args.getExpressions().size(); i++) {
             Expression e = args.getExpression(i);
-
-            Variable v = null;
 
             if (e instanceof ConstantExpression) {
                 ConstantExpression ce = (ConstantExpression) e;
 
-                v = VariableFactory.createConstantVariable(currentScope, new Type(ce.getType().getName(), true), "", ce.getValue());
+                arguments[i] = Argument.newConstArg(new Type(ce.getType().getName(), true),ce.getValue());
+
+//                v = VariableFactory.createConstantVariable(currentScope, new Type(ce.getArgType().getName(), true), "", ce.getValue());
             }
 
             if (e instanceof VariableExpression) {
                 VariableExpression ve = (VariableExpression) e;
 
-                v = VariableFactory.createObjectVariable(currentScope, new Type(ve.getType().getName(), true), ve.getName());
+                // TODO reference variable instead of creating it!!! 18.02.2014
+                Variable v = VariableFactory.createObjectVariable(currentScope, new Type(ve.getType().getName(), true), ve.getName());
+
+                arguments[i] = Argument.newVarArg(v);
+
             }
 
             if (e instanceof PropertyExpression) {
                 PropertyExpression pe = (PropertyExpression) e;
 
-                v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.PROPERTYEXPR", true), "don't know");
+                Variable v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.PROPERTYEXPR", true), "don't know");
+                
+                arguments[i] = Argument.newVarArg(v);
+                
+                
             }
 
             if (e instanceof MethodCallExpression) {
                 System.out.println("TYPE: " + e);
-                v = returnVariables.get(e);
+                arguments[i] = Argument.newInvArg(returnVariables.get(e));
             }
 
-            if (v == null) {
+            if (arguments[i] == null) {
+                arguments[i] = Argument.NULL;
                 System.out.println("NULLTYPE: " + e);
-                v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.unknown", true), "don't know");
+//                v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.unknown", true), "don't know");
             }
 
-            arguments[i] = v;
+//            arguments[i] = v;
         }
         return arguments;
     }
@@ -1033,7 +1046,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //
 //    @Override
 //    public void visitConstructorCallExpression(ConstructorCallExpression s) {
-//        System.out.println(" --> CONSTRUCTOR: " + s.getType());
+//        System.out.println(" --> CONSTRUCTOR: " + s.getArgType());
 //
 //        super.visitConstructorCallExpression(s);
 //
@@ -1042,8 +1055,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //        Variable[] arguments = convertArguments(args);
 //
 //        codeBuilder.createInstance(
-//                currentScope, s.getType().getName(),
-//                codeBuilder.createVariable(currentScope, s.getType().getName()),
+//                currentScope, s.getArgType().getName(),
+//                codeBuilder.createVariable(currentScope, s.getArgType().getName()),
 //                arguments);
 //    }
 //
@@ -1070,9 +1083,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //            objectName = ve.getName();
 //        } else if (s.getObjectExpression() instanceof ClassExpression) {
 //            ClassExpression ce = (ClassExpression) s.getObjectExpression();
-//            objectName = ce.getType().getName();
+//            objectName = ce.getArgType().getName();
 //
-//            if (ce.getType().getName().equals(VSource.class.getName())) {
+//            if (ce.getArgType().getName().equals(VSource.class.getName())) {
 //                isIdCall = true;
 //                System.out.println(">> VSource: push");
 //                for (Variable arg : arguments) {
@@ -1112,7 +1125,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //            returnValueName = codeBuilder.createVariable(currentScope, "java.lang.Object");
 //        }
 //
-//        codeBuilder.invokeMethod(currentScope, s.getType().getName(), s.getText(), isVoid,
+//        codeBuilder.invokeMethod(currentScope, s.getArgType().getName(), s.getText(), isVoid,
 //                returnValueName, arguments).setCode(getCode(s));
 //    }
 //
@@ -1120,7 +1133,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //    public void visitDeclarationExpression(DeclarationExpression s) {
 //        System.out.println(" --> DECLARATION: " + s.getVariableExpression());
 //        super.visitDeclarationExpression(s);
-//        codeBuilder.createVariable(currentScope, s.getVariableExpression().getType().getName(), s.getVariableExpression().getName());
+//        codeBuilder.createVariable(currentScope, s.getVariableExpression().getArgType().getName(), s.getVariableExpression().getName());
 //
 //        if (s.getRightExpression() instanceof ConstantExpression) {
 //            ConstantExpression ce = (ConstantExpression) s.getRightExpression();
@@ -1164,7 +1177,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                ConstantExpression ce = (ConstantExpression) e;
 //
 //                // TODO WHY no name???
-//                v = VariableFactory.createConstantVariable(currentScope, ce.getType().getName(), "", ce.getValue());
+//                v = VariableFactory.createConstantVariable(currentScope, ce.getArgType().getName(), "", ce.getValue());
 //            }
 //
 //            if (e instanceof VariableExpression) {

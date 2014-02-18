@@ -71,21 +71,21 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public Invocation createInstance(String id, IType type, String varName, Variable... args) {
+    public Invocation createInstance(String id, IType type, String varName, IArgument... args) {
         Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), "<init>", type, true, false, true, args);
         getInvocations().add(result);
         return result;
     }
 
     @Override
-    public Invocation callMethod(String id, String varName, String mName, IType returnType, boolean isVoid, Variable... args) {
+    public Invocation callMethod(String id, String varName, String mName, IType returnType, boolean isVoid, IArgument... args) {
         Invocation result = new InvocationImpl(parent, id, varName, mName, returnType, false, isVoid, false, args);
         getInvocations().add(result);
         return result;
     }
 
     @Override
-    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType, boolean isVoid, Variable... args) {
+    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType, boolean isVoid, IArgument... args) {
         Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), mName, returnType, false, isVoid, true, args);
         getInvocations().add(result);
         return result;
@@ -119,7 +119,7 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public Invocation callMethod(String id, String varName, MethodDeclaration mDec, Variable... args) {
+    public Invocation callMethod(String id, String varName, MethodDeclaration mDec, IArgument... args) {
 
         if (mDec.getModifiers().getModifiers().contains(Modifier.STATIC)) {
             return callStaticMethod(id, mDec.getClassDeclaration().getClassType(), varName, mDec.getReturnType(), true, args);
@@ -133,7 +133,7 @@ class ControlFlowImpl implements ControlFlow {
     public boolean isUsedAsInput(Invocation invocation) {
        
         for (Invocation inv : invocations) {
-            for (Variable arg : inv.getArguments()) {
+            for (IArgument arg : inv.getArguments()) {
                 if (arg.getInvocation().isPresent()) {
                     if (arg.getInvocation().get().equals(invocation)) {
                         return true;

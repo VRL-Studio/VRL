@@ -163,7 +163,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public void createInstance(Scope scope, IType type, String varName, Variable... args) {
+    public void createInstance(Scope scope, IType type, String varName, IArgument... args) {
 
         String id = idRequest.request();
 
@@ -174,7 +174,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     
 
     @Override
-    public Invocation invokeMethod(Scope scope, String varName, String mName, IType returnType, boolean isVoid, Variable... args) {
+    public Invocation invokeMethod(Scope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args) {
         String id = idRequest.request();
 
         Invocation result = scope.getControlFlow().callMethod(id, varName, mName, returnType, isVoid, args);
@@ -183,7 +183,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
     
     @Override
-    public Invocation invokeStaticMethod(Scope scope, IType type, String mName, IType returnType, boolean isVoid, Variable... args) {
+    public Invocation invokeStaticMethod(Scope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args) {
         String id = idRequest.request();
 
         Invocation result = scope.getControlFlow().callStaticMethod(id, type, mName, returnType, isVoid, args);
@@ -215,7 +215,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public Invocation invokeMethod(Scope scope, String varName, MethodDeclaration mDec, Variable... args) {
+    public Invocation invokeMethod(Scope scope, String varName, MethodDeclaration mDec, IArgument... args) {
         String id = idRequest.request();
 
         Invocation result = scope.getControlFlow().callMethod(id, varName, mDec, args);

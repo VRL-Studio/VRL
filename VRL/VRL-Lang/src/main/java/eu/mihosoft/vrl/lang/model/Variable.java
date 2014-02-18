@@ -74,9 +74,9 @@ public interface Variable {
 
     public void setConstant(boolean b);
 
-    public boolean isReturnValue();
+//    public boolean isReturnValue();
 
-    public Optional<Invocation> getInvocation();
+//    public Optional<Invocation> getInvocation();
 }
 
 class VariableImpl implements Variable {
@@ -194,17 +194,17 @@ class VariableImpl implements Variable {
         return staticVar;
     }
 
-    /**
-     * @return the invocation
-     */
-    @Override
-    public Optional<Invocation> getInvocation() {
-        return Optional.ofNullable(invocation);
-    }
-
-    @Override
-    public boolean isReturnValue() {
-        return invocation!=null;
-    }
+//    /**
+//     * @return the invocation
+//     */
+//    @Override
+//    public Optional<Invocation> getInvocation() {
+//        return Optional.ofNullable(invocation);
+//    }
+//
+//    @Override
+//    public boolean isReturnValue() {
+//        return invocation!=null;
+//    }
 
 }

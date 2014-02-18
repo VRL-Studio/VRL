@@ -313,8 +313,8 @@ class ScopeImpl implements Scope {
 
         for (Invocation i : controlFlow.getInvocations()) {
 //            System.out.println("invocation: " + i);
-            for (Variable v : i.getArguments()) {
-                System.out.println("--> varname: " + v.getName() + ", " + i);
+            for (IArgument a : i.getArguments()) {
+                System.out.println("--> arg: " + a + ", " + i);
             }
 
             if (i instanceof ScopeInvocation) {
