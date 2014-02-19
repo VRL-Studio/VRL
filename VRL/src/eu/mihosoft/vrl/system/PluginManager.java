@@ -338,6 +338,15 @@ class PluginManager {
         for (PluginNode n : node.getEdges()) {
             if (!resolvedNodes.contains(n)) {
                 if (unresolvedNodes.contains(n)) {
+                    
+                    System.err.println(">> The plugin "+ n.getPlugin().getIdentifier()
+                            +" is responsable for circular plugin dependencies!");
+                    
+                    System.err.println("Dependencies are: ");
+                    for (int i = 0; i < n.getPlugin().getDependencies().length; i++) {
+                        System.err.println(" "+n.getPlugin().getDependencies()[i].getName());
+                    }
+                    
                     throw new IllegalStateException(
                             ">> Error: circular plugin dependencies!");
                 }
