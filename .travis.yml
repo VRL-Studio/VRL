@@ -1,7 +1,7 @@
 # blacklist
 branches:
-  except:
-    - playground-0.5
+#  except:
+#    - playground-0.5
 
 
 language: java
