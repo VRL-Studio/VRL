@@ -57,8 +57,6 @@ public class B {
     public void a123() {
     }
 }
-
-
 // <editor-fold defaultstate="collapsed" desc="VRL-Data">
 /*<!VRL!><Type:VRL-Layout>
 <map>
@@ -155,8 +153,8 @@ public class B {
   <entry>
     <string>Script:my.testpackage.A</string>
     <layout>
-      <x>1792.8270328955246</x>
-      <y>1991.968561335206</y>
+      <x>1293.3571219278715</x>
+      <y>1731.5762578934612</y>
       <width>550.0</width>
       <height>503.26843633505877</height>
       <contentVisible>true</contentVisible>
@@ -165,18 +163,8 @@ public class B {
   <entry>
     <string>Script:my.testpackage.B</string>
     <layout>
-      <x>499.469910967653</x>
-      <y>2879.2371280549573</y>
-      <width>550.0</width>
-      <height>800.0</height>
-      <contentVisible>true</contentVisible>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.C</string>
-    <layout>
-      <x>611.2595016980193</x>
-      <y>1245.8792391297209</y>
+      <x>0.0</x>
+      <y>2618.8448246132125</y>
       <width>550.0</width>
       <height>800.0</height>
       <contentVisible>true</contentVisible>
@@ -195,8 +183,8 @@ public class B {
   <entry>
     <string>Script:my.testpackage.MyFileClass</string>
     <layout>
-      <x>0.0</x>
-      <y>0.0</y>
+      <x>213.07400241309972</x>
+      <y>507.31905336452314</y>
       <width>972.9017226918049</width>
       <height>844.9825190429783</height>
       <contentVisible>true</contentVisible>
@@ -235,8 +223,8 @@ public class B {
   <entry>
     <string>Script:my.testpackage.MyFileClass2</string>
     <layout>
-      <x>1778.1397065743786</x>
-      <y>260.39230344174496</y>
+      <x>1278.6697956067255</x>
+      <y>0.0</y>
       <width>1220.421598292887</width>
       <height>860.236342502569</height>
       <contentVisible>true</contentVisible>
@@ -285,8 +273,8 @@ public class B {
   <entry>
     <string>Script:my.testpackage.MyFileClass:m2:inv:m2</string>
     <layout>
-      <x>761.5245745383697</x>
-      <y>0.0</y>
+      <x>756.687183373083</x>
+      <y>137.42479803320882</y>
       <width>400.0</width>
       <height>100.0</height>
       <contentVisible>true</contentVisible>
@@ -345,8 +333,8 @@ public class B {
   <entry>
     <string>Script:my.testpackage.MyFileClass:m2:inv:m1</string>
     <layout>
-      <x>0.0</x>
-      <y>110.95912993478679</y>
+      <x>8.735153875298122</x>
+      <y>164.42331564714158</y>
       <width>400.0</width>
       <height>100.0</height>
       <contentVisible>true</contentVisible>

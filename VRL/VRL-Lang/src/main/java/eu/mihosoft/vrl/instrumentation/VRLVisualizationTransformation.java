@@ -773,7 +773,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 if (ce.isNullExpression()) {
                     arguments[i] = Argument.NULL;
                 } else {
-                    arguments[i] = Argument.newConstArg(new Type(ce.getType().getName(), true), ce.getValue());
+                    arguments[i] = Argument.constArg(new Type(ce.getType().getName(), true), ce.getValue());
 
                 }
 //                v = VariableFactory.createConstantVariable(currentScope, new Type(ce.getArgType().getName(), true), "", ce.getValue());
@@ -789,7 +789,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                    v = VariableFactory.createObjectVariable(currentScope, new Type(ve.getType().getName(), true), ve.getName());
 //                }
                 
-                arguments[i] = Argument.newVarArg(v);
+                arguments[i] = Argument.varArg(v);
 
             }
 
@@ -798,13 +798,13 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
                 Variable v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.PROPERTYEXPR", true), "don't know");
 
-                arguments[i] = Argument.newVarArg(v);
+                arguments[i] = Argument.varArg(v);
 
             }
 
             if (e instanceof MethodCallExpression) {
                 System.out.println("TYPE: " + e);
-                arguments[i] = Argument.newInvArg(returnVariables.get((MethodCallExpression)e));
+                arguments[i] = Argument.invArg(returnVariables.get((MethodCallExpression)e));
             }
 
             if (arguments[i] == null) {

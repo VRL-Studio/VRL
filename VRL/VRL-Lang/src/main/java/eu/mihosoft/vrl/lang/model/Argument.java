@@ -29,25 +29,25 @@ public final class Argument implements IArgument {
         this.invocation = invocation;
     }
 
-    public static IArgument newConstArg(IType type, Object constant) {
+    public static IArgument constArg(IType type, Object constant) {
         IArgument result = new Argument(ArgumentType.CONSTANT, null, constant, type, null);
 
         return result;
     }
 
-    public static IArgument newVarArg(Variable v) {
+    public static IArgument varArg(Variable v) {
         IArgument result = new Argument(ArgumentType.VARIABLE, v, null, null, null);
 
         return result;
     }
 
-    public static IArgument newInvArg(Invocation i) {
+    public static IArgument invArg(Invocation i) {
         IArgument result = new Argument(ArgumentType.INVOCATION, null, null, null, i);
 
         return result;
     }
 
-    public static IArgument newNullArg() {
+    public static IArgument nullArg() {
         return NULL;
     }
 

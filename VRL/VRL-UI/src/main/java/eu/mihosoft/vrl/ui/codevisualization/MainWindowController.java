@@ -793,7 +793,7 @@ public class MainWindowController implements Initializable {
 
                                     receiverInv.getArguments().set(
                                             argIndex,
-                                            Argument.newInvArg(senderInv));
+                                            Argument.invArg(senderInv));
 //
 //                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
 
