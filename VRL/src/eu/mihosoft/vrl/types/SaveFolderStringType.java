@@ -181,14 +181,7 @@ public class SaveFolderStringType extends TypeRepresentationBase {
 
     @Override
     public String getValueAsCode() {
-        Object v = getValue();
-
-        if (v == null) {
-            return "null";
-        }
-
-        File f = (File) v;
-
-        return "new File(\"" + VLangUtils.addEscapesToCode(f.getPath()) + "\")";
+        return "\""
+                + VLangUtils.addEscapesToCode(getValue().toString()) + "\"";
     }
 }
