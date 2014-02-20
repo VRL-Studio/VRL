@@ -22,7 +22,8 @@ script:
 
 
 after_success:
-    "wput -u VRL/dist/javadoc/ ftp://$FTP_USER:$FTP_PWD@$SERVER/api-doc/latest"
+    - TERM=dumb ant javadoc
+    - "wput -u VRL/dist/javadoc/ ftp://$FTP_USER:$FTP_PWD@$SERVER/api-doc/latest"
 
 
 
