@@ -23,8 +23,8 @@ script:
 
 after_success:
     - TERM=dumb ant javadoc
-    - "wput -u dist/javadoc/ ftp://$FTP_USER:$FTP_PWD@vrl.mihosoft.eu/api-doc/latest"
-
+#    - "wput -u dist/javadoc/ ftp://$FTP_USER:$FTP_PWD@vrl.mihosoft.eu/api-doc/latest"
+    - "ncftpput -R -v -u $FTP_USER -p $FTP_PWD mihosoft.eu /vrl.mihosoft/api-doc/latest/ dist/javadoc/"
 env:
   global:
   - secure: "M9spQVc+qStizUyBkEs4eXS+eUAadsh5ZE46gihiw+jEchMfD70/VVvCnEJ2xDnv2ERuU22JJpnlnqkdCbJVkegbpN+uKS+v69Kg/ycBT7AXsT/nV0ugu+rNzhqaBbDN38Mx9o7KAzEUW9ibAca0mFvsXyzuAXgn8qsAflEeTxc="
