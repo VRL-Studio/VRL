@@ -8,7 +8,7 @@ jdk:
 #  - oraclejdk8
   
 before_install:
-  - "sudo apt-get install wput ncftpput"
+  - "sudo apt-get install wput ncftp"
   - "export DISPLAY=:99.0"
   - "export TERM=dumb"
   - "sh -e /etc/init.d/xvfb start"
