@@ -392,7 +392,6 @@ public class MainWindowController implements Initializable {
 //            System.out.println("relations: " + relations.size());
             for (DataRelation dataRelation : relations) {
 
-                
                 Connector output = invocationOutputs.get(dataRelation.getSender());
                 Connector input = invocationInputs.get(dataRelation.getSender());
 
@@ -464,23 +463,20 @@ public class MainWindowController implements Initializable {
 
             int index = 0;
             for (IArgument a : i.getArguments()) {
-                
+
                 Connector input = n.addInput("data");
 //                System.out.println(" > Write Connector: ");
 //                variableConnectors.put(getVariableId(n, v), input);
 //                System.out.println("-> adding input: " + getVariableId(n, v));
 //                variableArgumentIndex.put(getVariableId(n, v), index);
                 connectorsToArgIndex.put(input.getId(), index);
-                
-                
-                if (a.getArgType()==ArgumentType.INVOCATION) {
+
+                if (a.getArgType() == ArgumentType.INVOCATION) {
                     invocationInputs.put(a.getInvocation().get(), input);
-                } else if (a.getArgType()==ArgumentType.VARIABLE) {
+                } else if (a.getArgType() == ArgumentType.VARIABLE) {
                     variableConnectors.put(getVariableId(n, a.getVariable().get()), input);
                 }
-                
-                
-                
+
                 index++;
             }
 
@@ -490,7 +486,7 @@ public class MainWindowController implements Initializable {
 //                Variable v = scope.getVariable(i.getReturnValue().get().getName());
 //                System.out.println(" > Write Connector: ");
 //                variableConnectors.put(getVariableId(n, v), output);
-                
+
             }
 
 //            if (!applyPosition(n)) {
@@ -732,8 +728,7 @@ public class MainWindowController implements Initializable {
         result.getConnections("control").getConnections().addListener(
                 (ListChangeListener.Change<? extends Connection> change) -> {
 
-                    List<VNode> roots = result.getNodes().filtered(
-                            n -> isRoot(n, "control"));
+                    List<VNode> roots = result.getNodes().filtered(WorkflowUtil.nodeNotConnected("control"));
 
                     // clear current control flow
                     rootScope.getControlFlow().getInvocations().clear();
@@ -774,21 +769,25 @@ public class MainWindowController implements Initializable {
                                 Invocation senderInv = nodeInvocations.get(senderN.getId());
                                 Invocation receiverInv = nodeInvocations.get(receiverN.getId());
 
+                                int numConnections
+                                = senderN.getOutputs().filtered(
+                                        WorkflowUtil.moreThanConnections(1, "data")).size();
+
+                                if (numConnections > 0) {
+                                    // TODO introduce var declaration to prevent multiple method calls for each dataflow connection 19.02.2014
+                                    System.out.println("NORE THAN ONE DATAFLOW CONN!!! for invocation " + senderInv);
+                                }
+
 //                                Connector output = variableConnectors.get(
 //                                        getVariableId(senderN, senderInv.getReturnValue().get().getName()));
 //                                Connector input = variableConnectors.get(
 //                                        getVariableId(receiverN, senderInv.getReturnValue().get().getName()));
-                                
                                 // TODO if (senderInv equals variableinvocation) only invocations supported 18.02.2014
-                                
                                 try {
 
 //                                    Variable retVal = senderInv.getReturnValue().get();
-
 //                                    String varId = getVariableId(receiverN, retVal.getName());
-                                    
 //                                    System.out.println("varId: " + varId);
-                                    
                                     int argIndex = connectorsToArgIndex.get(conn.getReceiver().getId());
 
                                     receiverInv.getArguments().set(
@@ -803,7 +802,7 @@ public class MainWindowController implements Initializable {
                                 }
 
                             }
-                        } 
+                        }
                         if (change.wasRemoved()) {
                             for (Connection conn : change.getRemoved()) {
                                 VNode senderN = conn.getSender().getNode();
@@ -821,7 +820,6 @@ public class MainWindowController implements Initializable {
                                             Argument.NULL);
 
 //                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
-
                                     senderInv.getParent().generateDataFlow();
                                 } catch (Exception ex) {
                                     ex.printStackTrace(System.err);

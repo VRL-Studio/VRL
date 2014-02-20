@@ -10,6 +10,7 @@ import eu.mihosoft.vrl.workflow.VNode;
 import java.util.function.Predicate;
 
 /**
+ * Workflow utility class.
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
@@ -19,22 +20,146 @@ public class WorkflowUtil {
         throw new AssertionError();
     }
 
-    private boolean isRoot(VNode node, String connectionType) {
-
-        Predicate<Connector> notConnected = (Connector c) -> {
+    /**
+     * Returns a predicate that indicates whether a connector is connected with
+     * the specified connection type.
+     * 
+     * <b>Note:</b> the predicate can be used to filter streams and collections.
+     *
+     * @param connectionType connection type (e.g. "data" or "control")
+     * @return a predicate that indicates whether a connector is connected with
+     * the specified connection type
+     * 
+     * @see java.util.stream.Stream
+     */
+    public static Predicate<Connector> connectorConnected(String connectionType) {
+        return (Connector c) -> {
             return c.getType().equals(connectionType)
                     && !c.getNode().getFlow().
                     getConnections(connectionType).
                     getAllWith(c).isEmpty();
         };
-
-        Predicate<VNode> rootNode = (VNode n) -> {
-            return n.getInputs().filtered(notConnected).isEmpty();
-        };
-
-        return rootNode.test(node);
     }
-    
-//    public static Predicate<Connector>
+
+    /**
+     * Returns a predicate that indicates whether a connector is not connected
+     * with the specified connection type.
+     *
+     * @param connectionType connection type (e.g. "data" or "control")
+     * @return a predicate that indicates whether a connector is not connected
+     * with the specified connection type
+     * 
+     * @see java.util.stream.Stream
+     */
+    public static Predicate<Connector> connectorNotConnected(
+            String connectionType) {
+        return (Connector c) -> {
+            return c.getType().equals(connectionType)
+                    && c.getNode().getFlow().
+                    getConnections(connectionType).
+                    getAllWith(c).isEmpty();
+        };
+    }
+
+    /**
+     * Returns a predicate that indicates whether a node is connected with the
+     * specified connection type.
+     *
+     * @param connectionType connection type (e.g. "data" or "control")
+     * @return a predicate that indicates whether a node is connected with the
+     * specified connection type
+     * 
+     * @see java.util.stream.Stream
+     */
+    public static Predicate<VNode> nodeConnected(String connectionType) {
+        return (VNode n) -> {
+            return !n.getInputs().filtered(connectorConnected(connectionType)).
+                    isEmpty();
+        };
+    }
+
+    /**
+     * Returns a predicate that indicates whether a node is not connected with
+     * the specified connection type.
+     *
+     * @param connectionType connection type (e.g. "data" or "control")
+     * @return a predicate that indicates whether a node is not connected with
+     * the specified connection type
+     * 
+     * @see java.util.stream.Stream
+     */
+    public static Predicate<VNode> nodeNotConnected(String connectionType) {
+        return (VNode n) -> {
+            return n.getInputs().filtered(connectorConnected(connectionType)).
+                    isEmpty();
+        };
+    }
+
+    /**
+     * Returns a predicate that indicates whether the number of connections of
+     * the specified connector is bigger than the expected number of
+     * connections. Only connections of the specifed type are counted.
+     *
+     * @param expectedNumConn expected number of connections
+     * @param connectionType connection type (e.g. "data" or "control")
+     * @return a predicate that indicates whether the number of connections of
+     * the specified connector is bigger than the expected number of connections
+     * 
+     * @see java.util.stream.Stream
+     */
+    public static Predicate<Connector> moreThanConnections(int expectedNumConn,
+            String connectionType) {
+        return (Connector c) -> {
+            return c.getType().equals(connectionType)
+                    && c.getNode().getFlow().
+                    getConnections(connectionType).
+                    getAllWith(c).size() > expectedNumConn;
+        };
+    }
+
+    /**
+     * Returns a predicate that indicates whether the number of connections of
+     * the specified connector is smaller than the expected number of
+     * connections. Only connections of the specifed type are counted.
+     *
+     * @param expectedNumConn expected number of connections
+     * @param connectionType connection type (e.g. "data" or "control")
+     * @return a predicate that indicates whether the number of connections of
+     * the specified connector is smaller than the expected number of
+     * connections
+     * 
+     * @see java.util.stream.Stream
+     */
+    public static Predicate<Connector> lessThanConnections(int expectedNumConn,
+            String connectionType) {
+        return (Connector c) -> {
+            return c.getType().equals(connectionType)
+                    && c.getNode().getFlow().
+                    getConnections(connectionType).
+                    getAllWith(c).size() < expectedNumConn;
+        };
+    }
+
+    /**
+     * Returns a predicate that indicates whether the number of connections of
+     * the specified connector is equal to the expected number of connections.
+     * Only connections of the specifed type are counted.
+     *
+     * @param expectedNumConn expected number of connections
+     * @param connectionType connection type (e.g. "data" or "control")
+     * @return a predicate that indicates whether the number of connections of
+     * the specified connector is equal to the expected number of connections
+     * 
+     * @see java.util.stream.Stream
+     */
+    public static Predicate<Connector> numberOfConnections(int expectedNumConn,
+            String connectionType) {
+        return (Connector c) -> {
+            return c.getType().equals(connectionType)
+                    && c.getNode().getFlow().
+                    getConnections(connectionType).
+                    getAllWith(c).size() == expectedNumConn;
+        };
+    }
 
 }
