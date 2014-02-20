@@ -131,9 +131,11 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public boolean isUsedAsInput(Invocation invocation) {
-       
+
         for (Invocation inv : invocations) {
+
             for (IArgument arg : inv.getArguments()) {
+
                 if (arg.getArgType() == ArgumentType.INVOCATION) {
                     if (arg.getInvocation().get().equals(invocation)) {
                         return true;

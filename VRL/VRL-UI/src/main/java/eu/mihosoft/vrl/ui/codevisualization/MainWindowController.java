@@ -144,6 +144,9 @@ public class MainWindowController implements Initializable {
     private FileAlterationObserver observer;
 
     private Stage mainWindow;
+    
+    private boolean isRunningScopeToFlow;
+    private boolean isRunningCodeToScope;
 
     /**
      * Initializes the controller class.
@@ -323,6 +326,8 @@ public class MainWindowController implements Initializable {
     }
 
     private void updateView(boolean refresh) {
+        
+        isRunningCodeToScope = true;
 
         savePositions();
 
@@ -359,6 +364,7 @@ public class MainWindowController implements Initializable {
 
         if (UIBinding.scopes == null) {
             System.err.println("NO SCOPES");
+            isRunningCodeToScope = false;
             return;
         }
 
@@ -377,6 +383,8 @@ public class MainWindowController implements Initializable {
 
 //        Layout layout = LayoutFactory.newDefaultLayout();
 //        layout.doLayout(flow);
+        
+        isRunningCodeToScope = false;
     }
 
     public void dataFlowToFlow(Scope scope, VFlow parent) {
@@ -402,6 +410,8 @@ public class MainWindowController implements Initializable {
     }
 
     public VFlow scopeToFlow(Scope scope, VFlow parent) {
+        
+        isRunningScopeToFlow = true;
 
         boolean isClassOrScript = scope.getType() == ScopeType.CLASS
                 || scope.getType() == ScopeType.COMPILATION_UNIT
@@ -504,6 +514,8 @@ public class MainWindowController implements Initializable {
         }
 
         dataFlowToFlow(scope, result);
+        
+        isRunningScopeToFlow = false;
 
         return result;
     }
@@ -727,7 +739,9 @@ public class MainWindowController implements Initializable {
     private void addControlflowListener(Scope rootScope, VFlow result) {
         result.getConnections("control").getConnections().addListener(
                 (ListChangeListener.Change<? extends Connection> change) -> {
-
+                    
+                    if (isRunningCodeToScope) return;
+                    
                     List<VNode> roots = result.getNodes().filtered(WorkflowUtil.nodeNotConnected("control"));
 
                     // clear current control flow
@@ -749,8 +763,10 @@ public class MainWindowController implements Initializable {
 
                     paths.forEach(path
                             -> path.forEach(node
-                                    -> rootScope.getControlFlow().
-                                    getInvocations().add(nodeInvocations.get(node.getId()))
+                                    -> {
+                                    System.out.println("-->adding inv: " + nodeInvocations.get(node.getId()) + " :: " + isRunningCodeToScope);
+                                    rootScope.getControlFlow().
+                                    getInvocations().add(nodeInvocations.get(node.getId()));}
                             )
                     );
                     updateCode(rootScope);
@@ -760,6 +776,9 @@ public class MainWindowController implements Initializable {
     private void addDataflowListener(Scope rootScope, VFlow result) {
         result.getConnections("data").getConnections().addListener(
                 (ListChangeListener.Change<? extends Connection> change) -> {
+                    
+                    if (isRunningCodeToScope) return;
+                    
                     while (change.next()) {
                         if (change.wasAdded()) {
                             for (Connection conn : change.getAddedSubList()) {
