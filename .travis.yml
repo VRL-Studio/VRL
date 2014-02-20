@@ -8,6 +8,7 @@ jdk:
   - oraclejdk8
   
 before_install:
+  - "apt-get install wput"
   - "export DISPLAY=:99.0"
   - "export TERM=dumb"
   - "sh -e /etc/init.d/xvfb start"
@@ -18,3 +19,15 @@ install:
 
 script:
     - TERM=dumb ant test
+
+
+after_success:
+    "wput -u VRL/dist/javadoc/" ftp://$FTP_USER:$FTP_PWD@$SERVER/api-doc/latest
+
+
+
+env:
+  global:
+  - secure: M9spQVc+qStizUyBkEs4eXS+eUAadsh5ZE46gihiw+jEchMfD70/VVvCnEJ2xDnv2ERuU22JJpnlnqkdCbJVkegbpN+uKS+v69Kg/ycBT7AXsT/nV0ugu+rNzhqaBbDN38Mx9o7KAzEUW9ibAca0mFvsXyzuAXgn8qsAflEeTxc=
+  - secure: O9JuRAtOYW5RxDQz+Ni7uyEzt8UK9tmcWV/mEi5g/DL9EHcHPGUNFahLElmv8LM9Ns8a8SRcLN1ArWo4f4FYu+zUv+gkaQ9T3aLeKPWqK9NGi0+uPLYhzuuy6JVj1lnX4mlRm7Wi853HIfa8EWMef0JWoIoxE/RjGWQLrvyaUQY=
+  - secure: XxkZrGlEAz79GkX1sHsU5LfLS6veujJwVoOLioFV9brhfAfDDDD252OX6rS6c+Emp7yxNE64zCainng17okddP8pBgK996/R+BgIx4kR58eaAaK5squ8mY29Z9I0qz7aGeuo7J6Kx15MiWmLxwDqT3zFzqbgsNqHlg4nFy1pOVI=
