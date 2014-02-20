@@ -23,7 +23,7 @@ script:
 
 after_success:
     - TERM=dumb ant javadoc
-    - "wput -u dist/javadoc/ ftp://$FTP_USER:$FTP_PWD@$SERVER/api-doc/latest"
+    - "wput -u dist/javadoc/ ftp://$FTP_USER:$FTP_PWD@vrl.$SERVER/api-doc/latest"
 
 
 
