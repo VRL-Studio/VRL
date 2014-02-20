@@ -13,7 +13,8 @@ script:
     - TERM=dumb gradle clean test
 
 after_script:
-    - "wput -u build/reports/tests/vrl ftp://$FTP_USER:$FTP_PWD@vrl.mihosoft.eu/vrl.mihosoft/test-reports"
+#    - "wput -u build/reports/tests/vrl ftp://$FTP_USER:$FTP_PWD@vrl.mihosoft.eu/vrl.mihosoft/test-reports"
+    - "ncftpput -R -v -u $FTP_USER -p $FTP_PWD mihosoft.eu /vrl.mihosoft/test-reports/latest build/reports/tests/vrl*"
 
 ##after_success:
 #    - TERM=dumb ant javadoc
