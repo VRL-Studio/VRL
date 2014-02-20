@@ -7,7 +7,27 @@ project.ext.set("skipMaven",["VRL-Lang:CommentParser"])
 
 subprojects {
     apply from: rootProject.file('common.gradle')
+    
+    // Disable the test report for the individual test task
+    test {
+        reports.html.enabled = false
+    }
 }
+
+task test(type: TestReport) {
+    destinationDir = file("$buildDir/reports/tests/vrl")
+    // Include the results from the `test` task in all subprojects
+    reportOn subprojects*.test
+}
+
+subprojects {
+    rootProject.test.dependsOn.add(test)
+}
+
+
+
+
+
 
 
 //task mergedJavadoc(type: Javadoc, description: 'Creates Javadoc from all the projects.') {
