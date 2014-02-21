@@ -1,12 +1,28 @@
 language: java
 jdk:
-- oraclejdk8
+    - oraclejdk8
 before_install:
-- export DISPLAY=:0
-- export TERM=dumb
-- sh -e /etc/init.d/xvfb start
-- cd VRL
+    - "sudo apt-get install wput ncftp"
+    - export DISPLAY=:0
+    - export TERM=dumb
+    - sh -e /etc/init.d/xvfb start
+    - cd VRL
 install:
-- TERM=dumb gradle wrapper clean
+    - TERM=dumb gradle wrapper clean
 script:
-- TERM=dumb gradle clean test
+    - TERM=dumb gradle clean test
+
+after_script:
+#    - "wput -u build/reports/tests/vrl ftp://$FTP_USER:$FTP_PWD@vrl.mihosoft.eu/vrl.mihosoft/test-reports"
+    - "ncftpput -R -v -u $FTP_USER -p $FTP_PWD mihosoft.eu /vrl.mihosoft/test-reports/latest build/reports/tests/vrl*"
+
+##after_success:
+#    - TERM=dumb ant javadoc
+#    - "wput -u dist/javadoc/ ftp://$FTP_USER:$FTP_PWD@vrl.mihosoft.eu/api-doc/latest"
+#    - "ncftpput -R -v -u $FTP_USER -p $FTP_PWD mihosoft.eu /vrl.mihosoft/api-doc/latest/ dist/javadoc/*"
+
+
+env:
+  global:
+    - secure: "M9spQVc+qStizUyBkEs4eXS+eUAadsh5ZE46gihiw+jEchMfD70/VVvCnEJ2xDnv2ERuU22JJpnlnqkdCbJVkegbpN+uKS+v69Kg/ycBT7AXsT/nV0ugu+rNzhqaBbDN38Mx9o7KAzEUW9ibAca0mFvsXyzuAXgn8qsAflEeTxc="
+    - secure: "ckjTIPKHj0wiuotc5L9gXuxf9EOpXE3oSioLH0S1AtSoZgotpTcXVHGmVjWrL9u24aRUsjv2ZCfnFpR6IwqGQB++kidf4R2tqJXxWDAupEjiNw9iPBaLQ0D2kv0Mk1gaVKnM61Ymiv+3qbN0cQyEaTDAAN6lV8KXjc38iZmo1aA="
