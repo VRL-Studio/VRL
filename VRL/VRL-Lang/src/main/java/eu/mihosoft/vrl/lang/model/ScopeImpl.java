@@ -49,13 +49,14 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
-import com.google.common.base.Objects;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -71,11 +72,11 @@ class ScopeImpl implements Scope {
     Map<String, Variable> variables = new HashMap<>();
     ControlFlow controlFlow;
     DataFlow dataFlow;
-    private final List<Scope> scopes = new ArrayList<>();
+    private final ObservableList<Scope> scopes = FXCollections.observableArrayList();
 //    private String code;
-    private List<Scope> readOnlyScopes;
+//    private List<Scope> readOnlyScopes;
     private ICodeRange location;
-    private final List<Comment> comments = new ArrayList<>();
+    private final ObservableList<Comment> comments = FXCollections.observableArrayList();
 
     public ScopeImpl(String id, Scope parent, ScopeType type, String name, Object... scopeArgs) {
         this.id = id;
@@ -231,13 +232,14 @@ class ScopeImpl implements Scope {
      * @return the scopes
      */
     @Override
-    public List<Scope> getScopes() {
+    public ObservableList<Scope> getScopes() {
 
-        if (readOnlyScopes == null) {
-            readOnlyScopes = Collections.unmodifiableList(scopes);
-        }
-
-        return readOnlyScopes;
+//        if (readOnlyScopes == null) {
+//            readOnlyScopes = Collections.unmodifiableList(scopes);
+//        }
+//
+//        return readOnlyScopes;
+        return scopes;
     }
 
     @Override

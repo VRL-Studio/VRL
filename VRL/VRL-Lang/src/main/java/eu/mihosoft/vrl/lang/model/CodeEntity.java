@@ -50,7 +50,7 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.ICodeRange;
+import eu.mihosoft.vrl.workflow.VNode;
 
 /**
  *
@@ -67,5 +67,7 @@ public interface CodeEntity {
     public ICodeRange getRange();
     
     public Scope getParent();
+    
+//    public void setNode(VNode n);
     
 }

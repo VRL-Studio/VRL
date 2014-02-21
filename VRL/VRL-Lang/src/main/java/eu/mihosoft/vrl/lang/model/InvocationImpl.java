@@ -50,14 +50,12 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.ICodeRange;
-import eu.mihosoft.vrl.lang.model.Invocation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -68,7 +66,7 @@ class InvocationImpl implements Invocation {
     private String id;
     private final String varName;
     private final String methodName;
-    private final List<IArgument> arguments = new ArrayList<>();
+    private final ObservableList<IArgument> arguments = FXCollections.observableArrayList();
     private final boolean constructor;
     private final boolean Void;
 //    private String code;
@@ -132,7 +130,7 @@ class InvocationImpl implements Invocation {
     }
 
     @Override
-    public List<IArgument> getArguments() {
+    public ObservableList<IArgument> getArguments() {
         return arguments;
     }
 

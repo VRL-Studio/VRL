@@ -50,9 +50,9 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.workflow.VFlow;
 import java.util.Collection;
 import java.util.List;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -80,7 +80,7 @@ public interface Scope extends CodeEntity {
 
     public ControlFlow getControlFlow();
 
-    public List<Scope> getScopes();
+    public ObservableList<Scope> getScopes();
 
     public Scope getScopeById(String id);
 

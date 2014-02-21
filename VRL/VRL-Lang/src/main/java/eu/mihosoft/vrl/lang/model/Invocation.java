@@ -50,8 +50,7 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import java.util.List;
-import java.util.Optional;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -67,7 +66,7 @@ public interface Invocation extends CodeEntity {
     
     public IType getReturnType();
 
-    public List<IArgument> getArguments();
+    public ObservableList<IArgument> getArguments();
 
     public boolean isConstructor();
 
