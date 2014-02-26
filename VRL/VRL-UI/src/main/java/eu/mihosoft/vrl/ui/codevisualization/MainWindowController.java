@@ -144,12 +144,15 @@ public class MainWindowController implements Initializable {
     private FileAlterationObserver observer;
 
     private Stage mainWindow;
-    
+
     private boolean isRunningScopeToFlow;
     private boolean isRunningCodeToScope;
 
     /**
      * Initializes the controller class.
+     *
+     * @param url
+     * @param rb
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -326,7 +329,7 @@ public class MainWindowController implements Initializable {
     }
 
     private void updateView(boolean refresh) {
-        
+
         isRunningCodeToScope = true;
 
         savePositions();
@@ -383,7 +386,6 @@ public class MainWindowController implements Initializable {
 
 //        Layout layout = LayoutFactory.newDefaultLayout();
 //        layout.doLayout(flow);
-        
         isRunningCodeToScope = false;
     }
 
@@ -410,7 +412,7 @@ public class MainWindowController implements Initializable {
     }
 
     public VFlow scopeToFlow(Scope scope, VFlow parent) {
-        
+
         isRunningScopeToFlow = true;
 
         boolean isClassOrScript = scope.getType() == ScopeType.CLASS
@@ -453,6 +455,9 @@ public class MainWindowController implements Initializable {
 
                 ScopeInvocation sI = (ScopeInvocation) i;
                 n = scopeToFlow(sI.getScope(), result).getModel();
+
+                invocationNodes.put(i, n.getId());
+                nodeInvocations.put(n.getId(), i);
 
             } else {
                 n = result.newNode();
@@ -514,7 +519,7 @@ public class MainWindowController implements Initializable {
         }
 
         dataFlowToFlow(scope, result);
-        
+
         isRunningScopeToFlow = false;
 
         return result;
@@ -739,46 +744,57 @@ public class MainWindowController implements Initializable {
     private void addControlflowListener(Scope rootScope, VFlow result) {
         result.getConnections("control").getConnections().addListener(
                 (ListChangeListener.Change<? extends Connection> change) -> {
-                    
-                    if (isRunningCodeToScope) return;
-                    
-                    List<VNode> roots = result.getNodes().filtered(WorkflowUtil.nodeNotConnected("control"));
 
-                    // clear current control flow
-                    rootScope.getControlFlow().getInvocations().clear();
+                    try {
 
-                    List<List<VNode>> paths = new ArrayList<>();
+                        if (isRunningCodeToScope) {
+                            return;
+                        }
 
-                    // follow controlflow from roots to end
-                    roots.forEach(
-                            r -> {
+                        List<VNode> roots = result.getNodes().filtered(WorkflowUtil.nodeNotConnected("control"));
+
+                        // clear current control flow
+                        rootScope.getControlFlow().getInvocations().clear();
+
+                        List<List<VNode>> paths = new ArrayList<>();
+
+                        // follow controlflow from roots to end
+                        roots.forEach(
+                                r -> {
 //                                System.out.println("-- root " + r.getTitle() + " --");
 
-                                List<VNode> path = getPath(r, "control");
+                                    List<VNode> path = getPath(r, "control");
 
 //                                path.forEach(
 //                                        n -> System.out.println("n->" + n.getTitle()));
-                                paths.add(path);
-                            });
+                                    paths.add(path);
+                                });
 
-                    paths.forEach(path
-                            -> path.forEach(node
-                                    -> {
-                                    System.out.println("-->adding inv: " + nodeInvocations.get(node.getId()) + " :: " + isRunningCodeToScope);
-                                    rootScope.getControlFlow().
-                                    getInvocations().add(nodeInvocations.get(node.getId()));}
-                            )
-                    );
-                    updateCode(rootScope);
+                        paths.forEach(path
+                                -> path.forEach(node
+                                        -> {
+                            System.out.println("-->adding inv: " + nodeInvocations.get(node.getId()) + " :: " + isRunningCodeToScope);
+                            rootScope.getControlFlow().
+                            getInvocations().add(nodeInvocations.get(node.getId()));
+                        }
+                                )
+                        );
+                        updateCode(rootScope);
+                    } catch (Exception ex) {
+                        ex.printStackTrace(System.err);
+                    }
                 });
+
     }
 
     private void addDataflowListener(Scope rootScope, VFlow result) {
         result.getConnections("data").getConnections().addListener(
                 (ListChangeListener.Change<? extends Connection> change) -> {
-                    
-                    if (isRunningCodeToScope) return;
-                    
+
+                    if (isRunningCodeToScope) {
+                        return;
+                    }
+
                     while (change.next()) {
                         if (change.wasAdded()) {
                             for (Connection conn : change.getAddedSubList()) {

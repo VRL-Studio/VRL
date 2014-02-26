@@ -25,6 +25,11 @@ manifest.mainAttributes("Main-Class" : ext.mainClass)
 //    packaging = "image"
 //}
 
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 dependencies {
     // TODO: Add dependencies here
     //   but note that JUnit should have already been added in parent.gradle.
@@ -35,7 +40,9 @@ dependencies {
     //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:how_to_declare_your_dependencies
     
 
-    compile "eu.mihosoft.vrl.workflow-8.0:vworkflows-fx:0.1-r2-SNAPSHOT"
+//    compile "eu.mihosoft.vrl.workflow-8.0:vworkflows-fx:0.1-r2-SNAPSHOT"
+    
+    compile group: 'eu.mihosoft.vrl.workflow-8.0', name: 'vworkflows-fx', version: '0.1-r2-SNAPSHOT', changing: true
     
 //    compile "com.fifesoft:rsyntaxtextarea:2.5.0"
     

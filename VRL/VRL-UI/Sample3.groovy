@@ -16,6 +16,18 @@ public class MyFileClass {
         for(int i = 0; i <= 30; i++) {
             m3(v1, v2, m2(v2, v3));
         }
+        
+        for(int j = 2; j <= 3; j++) {
+            m3(v1, v2, m2(v2, v3));
+        }
+        
+        m2(m1(v1), m1(v2));
+        m2(m1(v1), m1(v2));
+        m1(v1);
+        
+        for(int k = 3; k <= 5; k++) {
+            m3(v1, v2, m2(v2, v3));
+        }
     }
 }
 @eu.mihosoft.vrl.instrumentation.VRLVisualization
