@@ -44,13 +44,13 @@ public class Vertex {
     }
 
     // Affine transformation of vertex. Returns a new CSG.Vertex
-    public Vertex transform(Matrix4d matrix4x4) {
-        pos.transform(matrix4x4);
+    public Vertex transform(Transform transform) {
+        pos = pos.transform(transform);
         return this;
     }
 
-    public Vertex transformed(Matrix4d matrix4x4) {
-        return clone().transform(matrix4x4);
+    public Vertex transformed(Transform transform) {
+        return clone().transform(transform);
     }
 
 }

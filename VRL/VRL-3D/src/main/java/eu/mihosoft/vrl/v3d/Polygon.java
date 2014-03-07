@@ -84,14 +84,14 @@ public class Polygon {
         return clone().translate(v);
     }
 
-    public Polygon transform(Matrix4d matrix4x4) {
+    public Polygon transform(Transform transform) {
         List<Vertex> newvertices = this.vertices.stream().map(
                 (v) -> {
-                    return v.transformed(matrix4x4);
+                    return v.transformed(transform);
                 }).collect(Collectors.toList());
 
 //		Plane newplane = this.plane.transform(matrix4x4);
-        if (matrix4x4.getScale() < 0) {
+        if (transform.getScale() < 0) {
 			// the transformation includes mirroring. We need to reverse the vertex order
             // in order to preserve the inside/outside orientation:
 
@@ -100,8 +100,8 @@ public class Polygon {
         return new Polygon(newvertices, this.shared);
     }
 
-    public Polygon transformed(Matrix4d matrix4x4) {
-        return clone().transform(matrix4x4);
+    public Polygon transformed(Transform transform) {
+        return clone().transform(transform);
     }
 
     public static Polygon createFromPoints(List<Vector> points, boolean shared) {

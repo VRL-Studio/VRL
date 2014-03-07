@@ -52,15 +52,12 @@ public class Main {
                         new Vector(1,0.5,0),
                         new Vector(1,0,0)), true);
 
-        Matrix4d transform = Transform.rotationZ(25);
-        
-        Matrix4d transform2 = Transform.rotationY(25);
-
-        transform.mul(transform2);
-        
-        Matrix4d transform3 = Transform.rotationX(25);
-        
-        transform.mul(transform3);
+        Transform transform = Transform.unity().
+                rotZ(25).
+                rotY(25).
+                rotX(25).
+                scale(new Vector(0.5, 1.5, 1.5));
+       
         
         CSG testObject = p.extrude(new Vector(0, 0, 5));
         
@@ -72,8 +69,7 @@ public class Main {
         sphereOptions.setRadius(1.8); 
        
         testObject = CSG.sphere(sphereOptions).subtract(testObject);
-        
-        testObject = testObject.transformed(Transform.scale(new Vector(1, 1, 1)));
+        testObject = testObject.transformed(Transform.unity().scale(new Vector(1, 0.5, 1)));
         
 //        testObject.translate(new Vector(5, 0, 0));
 

@@ -77,20 +77,22 @@ public class Vector {
         return this.x + " " + this.y + " " + this.z;
     }
 
-    public Vector transform(Matrix4d matrix4x4) {
+    public Vector transform(Transform transform) {
 
-        Vector3d vec = new Vector3d(x, y, z);
-        matrix4x4.transform(vec);
+//        Vector3d vec = new Vector3d(x, y, z);
+//        matrix4x4.transform(vec);
+//
+//        this.x = vec.x;
+//        this.y = vec.y;
+//        this.z = vec.z;
+        
+       
 
-        this.x = vec.x;
-        this.y = vec.y;
-        this.z = vec.z;
-
-        return this;
+        return transform.transform(this);
     }
 
-    public Vector transformed(Matrix4d matrix4x4) {
-        return clone().transform(matrix4x4);
+    public Vector transformed(Transform transform) {
+        return clone().transform(transform);
     }
 
 }

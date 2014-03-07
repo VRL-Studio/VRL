@@ -350,9 +350,9 @@ public class CSG {
     }
 
     // Affine transformation of CSG object. Returns a new CSG object
-    public CSG transformed(Matrix4d matrix4x4) {
+    public CSG transformed(Transform transform) {
         List<Polygon> newpolygons = this.polygons.stream().map(
-                p -> p.transformed(matrix4x4)
+                p -> p.transformed(transform)
         ).collect(Collectors.toList());
 
         CSG result = CSG.fromPolygons(newpolygons);
