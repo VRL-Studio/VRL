@@ -3,19 +3,24 @@ package eu.mihosoft.vrl.v3d;
 import java.util.ArrayList;
 import java.util.List;
 
-// # class Node
-// Holds a node in a BSP tree. A BSP tree is built from a collection of polygons
-// by picking a polygon to split along. That polygon (and all other coplanar
-// polygons) are added directly to that node and the other polygons are added to
-// the front and/or back subtrees. This is not a leafy BSP tree since there is
-// no distinction between internal and leaf nodes.
-public class Node {
+/**
+ * Holds a node in a BSP tree. A BSP tree is built from a collection of polygons
+ * by picking a polygon to split along. That polygon (and all other coplanar
+ * polygons) are added directly to that node and the other polygons are added to
+ * the front and/or back subtrees. This is not a leafy BSP tree since there is
+ * no distinction between internal and leaf nodes.
+ */
+final class Node {
 
     private List<Polygon> polygons;
     private Plane plane;
     private Node front;
     private Node back;
 
+    /**
+     *
+     * @param polygons
+     */
     public Node(List<Polygon> polygons) {
         this.polygons = new ArrayList<>();
         if (polygons != null) {
@@ -23,6 +28,9 @@ public class Node {
         }
     }
 
+    /**
+     *
+     */
     public Node() {
         this(null);
     }
@@ -42,17 +50,21 @@ public class Node {
 
     // Convert solid space to empty space and empty space to solid space.
     public void invert() {
-        
+
+        if (this.polygons.isEmpty()) {
+            return;
+        }
+
         for (Polygon polygon : this.polygons) {
             polygon.flip();
         }
-        
+
         if (this.plane == null) {
             this.plane = polygons.get(0).plane.clone();
         }
-        
+
         this.plane.flip();
-        
+
         if (this.front != null) {
             this.front.invert();
         }
@@ -67,14 +79,14 @@ public class Node {
     // Recursively remove all polygons in `polygons` that are inside this BSP
     // tree.
     public List<Polygon> clipPolygons(List<Polygon> polygons) {
-        
+
         if (this.plane == null) {
             return new ArrayList<>(polygons);
         }
-        
+
         List<Polygon> frontP = new ArrayList<>();
         List<Polygon> backP = new ArrayList<>();
-        
+
         for (Polygon polygon : polygons) {
             this.plane.splitPolygon(polygon, frontP, backP, frontP, backP);
         }
@@ -88,7 +100,6 @@ public class Node {
         }
 
 //        return Utils.concat(front, back);
-         
         frontP.addAll(backP);
         return frontP;
     }
@@ -116,7 +127,7 @@ public class Node {
 //            polygons = Utils.concat(polygons, this.back.allPolygons());
             localPolygons.addAll(this.back.allPolygons());
         }
-        
+
         return localPolygons;
     }
 
@@ -133,10 +144,10 @@ public class Node {
         if (this.plane == null) {
             this.plane = polygons.get(0).plane.clone();
         }
-        
+
         List<Polygon> frontP = new ArrayList<>();
         List<Polygon> backP = new ArrayList<>();
-        
+
         polygons.forEach((polygon) -> {
             this.plane.splitPolygon(polygon, this.polygons, this.polygons, frontP, backP);
         });

@@ -3,7 +3,6 @@ package eu.mihosoft.vrl.v3d;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Represents a convex polygon. The vertices used to initialize a polygon must
@@ -15,7 +14,7 @@ import java.util.stream.Collectors;
  * polygons that are clones of each other or were split from the same polygon.
  * This can be used to define per-polygon properties (such as surface color).
  */
-public class Polygon {
+public final class Polygon {
 
     public final List<Vertex> vertices;
     public final boolean shared;

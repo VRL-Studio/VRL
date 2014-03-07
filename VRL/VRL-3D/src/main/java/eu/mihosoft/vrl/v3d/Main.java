@@ -64,11 +64,8 @@ public class Main {
         testObject.translate(new Vector(0, 0, -3));
         
         testObject = testObject.transformed(transform);
-        
-        SphereOptions sphereOptions = new SphereOptions();
-        sphereOptions.setRadius(1.8); 
        
-        testObject = CSG.sphere(sphereOptions).subtract(testObject);
+        testObject = new Sphere(1.8).toCSG().subtract(testObject);
         testObject = testObject.transformed(Transform.unity().scale(new Vector(1, 1, 1)));
         
 //        testObject.translate(new Vector(5, 0, 0));
