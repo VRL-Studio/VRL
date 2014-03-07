@@ -128,6 +128,20 @@ public class CSG {
         return CSG.fromPolygons(a.allPolygons());
     }
 
+    public CSG subtract_orig(CSG csg) {
+        Node a = new Node(this.clone().polygons);
+        Node b = new Node(csg.clone().polygons);
+        a.invert();
+        a.clipTo(b);
+        b.clipTo(a);
+        b.invert();
+        b.clipTo(a);
+        b.invert();
+        a.build(b.allPolygons());
+        a.invert();
+        return CSG.fromPolygons(a.allPolygons());
+    }
+
     // Return a new CSG solid representing space both this solid and in the
     // solid `csg`. Neither this solid nor the solid `csg` are modified.
     //

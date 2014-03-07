@@ -34,18 +34,25 @@ public class Node {
         node.front = this.front == null ? null : this.front.clone();
         node.back = this.back == null ? null : this.back.clone();
         node.polygons = new ArrayList<>();
-        polygons.forEach((polygon) -> {
-            node.polygons.add(polygon.clone());
+        polygons.forEach((Polygon p) -> {
+            node.polygons.add(p.clone());
         });
         return node;
     }
 
     // Convert solid space to empty space and empty space to solid space.
     public void invert() {
+        
         for (Polygon polygon : this.polygons) {
             polygon.flip();
         }
+        
+        if (this.plane == null) {
+            this.plane = polygons.get(0).plane.clone();
+        }
+        
         this.plane.flip();
+        
         if (this.front != null) {
             this.front.invert();
         }
@@ -60,23 +67,30 @@ public class Node {
     // Recursively remove all polygons in `polygons` that are inside this BSP
     // tree.
     public List<Polygon> clipPolygons(List<Polygon> polygons) {
+        
         if (this.plane == null) {
             return new ArrayList<>(polygons);
         }
-        List<Polygon> front = new ArrayList<>();
-        List<Polygon> back = new ArrayList<>();
+        
+        List<Polygon> frontP = new ArrayList<>();
+        List<Polygon> backP = new ArrayList<>();
+        
         for (Polygon polygon : polygons) {
-            this.plane.splitPolygon(polygon, front, back, front, back);
+            this.plane.splitPolygon(polygon, frontP, backP, frontP, backP);
         }
         if (this.front != null) {
-            front = this.front.clipPolygons(front);
+            frontP = this.front.clipPolygons(frontP);
         }
         if (this.back != null) {
-            back = this.back.clipPolygons(back);
+            backP = this.back.clipPolygons(backP);
         } else {
-            back = new ArrayList<>(0);
+            backP = new ArrayList<>(0);
         }
-        return Utils.concat(front, back);
+
+//        return Utils.concat(front, back);
+         
+        frontP.addAll(backP);
+        return frontP;
     }
 
     // Remove all polygons in this BSP tree that are inside the other BSP tree
@@ -93,21 +107,24 @@ public class Node {
 
     // Return a list of all polygons in this BSP tree.
     public List<Polygon> allPolygons() {
-        List<Polygon> polygons = new ArrayList<>(this.polygons);
+        List<Polygon> localPolygons = new ArrayList<>(this.polygons);
         if (this.front != null) {
-            polygons = Utils.concat(polygons, this.front.allPolygons());
+            localPolygons.addAll(this.front.allPolygons());
+//            polygons = Utils.concat(polygons, this.front.allPolygons());
         }
         if (this.back != null) {
-            polygons = Utils.concat(polygons, this.back.allPolygons());
+//            polygons = Utils.concat(polygons, this.back.allPolygons());
+            localPolygons.addAll(this.back.allPolygons());
         }
-        return polygons;
+        
+        return localPolygons;
     }
 
     // Build a BSP tree out of `polygons`. When called on an existing tree, the
     // new polygons are filtered down to the bottom of the tree and become new
     // nodes there. Each set of polygons is partitioned using the first polygon
     // (no heuristic is used to pick a good split).
-    public void build(List<Polygon> polygons) {
+    public final void build(List<Polygon> polygons) {
 
         if (polygons.isEmpty()) {
             return;
@@ -116,22 +133,24 @@ public class Node {
         if (this.plane == null) {
             this.plane = polygons.get(0).plane.clone();
         }
-        List<Polygon> front = new ArrayList<>();
-        List<Polygon> back = new ArrayList<>();
-        polygons.stream().forEach((polygon) -> {
-            this.plane.splitPolygon(polygon, this.polygons, this.polygons, front, back);
+        
+        List<Polygon> frontP = new ArrayList<>();
+        List<Polygon> backP = new ArrayList<>();
+        
+        polygons.forEach((polygon) -> {
+            this.plane.splitPolygon(polygon, this.polygons, this.polygons, frontP, backP);
         });
-        if (front.size() > 0) {
+        if (frontP.size() > 0) {
             if (this.front == null) {
                 this.front = new Node();
             }
-            this.front.build(front);
+            this.front.build(frontP);
         }
-        if (back.size() > 0) {
+        if (backP.size() > 0) {
             if (this.back == null) {
                 this.back = new Node();
             }
-            this.back.build(back);
+            this.back.build(backP);
         }
     }
 }
