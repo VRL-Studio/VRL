@@ -23,25 +23,6 @@ import javax.vecmath.Matrix4d;
 public class Main {
 
     public static void main(String[] args) {
-
-////        CubeOptions smallCube = new CubeOptions();
-////        smallCube.setCenter(new Vector(2, 2, 2));
-//        SphereOptions sphereOptions = new SphereOptions();
-//        sphereOptions.setRadius(1.8);
-////        sphereOptions.setCenter(new Vector(1, 0, 0));
-//
-//        CylinderOptions cylinderOptions = new CylinderOptions();
-//        cylinderOptions.setRadius(0.8);
-//        cylinderOptions.setStart(new Vector(0, -3, 0));
-//        cylinderOptions.setEnd(new Vector(0, 3, 0));
-//
-//        CSG testObject = CSG.sphere(sphereOptions).
-//                subtract(CSG.cylinder(cylinderOptions));
-//        
-//
-//        testObject = CSG.fromPolygons(testObject.clone().toPolygons());
-//
-//        testObject = testObject.subtract(CSG.cube(new CubeOptions()));
         Polygon p = Polygon.createFromPoints(
                 Arrays.asList(new Vector(0, 0, 0),
                         new Vector(0, 1.0, 0),
@@ -53,19 +34,23 @@ public class Main {
                 rotZ(25).
                 rotY(25).
                 rotX(25).
+                translate(new Vector(0, 0, 3)).
                 scale(new Vector(0.5, 1.5, 1.5));
 
-        CSG testObject = p.extrude(new Vector(0, 0, 5));
-
-        testObject.translate(new Vector(0, 0, -3));
-
-        testObject = testObject.transformed(transform);
-
-        testObject = new Sphere(1.8).toCSG().subtract(testObject).
+        CSG testObject = new Sphere(1.5).toCSG().transformed(Transform.unity().translate(new Vector(1, 0, 0))).
+                intersect(
+//                        new Cube().toCSG()
+                        p.extrude(new Vector(0, 0, 3)).
+                                transformed(transform)
+                );/*.
                 union(
                         new Cylinder().toCSG().
-                        transformed(Transform.unity().translate(new Vector(0, 0, 0)).
-                                scale(new Vector(1, 3, 1))));
+                        transformed(
+                                Transform.unity().
+                                translate(new Vector(0, 0, 0)).
+                                scale(new Vector(1, 3, 1))
+                        )
+                );*/
 
         String stlString;
 

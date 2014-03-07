@@ -156,7 +156,7 @@ public class CSG {
     //          |       |
     //          +-------+
     //
-    public CSG intersect(CSG csg) {
+    public CSG intersect_orig(CSG csg) {
         Node a = new Node(this.clone().polygons);
         Node b = new Node(csg.clone().polygons);
         a.invert();
@@ -164,6 +164,21 @@ public class CSG {
         b.invert();
         a.clipTo(b);
         b.clipTo(a);
+        a.build(b.allPolygons());
+        a.invert();
+        return CSG.fromPolygons(a.allPolygons());
+    }
+
+    public CSG intersect(CSG csg) {
+        Node a = new Node(this.clone().polygons);
+        Node b = new Node(csg.clone().polygons);
+        a.invert();
+        b.invert();
+        a.clipTo(b);
+        b.clipTo(a);
+        b.invert();
+        b.clipTo(a);
+        b.invert();
         a.build(b.allPolygons());
         a.invert();
         return CSG.fromPolygons(a.allPolygons());
@@ -178,7 +193,7 @@ public class CSG {
         }
         return csg;
     }
-    
+
     public String toStlString() {
 
         StringBuilder sb = new StringBuilder("solid v3d.csg\n");
