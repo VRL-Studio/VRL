@@ -178,70 +178,7 @@ public class CSG {
         }
         return csg;
     }
-
     
-
-    private static Vertex cylPoint(
-            Vector axisX, Vector axisY, Vector axisZ, Vector ray, Vector s,
-            double r, double stack, double slice, double normalBlend) {
-        double angle = slice * Math.PI * 2;
-        Vector out = axisX.times(Math.cos(angle)).plus(axisY.times(Math.sin(angle)));
-        Vector pos = s.plus(ray.times(stack)).plus(out.times(r));
-        Vector normal = out.times(1.0 - Math.abs(normalBlend)).plus(axisZ.times(normalBlend));
-        return new Vertex(pos, normal);
-    }
-
-    // Construct a solid cylinder. Optional parameters are `start`, `end`,
-    // `radius`, and `slices`, which default to `[0, -1, 0]`, `[0, 1, 0]`, `1`, and
-    // `16`. The `slices` parameter controls the tessellation.
-    //
-    // Example usage:
-    //
-    //     var cylinder = CSG.cylinder({
-    //       start: [0, -1, 0],
-    //       end: [0, 1, 0],
-    //       radius: 1,
-    //       slices: 16
-    //     });
-    public static CSG cylinder(CylinderOptions options) {
-
-        final Vector s = options.getStart();
-        Vector e = options.getEnd();
-        final Vector ray = e.minus(s);
-        final double r = options.getRadius();
-        int slices = options.getSlices();
-        final Vector axisZ = ray.unit();
-        boolean isY = (Math.abs(axisZ.y) > 0.5);
-        final Vector axisX = new Vector(isY ? 1 : 0, !isY ? 1 : 0, 0).cross(axisZ).unit();
-        final Vector axisY = axisX.cross(axisZ).unit();
-        Vertex start = new Vertex(s, axisZ.negated());
-        Vertex end = new Vertex(e, axisZ.unit());
-        List<Polygon> polygons = new ArrayList<>();
-
-        for (int i = 0; i < slices; i++) {
-            double t0 = i / (double) slices, t1 = (i + 1) / (double) slices;
-            polygons.add(new Polygon(Arrays.asList(
-                    start,
-                    cylPoint(axisX, axisY, axisZ, ray, s, r, 0, t0, -1),
-                    cylPoint(axisX, axisY, axisZ, ray, s, r, 0, t1, -1)),
-                    false));
-            polygons.add(new Polygon(Arrays.asList(
-                    cylPoint(axisX, axisY, axisZ, ray, s, r, 0, t1, 0),
-                    cylPoint(axisX, axisY, axisZ, ray, s, r, 0, t0, 0),
-                    cylPoint(axisX, axisY, axisZ, ray, s, r, 1, t0, 0),
-                    cylPoint(axisX, axisY, axisZ, ray, s, r, 1, t1, 0)),
-                    false));
-            polygons.add(new Polygon(
-                    Arrays.asList(
-                            end,
-                            cylPoint(axisX, axisY, axisZ, ray, s, r, 1, t1, 1),
-                            cylPoint(axisX, axisY, axisZ, ray, s, r, 1, t0, 1)),
-                    false)
-            );
-        }
-        return fromPolygons(polygons);
-    }
-
     public String toStlString() {
 
         StringBuilder sb = new StringBuilder("solid v3d.csg\n");

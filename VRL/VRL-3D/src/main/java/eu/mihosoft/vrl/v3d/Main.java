@@ -42,39 +42,35 @@ public class Main {
 //        testObject = CSG.fromPolygons(testObject.clone().toPolygons());
 //
 //        testObject = testObject.subtract(CSG.cube(new CubeOptions()));
-        
-        
-        
         Polygon p = Polygon.createFromPoints(
                 Arrays.asList(new Vector(0, 0, 0),
                         new Vector(0, 1.0, 0),
                         new Vector(0.5, 1, 0),
-                        new Vector(1,0.5,0),
-                        new Vector(1,0,0)), true);
+                        new Vector(1, 0.5, 0),
+                        new Vector(1, 0, 0)), true);
 
         Transform transform = Transform.unity().
                 rotZ(25).
                 rotY(25).
                 rotX(25).
                 scale(new Vector(0.5, 1.5, 1.5));
-       
-        
+
         CSG testObject = p.extrude(new Vector(0, 0, 5));
-        
+
         testObject.translate(new Vector(0, 0, -3));
-        
+
         testObject = testObject.transformed(transform);
-       
-        testObject = new Sphere(1.8).toCSG().subtract(testObject);
-        testObject = testObject.transformed(Transform.unity().scale(new Vector(1, 1, 1)));
-        
-//        testObject.translate(new Vector(5, 0, 0));
+
+        testObject = new Sphere(1.8).toCSG().subtract(testObject).
+                union(
+                        new Cylinder().toCSG().
+                        transformed(Transform.unity().translate(new Vector(0, 0, 0)).
+                                scale(new Vector(1, 3, 1))));
 
         String stlString;
 
         stlString = testObject.toStlString();
 
-//        stlString = CSG.cylinder(cylinderOptions).inverse().toStlString();
         BufferedWriter writer;
 
         try {
