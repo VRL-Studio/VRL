@@ -9,12 +9,17 @@ import javax.vecmath.Matrix4d;
 
 /**
  *
- * @author miho
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class Transform {
 
-    private Matrix4d m;
+    private final Matrix4d m;
 
+    /**
+     * Constructor.
+     *
+     * Creates a unit transform.
+     */
     public Transform() {
         m = new Matrix4d();
         m.m00 = 1;
@@ -22,57 +27,94 @@ public class Transform {
         m.m22 = 1;
         m.m33 = 1;
     }
-    
+
+    /**
+     * Returns a new unity transform.
+     *
+     * @return unity transform
+     */
     public static Transform unity() {
         return new Transform();
     }
 
+    /**
+     * Constructor.
+     *
+     * @param m matrix
+     */
     private Transform(Matrix4d m) {
         this.m = m;
     }
 
-    // Create a rotation matrix for rotating around the x axis
+    /**
+     * Applies rotation around the x axis.
+     *
+     * @param degrees degrees
+     * @return this transform
+     */
     public Transform rotX(double degrees) {
         double radians = degrees * Math.PI * (1.0 / 180.0);
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         double elemenents[] = {
-            1, 0, 0, 0, 0, cos, sin, 0, 0, -sin, cos, 0, 0, 0, 0, 1};
+            1, 0, 0, 0, 0, cos, sin, 0, 0, -sin, cos, 0, 0, 0, 0, 1
+        };
         m.mul(new Matrix4d(elemenents));
         return this;
     }
 
-// Create a rotation matrix for rotating around the y axis
+    /**
+     * Applies rotation around the y axis.
+     *
+     * @param degrees degrees
+     * @return this transform
+     */
     public Transform rotY(double degrees) {
         double radians = degrees * Math.PI * (1.0 / 180.0);
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         double elemenents[] = {
-            cos, 0, -sin, 0, 0, 1, 0, 0, sin, 0, cos, 0, 0, 0, 0, 1};
+            cos, 0, -sin, 0, 0, 1, 0, 0, sin, 0, cos, 0, 0, 0, 0, 1
+        };
         m.mul(new Matrix4d(elemenents));
         return this;
     }
 
-// Create a rotation matrix for rotating around the z axis
+    /**
+     * Applies rotation around the z axis.
+     *
+     * @param degrees degrees
+     * @return this transform
+     */
     public Transform rotZ(double degrees) {
         double radians = degrees * Math.PI * (1.0 / 180.0);
         double cos = Math.cos(radians);
         double sin = Math.sin(radians);
         double elemenents[] = {
-            cos, sin, 0, 0, -sin, cos, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+            cos, sin, 0, 0, -sin, cos, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+        };
         m.mul(new Matrix4d(elemenents));
         return this;
     }
 
-// Create an affine matrix for translate:
+    /**
+     * Applies translation to this transform.
+     * @param vec translation vector
+     * @return this transform
+     */
     public Transform translate(Vector vec) {
-        // parse as CSG.Vector3D, so we can pass an array or a CSG.Vector3D
-        double elemenents[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, vec.x, vec.y, vec.z, 1};
+        double elemenents[] = {
+            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, vec.x, vec.y, vec.z, 1
+        };
         m.mul(new Matrix4d(elemenents));
         return this;
     }
 
-// Create an affine matrix for mirroring into an arbitrary plane:
+    /**
+     * Applies a mirror operation to this transform.
+     * @param plane the plane that defines the mirror operation
+     * @return this transform
+     */
     public Transform mirror(Plane plane) {
         double nx = plane.normal.x;
         double ny = plane.normal.y;
@@ -88,39 +130,45 @@ public class Transform {
         return this;
     }
 
-// Create an affine matrix for scaling:
+    /**
+     * Applies a scale operation to this transform.
+     * @param vec vector that specifies scale (x,y,z)
+     * @return this transform
+     */
     public Transform scale(Vector vec) {
-        // parse as CSG.Vector3D, so we can pass an array or a CSG.Vector3D
         double elemenents[] = {
             vec.x, 0, 0, 0, 0, vec.y, 0, 0, 0, 0, vec.z, 0, 0, 0, 0, 1};
         m.mul(new Matrix4d(elemenents));
         return this;
     }
-    
-    Matrix4d getMat4d() {
-        return m;
-    }
-    
+
+    /**
+     * Applies this transform to the specified vector.
+     *
+     * @param vec vector to transform
+     * @return the specified vector
+     */
     public Vector transform(Vector vec) {
         double x, y;
-        x = m.m00*vec.x + m.m01*vec.y + m.m02*vec.z + m.m03;
-        y = m.m10*vec.x + m.m11*vec.y + m.m12*vec.z + m.m13;
-        vec.z =  m.m20*vec.x + m.m21*vec.y + m.m22*vec.z + m.m23;
+        x = m.m00 * vec.x + m.m01 * vec.y + m.m02 * vec.z + m.m03;
+        y = m.m10 * vec.x + m.m11 * vec.y + m.m12 * vec.z + m.m13;
+        vec.z = m.m20 * vec.x + m.m21 * vec.y + m.m22 * vec.z + m.m23;
         vec.x = x;
         vec.y = y;
-        
+
         return vec;
     }
-    
-     /**
-     * Performs an SVD normalization of the underlying matrix to calculate
-     * and return the uniform scale factor. If the matrix has non-uniform
-     * scale factors, the largest of the x, y, and z scale factors will
-     * be returned. This transformation is not modified.
-     * @return  the scale factor of this transformation
+
+    /**
+     * Performs an SVD normalization of the underlying matrix to calculate and
+     * return the uniform scale factor. If the matrix has non-uniform scale
+     * factors, the largest of the x, y, and z scale factors will be returned.
+     * This transformation is not modified.
+     *
+     * @return the scale factor of this transformation
      */
     public double getScale() {
         return m.getScale();
     }
- 
+
 }

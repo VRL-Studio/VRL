@@ -69,7 +69,7 @@ public class Main {
         sphereOptions.setRadius(1.8); 
        
         testObject = CSG.sphere(sphereOptions).subtract(testObject);
-        testObject = testObject.transformed(Transform.unity().scale(new Vector(1, 0.5, 1)));
+        testObject = testObject.transformed(Transform.unity().scale(new Vector(1, 1, 1)));
         
 //        testObject.translate(new Vector(5, 0, 0));
 

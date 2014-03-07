@@ -4,23 +4,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.vecmath.Matrix4d;
 
-// # class Polygon
-// Represents a convex polygon. The vertices used to initialize a polygon must
-// be coplanar and form a convex loop. They do not have to be `CSG.Vertex`
-// instances but they must behave similarly (duck typing can be used for
-// customization).
-//
-// Each convex polygon has a `shared` property, which is shared between all
-// polygons that are clones of each other or were split from the same polygon.
-// This can be used to define per-polygon properties (such as surface color).
+/**
+ * Represents a convex polygon. The vertices used to initialize a polygon must
+ * be coplanar and form a convex loop. They do not have to be `CSG.Vertex`
+ * instances but they must behave similarly (duck typing can be used for
+ * customization).
+ *
+ * Each convex polygon has a `shared` property, which is shared between all
+ * polygons that are clones of each other or were split from the same polygon.
+ * This can be used to define per-polygon properties (such as surface color).
+ */
 public class Polygon {
 
     public final List<Vertex> vertices;
     public final boolean shared;
     public final Plane plane;
 
+    /**
+     * Constructor.
+     *
+     * @param vertices
+     * @param shared
+     */
     public Polygon(List<Vertex> vertices, boolean shared) {
         this.vertices = vertices;
         this.shared = shared;
@@ -39,6 +45,11 @@ public class Polygon {
         return new Polygon(newVertices, shared);
     }
 
+    /**
+     * Flips this polygon.
+     *
+     * @return this polygon
+     */
     public Polygon flip() {
         vertices.forEach((vertex) -> {
             vertex.flip();
@@ -48,30 +59,50 @@ public class Polygon {
         return this;
     }
 
+    /**
+     * Returns a flipped copy of this polygon.
+     *
+     * <b>Note:</b> this polygon is not modified
+     *
+     * @return a flipped copy of this polygon
+     */
     public Polygon flipped() {
-
         return clone().flip();
     }
 
+    /**
+     * Returns this polygon in STL string format.
+     *
+     * @return this polygon in STL string format
+     */
     public String toStlString() {
         String result = "";
 
-        if (this.vertices.size() >= 3) // should be!
-        {
-            // STL requires triangular polygons. If our polygon has more vertices, create
+        if (this.vertices.size() >= 3) {
+            // STL requires triangular polygons.
+            // If our polygon has more vertices, create
             // multiple triangles:
             String firstVertexStl = this.vertices.get(0).toStlString();
             for (int i = 0; i < this.vertices.size() - 2; i++) {
-                result += "facet normal " + this.plane.normal.toStlString() + "\nouter loop\n";
-                result += firstVertexStl + "\n";
-                result += this.vertices.get(i + 1).toStlString() + "\n";
-                result += this.vertices.get(i + 2).toStlString() + "\n";
-                result += "endloop\nendfacet\n";
+                result
+                        += "  facet normal " + this.plane.normal.toStlString() + "\n"
+                        + "    outer loop\n"
+                        + "      " + firstVertexStl + "\n"
+                        + "      " + this.vertices.get(i + 1).toStlString() + "\n"
+                        + "      " + this.vertices.get(i + 2).toStlString() + "\n"
+                        + "    endloop\n"
+                        + "  endfacet\n";
             }
         }
         return result;
     }
 
+    /**
+     * Translates this polygon.
+     *
+     * @param v the vector that defines the translation
+     * @return this polygon
+     */
     public Polygon translate(Vector v) {
         vertices.forEach((vertex) -> {
             vertex.pos = vertex.pos.plus(v);
@@ -79,37 +110,76 @@ public class Polygon {
         return this;
     }
 
+    /**
+     * Returns a translated copy of this polygon.
+     *
+     * <b>Note:</b> this polygon is not modified
+     *
+     * @param v the vector that defines the translation
+     * @return a translated copy of this polygon
+     */
     public Polygon translated(Vector v) {
-
         return clone().translate(v);
     }
 
+    /**
+     * Applies the specified transformation to this polygon.
+     *
+     * <b>Note:</b> if the applied transformation performs a mirror operation
+     * the vertex order of this polygon is reversed.
+     *
+     * @param transform the transformation to apply
+     * @return this polygon
+     */
     public Polygon transform(Transform transform) {
-        List<Vertex> newvertices = this.vertices.stream().map(
+        this.vertices.stream().forEach(
                 (v) -> {
-                    return v.transformed(transform);
-                }).collect(Collectors.toList());
+                    v.transform(transform);
+                });
 
-//		Plane newplane = this.plane.transform(matrix4x4);
         if (transform.getScale() < 0) {
-			// the transformation includes mirroring. We need to reverse the vertex order
-            // in order to preserve the inside/outside orientation:
-
+            // the transformation includes mirroring. We need to reverse the 
+            // vertex order in order to preserve the inside/outside orientation:
             Collections.reverse(vertices);
         }
-        return new Polygon(newvertices, this.shared);
+        return this;
     }
 
+    /**
+     * Returns a transformed copy of this polygon.
+     *
+     * <b>Note:</b> if the applied transformation performs a mirror operation
+     * the vertex order of this polygon is reversed.
+     *
+     * <b>Note:</b> this polygon is not modified
+     *
+     * @param transform the transformation to apply
+     * @return a transformed copy of this polygon
+     */
     public Polygon transformed(Transform transform) {
         return clone().transform(transform);
     }
 
+    /**
+     * Creates a polygon from the specified point list.
+     *
+     * @param points the points that define the polygon
+     * @param shared
+     * @return a polygon defined by the specified point list
+     */
     public static Polygon createFromPoints(List<Vector> points, boolean shared) {
         return createFromPoints(points, shared, null);
     }
 
-    // Create a polygon from the given points
-    public static Polygon createFromPoints(List<Vector> points, boolean shared, Plane plane) {
+    /**
+     * Creates a polygon from the specified point list.
+     *
+     * @param points the points that define the polygon
+     * @param shared
+     * @param plane may be null
+     * @return a polygon defined by the specified point list
+     */
+    private static Polygon createFromPoints(List<Vector> points, boolean shared, Plane plane) {
         Vector normal = (plane != null) ? plane.normal.clone() : new Vector(0, 0, 0);
 
         List<Vertex> vertices = new ArrayList<>();
@@ -122,21 +192,24 @@ public class Polygon {
         return new Polygon(vertices, shared);
     }
 
-    ;
-    
-        
-    // Extrude a polygon into the direction offsetvector
-	// Returns a CSG object
-        public CSG extrude(Vector offsetvector) {
+    /**
+     * Extrudes this polygon into the specified direction.
+     *
+     * @param dir direction
+     * @return a CSG object that consists of the extruded polygon
+     */
+    public CSG extrude(Vector dir) {
         List<Polygon> newPolygons = new ArrayList<>();
 
         Polygon polygon1 = this;
-        double direction = polygon1.plane.normal.dot(offsetvector);
+        double direction = polygon1.plane.normal.dot(dir);
+
         if (direction > 0) {
             polygon1 = polygon1.flipped();
         }
+
         newPolygons.add(polygon1);
-        Polygon polygon2 = polygon1.translated(offsetvector);
+        Polygon polygon2 = polygon1.translated(dir);
         int numvertices = this.vertices.size();
         for (int i = 0; i < numvertices; i++) {
             List<Vector> sidefacepoints = new ArrayList<>();
