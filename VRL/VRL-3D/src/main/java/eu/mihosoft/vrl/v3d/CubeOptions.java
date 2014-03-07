@@ -11,7 +11,7 @@ public class CubeOptions {
         this.center = center;
     }
 
-    public void setRadius(double[] radius) {
+    public void setRadius(double... radius) {
         this.radius = radius;
     }
 

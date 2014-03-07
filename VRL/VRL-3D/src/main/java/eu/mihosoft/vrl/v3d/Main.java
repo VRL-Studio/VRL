@@ -22,24 +22,29 @@ public class Main {
 
     public static void main(String[] args) {
 
-//        CubeOptions smallCube = new CubeOptions();
-//        smallCube.setCenter(new Vector(2, 2, 2));
+        CubeOptions smallCube = new CubeOptions();
+        smallCube.setCenter(new Vector(0, 0, 0));
+        smallCube.setRadius(6,0.5,0.5);
+        
+        CubeOptions smallCube2 = new CubeOptions();
+        smallCube2.setCenter(new Vector(0, 0, 0));
+        smallCube2.setRadius(1,1,1);
+        
         SphereOptions sphereOptions = new SphereOptions();
-        sphereOptions.setRadius(1.8);
+        sphereOptions.setRadius(2);
 //        sphereOptions.setCenter(new Vector(1, 0, 0));
 
         CylinderOptions cylinderOptions = new CylinderOptions();
         cylinderOptions.setRadius(0.8);
         cylinderOptions.setStart(new Vector(0, -3, 0));
         cylinderOptions.setEnd(new Vector(0, 3, 0));
-
-        CSG testObject = CSG.sphere(sphereOptions).
-                subtract(CSG.cylinder(cylinderOptions));
         
+        CSG a = CSG.sphere(sphereOptions);
+        CSG b = CSG.cylinder(cylinderOptions);
+        CSG c =  CSG.sphere(new SphereOptions());//CSG.cube(smallCube2);//
 
-        testObject = CSG.fromPolygons(testObject.clone().toPolygons());
+        CSG testObject = a.subtract(b).subtract(c);
 
-        testObject = testObject.subtract(CSG.cube(new CubeOptions()));
 
         String stlString;
 
