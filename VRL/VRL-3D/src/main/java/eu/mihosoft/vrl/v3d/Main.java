@@ -11,6 +11,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,26 +23,43 @@ public class Main {
 
     public static void main(String[] args) {
 
-//        CubeOptions smallCube = new CubeOptions();
-//        smallCube.setCenter(new Vector(2, 2, 2));
+////        CubeOptions smallCube = new CubeOptions();
+////        smallCube.setCenter(new Vector(2, 2, 2));
+//        SphereOptions sphereOptions = new SphereOptions();
+//        sphereOptions.setRadius(1.8);
+////        sphereOptions.setCenter(new Vector(1, 0, 0));
+//
+//        CylinderOptions cylinderOptions = new CylinderOptions();
+//        cylinderOptions.setRadius(0.8);
+//        cylinderOptions.setStart(new Vector(0, -3, 0));
+//        cylinderOptions.setEnd(new Vector(0, 3, 0));
+//
+//        CSG testObject = CSG.sphere(sphereOptions).
+//                subtract(CSG.cylinder(cylinderOptions));
+//        
+//
+//        testObject = CSG.fromPolygons(testObject.clone().toPolygons());
+//
+//        testObject = testObject.subtract(CSG.cube(new CubeOptions()));
+        
+        
+        Polygon p = Polygon.createFromPoints(
+                Arrays.asList(new Vector(0, 0, 0),
+                        new Vector(0, 1.0, 0),
+                        new Vector(0.5, 1, 0),
+                        new Vector(1,0.5,0),
+                        new Vector(1,0,0)), true);
+        
+        System.out.println("p: " + p.toStlString());
+        
+        CSG testObject = p.extrude(new Vector(0, 0, 3));
+        
         SphereOptions sphereOptions = new SphereOptions();
-        sphereOptions.setRadius(1.8);
-//        sphereOptions.setCenter(new Vector(1, 0, 0));
-
-        CylinderOptions cylinderOptions = new CylinderOptions();
-        cylinderOptions.setRadius(0.8);
-        cylinderOptions.setStart(new Vector(0, -3, 0));
-        cylinderOptions.setEnd(new Vector(0, 3, 0));
-
-        CSG testObject = CSG.sphere(sphereOptions).
-                subtract(CSG.cylinder(cylinderOptions));
+        sphereOptions.setRadius(1.8); 
+       
+        testObject = CSG.sphere(sphereOptions).subtract(testObject);
         
-
-        testObject = CSG.fromPolygons(testObject.clone().toPolygons());
-
-        testObject = testObject.subtract(CSG.cube(new CubeOptions()));
-        
-        testObject.translate(new Vector(5, 0, 0));
+//        testObject.translate(new Vector(5, 0, 0));
 
         String stlString;
 

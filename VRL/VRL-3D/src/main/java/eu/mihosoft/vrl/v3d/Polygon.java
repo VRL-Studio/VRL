@@ -37,12 +37,18 @@ public class Polygon {
         return new Polygon(newVertices, shared);
     }
 
-    public void flip() {
+    public Polygon flip() {
         vertices.forEach((vertex) -> {
             vertex.flip();
         });
         Collections.reverse(vertices);
         plane.flip();
+        return this;
+    }
+    
+    public Polygon flipped() {
+       
+        return clone().flip();
     }
 
     public String toStlString() {
@@ -64,9 +70,63 @@ public class Polygon {
         return result;
     }
 
-    void translate(Vector v) {
+    public Polygon translate(Vector v) {
         vertices.forEach((vertex) -> {
             vertex.pos = vertex.pos.plus(v);
         });
+        return this;
     }
+    
+        public Polygon translated(Vector v) {
+            
+        return clone().translate(v);
+    }
+        
+        public static Polygon createFromPoints(List<Vector> points, boolean shared) {
+            return createFromPoints(points, shared, null);
+        }
+        
+        // Create a polygon from the given points
+        public static Polygon createFromPoints(List<Vector> points, boolean shared, Plane plane) {
+	Vector normal = (plane!=null)? plane.normal.clone() : new Vector(0,0,0);
+	
+	List<Vertex> vertices = new ArrayList<>();
+	points.forEach((Vector p)-> {
+		Vector vec = p.clone();
+		Vertex vertex = new Vertex(vec,normal);
+		vertices.add(vertex);
+	});
+
+	return new Polygon(vertices, shared);
+};
+    
+        
+    // Extrude a polygon into the direction offsetvector
+	// Returns a CSG object
+        public CSG extrude(Vector offsetvector) {
+		List<Polygon> newPolygons = new ArrayList<>();
+
+		Polygon polygon1 = this;
+		double direction = polygon1.plane.normal.dot(offsetvector);
+		if(direction > 0) {
+			polygon1 = polygon1.flipped();
+		}
+		newPolygons.add(polygon1);
+		Polygon polygon2 = polygon1.translated(offsetvector);
+		int numvertices = this.vertices.size();
+		for(int i = 0; i < numvertices; i++) {
+			List<Vector> sidefacepoints = new ArrayList<>();
+			int nexti = (i < (numvertices - 1)) ? i + 1 : 0;
+			sidefacepoints.add(polygon1.vertices.get(i).pos);
+			sidefacepoints.add(polygon2.vertices.get(i).pos);
+			sidefacepoints.add(polygon2.vertices.get(nexti).pos);
+			sidefacepoints.add(polygon1.vertices.get(nexti).pos);
+			Polygon sidefacepolygon = Polygon.createFromPoints(sidefacepoints, this.shared);
+			newPolygons.add(sidefacepolygon);
+		}
+		polygon2 = polygon2.flipped();
+		newPolygons.add(polygon2);
+		return CSG.fromPolygons(newPolygons);
+	}
+
 }
