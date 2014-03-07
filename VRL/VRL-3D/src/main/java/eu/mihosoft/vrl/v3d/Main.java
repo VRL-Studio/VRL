@@ -14,6 +14,7 @@ import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.vecmath.Matrix4d;
 
 /**
  *
@@ -43,21 +44,36 @@ public class Main {
 //        testObject = testObject.subtract(CSG.cube(new CubeOptions()));
         
         
+        
         Polygon p = Polygon.createFromPoints(
                 Arrays.asList(new Vector(0, 0, 0),
                         new Vector(0, 1.0, 0),
                         new Vector(0.5, 1, 0),
                         new Vector(1,0.5,0),
                         new Vector(1,0,0)), true);
+
+        Matrix4d transform = Transform.rotationZ(25);
         
-        System.out.println("p: " + p.toStlString());
+        Matrix4d transform2 = Transform.rotationY(25);
+
+        transform.mul(transform2);
         
-        CSG testObject = p.extrude(new Vector(0, 0, 3));
+        Matrix4d transform3 = Transform.rotationX(25);
+        
+        transform.mul(transform3);
+        
+        CSG testObject = p.extrude(new Vector(0, 0, 5));
+        
+        testObject.translate(new Vector(0, 0, -3));
+        
+        testObject = testObject.transformed(transform);
         
         SphereOptions sphereOptions = new SphereOptions();
         sphereOptions.setRadius(1.8); 
        
         testObject = CSG.sphere(sphereOptions).subtract(testObject);
+        
+        testObject = testObject.transformed(Transform.scale(new Vector(1, 1, 1)));
         
 //        testObject.translate(new Vector(5, 0, 0));
 

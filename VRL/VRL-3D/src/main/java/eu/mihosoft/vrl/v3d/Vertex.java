@@ -1,6 +1,7 @@
 package eu.mihosoft.vrl.v3d;
 
 // # class Vertex
+import javax.vecmath.Matrix4d;
 
 // Represents a vertex of a polygon. Use your own vertex class instead of this
 // one to provide additional features like texture coordinates and vertex
@@ -10,6 +11,7 @@ package eu.mihosoft.vrl.v3d;
 // functions like `CSG.sphere()` can return a smooth vertex normal, but `normal`
 // is not used anywhere else.
 public class Vertex {
+
     public Vector pos;
     public Vector normal;
 
@@ -36,8 +38,19 @@ public class Vertex {
         return new Vertex(pos.lerp(other.pos, t),
                 normal.lerp(other.normal, t));
     }
-    
+
     public String toStlString() {
         return "vertex " + this.pos.toStlString();
     }
+
+    // Affine transformation of vertex. Returns a new CSG.Vertex
+    public Vertex transform(Matrix4d matrix4x4) {
+        pos.transform(matrix4x4);
+        return this;
+    }
+
+    public Vertex transformed(Matrix4d matrix4x4) {
+        return clone().transform(matrix4x4);
+    }
+
 }

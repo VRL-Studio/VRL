@@ -3,6 +3,8 @@ package eu.mihosoft.vrl.v3d;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import javax.vecmath.Matrix4d;
 
 // Example usage:
 //
@@ -317,7 +319,7 @@ public class CSG {
     }
 
     public String toStlString() {
-        
+
         StringBuilder sb = new StringBuilder("solid v3d.csg\n");
         this.polygons.stream().forEach(
                 (Polygon p) -> {
@@ -326,10 +328,22 @@ public class CSG {
         sb.append("endsolid v3d.csg\n");
         return sb.toString();
     }
-    
+
     public void translate(Vector v) {
         polygons.stream().forEach((polygon) -> {
             polygon.translate(v);
         });
     }
+
+    // Affine transformation of CSG object. Returns a new CSG object
+    public CSG transformed(Matrix4d matrix4x4) {
+        List<Polygon> newpolygons = this.polygons.stream().map(
+                p -> p.transformed(matrix4x4)
+        ).collect(Collectors.toList());
+
+        CSG result = CSG.fromPolygons(newpolygons);
+
+        return result;
+    }
+
 }

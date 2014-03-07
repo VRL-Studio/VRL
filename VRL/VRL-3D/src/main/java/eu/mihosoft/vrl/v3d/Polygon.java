@@ -3,6 +3,8 @@ package eu.mihosoft.vrl.v3d;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import javax.vecmath.Matrix4d;
 
 // # class Polygon
 // Represents a convex polygon. The vertices used to initialize a polygon must
@@ -45,23 +47,23 @@ public class Polygon {
         plane.flip();
         return this;
     }
-    
+
     public Polygon flipped() {
-       
+
         return clone().flip();
     }
 
     public String toStlString() {
         String result = "";
-        
+
         if (this.vertices.size() >= 3) // should be!
         {
-	    // STL requires triangular polygons. If our polygon has more vertices, create
+            // STL requires triangular polygons. If our polygon has more vertices, create
             // multiple triangles:
             String firstVertexStl = this.vertices.get(0).toStlString();
             for (int i = 0; i < this.vertices.size() - 2; i++) {
                 result += "facet normal " + this.plane.normal.toStlString() + "\nouter loop\n";
-                result += firstVertexStl+"\n";
+                result += firstVertexStl + "\n";
                 result += this.vertices.get(i + 1).toStlString() + "\n";
                 result += this.vertices.get(i + 2).toStlString() + "\n";
                 result += "endloop\nendfacet\n";
@@ -76,57 +78,79 @@ public class Polygon {
         });
         return this;
     }
-    
-        public Polygon translated(Vector v) {
-            
+
+    public Polygon translated(Vector v) {
+
         return clone().translate(v);
     }
-        
-        public static Polygon createFromPoints(List<Vector> points, boolean shared) {
-            return createFromPoints(points, shared, null);
-        }
-        
-        // Create a polygon from the given points
-        public static Polygon createFromPoints(List<Vector> points, boolean shared, Plane plane) {
-	Vector normal = (plane!=null)? plane.normal.clone() : new Vector(0,0,0);
-	
-	List<Vertex> vertices = new ArrayList<>();
-	points.forEach((Vector p)-> {
-		Vector vec = p.clone();
-		Vertex vertex = new Vertex(vec,normal);
-		vertices.add(vertex);
-	});
 
-	return new Polygon(vertices, shared);
-};
+    public Polygon transform(Matrix4d matrix4x4) {
+        List<Vertex> newvertices = this.vertices.stream().map(
+                (v) -> {
+                    return v.transformed(matrix4x4);
+                }).collect(Collectors.toList());
+
+//		Plane newplane = this.plane.transform(matrix4x4);
+        if (matrix4x4.getScale() < 0) {
+			// the transformation includes mirroring. We need to reverse the vertex order
+            // in order to preserve the inside/outside orientation:
+
+            Collections.reverse(vertices);
+        }
+        return new Polygon(newvertices, this.shared);
+    }
+
+    public Polygon transformed(Matrix4d matrix4x4) {
+        return clone().transform(matrix4x4);
+    }
+
+    public static Polygon createFromPoints(List<Vector> points, boolean shared) {
+        return createFromPoints(points, shared, null);
+    }
+
+    // Create a polygon from the given points
+    public static Polygon createFromPoints(List<Vector> points, boolean shared, Plane plane) {
+        Vector normal = (plane != null) ? plane.normal.clone() : new Vector(0, 0, 0);
+
+        List<Vertex> vertices = new ArrayList<>();
+        points.forEach((Vector p) -> {
+            Vector vec = p.clone();
+            Vertex vertex = new Vertex(vec, normal);
+            vertices.add(vertex);
+        });
+
+        return new Polygon(vertices, shared);
+    }
+
+    ;
     
         
     // Extrude a polygon into the direction offsetvector
 	// Returns a CSG object
         public CSG extrude(Vector offsetvector) {
-		List<Polygon> newPolygons = new ArrayList<>();
+        List<Polygon> newPolygons = new ArrayList<>();
 
-		Polygon polygon1 = this;
-		double direction = polygon1.plane.normal.dot(offsetvector);
-		if(direction > 0) {
-			polygon1 = polygon1.flipped();
-		}
-		newPolygons.add(polygon1);
-		Polygon polygon2 = polygon1.translated(offsetvector);
-		int numvertices = this.vertices.size();
-		for(int i = 0; i < numvertices; i++) {
-			List<Vector> sidefacepoints = new ArrayList<>();
-			int nexti = (i < (numvertices - 1)) ? i + 1 : 0;
-			sidefacepoints.add(polygon1.vertices.get(i).pos);
-			sidefacepoints.add(polygon2.vertices.get(i).pos);
-			sidefacepoints.add(polygon2.vertices.get(nexti).pos);
-			sidefacepoints.add(polygon1.vertices.get(nexti).pos);
-			Polygon sidefacepolygon = Polygon.createFromPoints(sidefacepoints, this.shared);
-			newPolygons.add(sidefacepolygon);
-		}
-		polygon2 = polygon2.flipped();
-		newPolygons.add(polygon2);
-		return CSG.fromPolygons(newPolygons);
-	}
+        Polygon polygon1 = this;
+        double direction = polygon1.plane.normal.dot(offsetvector);
+        if (direction > 0) {
+            polygon1 = polygon1.flipped();
+        }
+        newPolygons.add(polygon1);
+        Polygon polygon2 = polygon1.translated(offsetvector);
+        int numvertices = this.vertices.size();
+        for (int i = 0; i < numvertices; i++) {
+            List<Vector> sidefacepoints = new ArrayList<>();
+            int nexti = (i < (numvertices - 1)) ? i + 1 : 0;
+            sidefacepoints.add(polygon1.vertices.get(i).pos);
+            sidefacepoints.add(polygon2.vertices.get(i).pos);
+            sidefacepoints.add(polygon2.vertices.get(nexti).pos);
+            sidefacepoints.add(polygon1.vertices.get(nexti).pos);
+            Polygon sidefacepolygon = Polygon.createFromPoints(sidefacepoints, this.shared);
+            newPolygons.add(sidefacepolygon);
+        }
+        polygon2 = polygon2.flipped();
+        newPolygons.add(polygon2);
+        return CSG.fromPolygons(newPolygons);
+    }
 
 }
