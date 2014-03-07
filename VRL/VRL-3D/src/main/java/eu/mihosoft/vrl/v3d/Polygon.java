@@ -31,7 +31,7 @@ public class Polygon {
     @Override
     public Polygon clone() {
         List<Vertex> newVertices = new ArrayList<>();
-        this.vertices.stream().forEach((vertex) -> {
+        this.vertices.forEach((vertex) -> {
             newVertices.add(vertex.clone());
         });
         return new Polygon(newVertices, shared);
@@ -62,5 +62,11 @@ public class Polygon {
             }
         }
         return result;
+    }
+
+    void translate(Vector v) {
+        vertices.forEach((vertex) -> {
+            vertex.pos = vertex.pos.plus(v);
+        });
     }
 }

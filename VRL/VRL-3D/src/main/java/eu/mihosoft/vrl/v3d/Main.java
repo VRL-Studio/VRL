@@ -40,6 +40,8 @@ public class Main {
         testObject = CSG.fromPolygons(testObject.clone().toPolygons());
 
         testObject = testObject.subtract(CSG.cube(new CubeOptions()));
+        
+        testObject.translate(new Vector(5, 0, 0));
 
         String stlString;
 

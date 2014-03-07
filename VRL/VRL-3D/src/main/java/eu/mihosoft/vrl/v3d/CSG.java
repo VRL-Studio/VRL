@@ -326,4 +326,10 @@ public class CSG {
         sb.append("endsolid v3d.csg\n");
         return sb.toString();
     }
+    
+    public void translate(Vector v) {
+        polygons.stream().forEach((polygon) -> {
+            polygon.translate(v);
+        });
+    }
 }
