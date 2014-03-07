@@ -16,11 +16,10 @@ public class Utils {
         return 1;
     }
 
-    public static  <T> List<T> concat(Collection<T> a, Collection<T> b) {
-        List<T> list = new ArrayList<T>(a);
+    public static <T> List<T> concat(Collection<T> a, Collection<T> b) {
+        List<T> list = new ArrayList<>(a);
         list.addAll(b);
         return list;
     }
 
-    
 }

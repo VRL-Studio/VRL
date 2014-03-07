@@ -46,8 +46,6 @@ public class Polygon {
     public String toStlString() {
         String result = "";
         
-        
-        
         if (this.vertices.size() >= 3) // should be!
         {
 	    // STL requires triangular polygons. If our polygon has more vertices, create

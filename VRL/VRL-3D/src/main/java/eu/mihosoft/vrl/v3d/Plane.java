@@ -51,7 +51,7 @@ public class Plane {
         // Classify each point as well as the entire polygon into one of the above
         // four classes.
         int polygonType = 0;
-        List<Integer> types = new ArrayList<Integer>();
+        List<Integer> types = new ArrayList<>();
         for (int i = 0; i < polygon.vertices.size(); i++) {
             double t = this.normal.dot(polygon.vertices.get(i).pos) - this.w;
             int type = (t < -Plane.EPSILON) ? BACK : (t > Plane.EPSILON) ? FRONT : COPLANAR;
@@ -71,8 +71,8 @@ public class Plane {
                 back.add(polygon);
                 break;
             case SPANNING:
-                List<Vertex> f = new ArrayList<Vertex>();
-                List<Vertex> b = new ArrayList<Vertex>();
+                List<Vertex> f = new ArrayList<>();
+                List<Vertex> b = new ArrayList<>();
                 for (int i = 0; i < polygon.vertices.size(); i++) {
                     int j = (i + 1) % polygon.vertices.size();
                     int ti = types.get(i);

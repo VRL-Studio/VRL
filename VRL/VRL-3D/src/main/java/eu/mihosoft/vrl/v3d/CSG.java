@@ -317,6 +317,7 @@ public class CSG {
     }
 
     public String toStlString() {
+        
         StringBuilder sb = new StringBuilder("solid v3d.csg\n");
         this.polygons.stream().forEach(
                 (Polygon p) -> {
