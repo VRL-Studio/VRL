@@ -1,6 +1,7 @@
 package eu.mihosoft.vrl.v3d;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 // # class Polygon
@@ -40,6 +41,7 @@ public class Polygon {
         vertices.forEach((vertex) -> {
             vertex.flip();
         });
+        Collections.reverse(vertices);
         plane.flip();
     }
 

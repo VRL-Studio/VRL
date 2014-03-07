@@ -25,7 +25,7 @@ public class Vector {
 
     @Override
     public Vector clone() {
-        return this;
+        return new Vector(x,y,z);
     }
 
     public Vector negated() {

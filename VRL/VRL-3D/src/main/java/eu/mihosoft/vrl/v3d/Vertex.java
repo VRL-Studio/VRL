@@ -20,7 +20,7 @@ public class Vertex {
 
     @Override
     public Vertex clone() {
-        return new Vertex(pos, normal);
+        return new Vertex(pos.clone(), normal.clone());
     }
 
     // Invert all orientation-specific data (e.g. vertex normal). Called when the
@@ -33,7 +33,8 @@ public class Vertex {
     // interpolating all properties using a parameter of `t`. Subclasses should
     // override this to interpolate additional properties.
     public Vertex interpolate(Vertex other, double t) {
-        return new Vertex(pos.lerp(other.pos, t), normal.lerp(other.normal, t));
+        return new Vertex(pos.lerp(other.pos, t),
+                normal.lerp(other.normal, t));
     }
     
     public String toStlString() {
