@@ -253,5 +253,10 @@ public class Vector3d {
     public Vector3d transformed(Transform transform) {
         return clone().transform(transform);
     }
+    
+    @Override
+    public String toString() {
+        return "[" + x + ", " + y + ", " + z + "]";
+    }
 
 }

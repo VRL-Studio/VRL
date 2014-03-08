@@ -199,6 +199,7 @@ public class Transform {
             1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, vec.x, vec.y, vec.z, 1
         };
         m.mul(new Matrix4d(elemenents));
+
         return this;
     }
 
@@ -213,7 +214,10 @@ public class Transform {
      */
     public Transform translate(double x, double y, double z) {
         double elemenents[] = {
-            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1
+            1, 0, 0, x,
+            0, 1, 0, y,
+            0, 0, 1, z,
+            0, 0, 0, 1
         };
         m.mul(new Matrix4d(elemenents));
         return this;
@@ -228,7 +232,10 @@ public class Transform {
      */
     public Transform translateX(double value) {
         double elemenents[] = {
-            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, value, 0, 0, 1
+            1, 0, 0, value,
+            0, 1, 0, 0,
+            0, 0, 1, 0,
+            0, 0, 0, 1
         };
         m.mul(new Matrix4d(elemenents));
         return this;
@@ -243,7 +250,10 @@ public class Transform {
      */
     public Transform translateY(double value) {
         double elemenents[] = {
-            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, value, 0, 1
+            1, 0, 0, 0,
+            0, 1, 0, value,
+            0, 0, 1, 0,
+            0, 0, 0, 1
         };
         m.mul(new Matrix4d(elemenents));
         return this;
@@ -258,7 +268,10 @@ public class Transform {
      */
     public Transform translateZ(double value) {
         double elemenents[] = {
-            1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, value, 1
+            1, 0, 0, 0,
+            0, 1, 0, 0,
+            0, 0, 1, value,
+            0, 0, 0, 1
         };
         m.mul(new Matrix4d(elemenents));
         return this;
@@ -376,12 +389,34 @@ public class Transform {
         return vec;
     }
 
+//    // Multiply a CSG.Vector3D (interpreted as 3 column, 1 row) by this matrix
+//	// (result = v*M)
+//	// Fourth element is taken as 1
+//	leftMultiply1x3Vector: function(v) {
+//		var v0 = v._x;
+//		var v1 = v._y;
+//		var v2 = v._z;
+//		var v3 = 1;
+//		var x = v0 * this.elements[0] + v1 * this.elements[4] + v2 * this.elements[8] + v3 * this.elements[12];
+//		var y = v0 * this.elements[1] + v1 * this.elements[5] + v2 * this.elements[9] + v3 * this.elements[13];
+//		var z = v0 * this.elements[2] + v1 * this.elements[6] + v2 * this.elements[10] + v3 * this.elements[14];
+//		var w = v0 * this.elements[3] + v1 * this.elements[7] + v2 * this.elements[11] + v3 * this.elements[15];
+//		// scale such that fourth element becomes 1:
+//		if(w != 1) {
+//			var invw = 1.0 / w;
+//			x *= invw;
+//			y *= invw;
+//			z *= invw;
+//		}
+//		return new CSG.Vector3D(x, y, z);
+//	},
     /**
      * Performs an SVD normalization of the underlying matrix to calculate and
      * return the uniform scale factor. If the matrix has non-uniform scale
- factors, the largest of the x, y, and z scale factors distill be returned.
-
- <b>Note:</b> this transformation is not modified.
+     * factors, the largest of the x, y, and z scale factors distill be
+     * returned.
+     *
+     * <b>Note:</b> this transformation is not modified.
      *
      * @return the scale factor of this transformation
      */
@@ -399,5 +434,10 @@ public class Transform {
     public Transform apply(Transform t) {
         m.mul(t.m);
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return m.toString();
     }
 }

@@ -76,9 +76,9 @@ public class Main {
 
         Transform transform = Transform.unity().
                 rotZ(25).
-                rotY(25).
+                rotY(15).
                 rotX(25).
-                translateX(3).
+                translate(0,0,-1).
                 scale(0.5, 1.5, 1.5);
 
         CSG testObject = new Sphere(1.3).toCSG().difference(
@@ -95,6 +95,7 @@ public class Main {
                                 scale(new Vector3d(1, 3, 1))
                         )
                 );
+
 
         String stlString;
 
