@@ -64,11 +64,12 @@ import java.util.stream.Collectors;
  *
  * <b>Implementation Details</b>
  *
- * All CSG operations are implemented in terms of two functions, `clipTo()` and
- * `invert()`, which remove parts of a BSP tree inside another BSP tree and swap
- * solid and empty space, respectively. To find the union of `a` and `b`, we
- * want to remove everything in `a` inside `b` and everything in `b` inside `a`,
- * then combine polygons from `a` and `b` into one solid:
+ * All CSG operations are implemented in terms of two functions,
+ * {@link Node#clipTo(eu.mihosoft.vrl.v3d.Node)} and {@link Node#invert()}, which remove parts of a BSP
+ * tree inside another BSP tree and swap solid and empty space, respectively. To
+ * find the union of {@code a} and {@code b}, we want to remove everything in
+ * {@code a} inside {@code b} and everything in {@code b} inside {@code a}, then
+ * combine polygons from {@code a} and {@code b} into one solid:
  *
  * <blockquote><pre>
  *     a.clipTo(b);
@@ -78,8 +79,9 @@ import java.util.stream.Collectors;
  *
  * The only tricky part is handling overlapping coplanar polygons in both trees.
  * The code above keeps both copies, but we need to keep them in one tree and
- * remove them in the other tree. To remove them from `b` we can clip the
- * inverse of `b` against `a`. The code for union now looks like this:
+ * remove them in the other tree. To remove them from {@code b} we can clip the
+ * inverse of {@code b} against {@code a}. The code for union now looks like
+ * this:
  *
  * <blockquote><pre>
  *     a.clipTo(b);
@@ -262,7 +264,7 @@ public class CSG {
         sb.append("solid v3d.csg\n");
         this.polygons.stream().forEach(
                 (Polygon p) -> {
-                   p.toStlString(sb).append("hello\n");
+                    p.toStlString(sb).append("hello\n");
                 });
         sb.append("endsolid v3d.csg\n");
         return sb;

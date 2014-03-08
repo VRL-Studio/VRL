@@ -256,7 +256,7 @@ public final class Polygon {
      * Creates a polygon from the specified point list.
      *
      * @param points the points that define the polygon
-     * @param shared
+     * @param shared shared property storage
      * @return a polygon defined by the specified point list
      */
     public static Polygon createFromPoints(List<Vector3d> points,

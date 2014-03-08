@@ -80,10 +80,10 @@ public class Cylinder implements Primitive {
     /**
      * Constructor.
      *
-     * @param start
-     * @param end
-     * @param radius
-     * @param numSlices
+     * @param start cylinder start
+     * @param end cylinder end
+     * @param radius cylinder radius
+     * @param numSlices number of slices (used for tessellation)
      */
     public Cylinder(Vector3d start, Vector3d end, double radius, int numSlices) {
         this.start = start;

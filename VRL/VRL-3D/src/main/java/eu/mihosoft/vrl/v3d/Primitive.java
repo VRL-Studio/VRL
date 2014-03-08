@@ -53,7 +53,7 @@ package eu.mihosoft.vrl.v3d;
 import java.util.List;
 
 /**
- * A Primitive.
+ * A primitive geometry.
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
