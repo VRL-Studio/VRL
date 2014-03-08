@@ -39,8 +39,8 @@ public class PropertyStorage {
      *
      * @param <T> property type
      * @param key key
-     * @return the property; if the property does not exist or the type does not
-     * match the returned {@link java.util.Optional} is empty
+     * @return the property; an empty {@link java.util.Optional} will be
+     * returned if the property does not exist or the type does not match
      */
     public <T> Optional<T> getValue(String key) {
 
