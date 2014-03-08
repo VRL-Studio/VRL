@@ -54,26 +54,39 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents a convex polygon. The vertices used to initialize a polygon must
- * be coplanar and form a convex loop. They do not have to be `CSG.Vertex`
- * instances but they must behave similarly (duck typing can be used for
- * customization).
+ * Represents a convex polygon.
  *
- * Each convex polygon has a `shared` property, which is shared between all
- * polygons that are clones of each other or were split from the same polygon.
- * This can be used to define per-polygon properties (such as surface color).
+ * Each convex polygon has a {@code shared} property, which is shared between
+ * all polygons that are clones of each other or were split from the same
+ * polygon. This can be used to define per-polygon properties (such as surface
+ * color).
  */
-public final class Polygon{
+public final class Polygon {
 
+    /**
+     * Polygon vertices
+     */
     public final List<Vertex> vertices;
+    /**
+     * Shared property (can be used for shared color etc.).
+     */
     public final boolean shared;
+    /**
+     * Plane defined by this polygon.
+     *
+     * <b>Note:</b> always uses first three vertices to define the plane.
+     */
     public final Plane plane;
 
     /**
-     * Constructor.
+     * Constructor. Creates a new polygon that consists of the specified
+     * vertices.
      *
-     * @param vertices
-     * @param shared
+     * <b>Note:</b> the vertices used to initialize a polygon must be coplanar
+     * and form a convex loop.
+     *
+     * @param vertices polygon vertices
+     * @param shared shared property
      */
     public Polygon(List<Vertex> vertices, boolean shared) {
         this.vertices = vertices;
@@ -112,7 +125,7 @@ public final class Polygon{
     /**
      * Returns a flipped copy of this polygon.
      *
-     * <b>Note:</b> this polygon is not modified
+     * <b>Note:</b> this polygon is not modified.
      *
      * @return a flipped copy of this polygon
      */
@@ -133,6 +146,7 @@ public final class Polygon{
      * Returns this polygon in STL string format.
      *
      * @param sb string builder
+     *
      * @return the specified string builder
      */
     public StringBuilder toStlString(StringBuilder sb) {
@@ -182,6 +196,7 @@ public final class Polygon{
      * <b>Note:</b> this polygon is not modified
      *
      * @param v the vector that defines the translation
+     *
      * @return a translated copy of this polygon
      */
     public Polygon translated(Vector v) {
@@ -195,9 +210,11 @@ public final class Polygon{
      * the vertex order of this polygon is reversed.
      *
      * @param transform the transformation to apply
+     *
      * @return this polygon
      */
     public Polygon transform(Transform transform) {
+
         this.vertices.stream().forEach(
                 (v) -> {
                     v.transform(transform);
@@ -245,8 +262,10 @@ public final class Polygon{
      * @param plane may be null
      * @return a polygon defined by the specified point list
      */
-    private static Polygon createFromPoints(List<Vector> points, boolean shared, Plane plane) {
-        Vector normal = (plane != null) ? plane.normal.clone() : new Vector(0, 0, 0);
+    private static Polygon createFromPoints(
+            List<Vector> points, boolean shared, Plane plane) {
+        Vector normal
+                = (plane != null) ? plane.normal.clone() : new Vector(0, 0, 0);
 
         List<Vertex> vertices = new ArrayList<>();
 
@@ -256,10 +275,6 @@ public final class Polygon{
             vertices.add(vertex);
         }
 
-//        points.forEach((Vector p) -> {
-//            Vector vec = p.clone();
-//            
-//        });
         return new Polygon(vertices, shared);
     }
 
@@ -267,6 +282,7 @@ public final class Polygon{
      * Extrudes this polygon into the specified direction.
      *
      * @param dir direction
+     *
      * @return a CSG object that consists of the extruded polygon
      */
     public CSG extrude(Vector dir) {
@@ -289,7 +305,8 @@ public final class Polygon{
             sidefacepoints.add(polygon2.vertices.get(i).pos);
             sidefacepoints.add(polygon2.vertices.get(nexti).pos);
             sidefacepoints.add(polygon1.vertices.get(nexti).pos);
-            Polygon sidefacepolygon = Polygon.createFromPoints(sidefacepoints, this.shared);
+            Polygon sidefacepolygon = Polygon.createFromPoints(
+                    sidefacepoints, this.shared);
             newPolygons.add(sidefacepolygon);
         }
         polygon2 = polygon2.flipped();
