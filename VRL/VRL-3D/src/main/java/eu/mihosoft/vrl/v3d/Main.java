@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.v3d;
 
 import java.io.IOException;
@@ -63,23 +62,26 @@ import java.util.logging.Logger;
 public class Main {
 
     public static void main(String[] args) {
-        
+
         Polygon p = Polygon.fromPoints(
-                        new Vector3d(0, 0, 0),
-                        new Vector3d(0, 1.0, 0),
-                        new Vector3d(0.5, 1, 0),
-                        new Vector3d(1, 0.5, 0),
-                        new Vector3d(1, 0, 0));
+                new Vector3d(0, 0, 0),
+                new Vector3d(0, 1.0, 0),
+                new Vector3d(0.5, 1, 0),
+                new Vector3d(1, 0.5, 0),
+                new Vector3d(1, 0, 0));
 
         Transform transform = Transform.unity().
                 rotZ(25).
                 rotY(15).
                 rotX(25).
-                translate(0,0,-1).
+                translate(0, 0, -1).
                 scale(0.5, 1.5, 1.5);
-
-        CSG testObject = new Cube(2).toCSG().union(new Sphere(1.25).toCSG())
-                ;
+        
+        CSG cube = new Cube(2).toCSG();
+        CSG sphere = new Sphere(1.25).toCSG();
+        CSG union = cube.union(sphere);
+        
+        
 //                .difference(
 ////                        new Cube(new Vector3d(0, 0, 0), new Vector3d(2, 2, 2)).toCSG()
 //                        p.extrude(new Vector3d(0, 0, 3)).
@@ -95,9 +97,10 @@ public class Main {
 //                        )
 //                );
 
-
         try {
-            FileUtil.writeStringToFile(Paths.get("obj.stl"), testObject.toStlString());
+            FileUtil.write(
+                    Paths.get("obj.stl"),
+                    union.toStlString());
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

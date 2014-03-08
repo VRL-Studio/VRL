@@ -77,4 +77,10 @@ public interface Primitive {
     public default CSG toCSG() {
         return CSG.fromPolygons(toPolygons());
     }
+    
+    /**
+     * Returns the property storage of this primitive.
+     * @return the property storage of this primitive
+     */
+    public PropertyStorage getProperties();
 }

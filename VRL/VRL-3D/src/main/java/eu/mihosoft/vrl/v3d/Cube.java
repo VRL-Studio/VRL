@@ -68,6 +68,8 @@ public class Cube implements Primitive {
      * Cube dimensions.
      */
     private Vector3d dimensions;
+    
+    private final PropertyStorage properties = new PropertyStorage();
 
     /**
      * Constructor. Creates a new cube with center {@code [0,0,0]} and
@@ -128,7 +130,7 @@ public class Cube implements Primitive {
                         (double) info[1][2]
                 )));
             }
-            polygons.add(new Polygon(vertices));
+            polygons.add(new Polygon(vertices,properties));
         }
         return polygons;
     }
@@ -159,5 +161,10 @@ public class Cube implements Primitive {
      */
     public void setDimensions(Vector3d dimensions) {
         this.dimensions = dimensions;
+    }
+
+    @Override
+    public PropertyStorage getProperties() {
+        return properties;
     }
 }

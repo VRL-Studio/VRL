@@ -67,6 +67,8 @@ public class Cylinder implements Primitive {
     private double radius;
     private int numSlices;
 
+    private final PropertyStorage properties = new PropertyStorage();
+
     /**
      * Constructor. Creates a new cylinder with center {@code [0,0,0]} and
      * ranging from {@code [0,-0.5,0]} to {@code [0,0.5,0]}, i.e.
@@ -115,19 +117,22 @@ public class Cylinder implements Primitive {
             polygons.add(new Polygon(Arrays.asList(
                     startV,
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t0, -1),
-                    cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t1, -1))
+                    cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t1, -1)),
+                    properties
             ));
             polygons.add(new Polygon(Arrays.asList(
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t1, 0),
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t0, 0),
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t0, 0),
-                    cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t1, 0))
+                    cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t1, 0)),
+                    properties
             ));
             polygons.add(new Polygon(
                     Arrays.asList(
                             endV,
                             cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t1, 1),
-                            cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t0, 1))
+                            cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t0, 1)),
+                    properties
             )
             );
         }
@@ -199,6 +204,11 @@ public class Cylinder implements Primitive {
      */
     public void setNumSlices(int numSlices) {
         this.numSlices = numSlices;
+    }
+
+    @Override
+    public PropertyStorage getProperties() {
+        return properties;
     }
 
 }

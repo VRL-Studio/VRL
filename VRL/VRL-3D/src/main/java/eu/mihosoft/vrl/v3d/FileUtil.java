@@ -13,6 +13,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 
 /**
+ * File util class.
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class FileUtil {
@@ -29,7 +31,7 @@ public class FileUtil {
      * 
      * @throws IOException if writing to file fails
      */
-    public static void writeStringToFile(Path p, String s) throws IOException {
+    public static void write(Path p, String s) throws IOException {
         try (BufferedWriter writer = Files.newBufferedWriter(p, Charset.forName("UTF-8"),
                 StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             writer.write(s, 0, s.length());
@@ -37,14 +39,14 @@ public class FileUtil {
     }
 
     /**
-     * Loads the specified file to a string.
+     * Reads the specified file to a string.
      *
-     * @param p file to load
+     * @param p file to read
      * @return the content of the file
      * 
-     * @throws IOException if loading from file failed
+     * @throws IOException if reading from file failed
      */
-    public static String loadFileToString(Path p) throws IOException {
+    public static String read(Path p) throws IOException {
         return new String(Files.readAllBytes(p), Charset.forName("UTF-8"));
     }
 }
