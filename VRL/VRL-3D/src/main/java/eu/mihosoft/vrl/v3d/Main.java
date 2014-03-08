@@ -73,7 +73,7 @@ public class Main {
                         new Vector(0, 1.0, 0),
                         new Vector(0.5, 1, 0),
                         new Vector(1, 0.5, 0),
-                        new Vector(1, 0, 0)), true);
+                        new Vector(1, 0, 0)));
 
         Transform transform = Transform.unity().
                 rotZ(25).
@@ -83,19 +83,19 @@ public class Main {
                 scale(0.5, 1.5, 1.5);
 
         CSG testObject = new Sphere(1.3).toCSG().difference(
-                        new Cube(new Vector(0, 0, 0), new Vector(2, 2, 2)).toCSG()
-//                        p.extrude(new Vector(0, 0, 3)).
-//                                transformed(transform)
+//                        new Cube(new Vector(0, 0, 0), new Vector(2, 2, 2)).toCSG()
+                        p.extrude(new Vector(0, 0, 3)).
+                                transformed(transform)
                 )
-                ;
-//                .intersect(
-//                        new Cylinder().toCSG().
-//                        transformed(
-//                                Transform.unity().
-//                                translate(new Vector(0, 0, 0)).
-//                                scale(new Vector(1, 3, 1))
-//                        )
-//                );
+//                ;
+                .intersect(
+                        new Cylinder().toCSG().
+                        transformed(
+                                Transform.unity().
+                                translate(new Vector(0, 0, 0)).
+                                scale(new Vector(1, 3, 1))
+                        )
+                );
 
         String stlString;
 

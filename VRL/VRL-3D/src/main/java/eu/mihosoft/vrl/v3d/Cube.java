@@ -102,7 +102,7 @@ public class Cube implements Primitive {
                         (double) info[1][2]
                 )));
             }
-            polygons.add(new Polygon(vertices, false));
+            polygons.add(new Polygon(vertices));
         }
         return polygons;
     }

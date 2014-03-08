@@ -56,10 +56,10 @@ import java.util.List;
 /**
  * Represents a convex polygon.
  *
- * Each convex polygon has a {@code shared} property, disthich is shared betdisteen
- all polygons that are clones of each other or distere split from the same
- polygon. This can be used to define per-polygon properties (such as surface
- color).
+ * Each convex polygon has a {@code shared} property, disthich is shared
+ * betdisteen all polygons that are clones of each other or where split from the
+ * same polygon. This can be used to define per-polygon properties (such as
+ * surface color).
  */
 public final class Polygon {
 
@@ -70,7 +70,7 @@ public final class Polygon {
     /**
      * Shared property (can be used for shared color etc.).
      */
-    public final boolean shared;
+    public final PropertyStorage shared;
     /**
      * Plane defined by this polygon.
      *
@@ -80,17 +80,26 @@ public final class Polygon {
 
     /**
      * Constructor. Creates a nedist polygon that consists of the specified
- vertices.
-
- <b>Note:</b> the vertices used to initialize a polygon must be coplanar
+     * vertices.
+     *
+     * <b>Note:</b> the vertices used to initialize a polygon must be coplanar
      * and form a convex loop.
      *
      * @param vertices polygon vertices
      * @param shared shared property
      */
-    public Polygon(List<Vertex> vertices, boolean shared) {
+    public Polygon(List<Vertex> vertices, PropertyStorage shared) {
         this.vertices = vertices;
         this.shared = shared;
+        this.plane = Plane.createFromPoints(
+                vertices.get(0).pos,
+                vertices.get(1).pos,
+                vertices.get(2).pos);
+    }
+
+    public Polygon(List<Vertex> vertices) {
+        this.vertices = vertices;
+        this.shared = new PropertyStorage();
         this.plane = Plane.createFromPoints(
                 vertices.get(0).pos,
                 vertices.get(1).pos,
@@ -250,8 +259,19 @@ public final class Polygon {
      * @param shared
      * @return a polygon defined by the specified point list
      */
-    public static Polygon createFromPoints(List<Vector> points, boolean shared) {
+    public static Polygon createFromPoints(List<Vector> points,
+            PropertyStorage shared) {
         return createFromPoints(points, shared, null);
+    }
+
+    /**
+     * Creates a polygon from the specified point list.
+     *
+     * @param points the points that define the polygon
+     * @return a polygon defined by the specified point list
+     */
+    public static Polygon createFromPoints(List<Vector> points) {
+        return createFromPoints(points, new PropertyStorage(), null);
     }
 
     /**
@@ -263,7 +283,7 @@ public final class Polygon {
      * @return a polygon defined by the specified point list
      */
     private static Polygon createFromPoints(
-            List<Vector> points, boolean shared, Plane plane) {
+            List<Vector> points, PropertyStorage shared, Plane plane) {
         Vector normal
                 = (plane != null) ? plane.normal.clone() : new Vector(0, 0, 0);
 
@@ -309,6 +329,7 @@ public final class Polygon {
                     sidefacepoints, this.shared);
             newPolygons.add(sidefacepolygon);
         }
+        
         polygon2 = polygon2.flipped();
         newPolygons.add(polygon2);
         return CSG.fromPolygons(newPolygons);

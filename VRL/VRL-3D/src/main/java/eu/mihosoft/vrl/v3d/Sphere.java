@@ -149,7 +149,7 @@ public class Sphere implements Primitive {
                         sphereVertex(center, radius, i / (double) numSlices,
                                 (j + 1) / (double) numStacks)
                 );
-                polygons.add(new Polygon(vertices, false));
+                polygons.add(new Polygon(vertices));
             }
         }
         return polygons;

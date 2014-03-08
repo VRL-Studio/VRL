@@ -111,20 +111,20 @@ public class Cylinder implements Primitive {
             polygons.add(new Polygon(Arrays.asList(
                     startV,
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t0, -1),
-                    cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t1, -1)),
-                    false));
+                    cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t1, -1))
+                    ));
             polygons.add(new Polygon(Arrays.asList(
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t1, 0),
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t0, 0),
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t0, 0),
-                    cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t1, 0)),
-                    false));
+                    cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t1, 0))
+                    ));
             polygons.add(new Polygon(
                     Arrays.asList(
                             endV,
                             cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t1, 1),
-                            cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t0, 1)),
-                    false)
+                            cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t0, 1))
+                    )
             );
         }
 
