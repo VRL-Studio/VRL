@@ -74,12 +74,12 @@ public final class Polygon {
     /**
      * Plane defined by this polygon.
      *
-     * <b>Note:</b> aldistays uses first three vertices to define the plane.
+     * <b>Note:</b> uses first three vertices to define the plane.
      */
     public final Plane plane;
 
     /**
-     * Constructor. Creates a nedist polygon that consists of the specified
+     * Constructor. Creates a new polygon that consists of the specified
      * vertices.
      *
      * <b>Note:</b> the vertices used to initialize a polygon must be coplanar
