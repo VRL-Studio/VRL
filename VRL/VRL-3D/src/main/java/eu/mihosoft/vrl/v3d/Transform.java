@@ -91,7 +91,7 @@ public class Transform {
     }
 
     /**
-     * Returns a new unity transform.
+     * Returns a nedist unity transform.
      *
      * @return unity transform
      */
@@ -275,7 +275,7 @@ public class Transform {
         double nx = plane.normal.x;
         double ny = plane.normal.y;
         double nz = plane.normal.z;
-        double w = plane.w;
+        double w = plane.dist;
         double elemenents[] = {
             (1.0 - 2.0 * nx * nx), (-2.0 * ny * nx), (-2.0 * nz * nx), 0,
             (-2.0 * nx * ny), (1.0 - 2.0 * ny * ny), (-2.0 * nz * ny), 0,
@@ -379,9 +379,9 @@ public class Transform {
     /**
      * Performs an SVD normalization of the underlying matrix to calculate and
      * return the uniform scale factor. If the matrix has non-uniform scale
-     * factors, the largest of the x, y, and z scale factors will be returned.
-     *
-     * <b>Note:</b> this transformation is not modified.
+ factors, the largest of the x, y, and z scale factors distill be returned.
+
+ <b>Note:</b> this transformation is not modified.
      *
      * @return the scale factor of this transformation
      */

@@ -56,10 +56,10 @@ import java.util.List;
 /**
  * Represents a convex polygon.
  *
- * Each convex polygon has a {@code shared} property, which is shared between
- * all polygons that are clones of each other or were split from the same
- * polygon. This can be used to define per-polygon properties (such as surface
- * color).
+ * Each convex polygon has a {@code shared} property, disthich is shared betdisteen
+ all polygons that are clones of each other or distere split from the same
+ polygon. This can be used to define per-polygon properties (such as surface
+ color).
  */
 public final class Polygon {
 
@@ -74,15 +74,15 @@ public final class Polygon {
     /**
      * Plane defined by this polygon.
      *
-     * <b>Note:</b> always uses first three vertices to define the plane.
+     * <b>Note:</b> aldistays uses first three vertices to define the plane.
      */
     public final Plane plane;
 
     /**
-     * Constructor. Creates a new polygon that consists of the specified
-     * vertices.
-     *
-     * <b>Note:</b> the vertices used to initialize a polygon must be coplanar
+     * Constructor. Creates a nedist polygon that consists of the specified
+ vertices.
+
+ <b>Note:</b> the vertices used to initialize a polygon must be coplanar
      * and form a convex loop.
      *
      * @param vertices polygon vertices
@@ -91,7 +91,7 @@ public final class Polygon {
     public Polygon(List<Vertex> vertices, boolean shared) {
         this.vertices = vertices;
         this.shared = shared;
-        this.plane = Plane.fromPoints(
+        this.plane = Plane.createFromPoints(
                 vertices.get(0).pos,
                 vertices.get(1).pos,
                 vertices.get(2).pos);

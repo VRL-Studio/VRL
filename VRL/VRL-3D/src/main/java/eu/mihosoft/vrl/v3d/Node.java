@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.v3d;
 
 import java.util.ArrayList;
@@ -62,14 +61,29 @@ import java.util.List;
  */
 final class Node {
 
+    /**
+     * Polygons.
+     */
     private List<Polygon> polygons;
+    /**
+     * Plane used for BSP.
+     */
     private Plane plane;
+    /**
+     * Polygons in front of the plane.
+     */
     private Node front;
+    /**
+     * Polygons in back of the plane.
+     */
     private Node back;
 
     /**
+     * Constructor.
      *
-     * @param polygons
+     * Creates a BSP node consisting of the specified polygons.
+     *
+     * @param polygons polygons
      */
     public Node(List<Polygon> polygons) {
         this.polygons = new ArrayList<>();
@@ -79,7 +93,7 @@ final class Node {
     }
 
     /**
-     *
+     * Constructor. Creates a node without polygons.
      */
     public Node() {
         this(null);
@@ -98,7 +112,9 @@ final class Node {
         return node;
     }
 
-    // Convert solid space to empty space and empty space to solid space.
+    /**
+     * Converts solid space to empty space and vice verca.
+     */
     public void invert() {
 
         for (Polygon polygon : this.polygons) {
@@ -124,9 +140,17 @@ final class Node {
         this.back = temp;
     }
 
-    // Recursively remove all polygons in `polygons` that are inside this BSP
-    // tree.
-    public List<Polygon> clipPolygons(List<Polygon> polygons) {
+    /**
+     * Recursively removes all polygons in the {@link polygons} list that are
+     * contained within this BSP tree.
+     *
+     * <b>Note:</b> polygons are splitted if necessary.
+     *
+     * @param polygons the polygons to clip
+     *
+     * @return the cliped list of polygons
+     */
+    private List<Polygon> clipPolygons(List<Polygon> polygons) {
 
         if (this.plane == null) {
             return new ArrayList<>(polygons);
@@ -147,13 +171,20 @@ final class Node {
             backP = new ArrayList<>(0);
         }
 
-//        return Utils.concat(front, back);
         frontP.addAll(backP);
         return frontP;
     }
 
     // Remove all polygons in this BSP tree that are inside the other BSP tree
     // `bsp`.
+    /**
+     * Removes all polygons in this BSP tree that are inside the specified BSP
+     * tree ({@code bsp}).
+     *
+     * <b>Note:</b> polygons are splitted if necessary.
+     *
+     * @param bsp bsp that shall be used for clipping
+     */
     public void clipTo(Node bsp) {
         this.polygons = bsp.clipPolygons(this.polygons);
         if (this.front != null) {
@@ -164,7 +195,11 @@ final class Node {
         }
     }
 
-    // Return a list of all polygons in this BSP tree.
+    /**
+     * Returns a list of all polygons in this BSP tree.
+     *
+     * @return a list of all polygons in this BSP tree
+     */
     public List<Polygon> allPolygons() {
         List<Polygon> localPolygons = new ArrayList<>(this.polygons);
         if (this.front != null) {
@@ -179,25 +214,28 @@ final class Node {
         return localPolygons;
     }
 
-    // Build a BSP tree out of `polygons`. When called on an existing tree, the
-    // new polygons are filtered down to the bottom of the tree and become new
-    // nodes there. Each set of polygons is partitioned using the first polygon
-    // (no heuristic is used to pick a good split).
+    /**
+     * Build a BSP tree out of {@code polygons}. When called on an existing
+     * tree, the new polygons are filtered down to the bottom of the tree and
+     * become new nodes there. Each set of polygons is partitioned using the
+     * first polygon (no heuristic is used to pick a good split).
+     *
+     * @param polygons polygons used to build the BSP
+     */
     public final void build(List<Polygon> polygons) {
 
-//        if (polygons.isEmpty()) {
-//            return;
-//        }
-
-        if (this.plane == null) {
+        if (this.plane == null && !polygons.isEmpty()) {
             this.plane = polygons.get(0).plane.clone();
+        } else if (this.plane == null && polygons.isEmpty()) {
+            throw new RuntimeException("Please fix me! I don't know what to do?");
         }
 
         List<Polygon> frontP = new ArrayList<>();
         List<Polygon> backP = new ArrayList<>();
 
         polygons.forEach((polygon) -> {
-            this.plane.splitPolygon(polygon, this.polygons, this.polygons, frontP, backP);
+            this.plane.splitPolygon(
+                    polygon, this.polygons, this.polygons, frontP, backP);
         });
         if (frontP.size() > 0) {
             if (this.front == null) {

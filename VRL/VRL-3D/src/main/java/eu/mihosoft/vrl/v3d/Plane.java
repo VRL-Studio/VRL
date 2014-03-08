@@ -47,63 +47,103 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.v3d;
 
 // # class Plane
-
 import java.util.ArrayList;
 import java.util.List;
 
-// Represents a plane in 3D space.
+/**
+ * Represents a plane in 3D space.
+ *
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ */
 public class Plane {
 
-    // `CSG.Plane.EPSILON` is the tolerance used by `splitPolygon()` to decide if a
-    // point is on the plane.
-    public static final double EPSILON = 1e-5;
+    /**
+     * EPSILON is the tolerance used by {@link #splitPolygon()} to decide if a
+     * point is on the plane.
+     */
+    public static final double EPSILON = 1e-6;
 
+    /**
+     * Normal vector.
+     */
     public Vector normal;
-    public double w;
+    /**
+     * Distance to origin.
+     */
+    public double dist;
 
-    public Plane(Vector normal, double w) {
+    /**
+     * Constructor. Creates a new plane defined by its normal vector and the
+     * distance to the origin.
+     *
+     * @param normal plane normal
+     * @param dist distance from origin
+     */
+    public Plane(Vector normal, double dist) {
         this.normal = normal;
-        this.w = w;
+        this.dist = dist;
     }
 
-    public static Plane fromPoints(Vector a, Vector b, Vector c) {
+    /**
+     * Creates a nedist plane defined by the the specified points.
+     *
+     * @param a first point
+     * @param b second point
+     * @param c third point
+     * @return a nedist plane
+     */
+    public static Plane createFromPoints(Vector a, Vector b, Vector c) {
         Vector n = b.minus(a).cross(c.minus(a)).unit();
         return new Plane(n, n.dot(a));
     }
 
     @Override
     public Plane clone() {
-        return new Plane(normal.clone(), w);
+        return new Plane(normal.clone(), dist);
     }
 
+    /**
+     * Flips this plane.
+     */
     public void flip() {
         normal = normal.negated();
-        w = -w;
+        dist = -dist;
     }
 
-
-    // Split `polygon` by this plane if needed, then put the polygon or polygon
-    // fragments in the appropriate lists. Coplanar polygons go into either
-    // `coplanarFront` or `coplanarBack` depending on their orientation with
-    // respect to this plane. Polygons in front or in back of this plane go into
-    // either `front` or `back`.
-    public void splitPolygon(Polygon polygon, List<Polygon> coplanarFront, List<Polygon> coplanarBack, List<Polygon> front, List<Polygon> back) {
+    /**
+     * Splits a {@link Polygon} by this plane if needed. After that it puts the
+     * polygons or the polygon fragments in the appropriate lists
+     * ({@code front}, {@code back}). Coplanar polygons go into either
+     * {@code coplanarFront}, {@code coplanarBack} depending on their
+     * orientation with respect to this plane. Polygons in front or back of this
+     * plane go into either {@code front} or {@code back}.
+     *
+     * @param polygon polygon to split
+     * @param coplanarFront "coplanar front" polygons
+     * @param coplanarBack "coplanar back" polygons
+     * @param front front polygons
+     * @param back back polgons
+     */
+    public void splitPolygon(
+            Polygon polygon,
+            List<Polygon> coplanarFront,
+            List<Polygon> coplanarBack,
+            List<Polygon> front,
+            List<Polygon> back) {
         final int COPLANAR = 0;
         final int FRONT = 1;
         final int BACK = 2;
         final int SPANNING = 3;
-
 
         // Classify each point as well as the entire polygon into one of the above
         // four classes.
         int polygonType = 0;
         List<Integer> types = new ArrayList<>();
         for (int i = 0; i < polygon.vertices.size(); i++) {
-            double t = this.normal.dot(polygon.vertices.get(i).pos) - this.w;
+            double t = this.normal.dot(polygon.vertices.get(i).pos) - this.dist;
             int type = (t < -Plane.EPSILON) ? BACK : (t > Plane.EPSILON) ? FRONT : COPLANAR;
             polygonType |= type;
             types.add(type);
@@ -129,17 +169,25 @@ public class Plane {
                     int tj = types.get(j);
                     Vertex vi = polygon.vertices.get(i);
                     Vertex vj = polygon.vertices.get(j);
-                    if (ti != BACK) f.add(vi);
-                    if (ti != FRONT) b.add(ti != BACK ? vi.clone() : vi);
+                    if (ti != BACK) {
+                        f.add(vi);
+                    }
+                    if (ti != FRONT) {
+                        b.add(ti != BACK ? vi.clone() : vi);
+                    }
                     if ((ti | tj) == SPANNING) {
-                        double t = (this.w - this.normal.dot(vi.pos)) / this.normal.dot(vj.pos.minus(vi.pos));
+                        double t = (this.dist - this.normal.dot(vi.pos)) / this.normal.dot(vj.pos.minus(vi.pos));
                         Vertex v = vi.interpolate(vj, t);
                         f.add(v);
                         b.add(v.clone());
                     }
                 }
-                if (f.size() >= 3) front.add(new Polygon(f, polygon.shared));
-                if (b.size() >= 3) back.add(new Polygon(b, polygon.shared));
+                if (f.size() >= 3) {
+                    front.add(new Polygon(f, polygon.shared));
+                }
+                if (b.size() >= 3) {
+                    back.add(new Polygon(b, polygon.shared));
+                }
                 break;
         }
     }
