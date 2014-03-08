@@ -54,7 +54,9 @@ public final class Polygon {
             vertex.flip();
         });
         Collections.reverse(vertices);
+        
         plane.flip();
+        
         return this;
     }
 
@@ -182,11 +184,17 @@ public final class Polygon {
         Vector normal = (plane != null) ? plane.normal.clone() : new Vector(0, 0, 0);
 
         List<Vertex> vertices = new ArrayList<>();
-        points.forEach((Vector p) -> {
+        
+        for (Vector p : points) {
             Vector vec = p.clone();
             Vertex vertex = new Vertex(vec, normal);
             vertices.add(vertex);
-        });
+        }
+        
+//        points.forEach((Vector p) -> {
+//            Vector vec = p.clone();
+//            
+//        });
 
         return new Polygon(vertices, shared);
     }

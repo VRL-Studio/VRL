@@ -51,16 +51,14 @@ final class Node {
     // Convert solid space to empty space and empty space to solid space.
     public void invert() {
 
-        if (this.polygons.isEmpty()) {
-            return;
-        }
-
         for (Polygon polygon : this.polygons) {
             polygon.flip();
         }
 
-        if (this.plane == null) {
+        if (this.plane == null && !polygons.isEmpty()) {
             this.plane = polygons.get(0).plane.clone();
+        } else if (this.plane == null && polygons.isEmpty()) {
+            throw new RuntimeException("Please fix me! I don't know what to do?");
         }
 
         this.plane.flip();
@@ -137,9 +135,9 @@ final class Node {
     // (no heuristic is used to pick a good split).
     public final void build(List<Polygon> polygons) {
 
-        if (polygons.isEmpty()) {
-            return;
-        }
+//        if (polygons.isEmpty()) {
+//            return;
+//        }
 
         if (this.plane == null) {
             this.plane = polygons.get(0).plane.clone();

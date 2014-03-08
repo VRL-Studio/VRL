@@ -37,20 +37,20 @@ public class Main {
                 translate(new Vector(0, 0, 3)).
                 scale(new Vector(0.5, 1.5, 1.5));
 
-        CSG testObject = new Sphere(1.5).toCSG().transformed(Transform.unity().translate(new Vector(1, 0, 0))).
+        CSG testObject = new Sphere(1.5).toCSG().
                 intersect(
-//                        new Cube().toCSG()
-                        p.extrude(new Vector(0, 0, 3)).
-                                transformed(transform)
-                );/*.
-                union(
-                        new Cylinder().toCSG().
-                        transformed(
-                                Transform.unity().
-                                translate(new Vector(0, 0, 0)).
-                                scale(new Vector(1, 3, 1))
-                        )
-                );*/
+                        new Cube(new Vector(0, 0, 0), new Vector(3, 0.5, 0.5)).toCSG()
+//                        p.extrude(new Vector(0, 0, 3)).
+//                                transformed(transform)
+                );
+//                .intersect(
+//                        new Cylinder().toCSG().
+//                        transformed(
+//                                Transform.unity().
+//                                translate(new Vector(0, 0, 0)).
+//                                scale(new Vector(1, 3, 1))
+//                        )
+//                );
 
         String stlString;
 

@@ -173,12 +173,10 @@ public class CSG {
         Node a = new Node(this.clone().polygons);
         Node b = new Node(csg.clone().polygons);
         a.invert();
+        b.clipTo(a);
         b.invert();
         a.clipTo(b);
         b.clipTo(a);
-        b.invert();
-        b.clipTo(a);
-        b.invert();
         a.build(b.allPolygons());
         a.invert();
         return CSG.fromPolygons(a.allPolygons());
