@@ -81,20 +81,22 @@ public class Main {
                 translate(0,0,-1).
                 scale(0.5, 1.5, 1.5);
 
-        CSG testObject = new Sphere(1.3).toCSG().difference(
-//                        new Cube(new Vector3d(0, 0, 0), new Vector3d(2, 2, 2)).toCSG()
-                        p.extrude(new Vector3d(0, 0, 3)).
-                                transformed(transform)
-                )
+        CSG testObject = new Cube(2).toCSG().union(new Sphere(1.25).toCSG())
+                ;
+//                .difference(
+////                        new Cube(new Vector3d(0, 0, 0), new Vector3d(2, 2, 2)).toCSG()
+//                        p.extrude(new Vector3d(0, 0, 3)).
+//                                transformed(transform)
+//                )
 //                ;
-                .intersect(
-                        new Cylinder().toCSG().
-                        transformed(
-                                Transform.unity().
-                                translate(new Vector3d(0, 0, 0)).
-                                scale(new Vector3d(1, 3, 1))
-                        )
-                );
+//                .intersect(
+//                        new Cylinder().toCSG().
+//                        transformed(
+//                                Transform.unity().
+//                                translate(new Vector3d(0, 0, 0)).
+//                                scale(new Vector3d(1, 3, 1))
+//                        )
+//                );
 
 
         String stlString;

@@ -60,14 +60,42 @@ import java.util.List;
  */
 public class Cube implements Primitive {
 
+    /**
+     * Center of this cube.
+     */
     private Vector3d center;
+    /**
+     * Cube dimensions.
+     */
     private Vector3d dimensions;
 
+    /**
+     * Constructor. Creates a new cube with center {@code [0,0,0]} and
+     * dimensions {@code [1,1,1]}.
+     */
     public Cube() {
         center = new Vector3d(0, 0, 0);
         dimensions = new Vector3d(1, 1, 1);
     }
+    
+    /**
+     * Constructor. Creates a new cube with center {@code [0,0,0]} and
+     * dimensions {@code [size,size,size]}.
+     * 
+     * @param size size
+     */
+    public Cube(double size) {
+        center = new Vector3d(0, 0, 0);
+        dimensions = new Vector3d(size, size, size);
+    }
 
+    /**
+     * Constructor.  Creates a new cuboid with the specified center and 
+     * dimensions.
+     * 
+     * @param center center of the cuboid
+     * @param dimensions cube dimensions
+     */
     public Cube(Vector3d center, Vector3d dimensions) {
         this.center = center;
         this.dimensions = dimensions;
@@ -75,8 +103,6 @@ public class Cube implements Primitive {
 
     @Override
     public List<Polygon> toPolygons() {
-        Vector3d c = getCenter();
-        Vector3d d = getDimensions();
 
         int[][][] a = {
             // position     // normal
@@ -92,9 +118,9 @@ public class Cube implements Primitive {
             List<Vertex> vertices = new ArrayList<>();
             for (int i : info[0]) {
                 Vector3d pos = new Vector3d(
-                        c.x + d.x * (1 * Math.min(1, i & 1) - 0.5),
-                        c.y + d.y * (1 * Math.min(1, i & 2) - 0.5),
-                        c.z + d.z * (1 * Math.min(1, i & 4) - 0.5)
+                        center.x + dimensions.x * (1 * Math.min(1, i & 1) - 0.5),
+                        center.y + dimensions.y * (1 * Math.min(1, i & 2) - 0.5),
+                        center.z + dimensions.z * (1 * Math.min(1, i & 4) - 0.5)
                 );
                 vertices.add(new Vertex(pos, new Vector3d(
                         (double) info[1][0],

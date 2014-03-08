@@ -68,17 +68,21 @@ public class Cylinder implements Primitive {
     private int numSlices;
 
     /**
-     * Constructor.
+     * Constructor. Creates a new cylinder with center {@code [0,0,0]} and
+     * ranging from {@code [0,-0.5,0]} to {@code [0,0.5,0]}, i.e.
+     * {@code size = 1}.
      */
     public Cylinder() {
-        this.start = new Vector3d(0, -1, 0);
-        this.end = new Vector3d(0, 1, 0);
+        this.start = new Vector3d(0, -0.5, 0);
+        this.end = new Vector3d(0, 0.5, 0);
         this.radius = 1;
         this.numSlices = 16;
     }
 
     /**
-     * Constructor.
+     * Constructor. Creates a cylinder ranging from {@code start} to {@code end}
+     * with the specified {@code radius}. The resolution of the tessellation can
+     * be controlled with {@code numSlices}.
      *
      * @param start cylinder start
      * @param end cylinder end
@@ -112,19 +116,19 @@ public class Cylinder implements Primitive {
                     startV,
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t0, -1),
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t1, -1))
-                    ));
+            ));
             polygons.add(new Polygon(Arrays.asList(
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t1, 0),
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 0, t0, 0),
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t0, 0),
                     cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t1, 0))
-                    ));
+            ));
             polygons.add(new Polygon(
                     Arrays.asList(
                             endV,
                             cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t1, 1),
                             cylPoint(axisX, axisY, axisZ, ray, s, radius, 1, t0, 1))
-                    )
+            )
             );
         }
 
@@ -184,14 +188,14 @@ public class Cylinder implements Primitive {
     }
 
     /**
-     * @return the numSlices
+     * @return the number of slices
      */
     public int getNumSlices() {
         return numSlices;
     }
 
     /**
-     * @param numSlices the numSlices to set
+     * @param numSlices the number of slices to set
      */
     public void setNumSlices(int numSlices) {
         this.numSlices = numSlices;
