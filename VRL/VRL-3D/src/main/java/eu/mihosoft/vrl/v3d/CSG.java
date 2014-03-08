@@ -50,6 +50,7 @@
 package eu.mihosoft.vrl.v3d;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,16 +61,17 @@ import java.util.stream.Collectors;
  * <a
  * href="https://github.com/evanw/csg.js/">https://github.com/evanw/csg.js/</a>
  * with some additional features like polygon extrude, transformations etc.
- * Thanks to the author for creating the CSG.js library.
+ * Thanks to the author for creating the CSG.js library.<br><br>
  *
  * <b>Implementation Details</b>
  *
  * All CSG operations are implemented in terms of two functions,
- * {@link Node#clipTo(eu.mihosoft.vrl.v3d.Node)} and {@link Node#invert()}, which remove parts of a BSP
- * tree inside another BSP tree and swap solid and empty space, respectively. To
- * find the union of {@code a} and {@code b}, we want to remove everything in
- * {@code a} inside {@code b} and everything in {@code b} inside {@code a}, then
- * combine polygons from {@code a} and {@code b} into one solid:
+ * {@link Node#clipTo(eu.mihosoft.vrl.v3d.Node)} and {@link Node#invert()},
+ * which remove parts of a BSP tree inside another BSP tree and swap solid and
+ * empty space, respectively. To find the union of {@code a} and {@code b}, we
+ * want to remove everything in {@code a} inside {@code b} and everything in
+ * {@code b} inside {@code a}, then combine polygons from {@code a} and
+ * {@code b} into one solid:
  *
  * <blockquote><pre>
  *     a.clipTo(b);
@@ -116,13 +118,23 @@ public class CSG {
         return csg;
     }
 
+    /**
+     * Constructs a CSG from the specified {@link Polygon} instances.
+     *
+     * @param polygons polygons
+     * @return a CSG instance
+     */
+    public static CSG fromPolygons(Polygon... polygons) {
+        return fromPolygons(Arrays.asList(polygons));
+    }
+
     @Override
     public CSG clone() {
         CSG csg = new CSG();
         csg.polygons = new ArrayList<>();
-        for (Polygon polygon : polygons) {
+        polygons.stream().forEach((polygon) -> {
             csg.polygons.add(polygon.clone());
-        }
+        });
         return csg;
     }
 

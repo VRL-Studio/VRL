@@ -50,6 +50,7 @@
 package eu.mihosoft.vrl.v3d;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -261,7 +262,7 @@ public final class Polygon {
      */
     public static Polygon createFromPoints(List<Vector3d> points,
             PropertyStorage shared) {
-        return createFromPoints(points, shared, null);
+        return fromPoints(points, shared, null);
     }
 
     /**
@@ -270,8 +271,18 @@ public final class Polygon {
      * @param points the points that define the polygon
      * @return a polygon defined by the specified point list
      */
-    public static Polygon createFromPoints(List<Vector3d> points) {
-        return createFromPoints(points, new PropertyStorage(), null);
+    public static Polygon fromPoints(List<Vector3d> points) {
+        return fromPoints(points, new PropertyStorage(), null);
+    }
+    
+        /**
+     * Creates a polygon from the specified points.
+     *
+     * @param points the points that define the polygon
+     * @return a polygon defined by the specified point list
+     */
+    public static Polygon fromPoints(Vector3d... points) {
+        return fromPoints(Arrays.asList(points), new PropertyStorage(), null);
     }
 
     /**
@@ -282,7 +293,7 @@ public final class Polygon {
      * @param plane may be null
      * @return a polygon defined by the specified point list
      */
-    private static Polygon createFromPoints(
+    private static Polygon fromPoints(
             List<Vector3d> points, PropertyStorage shared, Plane plane) {
         Vector3d normal
                 = (plane != null) ? plane.normal.clone() : new Vector3d(0, 0, 0);

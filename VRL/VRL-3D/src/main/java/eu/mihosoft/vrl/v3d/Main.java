@@ -50,12 +50,8 @@
 
 package eu.mihosoft.vrl.v3d;
 
-import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -67,12 +63,13 @@ import java.util.logging.Logger;
 public class Main {
 
     public static void main(String[] args) {
-        Polygon p = Polygon.createFromPoints(
-                Arrays.asList(new Vector3d(0, 0, 0),
+        
+        Polygon p = Polygon.fromPoints(
+                        new Vector3d(0, 0, 0),
                         new Vector3d(0, 1.0, 0),
                         new Vector3d(0.5, 1, 0),
                         new Vector3d(1, 0.5, 0),
-                        new Vector3d(1, 0, 0)));
+                        new Vector3d(1, 0, 0));
 
         Transform transform = Transform.unity().
                 rotZ(25).
@@ -99,22 +96,11 @@ public class Main {
 //                );
 
 
-        String stlString;
-
-        stlString = testObject.toStlString();
-
-        BufferedWriter writer;
-
         try {
-            writer = Files.newBufferedWriter(Paths.get("obj.stl"), Charset.defaultCharset(),
-                    StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            writer.write(stlString, 0, stlString.length());
-
-            writer.close();
+            FileUtil.writeStringToFile(Paths.get("obj.stl"), testObject.toStlString());
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }
 
 }
