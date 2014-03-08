@@ -65,7 +65,7 @@ import javax.vecmath.Matrix4d;
  * // t applies rotation and translation
  * Transform t = Transform.unity().rotX(45).translate(2,1,0);
  * </pre></blockquote>
- * 
+ *
  * <b>TODO:</b> use quaternions for rotations.
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
@@ -301,9 +301,25 @@ public class Transform {
     }
 
     /**
+     * Applies a scale operation to this transform.
+     *
+     * @param x x scale value
+     * @param y y scale value
+     * @param z z scale value
+     *
+     * @return this transform
+     */
+    public Transform scale(double x, double y, double z) {
+        double elemenents[] = {
+            x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1};
+        m.mul(new Matrix4d(elemenents));
+        return this;
+    }
+
+    /**
      * Applies a scale operation (x axis) to this transform.
      *
-     * @param s scale value
+     * @param s x scale value
      *
      * @return this transform
      */
@@ -317,7 +333,7 @@ public class Transform {
     /**
      * Applies a scale operation (y axis) to this transform.
      *
-     * @param s scale value
+     * @param s y scale value
      *
      * @return this transform
      */
@@ -331,7 +347,7 @@ public class Transform {
     /**
      * Applies a scale operation (z axis) to this transform.
      *
-     * @param s scale value
+     * @param s z scale value
      *
      * @return this transform
      */
@@ -375,14 +391,13 @@ public class Transform {
 
     /**
      * Applies the specified transform to this transform.
-     * 
+     *
      * @param t transform to apply
-     * 
+     *
      * @return this transform
      */
     public Transform apply(Transform t) {
         m.mul(t.m);
         return this;
     }
-
 }

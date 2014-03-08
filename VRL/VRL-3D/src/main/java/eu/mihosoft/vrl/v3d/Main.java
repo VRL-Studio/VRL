@@ -79,8 +79,8 @@ public class Main {
                 rotZ(25).
                 rotY(25).
                 rotX(25).
-                translate(new Vector(0, 0, 3)).
-                scale(new Vector(0.5, 1.5, 1.5));
+                translateX(3).
+                scale(0.5, 1.5, 1.5);
 
         CSG testObject = new Sphere(1.3).toCSG().difference(
                         new Cube(new Vector(0, 0, 0), new Vector(2, 2, 2)).toCSG()
