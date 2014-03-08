@@ -59,12 +59,12 @@ public class Vertex {
     /**
      * Vertex position.
      */
-    public Vector pos;
+    public Vector3d pos;
 
     /**
      * Normal.
      */
-    public Vector normal;
+    public Vector3d normal;
 
     /**
      * Constructor. Creates a vertex.
@@ -72,7 +72,7 @@ public class Vertex {
      * @param pos position
      * @param normal normal
      */
-    public Vertex(Vector pos, Vector normal) {
+    public Vertex(Vector3d pos, Vector3d normal) {
         this.pos = pos;
         this.normal = normal;
     }

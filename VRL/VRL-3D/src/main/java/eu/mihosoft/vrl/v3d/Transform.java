@@ -54,7 +54,7 @@ import javax.vecmath.Matrix4d;
 /**
  * Transform. Transformations (translation, rotation, scale) can be applied to
  * geometrical objects like {@link CSG}, {@link Polygon}, {@link Vertex} and
- * {@link Vector}.
+ * {@link Vector3d}.
  *
  * This transform class uses the builder pattern to define combined
  * transformations.<br><br>
@@ -181,7 +181,7 @@ public class Transform {
      *
      * @return this transform
      */
-    public Transform rot(Vector vec) {
+    public Transform rot(Vector3d vec) {
 
         // TODO: use quaternions
         return rotX(vec.x).rotY(vec.y).rotZ(vec.z);
@@ -194,7 +194,7 @@ public class Transform {
      *
      * @return this transform
      */
-    public Transform translate(Vector vec) {
+    public Transform translate(Vector3d vec) {
         double elemenents[] = {
             1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, vec.x, vec.y, vec.z, 1
         };
@@ -293,7 +293,7 @@ public class Transform {
      *
      * @return this transform
      */
-    public Transform scale(Vector vec) {
+    public Transform scale(Vector3d vec) {
         double elemenents[] = {
             vec.x, 0, 0, 0, 0, vec.y, 0, 0, 0, 0, vec.z, 0, 0, 0, 0, 1};
         m.mul(new Matrix4d(elemenents));
@@ -365,7 +365,7 @@ public class Transform {
      *
      * @return the specified vector
      */
-    public Vector transform(Vector vec) {
+    public Vector3d transform(Vector3d vec) {
         double x, y;
         x = m.m00 * vec.x + m.m01 * vec.y + m.m02 * vec.z + m.m03;
         y = m.m10 * vec.x + m.m11 * vec.y + m.m12 * vec.z + m.m13;

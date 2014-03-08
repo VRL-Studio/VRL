@@ -69,11 +69,11 @@ public class Main {
 
     public static void main(String[] args) {
         Polygon p = Polygon.createFromPoints(
-                Arrays.asList(new Vector(0, 0, 0),
-                        new Vector(0, 1.0, 0),
-                        new Vector(0.5, 1, 0),
-                        new Vector(1, 0.5, 0),
-                        new Vector(1, 0, 0)));
+                Arrays.asList(new Vector3d(0, 0, 0),
+                        new Vector3d(0, 1.0, 0),
+                        new Vector3d(0.5, 1, 0),
+                        new Vector3d(1, 0.5, 0),
+                        new Vector3d(1, 0, 0)));
 
         Transform transform = Transform.unity().
                 rotZ(25).
@@ -83,8 +83,8 @@ public class Main {
                 scale(0.5, 1.5, 1.5);
 
         CSG testObject = new Sphere(1.3).toCSG().difference(
-//                        new Cube(new Vector(0, 0, 0), new Vector(2, 2, 2)).toCSG()
-                        p.extrude(new Vector(0, 0, 3)).
+//                        new Cube(new Vector3d(0, 0, 0), new Vector3d(2, 2, 2)).toCSG()
+                        p.extrude(new Vector3d(0, 0, 3)).
                                 transformed(transform)
                 )
 //                ;
@@ -92,8 +92,8 @@ public class Main {
                         new Cylinder().toCSG().
                         transformed(
                                 Transform.unity().
-                                translate(new Vector(0, 0, 0)).
-                                scale(new Vector(1, 3, 1))
+                                translate(new Vector3d(0, 0, 0)).
+                                scale(new Vector3d(1, 3, 1))
                         )
                 );
 

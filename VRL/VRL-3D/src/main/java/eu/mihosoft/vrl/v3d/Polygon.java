@@ -192,7 +192,7 @@ public final class Polygon {
      * @param v the vector that defines the translation
      * @return this polygon
      */
-    public Polygon translate(Vector v) {
+    public Polygon translate(Vector3d v) {
         vertices.forEach((vertex) -> {
             vertex.pos = vertex.pos.plus(v);
         });
@@ -208,7 +208,7 @@ public final class Polygon {
      *
      * @return a translated copy of this polygon
      */
-    public Polygon translated(Vector v) {
+    public Polygon translated(Vector3d v) {
         return clone().translate(v);
     }
 
@@ -259,7 +259,7 @@ public final class Polygon {
      * @param shared
      * @return a polygon defined by the specified point list
      */
-    public static Polygon createFromPoints(List<Vector> points,
+    public static Polygon createFromPoints(List<Vector3d> points,
             PropertyStorage shared) {
         return createFromPoints(points, shared, null);
     }
@@ -270,7 +270,7 @@ public final class Polygon {
      * @param points the points that define the polygon
      * @return a polygon defined by the specified point list
      */
-    public static Polygon createFromPoints(List<Vector> points) {
+    public static Polygon createFromPoints(List<Vector3d> points) {
         return createFromPoints(points, new PropertyStorage(), null);
     }
 
@@ -283,14 +283,14 @@ public final class Polygon {
      * @return a polygon defined by the specified point list
      */
     private static Polygon createFromPoints(
-            List<Vector> points, PropertyStorage shared, Plane plane) {
-        Vector normal
-                = (plane != null) ? plane.normal.clone() : new Vector(0, 0, 0);
+            List<Vector3d> points, PropertyStorage shared, Plane plane) {
+        Vector3d normal
+                = (plane != null) ? plane.normal.clone() : new Vector3d(0, 0, 0);
 
         List<Vertex> vertices = new ArrayList<>();
 
-        for (Vector p : points) {
-            Vector vec = p.clone();
+        for (Vector3d p : points) {
+            Vector3d vec = p.clone();
             Vertex vertex = new Vertex(vec, normal);
             vertices.add(vertex);
         }
@@ -305,7 +305,7 @@ public final class Polygon {
      *
      * @return a CSG object that consists of the extruded polygon
      */
-    public CSG extrude(Vector dir) {
+    public CSG extrude(Vector3d dir) {
         List<Polygon> newPolygons = new ArrayList<>();
 
         Polygon polygon1 = this;
@@ -319,7 +319,7 @@ public final class Polygon {
         Polygon polygon2 = polygon1.translated(dir);
         int numvertices = this.vertices.size();
         for (int i = 0; i < numvertices; i++) {
-            List<Vector> sidefacepoints = new ArrayList<>();
+            List<Vector3d> sidefacepoints = new ArrayList<>();
             int nexti = (i < (numvertices - 1)) ? i + 1 : 0;
             sidefacepoints.add(polygon1.vertices.get(i).pos);
             sidefacepoints.add(polygon2.vertices.get(i).pos);

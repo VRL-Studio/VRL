@@ -1,5 +1,5 @@
 /* 
- * Vector.java
+ * Vector3d.java
  *
  * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2014 by Michael Hoffer
@@ -50,11 +50,11 @@
 package eu.mihosoft.vrl.v3d;
 
 /**
- * 3D Vector.
+ * 3D Vector3d.
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class Vector {
+public class Vector3d {
 
     public double x;
     public double y;
@@ -67,7 +67,7 @@ public class Vector {
      * @param y y value
      * @param z z value
      */
-    public Vector(double x, double y, double z) {
+    public Vector3d(double x, double y, double z) {
 
         this.x = x;
         this.y = y;
@@ -75,8 +75,8 @@ public class Vector {
     }
 
     @Override
-    public Vector clone() {
-        return new Vector(x, y, z);
+    public Vector3d clone() {
+        return new Vector3d(x, y, z);
     }
 
     /**
@@ -86,8 +86,8 @@ public class Vector {
      *
      * @return a negated copy of this vector
      */
-    public Vector negated() {
-        return new Vector(-x, -y, -z);
+    public Vector3d negated() {
+        return new Vector3d(-x, -y, -z);
     }
 
     /**
@@ -99,8 +99,8 @@ public class Vector {
      *
      * @return the sum of this vector and the specified vector
      */
-    public Vector plus(Vector v) {
-        return new Vector(x + v.x, y + v.y, z + v.z);
+    public Vector3d plus(Vector3d v) {
+        return new Vector3d(x + v.x, y + v.y, z + v.z);
     }
 
     /**
@@ -112,8 +112,8 @@ public class Vector {
      *
      * @return the difference of this vector and the specified vector
      */
-    public Vector minus(Vector v) {
-        return new Vector(x - v.x, y - v.y, z - v.z);
+    public Vector3d minus(Vector3d v) {
+        return new Vector3d(x - v.x, y - v.y, z - v.z);
     }
 
     /**
@@ -125,8 +125,8 @@ public class Vector {
      *
      * @return the product of this vector and the specified value
      */
-    public Vector times(double a) {
-        return new Vector(x * a, y * a, z * a);
+    public Vector3d times(double a) {
+        return new Vector3d(x * a, y * a, z * a);
     }
 
     /**
@@ -138,8 +138,8 @@ public class Vector {
      *
      * @return this vector devided by the specified value
      */
-    public Vector dividedBy(double a) {
-        return new Vector(x / a, y / a, z / a);
+    public Vector3d dividedBy(double a) {
+        return new Vector3d(x / a, y / a, z / a);
     }
 
     /**
@@ -151,7 +151,7 @@ public class Vector {
      *
      * @return the dot product of this vector and the specified vector
      */
-    public double dot(Vector a) {
+    public double dot(Vector3d a) {
         return this.x * a.x + this.y * a.y + this.z * a.z;
     }
 
@@ -166,7 +166,7 @@ public class Vector {
      * @return copy of this vector if {@code t = 0}; copy of a if {@code t = 1};
      * the point midway between this and the specified vector if {@code t = 0.5}
      */
-    public Vector lerp(Vector a, double t) {
+    public Vector3d lerp(Vector3d a, double t) {
         return this.plus(a.minus(this).times(t));
     }
 
@@ -188,7 +188,7 @@ public class Vector {
      *
      * @return a normalized copy of this vector with {@code length}
      */
-    public Vector unit() {
+    public Vector3d unit() {
         return this.dividedBy(this.length());
     }
 
@@ -201,8 +201,8 @@ public class Vector {
      *
      * @return the cross product of this vector and the specified vector.
      */
-    public Vector cross(Vector a) {
-        return new Vector(
+    public Vector3d cross(Vector3d a) {
+        return new Vector3d(
                 this.y * a.z - this.z * a.y,
                 this.z * a.x - this.x * a.z,
                 this.x * a.y - this.y * a.x
@@ -237,7 +237,7 @@ public class Vector {
      * 
      * @return this vector
      */
-    public Vector transform(Transform transform) {
+    public Vector3d transform(Transform transform) {
         return transform.transform(this);
     }
 
@@ -250,7 +250,7 @@ public class Vector {
      *
      * @return a transformed copy of this vector
      */
-    public Vector transformed(Transform transform) {
+    public Vector3d transformed(Transform transform) {
         return clone().transform(transform);
     }
 

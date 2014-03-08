@@ -60,23 +60,23 @@ import java.util.List;
  */
 public class Cube implements Primitive {
 
-    private Vector center;
-    private Vector dimensions;
+    private Vector3d center;
+    private Vector3d dimensions;
 
     public Cube() {
-        center = new Vector(0, 0, 0);
-        dimensions = new Vector(1, 1, 1);
+        center = new Vector3d(0, 0, 0);
+        dimensions = new Vector3d(1, 1, 1);
     }
 
-    public Cube(Vector center, Vector dimensions) {
+    public Cube(Vector3d center, Vector3d dimensions) {
         this.center = center;
         this.dimensions = dimensions;
     }
 
     @Override
     public List<Polygon> toPolygons() {
-        Vector c = getCenter();
-        Vector d = getDimensions();
+        Vector3d c = getCenter();
+        Vector3d d = getDimensions();
 
         int[][][] a = {
             // position     // normal
@@ -91,12 +91,12 @@ public class Cube implements Primitive {
         for (int[][] info : a) {
             List<Vertex> vertices = new ArrayList<>();
             for (int i : info[0]) {
-                Vector pos = new Vector(
+                Vector3d pos = new Vector3d(
                         c.x + d.x * (1 * Math.min(1, i & 1) - 0.5),
                         c.y + d.y * (1 * Math.min(1, i & 2) - 0.5),
                         c.z + d.z * (1 * Math.min(1, i & 4) - 0.5)
                 );
-                vertices.add(new Vertex(pos, new Vector(
+                vertices.add(new Vertex(pos, new Vector3d(
                         (double) info[1][0],
                         (double) info[1][1],
                         (double) info[1][2]
@@ -110,28 +110,28 @@ public class Cube implements Primitive {
     /**
      * @return the center
      */
-    public Vector getCenter() {
+    public Vector3d getCenter() {
         return center;
     }
 
     /**
      * @param center the center to set
      */
-    public void setCenter(Vector center) {
+    public void setCenter(Vector3d center) {
         this.center = center;
     }
 
     /**
      * @return the dimensions
      */
-    public Vector getDimensions() {
+    public Vector3d getDimensions() {
         return dimensions;
     }
 
     /**
      * @param dimensions the dimensions to set
      */
-    public void setDimensions(Vector dimensions) {
+    public void setDimensions(Vector3d dimensions) {
         this.dimensions = dimensions;
     }
 }

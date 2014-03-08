@@ -62,8 +62,8 @@ import java.util.List;
  */
 public class Cylinder implements Primitive {
 
-    private Vector start;
-    private Vector end;
+    private Vector3d start;
+    private Vector3d end;
     private double radius;
     private int numSlices;
 
@@ -71,8 +71,8 @@ public class Cylinder implements Primitive {
      * Constructor.
      */
     public Cylinder() {
-        this.start = new Vector(0, -1, 0);
-        this.end = new Vector(0, 1, 0);
+        this.start = new Vector3d(0, -1, 0);
+        this.end = new Vector3d(0, 1, 0);
         this.radius = 1;
         this.numSlices = 16;
     }
@@ -85,7 +85,7 @@ public class Cylinder implements Primitive {
      * @param radius
      * @param numSlices
      */
-    public Cylinder(Vector start, Vector end, double radius, int numSlices) {
+    public Cylinder(Vector3d start, Vector3d end, double radius, int numSlices) {
         this.start = start;
         this.end = end;
         this.radius = radius;
@@ -94,14 +94,14 @@ public class Cylinder implements Primitive {
 
     @Override
     public List<Polygon> toPolygons() {
-        final Vector s = getStart();
-        Vector e = getEnd();
-        final Vector ray = e.minus(s);
-        final Vector axisZ = ray.unit();
+        final Vector3d s = getStart();
+        Vector3d e = getEnd();
+        final Vector3d ray = e.minus(s);
+        final Vector3d axisZ = ray.unit();
         boolean isY = (Math.abs(axisZ.y) > 0.5);
-        final Vector axisX = new Vector(isY ? 1 : 0, !isY ? 1 : 0, 0).
+        final Vector3d axisX = new Vector3d(isY ? 1 : 0, !isY ? 1 : 0, 0).
                 cross(axisZ).unit();
-        final Vector axisY = axisX.cross(axisZ).unit();
+        final Vector3d axisY = axisX.cross(axisZ).unit();
         Vertex startV = new Vertex(s, axisZ.negated());
         Vertex endV = new Vertex(e, axisZ.unit());
         List<Polygon> polygons = new ArrayList<>();
@@ -132,40 +132,40 @@ public class Cylinder implements Primitive {
     }
 
     private Vertex cylPoint(
-            Vector axisX, Vector axisY, Vector axisZ, Vector ray, Vector s,
+            Vector3d axisX, Vector3d axisY, Vector3d axisZ, Vector3d ray, Vector3d s,
             double r, double stack, double slice, double normalBlend) {
         double angle = slice * Math.PI * 2;
-        Vector out = axisX.times(Math.cos(angle)).plus(axisY.times(Math.sin(angle)));
-        Vector pos = s.plus(ray.times(stack)).plus(out.times(r));
-        Vector normal = out.times(1.0 - Math.abs(normalBlend)).plus(axisZ.times(normalBlend));
+        Vector3d out = axisX.times(Math.cos(angle)).plus(axisY.times(Math.sin(angle)));
+        Vector3d pos = s.plus(ray.times(stack)).plus(out.times(r));
+        Vector3d normal = out.times(1.0 - Math.abs(normalBlend)).plus(axisZ.times(normalBlend));
         return new Vertex(pos, normal);
     }
 
     /**
      * @return the start
      */
-    public Vector getStart() {
+    public Vector3d getStart() {
         return start;
     }
 
     /**
      * @param start the start to set
      */
-    public void setStart(Vector start) {
+    public void setStart(Vector3d start) {
         this.start = start;
     }
 
     /**
      * @return the end
      */
-    public Vector getEnd() {
+    public Vector3d getEnd() {
         return end;
     }
 
     /**
      * @param end the end to set
      */
-    public void setEnd(Vector end) {
+    public void setEnd(Vector3d end) {
         this.end = end;
     }
 

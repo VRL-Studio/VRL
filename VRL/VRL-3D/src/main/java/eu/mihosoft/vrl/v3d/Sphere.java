@@ -62,7 +62,7 @@ import java.util.List;
  */
 public class Sphere implements Primitive {
 
-    private Vector center;
+    private Vector3d center;
     private double radius;
     private int numSlices;
     private int numStacks;
@@ -96,7 +96,7 @@ public class Sphere implements Primitive {
      * @param numSlices number of slices
      * @param numStacks number of stacks
      */
-    public Sphere(Vector center, double radius, int numSlices, int numStacks) {
+    public Sphere(Vector3d center, double radius, int numSlices, int numStacks) {
         this.center = center;
         this.radius = radius;
         this.numSlices = numSlices;
@@ -104,16 +104,16 @@ public class Sphere implements Primitive {
     }
 
     private void init() {
-        center = new Vector(0, 0, 0);
+        center = new Vector3d(0, 0, 0);
         radius = 1;
         numSlices = 16;
         numStacks = 8;
     }
 
-    private Vertex sphereVertex(Vector c, double r, double theta, double phi) {
+    private Vertex sphereVertex(Vector3d c, double r, double theta, double phi) {
         theta *= Math.PI * 2;
         phi *= Math.PI;
-        Vector dir = new Vector(
+        Vector3d dir = new Vector3d(
                 Math.cos(theta) * Math.sin(phi),
                 Math.cos(phi),
                 Math.sin(theta) * Math.sin(phi)
@@ -158,14 +158,14 @@ public class Sphere implements Primitive {
     /**
      * @return the center
      */
-    public Vector getCenter() {
+    public Vector3d getCenter() {
         return center;
     }
 
     /**
      * @param center the center to set
      */
-    public void setCenter(Vector center) {
+    public void setCenter(Vector3d center) {
         this.center = center;
     }
 

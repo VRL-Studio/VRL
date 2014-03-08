@@ -69,7 +69,7 @@ public class Plane {
     /**
      * Normal vector.
      */
-    public Vector normal;
+    public Vector3d normal;
     /**
      * Distance to origin.
      */
@@ -82,7 +82,7 @@ public class Plane {
      * @param normal plane normal
      * @param dist distance from origin
      */
-    public Plane(Vector normal, double dist) {
+    public Plane(Vector3d normal, double dist) {
         this.normal = normal;
         this.dist = dist;
     }
@@ -95,8 +95,8 @@ public class Plane {
      * @param c third point
      * @return a nedist plane
      */
-    public static Plane createFromPoints(Vector a, Vector b, Vector c) {
-        Vector n = b.minus(a).cross(c.minus(a)).unit();
+    public static Plane createFromPoints(Vector3d a, Vector3d b, Vector3d c) {
+        Vector3d n = b.minus(a).cross(c.minus(a)).unit();
         return new Plane(n, n.dot(a));
     }
 
