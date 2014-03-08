@@ -1,26 +1,65 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * Cube.java
+ *
+ * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
+ * Copyright (c) 2006–2014 by Michael Hoffer
+ * 
+ * This file is part of Visual Reflection Library (VRL).
+ *
+ * VRL is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 3
+ * as published by the Free Software Foundation.
+ * 
+ * see: http://opensource.org/licenses/LGPL-3.0
+ *      file://path/to/VRL/src/eu/mihosoft/vrl/resources/license/lgplv3.txt
+ *
+ * VRL is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * This version of VRL includes copyright notice and attribution requirements.
+ * According to the LGPL this information must be displayed even if you modify
+ * the source code of VRL. Neither the VRL Canvas attribution icon nor any
+ * copyright statement/attribution may be removed.
+ *
+ * Attribution Requirements:
+ *
+ * If you create derived work you must do three things regarding copyright
+ * notice and author attribution.
+ *
+ * First, the following text must be displayed on the Canvas or an equivalent location:
+ * "based on VRL source code".
+ * 
+ * Second, the copyright notice must remain. It must be reproduced in any
+ * program that uses VRL.
+ *
+ * Third, add an additional notice, stating that you modified VRL. In addition
+ * you must cite the publications listed below. A suitable notice might read
+ * "VRL source code modified by YourName 2012".
+ * 
+ * Note, that these requirements are in full accordance with the LGPL v3
+ * (see 7. Additional Terms, b).
+ *
+ * Publications:
+ *
+ * M. Hoffer, C.Poliwoda, G.Wittum. Visual Reflection Library -
+ * A Framework for Declarative GUI Programming on the Java Platform.
+ * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.v3d;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
-// Construct an axis-aligned solid cuboid. Optional parameters are `center` and
-    // `radius`, which default to `[0, 0, 0]` and `[1, 1, 1]`. The radius can be
-    // specified using a single number or a list of three numbers, one for each axis.
-
 /**
- * An axis-aligned solid cuboid defined by {@code center} and {@code dimensions}.
- * 
+ * An axis-aligned solid cuboid defined by {@code center} and
+ * {@code dimensions}.
+ *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class Cube implements Primitive{
-    
+public class Cube implements Primitive {
+
     private Vector center;
     private Vector dimensions;
 
@@ -33,7 +72,6 @@ public class Cube implements Primitive{
         this.center = center;
         this.dimensions = dimensions;
     }
-    
 
     @Override
     public List<Polygon> toPolygons() {
@@ -41,6 +79,7 @@ public class Cube implements Primitive{
         Vector d = getDimensions();
 
         int[][][] a = {
+            // position     // normal
             {{0, 4, 6, 2}, {-1, 0, 0}},
             {{1, 3, 7, 5}, {+1, 0, 0}},
             {{0, 1, 5, 4}, {0, -1, 0}},
@@ -50,21 +89,20 @@ public class Cube implements Primitive{
         };
         List<Polygon> polygons = new ArrayList<>();
         for (int[][] info : a) {
-            List<Vertex> vertexes = new ArrayList<>();
+            List<Vertex> vertices = new ArrayList<>();
             for (int i : info[0]) {
                 Vector pos = new Vector(
-                        // TODO 
-                        c.x + d.x * (2 * Utils.doubleNegate(i & 1) - 1),
-                        c.y + d.y * (2 * Utils.doubleNegate(i & 2) - 1),
-                        c.z + d.z * (2 * Utils.doubleNegate(i & 4) - 1)
+                        c.x + d.x * (1 * Math.min(1, i & 1) - 0.5),
+                        c.y + d.y * (1 * Math.min(1, i & 2) - 0.5),
+                        c.z + d.z * (1 * Math.min(1, i & 4) - 0.5)
                 );
-                vertexes.add(new Vertex(pos, new Vector(
+                vertices.add(new Vertex(pos, new Vector(
                         (double) info[1][0],
                         (double) info[1][1],
                         (double) info[1][2]
                 )));
             }
-            polygons.add(new Polygon(vertexes, false));
+            polygons.add(new Polygon(vertices, false));
         }
         return polygons;
     }
@@ -96,6 +134,4 @@ public class Cube implements Primitive{
     public void setDimensions(Vector dimensions) {
         this.dimensions = dimensions;
     }
-
-     
 }

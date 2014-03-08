@@ -1,7 +1,51 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* 
+ * Sphere.java
+ *
+ * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
+ * Copyright (c) 2006–2014 by Michael Hoffer
+ * 
+ * This file is part of Visual Reflection Library (VRL).
+ *
+ * VRL is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License version 3
+ * as published by the Free Software Foundation.
+ * 
+ * see: http://opensource.org/licenses/LGPL-3.0
+ *      file://path/to/VRL/src/eu/mihosoft/vrl/resources/license/lgplv3.txt
+ *
+ * VRL is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * This version of VRL includes copyright notice and attribution requirements.
+ * According to the LGPL this information must be displayed even if you modify
+ * the source code of VRL. Neither the VRL Canvas attribution icon nor any
+ * copyright statement/attribution may be removed.
+ *
+ * Attribution Requirements:
+ *
+ * If you create derived work you must do three things regarding copyright
+ * notice and author attribution.
+ *
+ * First, the following text must be displayed on the Canvas or an equivalent location:
+ * "based on VRL source code".
+ * 
+ * Second, the copyright notice must remain. It must be reproduced in any
+ * program that uses VRL.
+ *
+ * Third, add an additional notice, stating that you modified VRL. In addition
+ * you must cite the publications listed below. A suitable notice might read
+ * "VRL source code modified by YourName 2012".
+ * 
+ * Note, that these requirements are in full accordance with the LGPL v3
+ * (see 7. Additional Terms, b).
+ *
+ * Publications:
+ *
+ * M. Hoffer, C.Poliwoda, G.Wittum. Visual Reflection Library -
+ * A Framework for Declarative GUI Programming on the Java Platform.
+ * Computing and Visualization in Science, in press.
  */
 package eu.mihosoft.vrl.v3d;
 
@@ -10,6 +54,9 @@ import java.util.List;
 
 /**
  * A solid sphere.
+ *
+ * Tthe tessellation along the longitude and latitude directions can be
+ * controlled via the {@link #numSlices} and {@link #numStacks} parameters.
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
@@ -21,18 +68,34 @@ public class Sphere implements Primitive {
     private int numStacks;
 
     /**
-     * Constructor.
+     * Constructor. Creates a sphere with radius 1, 16 slices and 8 stacks and
+     * center [0,0,0].
      *
      */
     public Sphere() {
         init();
     }
 
+    /**
+     * Constructor. Creates a sphere with the specified radius, 16 slices and 8
+     * stacks and center [0,0,0].
+     *
+     * @param radius sphare radius
+     */
     public Sphere(double radius) {
         init();
         this.radius = radius;
     }
 
+    /**
+     * Constructor. Creates a sphere with the specified radius, number of slices
+     * and stacks.
+     *
+     * @param center center of the sphere
+     * @param radius sphere radius
+     * @param numSlices number of slices
+     * @param numStacks number of stacks
+     */
     public Sphere(Vector center, double radius, int numSlices, int numStacks) {
         this.center = center;
         this.radius = radius;
@@ -60,24 +123,32 @@ public class Sphere implements Primitive {
 
     @Override
     public List<Polygon> toPolygons() {
-        final Vector c = getCenter();
-        final double r = getRadius();
-        int slices = getNumSlices();
-        int stacks = getNumStacks();
         List<Polygon> polygons = new ArrayList<>();
 
-        for (int i = 0; i < slices; i++) {
-            for (int j = 0; j < stacks; j++) {
+        for (int i = 0; i < numSlices; i++) {
+            for (int j = 0; j < numStacks; j++) {
                 final List<Vertex> vertices = new ArrayList<>();
 
-                vertices.add(sphereVertex(c, r, i / (double) slices, j / (double) stacks));
+                vertices.add(
+                        sphereVertex(center, radius, i / (double) numSlices,
+                                j / (double) numStacks)
+                );
                 if (j > 0) {
-                    vertices.add(sphereVertex(c, r, (i + 1) / (double) slices, j / (double) stacks));
+                    vertices.add(
+                            sphereVertex(center, radius, (i + 1) / (double) numSlices,
+                                    j / (double) numStacks)
+                    );
                 }
-                if (j < stacks - 1) {
-                    vertices.add(sphereVertex(c, r, (i + 1) / (double) slices, (j + 1) / (double) stacks));
+                if (j < numStacks - 1) {
+                    vertices.add(
+                            sphereVertex(center, radius, (i + 1) / (double) numSlices,
+                                    (j + 1) / (double) numStacks)
+                    );
                 }
-                vertices.add(sphereVertex(c, r, i / (double) slices, (j + 1) / (double) stacks));
+                vertices.add(
+                        sphereVertex(center, radius, i / (double) numSlices,
+                                (j + 1) / (double) numStacks)
+                );
                 polygons.add(new Polygon(vertices, false));
             }
         }
@@ -141,18 +212,3 @@ public class Sphere implements Primitive {
     }
 
 }
-
-    // Construct a solid sphere. Optional parameters are `center`, `radius`,
-// `slices`, and `stacks`, which default to `[0, 0, 0]`, `1`, `16`, and `8`.
-// The `slices` and `stacks` parameters control the tessellation along the
-// longitude and latitude directions.
-//
-// Example usage:
-//
-//     var sphere = CSG.sphere({
-//       center: [0, 0, 0],
-//       radius: 1,
-//       slices: 16,
-//       stacks: 8
-//     });
-
