@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.v3d;
 
 /**
@@ -83,7 +82,7 @@ public class Vector {
     /**
      * Returns a negated copy of this vector.
      *
-     * <b>Note:</b> this vector is not modified
+     * <b>Note:</b> this vector is not modified.
      *
      * @return a negated copy of this vector
      */
@@ -96,7 +95,7 @@ public class Vector {
      *
      * @param v the vector to add
      *
-     * <b>Note:</b> this vector is not modified
+     * <b>Note:</b> this vector is not modified.
      *
      * @return the sum of this vector and the specified vector
      */
@@ -109,7 +108,7 @@ public class Vector {
      *
      * @param v the vector to subtract
      *
-     * <b>Note:</b> this vector is not modified
+     * <b>Note:</b> this vector is not modified.
      *
      * @return the difference of this vector and the specified vector
      */
@@ -122,7 +121,7 @@ public class Vector {
      *
      * @param a the value
      *
-     * <b>Note:</b> this vector is not modified
+     * <b>Note:</b> this vector is not modified.
      *
      * @return the product of this vector and the specified value
      */
@@ -135,7 +134,7 @@ public class Vector {
      *
      * @param a the value
      *
-     * <b>Note:</b> this vector is not modified
+     * <b>Note:</b> this vector is not modified.
      *
      * @return this vector devided by the specified value
      */
@@ -145,11 +144,11 @@ public class Vector {
 
     /**
      * Returns the dot product of this vector and the specified vector.
-     * 
-     * <b>Note:</b> this vector is not modified
+     *
+     * <b>Note:</b> this vector is not modified.
      *
      * @param a the second vector
-     * 
+     *
      * @return the dot product of this vector and the specified vector
      */
     public double dot(Vector a) {
@@ -157,10 +156,15 @@ public class Vector {
     }
 
     /**
+     * Linearly interpolates between this and the specified vector.
      * 
-     * @param a
-     * @param t
-     * @return
+     * <b>Note:</b> this vector is not modified.
+     *
+     * @param a vector
+     * @param t interpolation value
+     * 
+     * @return copy of this vector if {@code t = 0}; copy of a if {@code t = 1};
+     * the point midway between this and the specified vector if {@code t = 0.5}
      */
     public Vector lerp(Vector a, double t) {
         return this.plus(a.minus(this).times(t));
@@ -169,7 +173,7 @@ public class Vector {
     /**
      * Returns the magnitude of this vector.
      *
-     * <b>Note:</b> this vector is not modified
+     * <b>Note:</b> this vector is not modified.
      *
      * @return the magnitude of this vector
      */
@@ -180,7 +184,7 @@ public class Vector {
     /**
      * Returns a normalized copy of this vector with {@code length}.
      *
-     * <b>Note:</b> this vector is not modified
+     * <b>Note:</b> this vector is not modified.
      *
      * @return a normalized copy of this vector with {@code length}
      */
@@ -191,7 +195,7 @@ public class Vector {
     /**
      * Returns the cross product of this vector and the specified vector.
      *
-     * <b>Note:</b> this vector is not modified
+     * <b>Note:</b> this vector is not modified.
      *
      * @param a the vector
      *
@@ -205,29 +209,32 @@ public class Vector {
         );
     }
 
-   /**
+    /**
      * Returns this vector in STL string format.
-     * 
+     *
      * @return this vector in STL string format
      */
     public String toStlString() {
         return toStlString(new StringBuilder()).toString();
     }
-    
+
     /**
      * Returns this vector in STL string format.
-     * 
+     *
      * @param sb string builder
      * @return the specified string builder
      */
     public StringBuilder toStlString(StringBuilder sb) {
-        return sb.append(this.x).append(" ").append(this.y).append(" ").append(this.z);
+        return sb.append(this.x).append(" ").
+                append(this.y).append(" ").
+                append(this.z);
     }
 
     /**
      * Applies the specified transformation to this vector.
      *
      * @param transform the transform to apply
+     * 
      * @return this vector
      */
     public Vector transform(Transform transform) {
@@ -239,7 +246,7 @@ public class Vector {
      *
      * @param transform the transform to apply
      *
-     * <b>Note:</b> this vector is not modified
+     * <b>Note:</b> this vector is not modified.
      *
      * @return a transformed copy of this vector
      */

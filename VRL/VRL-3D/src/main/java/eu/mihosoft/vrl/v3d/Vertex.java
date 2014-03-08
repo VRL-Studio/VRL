@@ -47,17 +47,12 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.v3d;
 
 /**
- * Represents a vertex of a polygon. Use your own vertex class instead of this
- * one to provide additional features like texture coordinates and vertex
- * colors. Custom vertex classes need to provide a `pos` property and `clone()`,
- * `flip()`, and `interpolate()` methods that behave analogous to the ones
- * defined by `Vertex`. This class provides `normal` so convenience functions
- * like `CSG.sphere()` can return a smooth vertex normal, but `normal` is not
- * used anywhere else.
+ * Represents a vertex of a polygon. This class provides {@link #normal} so
+ * primitives like {@link Cube} can return a smooth vertex normal, but
+ * {@link #normal} is not used anywhere else.
  */
 public class Vertex {
 
@@ -65,7 +60,7 @@ public class Vertex {
      * Vertex position.
      */
     public Vector pos;
-    
+
     /**
      * Normal.
      */
@@ -95,9 +90,9 @@ public class Vertex {
     }
 
     /**
-     * Create a new vertex between this vertex and the specified vertex by linearly
-     * interpolating all properties using a parameter t.
-     * 
+     * Create a new vertex between this vertex and the specified vertex by
+     * linearly interpolating all properties using a parameter t.
+     *
      * @param other vertex
      * @param t interpolation parameter
      * @return a new vertex between this and the specified vertex
@@ -109,16 +104,16 @@ public class Vertex {
 
     /**
      * Returns this vertex in STL string format.
-     * 
+     *
      * @return this vertex in STL string format
      */
     public String toStlString() {
         return "vertex " + this.pos.toStlString();
     }
-    
+
     /**
      * Returns this vertex in STL string format.
-     * 
+     *
      * @param sb string builder
      * @return the specified string builder
      */
@@ -129,6 +124,7 @@ public class Vertex {
 
     /**
      * Applies the specified transform to this vertex.
+     *
      * @param transform the transform to apply
      * @return this vertex
      */
@@ -139,11 +135,11 @@ public class Vertex {
 
     /**
      * Applies the specified transform to a copy of this vertex.
+     *
      * @param transform the transform to apply
      * @return a copy of this transform
      */
     public Vertex transformed(Transform transform) {
         return clone().transform(transform);
     }
-
 }
