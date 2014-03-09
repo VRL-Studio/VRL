@@ -66,6 +66,17 @@ import eu.mihosoft.vrl.v3d.ext.org.poly2tri.PolygonUtil;
 public final class Polygon {
 
     /**
+     * Decomposes the specified concave polygon into convex polygons.
+     * @param points the points that define the polygon
+     * @return the decomposed concave polygon (list of convex polygons)
+     */
+    public static List<Polygon> fromConcavePoints(Vector3d... points) {
+        Polygon p = fromPoints(points);
+
+        return PolygonUtil.concaveToConvex(p);
+    }
+
+    /**
      * Polygon vertices
      */
     public final List<Vertex> vertices;
@@ -284,7 +295,7 @@ public final class Polygon {
      * @param shared shared property storage
      * @return a polygon defined by the specified point list
      */
-    public static Polygon createFromPoints(List<Vector3d> points,
+    public static Polygon fromPoints(List<Vector3d> points,
             PropertyStorage shared) {
         return fromPoints(points, shared, null);
     }
@@ -361,7 +372,7 @@ public final class Polygon {
             sidefacepoints.add(polygon2.vertices.get(i).pos);
             sidefacepoints.add(polygon2.vertices.get(nexti).pos);
             sidefacepoints.add(polygon1.vertices.get(nexti).pos);
-            Polygon sidefacepolygon = Polygon.createFromPoints(
+            Polygon sidefacepolygon = Polygon.fromPoints(
                     sidefacepoints, this.shared);
             newPolygons.add(sidefacepolygon);
         }
@@ -369,11 +380,9 @@ public final class Polygon {
         polygon2 = polygon2.flipped();
         newPolygons.addAll(PolygonUtil.concaveToConvex(polygon2));
 
-//        newPolygons.add(polygon2);
+        newPolygons.add(polygon2);
         return CSG.fromPolygons(newPolygons);
     }
-
-    
 
 //    private static List<Polygon> concaveToConvex(Polygon concave) {
 //        List<Polygon> result = new ArrayList<>();
