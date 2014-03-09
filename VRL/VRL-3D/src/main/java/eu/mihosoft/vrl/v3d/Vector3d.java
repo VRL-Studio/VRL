@@ -74,6 +74,20 @@ public class Vector3d {
         this.z = z;
     }
 
+    /**
+     * Creates a new vector with specified {@code x}, {@code y} and
+     * {@code z = 0}.
+     *
+     * @param x x value
+     * @param y y value
+     */
+    public Vector3d(double x, double y) {
+
+        this.x = x;
+        this.y = y;
+        this.z = 0;
+    }
+
     @Override
     public Vector3d clone() {
         return new Vector3d(x, y, z);
@@ -157,12 +171,12 @@ public class Vector3d {
 
     /**
      * Linearly interpolates between this and the specified vector.
-     * 
+     *
      * <b>Note:</b> this vector is not modified.
      *
      * @param a vector
      * @param t interpolation value
-     * 
+     *
      * @return copy of this vector if {@code t = 0}; copy of a if {@code t = 1};
      * the point midway between this and the specified vector if {@code t = 0.5}
      */
@@ -234,7 +248,7 @@ public class Vector3d {
      * Applies the specified transformation to this vector.
      *
      * @param transform the transform to apply
-     * 
+     *
      * @return this vector
      */
     public Vector3d transform(Transform transform) {
@@ -253,7 +267,7 @@ public class Vector3d {
     public Vector3d transformed(Transform transform) {
         return clone().transform(transform);
     }
-    
+
     @Override
     public String toString() {
         return "[" + x + ", " + y + ", " + z + "]";

@@ -328,6 +328,20 @@ public class Transform {
         m.mul(new Matrix4d(elemenents));
         return this;
     }
+    
+        /**
+     * Applies a scale operation to this transform.
+     *
+     * @param s s scale value (x, y and z)
+     *
+     * @return this transform
+     */
+    public Transform scale(double s) {
+        double elemenents[] = {
+            s, 0, 0, 0, 0, s, 0, 0, 0, 0, s, 0, 0, 0, 0, 1};
+        m.mul(new Matrix4d(elemenents));
+        return this;
+    }
 
     /**
      * Applies a scale operation (x axis) to this transform.

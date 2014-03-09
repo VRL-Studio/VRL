@@ -49,10 +49,17 @@
  */
 package eu.mihosoft.vrl.v3d;
 
+import com.sun.j3d.utils.geometry.Triangulator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import org.poly2tri.geometry.polygon.PolygonPoint;
+import org.poly2tri.triangulation.TriangulationPoint;
+import org.poly2tri.triangulation.delaunay.DelaunayTriangle;
+import org.poly2tri.triangulation.delaunay.sweep.DTSweepContext;
+import quickhull3d.Point3d;
+import quickhull3d.QuickHull3D;
 
 /**
  * Represents a convex polygon.
@@ -98,6 +105,15 @@ public final class Polygon {
                 vertices.get(2).pos);
     }
 
+    /**
+     * Constructor. Creates a new polygon that consists of the specified
+     * vertices.
+     *
+     * <b>Note:</b> the vertices used to initialize a polygon must be coplanar
+     * and form a convex loop.
+     *
+     * @param vertices polygon vertices
+     */
     public Polygon(List<Vertex> vertices) {
         this.vertices = vertices;
         this.shared = new PropertyStorage();
@@ -105,6 +121,20 @@ public final class Polygon {
                 vertices.get(0).pos,
                 vertices.get(1).pos,
                 vertices.get(2).pos);
+    }
+
+    /**
+     * Constructor. Creates a new polygon that consists of the specified
+     * vertices.
+     *
+     * <b>Note:</b> the vertices used to initialize a polygon must be coplanar
+     * and form a convex loop.
+     *
+     * @param vertices polygon vertices
+     *
+     */
+    public Polygon(Vertex... vertices) {
+        this(Arrays.asList(vertices));
     }
 
     @Override
@@ -274,8 +304,8 @@ public final class Polygon {
     public static Polygon fromPoints(List<Vector3d> points) {
         return fromPoints(points, new PropertyStorage(), null);
     }
-    
-        /**
+
+    /**
      * Creates a polygon from the specified points.
      *
      * @param points the points that define the polygon
@@ -326,7 +356,8 @@ public final class Polygon {
             polygon1 = polygon1.flipped();
         }
 
-        newPolygons.add(polygon1);
+//        newPolygons.add(polygon1);
+        newPolygons.addAll(concaveToConvex(polygon1));
         Polygon polygon2 = polygon1.translated(dir);
         int numvertices = this.vertices.size();
         for (int i = 0; i < numvertices; i++) {
@@ -340,10 +371,175 @@ public final class Polygon {
                     sidefacepoints, this.shared);
             newPolygons.add(sidefacepolygon);
         }
-        
+
         polygon2 = polygon2.flipped();
-        newPolygons.add(polygon2);
+        newPolygons.addAll(concaveToConvex(polygon2));
+
+//        newPolygons.add(polygon2);
         return CSG.fromPolygons(newPolygons);
     }
 
+    private static List<Polygon> concaveToConvex(Polygon concave) {
+
+        List<Polygon> result = new ArrayList<>();
+
+        Vector3d normal = concave.vertices.get(0).normal.clone();
+
+        Plane plane = concave.plane.clone();
+
+        boolean cw = plane.dist > 0;
+
+        List< PolygonPoint> points = new ArrayList<>();
+
+        for (Vertex v : concave.vertices) {
+            PolygonPoint vp = new PolygonPoint(v.pos.x, v.pos.y, v.pos.z);
+            points.add(vp);
+        }
+
+        org.poly2tri.geometry.polygon.Polygon p
+                = new org.poly2tri.geometry.polygon.Polygon(points);
+        org.poly2tri.Poly2Tri.triangulate(p);
+
+        List<DelaunayTriangle> triangles = p.getTriangles();
+
+        List<Vertex> triPoints = new ArrayList<>();
+
+        for (DelaunayTriangle t : triangles) {
+
+            int counter = 0;
+            for (TriangulationPoint tp : t.points) {
+
+                triPoints.add(new Vertex(
+                        new Vector3d(tp.getX(), tp.getY(), tp.getZ()),
+                        normal));
+
+                if (counter == 2) {
+                    if (!cw) {
+                        Collections.reverse(triPoints);
+                    }
+                    Polygon poly = new Polygon(triPoints);
+                    result.add(poly);
+                    counter = 0;
+                    triPoints = new ArrayList<>();
+                    System.out.println(poly.toStlString());
+
+                } else {
+                    counter++;
+                }
+            }
+        }
+
+        return result;
+    }
+
+//    private static List<Polygon> concaveToConvex(Polygon concave) {
+//        List<Polygon> result = new ArrayList<>();
+//
+//        Triangulation t = new Triangulation();
+//        
+//        double[] xv = new double[concave.vertices.size()];
+//        double[] yv = new double[concave.vertices.size()];
+//        
+//        for(int i = 0; i < xv.length;i++) {
+//            Vector3d pos = concave.vertices.get(i).pos;
+//            xv[i] = pos.x;
+//            yv[i] = pos.y;
+//        }
+//        
+//        TriangleTri[] triangles = t.triangulatePolygon(xv, yv, xv.length);
+//        
+//        for(TriangleTri tr : triangles) {
+//            double x1 = tr.x[0];
+//            double x2 = tr.x[1];
+//            double x3 = tr.x[2];
+//            double y1 = tr.y[0];
+//            double y2 = tr.y[1];
+//            double y3 = tr.y[2];
+//            
+//            Vertex v1 = new Vertex(new Vector3d(x1, y1), new Vector3d(0, 0));
+//            Vertex v2 = new Vertex(new Vector3d(x2, y2), new Vector3d(0, 0));
+//            Vertex v3 = new Vertex(new Vector3d(x3, y3), new Vector3d(0, 0));
+//            
+//            result.add(new Polygon(v1,v2,v3));
+//        }
+//
+//        return result;
+//    }
+//    private static List<Polygon> concaveToConvex(Polygon concave) {
+//        List<Polygon> result = new ArrayList<>();
+//
+//        //convert polygon to convex polygons
+//        EarClippingTriangulator clippingTriangulator = new EarClippingTriangulator();
+//        double[] vertexArray = new double[concave.vertices.size() * 2];
+//        for (int i = 0; i < vertexArray.length; i += 2) {
+//            Vertex v = concave.vertices.get(i / 2);
+//            vertexArray[i + 0] = v.pos.x;
+//            vertexArray[i + 1] = v.pos.y;
+//        }
+// 
+//        IntArray indices = clippingTriangulator.computeTriangles(vertexArray);
+//        
+//        System.out.println("indices: " + indices.size + ", vertices: " + vertexArray.length);
+//        
+//        for (double i : vertexArray) {
+//            System.out.println("vertices: " + i);
+//        }
+//        
+//        Vertex[] newPolygonVerts = new Vertex[3];
+//
+//        int count = 0;
+//        for (int i = 0; i < indices.size; i+=2) {
+//            double x = vertexArray[indices.items[i]+0];
+//            double y = vertexArray[indices.items[i]+1];
+//            
+//            Vector3d pos = new Vector3d(x, y);
+//            Vertex v = new Vertex(pos, new Vector3d(0, 0, 0));
+//
+//            System.out.println("writing vertex: " + (count));
+//            newPolygonVerts[count] = v;
+//
+//            if (count == 2) {
+//                result.add(new Polygon(newPolygonVerts));
+//                count = 0;
+//            } else {
+//                count++;
+//            }
+//        }
+//        
+//        System.out.println("---");
+//        
+//        for (Polygon p : result) {
+//            System.out.println(p.toStlString());
+//        }
+//
+//        return result;
+//        
+////        Point3d[] points = new Point3d[concave.vertices.size()];
+////        
+////        for (int i = 0; i < points.length;i++) {
+////            Vector3d pos = concave.vertices.get(i).pos;
+////            points[i] = new Point3d(pos.x, pos.y, pos.z);
+////        }
+////        
+////        QuickHull3D hull = new QuickHull3D();
+////        hull.build(points);
+////
+////        System.out.println("Vertices:");
+////        Point3d[] vertices = hull.getVertices();
+////        for (int i = 0; i < vertices.length; i++) {
+////            Point3d pnt = vertices[i];
+////            System.out.println(pnt.x + " " + pnt.y + " " + pnt.z);
+////        }
+////
+////        System.out.println("Faces:");
+////        int[][] faceIndices = hull.getFaces();
+////        for (int i = 0; i < faceIndices.length; i++) {
+////            for (int k = 0; k < faceIndices[i].length; k++) {
+////                System.out.print(faceIndices[i][k] + " ");
+////            }
+////            System.out.println("");
+////        }
+//
+////        return result;
+//    }
 }
