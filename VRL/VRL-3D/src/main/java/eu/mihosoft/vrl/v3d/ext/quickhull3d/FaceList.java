@@ -1,4 +1,4 @@
-package quickhull3d;
+package eu.mihosoft.vrl.v3d.ext.quickhull3d;
 
 /**
  * Maintains a single-linked list of faces for use by QuickHull3D

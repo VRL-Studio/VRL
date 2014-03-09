@@ -1,4 +1,4 @@
-package quickhull3d;
+package eu.mihosoft.vrl.v3d.ext.quickhull3d;
 
 /**
  * Represents vertices of the hull, as well as the points from

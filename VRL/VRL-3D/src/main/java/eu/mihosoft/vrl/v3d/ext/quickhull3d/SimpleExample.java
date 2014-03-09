@@ -1,4 +1,4 @@
-package quickhull3d;
+package eu.mihosoft.vrl.v3d.ext.quickhull3d;
 
 /**
  * Simple example usage of QuickHull3D. Run as the command

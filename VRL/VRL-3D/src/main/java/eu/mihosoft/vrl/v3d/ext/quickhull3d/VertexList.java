@@ -1,4 +1,4 @@
-package quickhull3d;
+package eu.mihosoft.vrl.v3d.ext.quickhull3d;
 
 /**
  * Maintains a double-linked list of vertices for use by QuickHull3D

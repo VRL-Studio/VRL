@@ -11,7 +11,7 @@
   * software.
   */
 
-package quickhull3d;
+package eu.mihosoft.vrl.v3d.ext.quickhull3d;
 
 /**
  * A three-element spatial point.
