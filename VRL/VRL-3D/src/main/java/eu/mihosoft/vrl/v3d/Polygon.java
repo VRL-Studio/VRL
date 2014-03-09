@@ -49,17 +49,11 @@
  */
 package eu.mihosoft.vrl.v3d;
 
-import com.sun.j3d.utils.geometry.Triangulator;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.poly2tri.geometry.polygon.PolygonPoint;
-import org.poly2tri.triangulation.TriangulationPoint;
-import org.poly2tri.triangulation.delaunay.DelaunayTriangle;
-import org.poly2tri.triangulation.delaunay.sweep.DTSweepContext;
-import quickhull3d.Point3d;
-import quickhull3d.QuickHull3D;
+import eu.mihosoft.vrl.v3d.ext.org.poly2tri.PolygonUtil;
 
 /**
  * Represents a convex polygon.
@@ -357,7 +351,7 @@ public final class Polygon {
         }
 
 //        newPolygons.add(polygon1);
-        newPolygons.addAll(concaveToConvex(polygon1));
+        newPolygons.addAll(PolygonUtil.concaveToConvex(polygon1));
         Polygon polygon2 = polygon1.translated(dir);
         int numvertices = this.vertices.size();
         for (int i = 0; i < numvertices; i++) {
@@ -373,64 +367,13 @@ public final class Polygon {
         }
 
         polygon2 = polygon2.flipped();
-        newPolygons.addAll(concaveToConvex(polygon2));
+        newPolygons.addAll(PolygonUtil.concaveToConvex(polygon2));
 
 //        newPolygons.add(polygon2);
         return CSG.fromPolygons(newPolygons);
     }
 
-    private static List<Polygon> concaveToConvex(Polygon concave) {
-
-        List<Polygon> result = new ArrayList<>();
-
-        Vector3d normal = concave.vertices.get(0).normal.clone();
-
-        Plane plane = concave.plane.clone();
-
-        boolean cw = plane.dist > 0;
-
-        List< PolygonPoint> points = new ArrayList<>();
-
-        for (Vertex v : concave.vertices) {
-            PolygonPoint vp = new PolygonPoint(v.pos.x, v.pos.y, v.pos.z);
-            points.add(vp);
-        }
-
-        org.poly2tri.geometry.polygon.Polygon p
-                = new org.poly2tri.geometry.polygon.Polygon(points);
-        org.poly2tri.Poly2Tri.triangulate(p);
-
-        List<DelaunayTriangle> triangles = p.getTriangles();
-
-        List<Vertex> triPoints = new ArrayList<>();
-
-        for (DelaunayTriangle t : triangles) {
-
-            int counter = 0;
-            for (TriangulationPoint tp : t.points) {
-
-                triPoints.add(new Vertex(
-                        new Vector3d(tp.getX(), tp.getY(), tp.getZ()),
-                        normal));
-
-                if (counter == 2) {
-                    if (!cw) {
-                        Collections.reverse(triPoints);
-                    }
-                    Polygon poly = new Polygon(triPoints);
-                    result.add(poly);
-                    counter = 0;
-                    triPoints = new ArrayList<>();
-                    System.out.println(poly.toStlString());
-
-                } else {
-                    counter++;
-                }
-            }
-        }
-
-        return result;
-    }
+    
 
 //    private static List<Polygon> concaveToConvex(Polygon concave) {
 //        List<Polygon> result = new ArrayList<>();

@@ -235,26 +235,9 @@ public class Main {
         CSG outer = board_points_outer.
                 extrude(new Vector3d(0, 0, bottom_thickness * 2));
         CSG inner = board_points_inner.
-                extrude(new Vector3d(0, 0, bottom_thickness * 3));
+                extrude(new Vector3d(0, 0, bottom_thickness * 2));
         
         return outer.difference(inner).transformed(Transform.unity().scale(0.05));
-        
-//        return inner;
-
-//// inner points
-//[0+ox2,0+oy2],
-//[0+ox2,bh-oy2],
-//[bw-ox2,bh-oy2],
-//[bw-ox2,bh-sd1+oy2],
-//[bw-sd3-ox2,bh-sd1+oy2],
-//[bw-sd3-ox2,sd2-oy2],
-//[bw-ox2,sd2-oy2],
-//[bw-ox2,0+oy2]
-//];
-//
-//linear_extrude(height = bottom_thickness, center = true, convexity = 10, twist = 0)
-////translate([ox1,oy1])
-//polygon(points=board_points,paths=[[0,1,2,3,4,5,6,7], [8,9,10,11,12,13,14,15]]);
     }
 
 }
