@@ -101,7 +101,7 @@ public class Main {
         try {
             FileUtil.write(
                     Paths.get("obj.stl"),
-                    board().toStlString());
+                    boardAndPegs().toStlString());
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -169,8 +169,8 @@ public class Main {
 
         return peg_points.
                 transformed(Transform.unity().translateX(-oo)).
-                extrude(new Vector3d(0, 0, pd * 2)).
-                transformed(Transform.unity().translateZ(0).scale(0.20));
+                extrude(new Vector3d(0, 0, pd)).
+                transformed(Transform.unity().rotX(90).translateZ(-pd/2));
     }
 
     public static CSG board() {
@@ -180,7 +180,7 @@ public class Main {
         double board_mounting_height = 4;
 
         double outer_offset = 4;
-        double inner_offset = 3;
+        double inner_offset = 4;
 
         double board_width = 85.6;
         double board_height = 56;
@@ -221,7 +221,7 @@ public class Main {
                 new Vector3d(bw+ox1,0-oy1)
         );
         
-         Polygon board_points_inner = Polygon.fromPoints(
+        Polygon board_points_inner = Polygon.fromPoints(
                 new Vector3d(0+ox2,0+oy2),
                 new Vector3d(0+ox2,bh-oy2),
                 new Vector3d(bw-ox2,bh-oy2),
@@ -233,11 +233,50 @@ public class Main {
         );
 
         CSG outer = board_points_outer.
-                extrude(new Vector3d(0, 0, bottom_thickness * 2));
+                extrude(new Vector3d(0, 0, bottom_thickness));
         CSG inner = board_points_inner.
-                extrude(new Vector3d(0, 0, bottom_thickness * 2));
+                extrude(new Vector3d(0, 0, bottom_thickness));
         
-        return outer.difference(inner).transformed(Transform.unity().scale(0.05));
+        return outer.difference(inner).transformed(Transform.unity().rotX(180).translateY(-bh));
+    }
+    
+    public static CSG boardAndPegs() {
+        
+        double board_width = 85.6;
+        double board_height = 56;
+        double bw = board_width;
+        double bh = board_height;
+        
+        double outer_offset = 4;
+        
+        double bottom_thickness = 2;
+        
+        CSG board = board();
+        
+        CSG peg1 = peg().transformed(Transform.unity().translate(0,bh-8,-bottom_thickness));
+
+        CSG peg2 = peg().transformed(Transform.unity().translate(8,bh,-bottom_thickness).rotZ(90));
+        
+        
+        CSG peg3 = peg().transformed(Transform.unity().translate(bw/2,bh,-bottom_thickness).rotZ(90));
+        
+//        translate([bw,outer_offset,0])
+//rotate([0,0,180])
+        CSG peg4 = peg().transformed(Transform.unity().translate(bw,bh-outer_offset,-bottom_thickness).rotZ(180));
+        
+//        translate([bw-12,bh,0])
+//rotate([0,0,270])
+        CSG peg5 = peg().transformed(Transform.unity().translate(bw-12,0,-bottom_thickness).rotZ(270));
+        
+//        translate([30,bh,0])
+//rotate([0,0,270])
+        CSG peg6 = peg().transformed(Transform.unity().translate(30,0,-bottom_thickness).rotZ(270));
+        
+        CSG union = board.union(peg1).union(peg2).union(peg3).union(peg4).union(peg5).union(peg6);
+        
+        return union;
+        
+//        return peg1;
     }
 
 }

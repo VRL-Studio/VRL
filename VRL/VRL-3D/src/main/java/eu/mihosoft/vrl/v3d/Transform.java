@@ -91,7 +91,7 @@ public class Transform {
     }
 
     /**
-     * Returns a nedist unity transform.
+     * Returns a new unity transform.
      *
      * @return unity transform
      */

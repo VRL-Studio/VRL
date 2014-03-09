@@ -380,7 +380,7 @@ public final class Polygon {
         polygon2 = polygon2.flipped();
         newPolygons.addAll(PolygonUtil.concaveToConvex(polygon2));
 
-        newPolygons.add(polygon2);
+//        newPolygons.add(polygon2);
         return CSG.fromPolygons(newPolygons);
     }
 
