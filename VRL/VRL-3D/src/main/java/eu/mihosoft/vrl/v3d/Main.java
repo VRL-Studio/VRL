@@ -63,7 +63,8 @@ public class Main {
 
     public static void main(String[] args) {
         
-        Polygon p = Polygon.fromPoints(
+        CSG extruded = Extrude.points(
+                new Vector3d(0, 0, 1),
                 new Vector3d(0, 0),
                 new Vector3d(1, 0),
                 new Vector3d(1, 1),
@@ -72,7 +73,6 @@ public class Main {
                 new Vector3d(0, 0.5)
         );
 
-        CSG extruded = p.extrude(new Vector3d(0, 0, 1));
         Transform transform = Transform.unity().
                 rotZ(25).
                 rotY(15).

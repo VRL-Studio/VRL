@@ -60,7 +60,8 @@ public class Peg {
 
         double pw = oo + oi;
 
-        Polygon peg_points = Polygon.fromPoints(
+        CSG peg_points = Extrude.points(
+                new Vector3d(0, 0, pd),
                 new Vector3d(0, 0),
                 new Vector3d(pw, 0),
                 new Vector3d(pw, bh / 5),
@@ -74,7 +75,6 @@ public class Peg {
 
         return peg_points.
                 transformed(Transform.unity().translateX(-oo)).
-                extrude(new Vector3d(0, 0, pd)).
                 transformed(Transform.unity().rotX(90).translateZ(-pd/2));
     }
 }

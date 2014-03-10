@@ -344,45 +344,7 @@ public final class Polygon {
         return new Polygon(vertices, shared);
     }
 
-    /**
-     * Extrudes this polygon into the specified direction.
-     *
-     * @param dir direction
-     *
-     * @return a CSG object that consists of the extruded polygon
-     */
-    public CSG extrude(Vector3d dir) {
-        List<Polygon> newPolygons = new ArrayList<>();
-
-        Polygon polygon1 = this;
-        double direction = polygon1.plane.normal.dot(dir);
-
-        if (direction > 0) {
-            polygon1 = polygon1.flipped();
-        }
-
-//        newPolygons.add(polygon1);
-        newPolygons.addAll(PolygonUtil.concaveToConvex(polygon1));
-        Polygon polygon2 = polygon1.translated(dir);
-        int numvertices = this.vertices.size();
-        for (int i = 0; i < numvertices; i++) {
-            List<Vector3d> sidefacepoints = new ArrayList<>();
-            int nexti = (i < (numvertices - 1)) ? i + 1 : 0;
-            sidefacepoints.add(polygon1.vertices.get(i).pos);
-            sidefacepoints.add(polygon2.vertices.get(i).pos);
-            sidefacepoints.add(polygon2.vertices.get(nexti).pos);
-            sidefacepoints.add(polygon1.vertices.get(nexti).pos);
-            Polygon sidefacepolygon = Polygon.fromPoints(
-                    sidefacepoints, this.shared);
-            newPolygons.add(sidefacepolygon);
-        }
-
-        polygon2 = polygon2.flipped();
-        newPolygons.addAll(PolygonUtil.concaveToConvex(polygon2));
-
-//        newPolygons.add(polygon2);
-        return CSG.fromPolygons(newPolygons);
-    }
+    
 
 //    private static List<Polygon> concaveToConvex(Polygon concave) {
 //        List<Polygon> result = new ArrayList<>();

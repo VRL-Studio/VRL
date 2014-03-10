@@ -50,7 +50,8 @@ public class RaspberryPiMount {
         double ox2 = inner_offset;
         double oy2 = inner_offset;
         
-        Polygon board_points_outer = Polygon.fromPoints(
+        CSG outer = Extrude.points(
+                new Vector3d(0, 0, bottom_thickness),
                 new Vector3d(0-ox1,0-oy1),
                 new Vector3d(0-ox1,bh+oy1),
                 new Vector3d(bw+ox1,bh+oy1),
@@ -61,7 +62,8 @@ public class RaspberryPiMount {
                 new Vector3d(bw+ox1,0-oy1)
         );
         
-        Polygon board_points_inner = Polygon.fromPoints(
+        CSG inner = Extrude.points(
+                new Vector3d(0, 0, bottom_thickness),
                 new Vector3d(0+ox2,0+oy2),
                 new Vector3d(0+ox2,bh-oy2),
                 new Vector3d(bw-ox2,bh-oy2),
@@ -71,11 +73,6 @@ public class RaspberryPiMount {
                 new Vector3d(bw-ox2,sd2-oy2),
                 new Vector3d(bw-ox2,0+oy2)
         );
-
-        CSG outer = board_points_outer.
-                extrude(new Vector3d(0, 0, bottom_thickness));
-        CSG inner = board_points_inner.
-                extrude(new Vector3d(0, 0, bottom_thickness));
         
         return outer.difference(inner).transformed(Transform.unity().rotX(180).translateY(-bh));
     }
