@@ -281,18 +281,26 @@ final class Utils {
                 if (comment.getRange().getEnd().getCharIndex()
                         < ce.getRange().getBegin().getCharIndex()) {
 
-                    String commentString = comment.getComment();
-
+//                    String commentString = comment.getComment();
 //                    System.out.println("commentstr: " + commentString);
 //                    cb.append(commentString).newLine();
 //                    System.out.println("code: " + cb.getCode());
                     commentRenderer.render(comment, cb);
                     rendered.add(comment);
                 }
+                
             }
 
             // custom render
             rel.render(ce);
+        }
+        
+        // render comments after last code entity in scope
+        for(Comment comment : e.getComments()) {
+            if (!rendered.contains(comment)) {
+                commentRenderer.render(comment, cb);
+                rendered.add(comment);
+            }
         }
     }
 }
