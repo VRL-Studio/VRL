@@ -28,28 +28,23 @@ artifacts {
 // -------- SONATYPE UPLOAD CONFIG (TODO: cleanup) --------
 //
 
-//file("E:\\sonatype-windows.properties").withReader { reader ->
-//  def userProps = new Properties()
-//  userProps.load(reader)
-//  userProps.each{
-//    it->  project.ext.set(it.key, it.value)
-//  }
-//}
+if (file("/media/realcrypt1/sonatype-linux.properties").exists()) {
+    file("/media/realcrypt1/sonatype-linux.properties").withReader { reader ->
+        def userProps = new Properties()
+        userProps.load(reader)
+        userProps.each{
+            it->  project.ext.set(it.key, it.value)
+        }
+    }
+} else if (file("/Volumes/TRUECRYPT/sonatype-osx.properties").exists()) {
 
-//file("/media/truecrypt1/sonatype-linux.properties").withReader { reader ->
-//  def userProps = new Properties()
-//  userProps.load(reader)
-//  userProps.each{
-//    it->  project.ext.set(it.key, it.value)
-//  }
-//}
-
-file("/Volumes/TRUECRYPT/sonatype-osx.properties").withReader { reader ->
-  def userProps = new Properties()
-  userProps.load(reader)
-  userProps.each{
-    it->  project.ext.set(it.key, it.value)
-  }
+    file("/Volumes/TRUECRYPT/sonatype-osx.properties").withReader { reader ->
+        def userProps = new Properties()
+        userProps.load(reader)
+        userProps.each{
+            it->  project.ext.set(it.key, it.value)
+        }
+    }
 }
 
 signing {

@@ -25,11 +25,6 @@ subprojects {
 }
 
 
-
-
-
-
-
 //task mergedJavadoc(type: Javadoc, description: 'Creates Javadoc from all the projects.') {
 //    title = 'All modules'
 //    destinationDir = new File(project.buildDir, 'merged-javadoc')
@@ -44,7 +39,7 @@ subprojects {
 //}
 
 task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper to the current directory.') {
-    gradleVersion = '1.10'
+    gradleVersion = '1.11'
 }
 
 //task install() {
