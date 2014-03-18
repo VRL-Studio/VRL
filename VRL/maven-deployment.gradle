@@ -1,4 +1,4 @@
-apply from: 'jdkdetect.gradle'
+apply from: "../jdkdetect.gradle"
 
 // sonatype dependencies
 apply plugin: 'maven'
@@ -52,6 +52,8 @@ signing {
 }
 
 uploadArchives {
+    if (!project.hasProperty('sonatypeUsername') || !project.hasProperty('sonatypePassword'))
+			  return
     repositories {
         mavenDeployer {
             beforeDeployment { MavenDeployment deployment -> signPom(deployment) }
