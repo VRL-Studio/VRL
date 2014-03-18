@@ -26,10 +26,10 @@ manifest.mainAttributes("Main-Class" : ext.mainClass)
 //    packaging = "image"
 //}
 
-configurations.all {
-    // check for updates every build
+//configurations.all {
+//    // check for updates every build
 //    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
-}
+//}
 
 dependencies {
     // TODO: Add dependencies here
