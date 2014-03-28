@@ -329,7 +329,6 @@ public class MainWindowController implements Initializable {
                             Logger.getLogger(MainWindowController.class.getName()).
                                     log(Level.SEVERE, null, ex);
                         }
-
                     });
                 }
             }

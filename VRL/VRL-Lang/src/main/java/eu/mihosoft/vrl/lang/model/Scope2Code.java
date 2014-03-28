@@ -542,8 +542,8 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
     @Override
     public void render(ClassDeclaration cd, CodeBuilder cb) {
 
-        cb.append("@eu.mihosoft.vrl.instrumentation.VRLVisualization").
-                newLine();
+//        cb.append("@eu.mihosoft.vrl.instrumentation.VRLVisualization").
+//                newLine();
         createModifiers(cd, cb);
         cb.append("class ");
         cb.append(new Type(cd.getName()).getShortName());

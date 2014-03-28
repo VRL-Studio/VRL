@@ -58,10 +58,10 @@ import eu.mihosoft.vrl.lang.VLangUtils;
  */
 public class Parameter implements IParameter {
 
-    private final Type type;
+    private final IType type;
     private final String name;
 
-    public Parameter(Type type, String name) {
+    public Parameter(IType type, String name) {
         this.type = type;
         this.name = name;
 
@@ -78,7 +78,7 @@ public class Parameter implements IParameter {
      * @return the type
      */
     @Override
-    public Type getType() {
+    public IType getType() {
         return type;
     }
 

@@ -50,6 +50,16 @@
 
 package eu.mihosoft.vrl.lang.model;
 
+import com.google.common.io.Files;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.codehaus.groovy.ast.expr.MethodCall;
+
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
@@ -70,5 +80,59 @@ public class Main {
 //        
 //        
 //        clazz.addMethod()
+        
+        VisualCodeBuilder vCodeBuilder = new VisualCodeBuilder_Impl();
+        
+        List<CompilationUnitDeclaration> cuDeclarations = new ArrayList<>();
+        
+        for(int i = 0; i < 100; i++) {
+            CompilationUnitDeclaration cuDev = vCodeBuilder.declareCompilationUnit("File"+i+".java", "myPackage");
+            ClassDeclaration cDec = deClareClass(vCodeBuilder, cuDev, "File"+i,i, 1000);
+            
+            cuDeclarations.add(cuDev);
+        }
+        
+        File srcDir = new File("test-src/myPackage");
+        srcDir.mkdirs();
+        
+        for(CompilationUnitDeclaration cuDec : cuDeclarations) {
+            File f = new File(srcDir,cuDec.getFileName());
+            
+//            System.out.println("f: -> " + f.getAbsolutePath());
+            
+            
+            String code = Scope2Code.getCode(cuDec);
+            
+            try {
+                Files.write(code, f, Charset.forName("UTF-8"));
+            } catch (IOException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }        
+    }
+    
+    static ClassDeclaration deClareClass(VisualCodeBuilder vCodeBuilder, CompilationUnitDeclaration cuDec, String name, int index, int numMethods) {
+        
+        Extends extendz = new Extends();
+        
+        if (index>0) {
+            extendz = new Extends(new Type(cuDec.getPackageName(), "File"+(index-1)));
+        }
+        
+        ClassDeclaration cDec = vCodeBuilder.declareClass(cuDec, new Type(cuDec.getPackageName(), name), new Modifiers(Modifier.PUBLIC), extendz, new Extends());
+        
+        MethodDeclaration prevMDec = null;
+        
+        for(int i = 0; i < numMethods; i++) {
+            MethodDeclaration mDec = vCodeBuilder.declareMethod(cDec, new Modifiers(Modifier.PUBLIC), Type.VOID, name+"M"+i, new Parameters(new Parameter(Type.INT, "v"+i)));
+            
+            if (prevMDec!=null) {
+                vCodeBuilder.invokeMethod(mDec, "this", prevMDec, Argument.constArg(Type.INT, i));
+            }
+            
+            prevMDec = mDec;
+        }
+        
+        return cDec;
     }
 }
