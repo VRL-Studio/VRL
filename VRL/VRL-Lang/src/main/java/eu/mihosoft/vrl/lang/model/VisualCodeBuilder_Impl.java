@@ -126,7 +126,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 
     @Override
     public MethodDeclaration declareMethod(ClassDeclaration scope,
-            IModifiers modifiers, Type returnType, String methodName, IParameters params) {
+            IModifiers modifiers, IType returnType, String methodName, IParameters params) {
         return scope.declareMethod(idRequest.request(), modifiers, returnType, methodName, params);
     }
 

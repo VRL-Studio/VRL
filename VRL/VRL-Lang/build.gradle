@@ -10,10 +10,13 @@
 // prefer. In this case NetBeans will not add these tasks but you may rely on
 // your own implementation.
 if (!hasProperty('mainClass')) {
-    ext.mainClass = 'eu.mihosoft.vrl.Main'
+    ext.mainClass = 'eu.mihosoft.vrl.lang.model.Main'
 }
 
 apply plugin: 'groovy'
+apply plugin: 'application'
+
+mainClassName = 'eu.mihosoft.vrl.lang.model.Main'
 
 // additional code/class-files from subprojects
 jar {

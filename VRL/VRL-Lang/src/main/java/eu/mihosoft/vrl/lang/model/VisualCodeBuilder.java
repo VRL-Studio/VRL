@@ -70,7 +70,7 @@ public interface VisualCodeBuilder {
     
     ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type, IModifiers modifiers, IExtends extendz, IExtends implementz);
 
-    MethodDeclaration declareMethod(ClassDeclaration scope, IModifiers modifiers, Type returnType, String methodName, IParameters params);
+    MethodDeclaration declareMethod(ClassDeclaration scope, IModifiers modifiers, IType returnType, String methodName, IParameters params);
 
     WhileDeclaration declareWhile(Scope scope, Invocation check);
 
