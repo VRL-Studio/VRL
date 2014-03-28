@@ -92,10 +92,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -108,6 +110,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooserBuilder;
 import javafx.stage.Stage;
@@ -139,6 +142,8 @@ public class MainWindowController implements Initializable {
     private final Map<Invocation, Connector> invocationOutputs = new HashMap<>();
     private final Map<Invocation, Connector> invocationInputs = new HashMap<>();
     private final Map<String, LayoutData> layoutData = new HashMap<>();
+
+    private final Set<String> loadLayoutIds = new HashSet<String>();
 
     private FileAlterationMonitor fileMonitor;
     private FileAlterationObserver observer;
@@ -183,6 +188,12 @@ public class MainWindowController implements Initializable {
             Logger.getLogger(MainWindowController.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
+        
+        VCodeEditor vEditor = new VCodeEditor(" the code ");
+        
+        canvas.getContentPane().getChildren().add(vEditor.getNode());
+        
+        
     }
 
     @FXML
@@ -565,10 +576,12 @@ public class MainWindowController implements Initializable {
             return false;
         }
 
-        LayoutData d = layoutData.get(codeId(cE));
+        String id = codeId(cE, true);
+
+        LayoutData d = layoutData.get(id);
 
         if (d == null) {
-            System.out.println("cannot load pos for " + cE.getId());
+            System.out.println("cannot load pos for [" + cE.getId() + ", " + id + "]");
             return false;
         }
 
@@ -586,7 +599,7 @@ public class MainWindowController implements Initializable {
             return;
         }
 
-        layoutData.put(codeId(cE), new LayoutData(n));
+        layoutData.put(codeId(cE, false), new LayoutData(n));
 
     }
 
@@ -645,6 +658,7 @@ public class MainWindowController implements Initializable {
                 XStream xstream = new XStream();
                 xstream.alias("layout", LayoutData.class);
                 layoutData.clear();
+                loadLayoutIds.clear();
                 layoutData.putAll(
                         (Map<String, LayoutData>) xstream.fromXML(vrlComment));
             } else {
@@ -656,7 +670,7 @@ public class MainWindowController implements Initializable {
         }
     }
 
-    private String codeId(CodeEntity cE) {
+    private String codeId(CodeEntity cE, boolean load) {
 
         List<String> parts = new ArrayList<>();
 
@@ -671,15 +685,35 @@ public class MainWindowController implements Initializable {
 
         String str = String.join(":", parts);
 
+        Set<String> set;
+
+        if (load) {
+            set = loadLayoutIds;
+        } else {
+            set = layoutData.keySet();
+        }
+
+        str = incCodeId(set, str);
+
+        if (load) {
+            set.add(str);
+        }
+
 //        System.out.println("id " + cE.getId() + " -> " + str);
         return str;
     }
 
     private String entityId(CodeEntity cE) {
         if (cE instanceof Invocation) {
+            if (cE instanceof ScopeInvocation) {
+                ScopeInvocation scopeInv = (ScopeInvocation) cE;
+
+                entityId(scopeInv.getScope());
+            }
+
             return "inv:" + ((Invocation) cE).getMethodName();
         } else if (cE instanceof ForDeclaration) {
-            return "for";
+            return "for:var=" + ((ForDeclaration) cE).getVarName();
         } else if (cE instanceof WhileDeclaration) {
             return "while";
         } else if (cE instanceof Scope) {
@@ -687,6 +721,24 @@ public class MainWindowController implements Initializable {
         }
 
         return "";
+    }
+
+    public String incCodeId(Set<String> ids, String id) {
+
+        if (!ids.contains(id)) {
+
+            return id;
+        }
+
+        int counter = 0;
+        String result = id + ":" + counter;
+
+        while (ids.contains(result)) {
+            counter++;
+            result = id + ":" + counter;
+        }
+
+        return result;
     }
 
     private void addCloseNodeListener(VFlowModel flow) {
