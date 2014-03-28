@@ -64,4 +64,6 @@ public interface CompilationUnitDeclaration extends Scope{
     public List<ClassDeclaration> getDeclaredClasses();
     
     public String getPackageName();
+    
+//    public List<ImportDeclaration> getImports();
 }
