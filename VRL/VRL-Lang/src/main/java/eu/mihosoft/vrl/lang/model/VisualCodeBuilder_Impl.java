@@ -107,7 +107,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public Variable createVariable(Scope scope, IType type, String varName) {
+    public Variable declareVariable(Scope scope, IType type, String varName) {
         Variable result = scope.createVariable(type, varName);
 
 //        variables.push(varName);
@@ -115,6 +115,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         return result;
     }
 
+    @Deprecated
     public Variable createVariable(Scope scope, IType type) {
         
         Variable result = scope.createVariable(type);

@@ -145,6 +145,12 @@ class ScopeImpl implements Scope {
 
     @Override
     public Variable createVariable(IType type, String varName) {
+        
+        if (getVariable(varName)!=null) {
+            throw new IllegalArgumentException("Variable '"+varName+"' does already exist!");
+        }
+              
+        
         Variable variable = new VariableImpl(this, type, varName, null, false);
         variables.put(varName, variable);
         return variable;

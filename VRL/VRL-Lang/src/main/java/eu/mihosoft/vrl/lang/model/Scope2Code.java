@@ -191,7 +191,7 @@ public class Scope2Code {
                 new Type("my.testpackage.MyFileClass"),
                 new Modifiers(Modifier.PUBLIC), new Extends(), new Extends());
 
-        builder.createVariable(myFileClass, new Type("int"), "value1");
+        builder.declareVariable(myFileClass, new Type("int"), "value1");
 
         MethodDeclaration m1 = builder.declareMethod(myFileClass,
                 new Modifiers(Modifier.PUBLIC), new Type("int"), "m1",

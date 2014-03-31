@@ -64,7 +64,7 @@ public interface VisualCodeBuilder {
 
     void createInstance(Scope scope, IType type, String varName, IArgument... args);
 
-    Variable createVariable(Scope scope, IType type, String varName);
+    Variable declareVariable(Scope scope, IType type, String varName);
 
     ForDeclaration declareFor(Scope scope, String varName, int from, int to, int inc);
     

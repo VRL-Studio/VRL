@@ -590,7 +590,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         } else {
 
-            Variable variable = codeBuilder.createVariable(currentScope, new Type(s.getVariableExpression().getType().getName(), true), s.getVariableExpression().getName());
+            Variable variable = codeBuilder.declareVariable(currentScope, new Type(s.getVariableExpression().getType().getName(), true), s.getVariableExpression().getName());
 
             // TODO range
             if (s.getRightExpression() instanceof ConstantExpression) {
