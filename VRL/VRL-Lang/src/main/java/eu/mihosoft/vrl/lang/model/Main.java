@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import com.google.common.io.Files;
@@ -55,9 +54,11 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 import org.codehaus.groovy.ast.expr.MethodCall;
 
 /**
@@ -65,9 +66,11 @@ import org.codehaus.groovy.ast.expr.MethodCall;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class Main {
+
     public static void main(String[] args) {
-//        VLanguageModel model = VLanguageFactory.newModel();
-//        
+        
+            //        VLanguageModel model = VLanguageFactory.newModel();
+//
 //        VClass clazz = model.newClass();
 //        clazz.setName("MyClass");
 //        
@@ -77,62 +80,77 @@ public class Main {
 //        m1.setModifiers(new Modifiers(Modifier.PUBLIC));
 //        m1.setReturnType(new Type("my.package.MyType"));
 //        m1.setParameters(new Parameter(new Type("java.lang.Integer"),"param1"),new Parameter(new Type("java.lang.Integer"),"param2"));
-//        
+//
 //        
 //        clazz.addMethod()
         
+//        try {    
+//            System.in.read();
+//            
+//        } catch (IOException ex) {
+//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+        
+        System.out.println("starting...");
+
         VisualCodeBuilder vCodeBuilder = new VisualCodeBuilder_Impl();
+
+        List<CompilationUnitDeclaration> cuDeclarations = Collections.synchronizedList(new ArrayList<>());
         
-        List<CompilationUnitDeclaration> cuDeclarations = new ArrayList<>();
-        
-        for(int i = 0; i < 100; i++) {
-            CompilationUnitDeclaration cuDev = vCodeBuilder.declareCompilationUnit("File"+i+".java", "myPackage");
-            ClassDeclaration cDec = deClareClass(vCodeBuilder, cuDev, "File"+i,i, 1000);
-            
+        for (int i = 0; i < 100; i++) {
+            System.out.println("i: " + i);
+            CompilationUnitDeclaration cuDev = vCodeBuilder.declareCompilationUnit("File" + i + ".java", "myPackage");
+            ClassDeclaration cDec = deClareClass(vCodeBuilder, cuDev, "File" + i, i, 1000);
+
             cuDeclarations.add(cuDev);
         }
-        
+
+        System.out.println("writing...");
+
         File srcDir = new File("test-src/myPackage");
         srcDir.mkdirs();
-        
-        for(CompilationUnitDeclaration cuDec : cuDeclarations) {
-            File f = new File(srcDir,cuDec.getFileName());
-            
+
+        for (CompilationUnitDeclaration cuDec : cuDeclarations) {
+            File f = new File(srcDir, cuDec.getFileName());
+
 //            System.out.println("f: -> " + f.getAbsolutePath());
-            
-            
             String code = Scope2Code.getCode(cuDec);
-            
+
             try {
                 Files.write(code, f, Charset.forName("UTF-8"));
             } catch (IOException ex) {
                 Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }        
-    }
-    
-    static ClassDeclaration deClareClass(VisualCodeBuilder vCodeBuilder, CompilationUnitDeclaration cuDec, String name, int index, int numMethods) {
-        
-        Extends extendz = new Extends();
-        
-        if (index>0) {
-            extendz = new Extends(new Type(cuDec.getPackageName(), "File"+(index-1)));
         }
-        
+    }
+
+    static ClassDeclaration deClareClass(VisualCodeBuilder vCodeBuilder, CompilationUnitDeclaration cuDec, String name, int index, int numMethods) {
+
+        Extends extendz = new Extends();
+
+        if (index > 0) {
+            extendz = new Extends(new Type(cuDec.getPackageName(), "File" + (index - 1)));
+        }
+
         ClassDeclaration cDec = vCodeBuilder.declareClass(cuDec, new Type(cuDec.getPackageName(), name), new Modifiers(Modifier.PUBLIC), extendz, new Extends());
-        
+
         MethodDeclaration prevMDec = null;
-        
-        for(int i = 0; i < numMethods; i++) {
-            MethodDeclaration mDec = vCodeBuilder.declareMethod(cDec, new Modifiers(Modifier.PUBLIC), Type.VOID, name+"M"+i, new Parameters(new Parameter(Type.INT, "v"+i)));
+
+        for (int i = 1; i <= numMethods; i++) {
+            MethodDeclaration mDec = vCodeBuilder.declareMethod(cDec, new Modifiers(Modifier.PUBLIC), Type.VOID, name + "M" + i, new Parameters(new Parameter(Type.INT, "v" + i)));
+
             
-            if (prevMDec!=null) {
-                vCodeBuilder.invokeMethod(mDec, "this", prevMDec, Argument.constArg(Type.INT, i));
-            }
+            ForDeclaration forD = vCodeBuilder.declareFor(mDec, "i", 1, 10, i);
+
+            if (prevMDec != null) {
+                vCodeBuilder.invokeMethod(forD, "this", prevMDec, Argument.varArg(forD.getVariable(forD.getVarName())));
+                
+                vCodeBuilder.declareVariable(forD, Type.INT, "j");
+            }            
             
             prevMDec = mDec;
         }
-        
+
         return cDec;
     }
 }

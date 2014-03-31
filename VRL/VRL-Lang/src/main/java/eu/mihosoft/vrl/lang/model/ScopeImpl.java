@@ -149,7 +149,6 @@ class ScopeImpl implements Scope {
         if (getVariable(varName)!=null) {
             throw new IllegalArgumentException("Variable '"+varName+"' does already exist!");
         }
-              
         
         Variable variable = new VariableImpl(this, type, varName, null, false);
         variables.put(varName, variable);
