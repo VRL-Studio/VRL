@@ -23,13 +23,13 @@ public class WorkflowUtil {
     /**
      * Returns a predicate that indicates whether a connector is connected with
      * the specified connection type.
-     * 
+     *
      * <b>Note:</b> the predicate can be used to filter streams and collections.
      *
      * @param connectionType connection type (e.g. "data" or "control")
      * @return a predicate that indicates whether a connector is connected with
      * the specified connection type
-     * 
+     *
      * @see java.util.stream.Stream
      */
     public static Predicate<Connector> connectorConnected(String connectionType) {
@@ -48,17 +48,12 @@ public class WorkflowUtil {
      * @param connectionType connection type (e.g. "data" or "control")
      * @return a predicate that indicates whether a connector is not connected
      * with the specified connection type
-     * 
+     *
      * @see java.util.stream.Stream
      */
     public static Predicate<Connector> connectorNotConnected(
             String connectionType) {
-        return (Connector c) -> {
-            return c.getType().equals(connectionType)
-                    && c.getNode().getFlow().
-                    getConnections(connectionType).
-                    getAllWith(c).isEmpty();
-        };
+        return connectorConnected(connectionType).negate();
     }
 
     /**
@@ -68,7 +63,7 @@ public class WorkflowUtil {
      * @param connectionType connection type (e.g. "data" or "control")
      * @return a predicate that indicates whether a node is connected with the
      * specified connection type
-     * 
+     *
      * @see java.util.stream.Stream
      */
     public static Predicate<VNode> nodeConnected(String connectionType) {
@@ -85,14 +80,11 @@ public class WorkflowUtil {
      * @param connectionType connection type (e.g. "data" or "control")
      * @return a predicate that indicates whether a node is not connected with
      * the specified connection type
-     * 
+     *
      * @see java.util.stream.Stream
      */
     public static Predicate<VNode> nodeNotConnected(String connectionType) {
-        return (VNode n) -> {
-            return n.getInputs().filtered(connectorConnected(connectionType)).
-                    isEmpty();
-        };
+        return nodeConnected(connectionType).negate();
     }
 
     /**
@@ -104,7 +96,7 @@ public class WorkflowUtil {
      * @param connectionType connection type (e.g. "data" or "control")
      * @return a predicate that indicates whether the number of connections of
      * the specified connector is bigger than the expected number of connections
-     * 
+     *
      * @see java.util.stream.Stream
      */
     public static Predicate<Connector> moreThanConnections(int expectedNumConn,
@@ -127,7 +119,7 @@ public class WorkflowUtil {
      * @return a predicate that indicates whether the number of connections of
      * the specified connector is smaller than the expected number of
      * connections
-     * 
+     *
      * @see java.util.stream.Stream
      */
     public static Predicate<Connector> lessThanConnections(int expectedNumConn,
@@ -149,7 +141,7 @@ public class WorkflowUtil {
      * @param connectionType connection type (e.g. "data" or "control")
      * @return a predicate that indicates whether the number of connections of
      * the specified connector is equal to the expected number of connections
-     * 
+     *
      * @see java.util.stream.Stream
      */
     public static Predicate<Connector> numberOfConnections(int expectedNumConn,

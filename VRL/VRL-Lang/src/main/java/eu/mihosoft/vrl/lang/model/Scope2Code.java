@@ -225,14 +225,12 @@ public class Scope2Code {
 //        Variable var = forD2.createVariable(new Type("java.lang.String"));
 //        forD2.assignConstant(var.getName(), "Hello!\"");
         builder.invokeStaticMethod(
-                forD2, new Type("System"), "out.println", 
+                forD2, new Type("System"), "out.println",
                 Type.VOID, true, Argument.constArg(Type.STRING, "Hello"));
-       
 
 //        builder.callMethod(forD2, "this", m2.getName(), true,
 //                "retM2", forD2.getVariable("v1"), m2.getVariable("v2"));
 //        builder.callMethod(forD2, "this", m1.getName(), true, "retM1b", m1.getVariable("v1"));
-
         return myFile;
     }
 
@@ -288,15 +286,15 @@ final class Utils {
                     commentRenderer.render(comment, cb);
                     rendered.add(comment);
                 }
-                
+
             }
 
             // custom render
             rel.render(ce);
         }
-        
+
         // render comments after last code entity in scope
-        for(Comment comment : e.getComments()) {
+        for (Comment comment : e.getComments()) {
             if (!rendered.contains(comment)) {
                 commentRenderer.render(comment, cb);
                 rendered.add(comment);
@@ -542,8 +540,9 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
     @Override
     public void render(ClassDeclaration cd, CodeBuilder cb) {
 
-//        cb.append("@eu.mihosoft.vrl.instrumentation.VRLVisualization").
-//                newLine();
+        cb.append("@eu.mihosoft.vrl.instrumentation.VRLVisualization").
+                newLine();
+
         createModifiers(cd, cb);
         cb.append("class ");
         cb.append(new Type(cd.getName()).getShortName());
@@ -654,7 +653,7 @@ class CompilationUnitRenderer implements
 
         if (e.getPackageName() != null || e.getPackageName().isEmpty()) {
             cb.append("package ").append(e.getPackageName()).append(";").
-                    newLine().newLine();
+                    newLine();
         }
 
         List<? extends CodeEntity> entities = e.getDeclaredClasses();

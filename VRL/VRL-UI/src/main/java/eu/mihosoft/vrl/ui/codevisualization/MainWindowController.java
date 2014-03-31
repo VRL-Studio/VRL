@@ -189,9 +189,9 @@ public class MainWindowController implements Initializable {
                     log(Level.SEVERE, null, ex);
         }
         
-        VCodeEditor vEditor = new VCodeEditor(" the code ");
-        
-        canvas.getContentPane().getChildren().add(vEditor.getNode());
+//        VCodeEditor vEditor = new VCodeEditor(" the code ");
+//        
+//        canvas.getContentPane().getChildren().add(vEditor.getNode());
         
         
     }
@@ -361,9 +361,9 @@ public class MainWindowController implements Initializable {
         GroovyClassLoader gcl = new GroovyClassLoader();
         gcl.parseClass(editor.getText(), "Script");
 
-        if (!refresh) {
+        //if (!refresh) {
             loadUIData();
-        }
+        //}
 
         System.out.println("UPDATE UI");
 
@@ -819,7 +819,8 @@ public class MainWindowController implements Initializable {
 //                                path.forEach(
 //                                        n -> System.out.println("n->" + n.getTitle()));
                                     paths.add(path);
-                                });
+                                }
+                        );
 
                         paths.forEach(path
                                 -> path.forEach(node
@@ -886,7 +887,6 @@ public class MainWindowController implements Initializable {
                                 } catch (Exception ex) {
                                     ex.printStackTrace(System.err);
                                 }
-
                             }
                         }
                         if (change.wasRemoved()) {
