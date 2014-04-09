@@ -57,7 +57,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * Configures VRL plugin packages and is responsible for register type
- * representations with the type representation of a given canvas.
+ * representations and components with the type factory of a given canvas.
  * @see VisualCanvas
  * @see eu.mihosoft.vrl.reflection.TypeRepresentationFactory
  * @author Michael Hoffer <info@michaelhoffer.de>
@@ -77,14 +77,14 @@ public interface PluginConfigurator {
      * Registers VRL plugin type representations with the type representation
      * factory of a given canvas and optionally performs other tasks such as
      * configuring additional components.
-     * @param canvas the canvas to register with
+     * @param api the api to register with
      */
     public void register(PluginAPI api);
 
     /**
      * Reverts VRL plugin registration. That is, it removes the type
      * representations of the VRL plugin and reverts all configurations.
-     * @param canvas the canvas to unregister from
+     * @param api the api to unregister from
      */
     public void unregister(PluginAPI api);
 
@@ -154,5 +154,13 @@ public interface PluginConfigurator {
      * @param iApi plugin api for uninitialization (contains configuration etc.)
      */
     public void uninstall(InitPluginAPI iApi);
+    
+    /**
+     * Indicates whether this plugin is relevant for project persistence.
+     * 
+     * @return <code>true</code> if this plugin is relevant for project
+     * persistance; <code>false</code> otherwise
+     */
+    public boolean isRelevantForPersistence();
 
 }
