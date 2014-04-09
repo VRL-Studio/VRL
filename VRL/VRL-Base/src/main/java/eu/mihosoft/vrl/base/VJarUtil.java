@@ -61,16 +61,15 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 /**
  *
@@ -110,9 +109,9 @@ public class VJarUtil {
      * @return a list containing the names of all classes
      * @throws IOException
      */
-    public static ArrayList<String> getClassNamesFromStream(
+    public static List<String> getClassNamesFromStream(
             JarInputStream jarInStream) throws IOException {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
 
         // the current jar entry
         JarEntry entry = jarInStream.getNextJarEntry();
@@ -148,7 +147,7 @@ public class VJarUtil {
      * @return a list containing the names of all entries
      * @throws IOException
      */
-    public static ArrayList<String> getEntryNamesFromStream(
+    public static List<String> getEntryNamesFromStream(
             JarInputStream jarInStream) throws IOException {
         ArrayList<String> result = new ArrayList<String>();
 
@@ -213,7 +212,7 @@ public class VJarUtil {
      */
     public static Collection<Class<?>> loadClasses(File f, ClassLoader loader) {
 
-        ArrayList<String> classNames = null;
+        List<String> classNames = null;
 
         try {
             classNames = VJarUtil.getClassNamesFromStream(
@@ -345,7 +344,7 @@ public class VJarUtil {
         }
     }
 
-    /**
+/**
      * Returns the location of the Jar archive or .class file the specified
      * class has been loaded from. <b>Note:</b> this only works if the class is
      * loaded from a jar archive or a .class file on the locale file system.
@@ -369,8 +368,13 @@ public class VJarUtil {
                     + "on the local filesystem.");
         }
 
+        try {
+            urlString = URLDecoder.decode(urlString, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(VJarUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         urlString = urlString.replace("file:", "");
-        urlString = urlString.replace("%20", " ");
 
         int location = urlString.indexOf(".jar!");
 
