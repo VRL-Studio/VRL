@@ -74,6 +74,26 @@ import java.util.logging.Logger;
  */
 public class VSessionRunner {
 
+    /**
+     * Runs the main method of the specified object or fails with error if the
+     * object does not provide such a method.
+     *
+     * @param o object to run
+     * @param args command line arguments
+     * @deprecated since 09.04.2014. This method remains just for compatibility
+     * reasons and should not be used anymore.
+     */
+    @Deprecated
+    public void run(Object o, String[] args) {
+        run(args);
+    }
+
+    /**
+     * Runs the main method of the project's main method if the project is on
+     * the system path. Fails with error otherwise.
+     *
+     * @param args command line arguments
+     */
     public void run(String[] args) {
 
         System.out.println("--------------------------------------------------------------------------------");
@@ -96,30 +116,28 @@ public class VSessionRunner {
             File projectJarFile = VJarUtil.getClassLocation(getClass().getClassLoader().
                     loadClass("eu.mihosoft.vrl.user.Main"));
 
-    
             // find all project classes
             final Collection<String> projectClassNames = VJarUtil.getClassNamesFromJar(projectJarFile);
-            
+
             // custom classloader which loads project classes explicitly from the project jar
             // and not from the system classloader
             ClassLoader clsLoader = new URLClassLoader(new URL[]{projectJarFile.toURI().toURL()},
-
                     VRL.getConsoleAppClassLoader()) {
-                        
-                        Map<String,Class<?>> loadedClasses = new HashMap<String, Class<?>>();
-                        
+
+                        Map<String, Class<?>> loadedClasses = new HashMap<String, Class<?>>();
+
                         @Override
                         protected Class<?> loadClass(String name, boolean resolve)
                         throws ClassNotFoundException {
 
                             // special case for project classes
                             if (projectClassNames.contains(name)) {
-                                
+
                                 // if already loaded return the project class
                                 if (loadedClasses.containsKey(name)) {
                                     return loadedClasses.get(name);
                                 }
-                                
+
                                 // if not already loaded load the project class
                                 try {
                                     Class<?> cls = findClass(name);

@@ -1066,8 +1066,6 @@ public class VRL {
 
         for (PluginConfigurator plugin : plugins.values()) {
             
-            System.out.println(" --> ext loader from " + plugin.getIdentifier().toString());
-            
             ClassLoader extLoader = externalCLMap.get(
                     plugin.getIdentifier().getName());
 
