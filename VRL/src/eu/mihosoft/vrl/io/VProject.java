@@ -227,7 +227,7 @@ public class VProject {
                 addLine("public static void main(String[] args) {").
                 incIndentation().
                 addLine("VSessionRunner r = new VSessionRunner();").
-                addLine("r.run(new Main(), args);").
+                addLine("r.run(args);").
                 decIndentation().
                 addLine("}").
                 decIndentation().
