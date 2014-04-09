@@ -65,6 +65,7 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.jar.JarEntry;
@@ -373,8 +374,13 @@ public class VJarUtil {
                     + "on the local filesystem.");
         }
 
+        try {
+            urlString = URLDecoder.decode(urlString, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(VJarUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         urlString = urlString.replace("file:", "");
-        urlString = urlString.replace("%20", " ");
 
         int location = urlString.indexOf(".jar!");
 
