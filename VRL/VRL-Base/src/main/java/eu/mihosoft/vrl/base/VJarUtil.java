@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.base;
 
 import java.io.BufferedInputStream;
@@ -141,6 +140,17 @@ public class VJarUtil {
     }
 
     /**
+     * Returns the name of all classes in the specified file.
+     *
+     * @param f file to scan
+     * @return a list containing the names of all classes
+     * @throws IOException
+     */
+    public static List<String> getClassNamesFromJar(File f) throws IOException {
+        return getClassNamesFromStream(new JarInputStream(new FileInputStream(f)));
+    }
+
+    /**
      * Returns the name of all entries in the specified stream.
      *
      * @param jarInStream the stream to read
@@ -161,12 +171,9 @@ public class VJarUtil {
             // indicates whether the current entry is in folder or if it is
             // in the root folder of the jar
 //            boolean isInDirectory = name.lastIndexOf("/") > 0;
-
             // indicates that the entry is a class file
 //            boolean isClassFile = name.endsWith(".class");
-
 //            if (isInDirectory && isClassFile) {
-
 //            if (isClassFile) {
 //                String className = pathToClassName(name);
             result.add(name);
@@ -218,8 +225,8 @@ public class VJarUtil {
             classNames = VJarUtil.getClassNamesFromStream(
                     new JarInputStream(new FileInputStream(f)));
             if (loader == null) {
-                loader =
-                        new URLClassLoader(new URL[]{f.toURI().toURL()});
+                loader
+                        = new URLClassLoader(new URL[]{f.toURI().toURL()});
             }
         } catch (IOException ex) {
 //            System.err.println(
@@ -259,9 +266,8 @@ public class VJarUtil {
      *
      * @param in file to check
      * @param entryName name of the entry to search
-     * @return
-     * <code>true</code> if an entry with the specified name could be found;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if an entry with the specified name could be
+     * found; <code>false</code> otherwise
      */
     static public boolean containsEntry(File in, String entryName) {
 
@@ -276,14 +282,13 @@ public class VJarUtil {
             return false;
         }
 
-
         try {
             java.util.jar.JarFile jar = new java.util.jar.JarFile(in);
 
-            boolean result =  jar.getEntry(entryName) != null;
-            
+            boolean result = jar.getEntry(entryName) != null;
+
             jar.close();
-            
+
             return result;
 
         } catch (IOException ex) {
@@ -318,16 +323,16 @@ public class VJarUtil {
         java.util.jar.JarFile jar = new java.util.jar.JarFile(in);
         java.util.Enumeration entries = jar.entries();
         while (entries.hasMoreElements()) {
-            java.util.jar.JarEntry file =
-                    (java.util.jar.JarEntry) entries.nextElement();
+            java.util.jar.JarEntry file
+                    = (java.util.jar.JarEntry) entries.nextElement();
             java.io.File f = new java.io.File(
                     out + java.io.File.separator + file.getName());
             if (file.isDirectory()) { // if its a directory, create it
                 f.mkdir();
                 continue;
             }
-            BufferedInputStream is =
-                    new BufferedInputStream(jar.getInputStream(file));
+            BufferedInputStream is
+                    = new BufferedInputStream(jar.getInputStream(file));
             java.io.FileOutputStream fos = new java.io.FileOutputStream(f);
 
             byte[] buffer = new byte[1024];
@@ -344,7 +349,7 @@ public class VJarUtil {
         }
     }
 
-/**
+    /**
      * Returns the location of the Jar archive or .class file the specified
      * class has been loaded from. <b>Note:</b> this only works if the class is
      * loaded from a jar archive or a .class file on the locale file system.
@@ -373,7 +378,7 @@ public class VJarUtil {
         } catch (UnsupportedEncodingException ex) {
             Logger.getLogger(VJarUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         urlString = urlString.replace("file:", "");
 
         int location = urlString.indexOf(".jar!");
