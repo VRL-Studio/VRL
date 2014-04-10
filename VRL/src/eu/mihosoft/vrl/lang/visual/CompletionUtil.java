@@ -67,17 +67,21 @@ import java.util.logging.Logger;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class CompletionUtil {
-    
-    private final static Collection<ClassCompletionList> completionLists =
-            new ArrayList<ClassCompletionList>();
-    private static ClassCompletionList completionListGroup =
-            new ClassCompletionListGroupImpl(completionLists);
-    
+
+    private final static Collection<ClassCompletionList> completionLists
+            = new ArrayList<ClassCompletionList>();
+    private static ClassCompletionList completionListGroup
+            = new ClassCompletionListGroupImpl(completionLists);
+
     static {
         String[] bootPaths = System.getProperty("sun.boot.class.path").split(":");
         for (String path : bootPaths) {
+
             if (path.endsWith("rt.jar") || path.endsWith("classes.jar")) {
-                registerClassesFromJar(new File(path));
+                File f = new File(path);
+                if (f.isFile()) {
+                    registerClassesFromJar(f);
+                }
             }
         }
     }
@@ -86,36 +90,36 @@ public class CompletionUtil {
     private CompletionUtil() {
         throw new AssertionError(); // not in this class either!
     }
-    
+
     public static void register(ClassCompletionList completions) {
         completionLists.add(completions);
-        
+
         completionListGroup = new ClassCompletionListGroupImpl(completionLists);
     }
-    
+
     public static void unregister(ClassCompletionList completions) {
         completionLists.remove(completions);
-        
+
         completionListGroup = new ClassCompletionListGroupImpl(completionLists);
     }
-    
+
     public static ClassCompletionList getCompletionList() {
         return completionListGroup;
     }
-    
+
     public static void registerClassesFromJar(File f) {
         register(new JarClassCompletionList(f));
     }
 }
 
 class ClassCompletionListImpl implements ClassCompletionList {
-    
+
     private Collection<String> classes = new ArrayList<String>();
-    
+
     public void addClass(String cls) {
         classes.add(cls);
     }
-    
+
     @Override
     public Collection<String> getClassNames() {
         return classes;
@@ -123,22 +127,21 @@ class ClassCompletionListImpl implements ClassCompletionList {
 }
 
 class JarClassCompletionList implements ClassCompletionList {
-    
+
     private Collection<String> classes = new ArrayList<String>();
-    
+
     public JarClassCompletionList(File jarFile) {
         try {
-            classes =
-                    VJarUtil.getClassNamesFromStream(
-                    new JarInputStream(new FileInputStream(jarFile)));
-            
-            
+            classes
+                    = VJarUtil.getClassNamesFromStream(
+                            new JarInputStream(new FileInputStream(jarFile)));
+
         } catch (IOException ex) {
             Logger.getLogger(JarClassCompletionList.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
     }
-    
+
     @Override
     public Collection<String> getClassNames() {
         return classes;
@@ -146,17 +149,17 @@ class JarClassCompletionList implements ClassCompletionList {
 }
 
 class ClassCompletionListGroupImpl implements ClassCompletionList {
-    
+
     private Collection<ClassCompletionList> completionLists;
-    
+
     public ClassCompletionListGroupImpl(Collection<ClassCompletionList> completionLists) {
         this.completionLists = completionLists;
     }
-    
+
     @Override
     public Collection<String> getClassNames() {
         Collection<String> classNames = new ArrayList<String>();
-        
+
         for (ClassCompletionList list : completionLists) {
             for (String n : list.getClassNames()) {
                 if (!n.contains("$")) {
@@ -164,7 +167,7 @@ class ClassCompletionListGroupImpl implements ClassCompletionList {
                 }
             }
         }
-        
+
         return classNames;
     }
 }
