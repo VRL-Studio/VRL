@@ -227,9 +227,10 @@ public class InputCodeType extends TypeRepresentationBase {
             editor.getScrollPane().setMaxWidth(w-5);
             editor.getScrollPane().setMaxHeight(h);
             
+            
             // TODO find out why offset is 26
-            editor.setPreferredSize(new Dimension(w-26, h));
-            editor.setSize(new Dimension(w-26, h));
+            editor.setPreferredSize(new Dimension(w-26, h-5));
+            editor.setSize(new Dimension(w-26, h-5));
         }
     }
 
