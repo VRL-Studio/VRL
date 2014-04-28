@@ -1065,7 +1065,7 @@ public class VRL {
                 = new VClassLoader(new PluginClassLoader(usedClassLoaders));
 
         for (PluginConfigurator plugin : plugins.values()) {
-            
+
             ClassLoader extLoader = externalCLMap.get(
                     plugin.getIdentifier().getName());
 
@@ -1075,6 +1075,25 @@ public class VRL {
         }
 
         return loader;
+    }
+
+    /**
+     * Returns the plugin specified by the given plugin dependency.
+     *
+     * @param pDep the pluign dependency
+     * @return the requested plugin if this plugin exists; <code>null</code>
+     * otherwise
+     */
+    public static PluginConfigurator getPluginByDependency(PluginDependency pDep) {
+
+        for (PluginConfigurator plugin : plugins.values()) {
+
+            if (pDep.verify(plugin.getIdentifier())) {
+                return plugin;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -1125,12 +1144,15 @@ public class VRL {
 
             // if not vrl plugin check whether we need to register with canvas
             if (!plugin.getIdentifier().getName().equals("VRL")) {
-                boolean used = false;
 
-                for (PluginDependency pDep : usedPlugins) {
-                    if (pDep.verify(plugin.getIdentifier())) {
-                        used = true;
-                        break;
+                boolean used = plugin.isAutomaticallySelected();
+
+                if (!used) {
+                    for (PluginDependency pDep : usedPlugins) {
+                        if (pDep.verify(plugin.getIdentifier())) {
+                            used = true;
+                            break;
+                        }
                     }
                 }
 
