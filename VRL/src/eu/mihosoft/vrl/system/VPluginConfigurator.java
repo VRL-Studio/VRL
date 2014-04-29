@@ -150,6 +150,7 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
     private PreferencePane preferencePane;
     private InitPluginAPI initAPI;
     private boolean relevantForPersistence = true;
+    private boolean automaticallySelected = false;
 
     public VPluginConfigurator() {
     }
@@ -459,10 +460,24 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
      * menu actions, editor configurationd etc.
      * </p>
      *
-     * @param relevantForPersistence the relevantForPersistence to set
+     * @param relevantForPersistence the state to set
      */
     public void setRelevantForPersistence(boolean relevantForPersistence) {
         this.relevantForPersistence = relevantForPersistence;
+    }
+
+    @Override
+    public boolean isAutomaticallySelected() {
+        return this.automaticallySelected;
+    }
+    
+    /**
+     * Defines whether this plugin shall be automatically selected.
+     * 
+     * @param automaticallySelected  the state to set
+     */
+    public void setAutomaticallySelected(boolean automaticallySelected) {
+        this.automaticallySelected = automaticallySelected;
     }
 }
 
