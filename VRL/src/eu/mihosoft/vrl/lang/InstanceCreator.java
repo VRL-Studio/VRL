@@ -54,6 +54,7 @@ package eu.mihosoft.vrl.lang;
 
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 import eu.mihosoft.vrl.visual.MessageType;
+import java.lang.reflect.Constructor;
 
 /**
  *
@@ -86,7 +87,7 @@ public class InstanceCreator {
 //                result = c.newInstance();
 //            } catch (Exception ex) {
 //                canvas.getMessageBox().
-//                        addMessage("Can't instanciate class:",
+//                        addMessage("Can't instantiate class:",
 //                        ex.toString(), MessageType.ERROR);
 //            }
 //        }
@@ -109,7 +110,7 @@ public class InstanceCreator {
         } catch (Exception ex) {
             if (canvas != null) {
                 canvas.getMessageBox().
-                        addMessage("Can't instanciate class:",
+                        addMessage("Can't instantiate class:",
                         ex.toString(), MessageType.ERROR);
             }
         }

@@ -767,7 +767,7 @@ public class GroovyCodeEditorComponent implements Serializable {
         InputCodeType tRep = (InputCodeType) mRep.getParameter(1);
         VCodeEditor editor = tRep.getEditor();
 
-        // we automatically add apackage definition if missing
+        // we automatically add a package definition if missing
         if (!VLangUtils.packageDefinedInCode(compileCode)) {
             compileCode = "package eu.mihosoft.vrl.user;" + compileCode;
         }
@@ -881,10 +881,16 @@ public class GroovyCodeEditorComponent implements Serializable {
 
         if (removeEmptyLastLinesFromCode(compileCode).
                 equals(removeEmptyLastLinesFromCode(currentCode))) { // nothing to do if code is identical
+            
+            String simpleClsName = "<undefined class>";
+            
+            if (cls!=null) {
+                simpleClsName = cls.getSimpleName();
+            }
 
             Message m = canvas.getMessageBox().addMessage("Code not changed:",
                     ">> implementation of class " + Message.EMPHASIZE_BEGIN
-                    + cls.getSimpleName()
+                    + simpleClsName
                     + Message.EMPHASIZE_END
                     + " has not been changed and won't be compiled.",
                     MessageType.INFO);

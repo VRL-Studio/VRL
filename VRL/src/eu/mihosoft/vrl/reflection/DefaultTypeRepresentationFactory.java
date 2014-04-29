@@ -197,6 +197,8 @@ final class DefaultTypeRepresentationFactory implements
 
         defaultSupportedTypes.add(LoadFolderType.class);
         defaultSupportedTypes.add(SaveFolderType.class);
+        
+        defaultSupportedTypes.add(SaveFolderStringType.class);
 
         defaultSupportedTypes.add(LoadFileStringType.class);
         defaultSupportedTypes.add(SaveFileStringType.class);

@@ -1,0 +1,54 @@
+apply plugin: 'java'
+// apply plugin: 'application'
+// apply plugin: 'idea'
+
+//apply plugin: 'maven'
+
+apply from: 'version-info.gradle'
+apply from: 'maven-deployment.gradle'
+//apply from: 'maven-deployment-local.gradle'
+
+//apply from: 'http://gradle-plugins.mihosoft.eu/latest/vlicenseheader.gradle'
+//repairHeaders.licenseHeaderText = new File(projectDir,'../license-template.txt')
+
+repositories {
+	
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    
+    // mavenLocal()
+    mavenCentral()
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.9'
+}
+
+// // finding jfxrt.jar for JDK 7as we depend on binding API
+// String jreHome = System.properties.find { it.key == "java.home" }.value + "/lib";
+// project.ext.set("javafx_jar", "$jreHome/jfxrt.jar")
+
+dependencies {
+	//
+}
+
+// sourceSets {
+//     main {
+//         java {
+//             srcDirs = ['../src/']
+//         }
+//         
+//         resources {
+//             srcDirs = ['../src/']
+//         }
+//     }
+// 
+//     test {
+//         java {
+//             srcDirs = ['../test/']
+//         }
+//     }
+// }
+
+

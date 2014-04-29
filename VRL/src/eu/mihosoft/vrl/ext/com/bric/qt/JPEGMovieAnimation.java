@@ -348,6 +348,10 @@ public class JPEGMovieAnimation {
 		} finally {
 			raf.close();
 		}
+                
+                // prevents memory leak:
+                // fixes issue #2: https://github.com/miho/VRL/issues/2
+                frames.clear();
 	}
 	
 	static byte[] block;

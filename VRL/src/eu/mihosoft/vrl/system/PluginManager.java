@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.reflection.Pair;
@@ -61,6 +60,7 @@ import java.util.Map;
 
 /**
  * Manages plugins and their dependencies.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 class PluginManager {
@@ -70,11 +70,12 @@ class PluginManager {
      * defined in each plugin. The boot order is determined via topological
      * sorting of an acyclic directed graph. Cyclic dependencies are detected.
      * In this case the computation of the boot order is impossible.
+     *
      * @param plugins plugins
      * @return a bootorder of the specified plugins based on the dependencies
-     *         defined in each plugin
+     * defined in each plugin
      * @throws IllegalStateException this exception will be thrown if either
-     *         plugin dependencies are missing or if cyclic dependencies exist
+     * plugin dependencies are missing or if cyclic dependencies exist
      */
     public BootOrder computeBootOrder(
             Collection<PluginConfigurator> plugins)
@@ -82,27 +83,27 @@ class PluginManager {
 
         List<PluginNode> resolvedNodes = new ArrayList<PluginNode>();
         List<PluginNode> unresolvedNodes = new ArrayList<PluginNode>();
-        
-        List<PluginConfigurator> result =
-                new ArrayList<PluginConfigurator>();
-        List<PluginConfigurator> deactivated =
-                new ArrayList<PluginConfigurator>();
+
+        List<PluginConfigurator> result
+                = new ArrayList<PluginConfigurator>();
+        List<PluginConfigurator> deactivated
+                = new ArrayList<PluginConfigurator>();
         String errorMessages = null;
 
         // define graph nodes
-        HashMap<PluginIdentifier, PluginNode> nodes =
-                new HashMap<PluginIdentifier, PluginNode>();
+        HashMap<PluginIdentifier, PluginNode> nodes
+                = new HashMap<PluginIdentifier, PluginNode>();
 
         for (PluginConfigurator p : plugins) {
             nodes.put(p.getIdentifier(), new PluginNode(p));
         }
 
         // check dependencies and create corresponding node list
-        HashMap<PluginDependency, PluginNode> deps =
-                new HashMap<PluginDependency, PluginNode>();
+        HashMap<PluginDependency, PluginNode> deps
+                = new HashMap<PluginDependency, PluginNode>();
 
-        HashMap<PluginIdentifier, PluginDependency> missingDependencies =
-                new HashMap<PluginIdentifier, PluginDependency>();
+        HashMap<PluginIdentifier, PluginDependency> missingDependencies
+                = new HashMap<PluginIdentifier, PluginDependency>();
 
         for (PluginConfigurator p : plugins) {
             for (PluginDependency d : p.getDependencies()) {
@@ -119,7 +120,7 @@ class PluginManager {
                 // we don not break here even if we know that it does not work
                 // because we collect all missing dependencies for showing an
                 // error message
-                if (!found) {
+                if (!found && !d.isOptional()) {
                     missingDependencies.put(p.getIdentifier(), d);
                 }
             }
@@ -129,8 +130,8 @@ class PluginManager {
         for (PluginIdentifier p : missingDependencies.keySet()) {
             nodes.remove(p);
 
-            ArrayList<PluginConfigurator> delList =
-                    new ArrayList<PluginConfigurator>();
+            ArrayList<PluginConfigurator> delList
+                    = new ArrayList<PluginConfigurator>();
             for (PluginConfigurator pC : plugins) {
                 if (pC.getIdentifier().equals(p)) {
                     delList.add(pC);
@@ -158,8 +159,8 @@ class PluginManager {
 
             depString += "</ul>";
 
-            errorMessages=depString;
-            
+            errorMessages = depString;
+
             System.err.println(depString);
         }
 
@@ -168,7 +169,12 @@ class PluginManager {
             PluginNode node = nodes.get(p.getIdentifier());
             for (PluginDependency dep : p.getDependencies()) {
                 PluginNode n = deps.get(dep);
-                node.addEdge(n);
+                
+                // n can be null if n was specified as optional dependency
+                // and if it is not available
+                if (n != null) {
+                    node.addEdge(n);
+                }
             }
         }
 
@@ -201,9 +207,11 @@ class PluginManager {
     }
 
     /**
-     * Computes a map containing the classloader parentage information that
-     * is necessary to create plugin classloaders.
-     * @param pluginGroupRoots plugin root groups (will be filled with root elements)
+     * Computes a map containing the classloader parentage information that is
+     * necessary to create plugin classloaders.
+     *
+     * @param pluginGroupRoots plugin root groups (will be filled with root
+     * elements)
      * @param bootorder plugins in topological order
      * @return a map containing the classloader parentage information
      */
@@ -237,8 +245,8 @@ class PluginManager {
 
             // the nearest elemenent to p in the bootorder that is a dependency
             // of p.
-            String parentOfP =
-                    getNearestElementInBootorder(pID, deps_p, bootorder);
+            String parentOfP
+                    = getNearestElementInBootorder(pID, deps_p, bootorder);
 
             // if this is null, ignore it
             if (parentOfP == null) {
@@ -248,22 +256,21 @@ class PluginManager {
             // define the previously computed nearest dependency of p as parent
             // of p
             result.put(pID, parentOfP);
-            
 
             // for each dependency of p compute the parent element
             for (String d : deps_p) {
 
                 // remove d from deps_p set
-                Collection<String> deps_p_without_d =
-                        new ArrayList<String>(deps_p);
+                Collection<String> deps_p_without_d
+                        = new ArrayList<String>(deps_p);
                 deps_p_without_d.remove(d);
 
                 // the nearest elemenent to d in the bootorder that is a
                 // dependency of p and !=d (that is, why we removed d from
                 // deps_p in the previous step).
-                String parentOfD =
-                        getNearestElementInBootorder(
-                        d, deps_p_without_d, bootorder);
+                String parentOfD
+                        = getNearestElementInBootorder(
+                                d, deps_p_without_d, bootorder);
 
                 // if we did not found a parent of d, ignore d
                 if (parentOfD == null) {
@@ -283,11 +290,12 @@ class PluginManager {
     /**
      * Returns the nearest element of p that is in the specified element list
      * (dependencies of p)
+     *
      * @param p element to find the nearest element for
      * @param deps_p element list (dependencies of p)
      * @param bootorder
      * @return the nearest element of p or <code>null</code> no such element
-     *         exists
+     * exists
      */
     private String getNearestElementInBootorder(String p,
             Collection<String> deps_p,
@@ -317,10 +325,11 @@ class PluginManager {
 
     /**
      * Resolution algorithm (topological sorting).
+     *
      * @param node root node
      * @param resolvedNodes a list used to store resoved nodes (result)
-     * @param unresolvedNodes
-     *          a list used to store unresoved nodes (used temporarily)
+     * @param unresolvedNodes a list used to store unresoved nodes (used
+     * temporarily)
      */
     private void resolve(PluginNode node,
             List<PluginNode> resolvedNodes,
@@ -329,6 +338,15 @@ class PluginManager {
         for (PluginNode n : node.getEdges()) {
             if (!resolvedNodes.contains(n)) {
                 if (unresolvedNodes.contains(n)) {
+                    
+                    System.err.println(">> The plugin "+ n.getPlugin().getIdentifier()
+                            +" is responsable for circular plugin dependencies!");
+                    
+                    System.err.println("Dependencies are: ");
+                    for (int i = 0; i < n.getPlugin().getDependencies().length; i++) {
+                        System.err.println(" "+n.getPlugin().getDependencies()[i].getName());
+                    }
+                    
                     throw new IllegalStateException(
                             ">> Error: circular plugin dependencies!");
                 }

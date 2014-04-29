@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.asm;
 
 import eu.mihosoft.vrl.lang.VLangUtils;
 import groovyjarjarasm.asm.*;
-import groovyjarjarasm.asm.commons.EmptyVisitor;
+//import groovyjarjarasm.asm.commons.EmptyVisitor;
 import groovyjarjarasm.asm.commons.Remapper;
 import groovyjarjarasm.asm.commons.RemappingClassAdapter;
 import java.io.*;
@@ -211,7 +211,14 @@ public class ByteCodeUtil {
     /**
      * Default class visitor. Does not modify class.
      */
-    private static class VClassVisitor extends EmptyVisitor {
+//    private static class VClassVisitor extends EmptyVisitor {
+    private static class VClassVisitor extends ClassVisitor {
+
+        public VClassVisitor() {
+            super(Opcodes.ASM4);
+        }
+        
+        
 
         @Override
         public void visit(int i, int i1, String string,
@@ -357,7 +364,12 @@ public class ByteCodeUtil {
 
         IOException exception = null;
 
-        class ClassNameVisitor extends EmptyVisitor {
+//        class ClassNameVisitor extends EmptyVisitor {
+            class ClassNameVisitor extends ClassVisitor {
+
+        public  ClassNameVisitor() {
+            super(Opcodes.ASM4);
+        }
 
             @Override
             public void visit(
@@ -498,7 +510,12 @@ public class ByteCodeUtil {
     /**
      * Default class visitor. Does not modify class.
      */
-    private static class VPrintClassVisitor extends EmptyVisitor {
+//    private static class VPrintClassVisitor extends EmptyVisitor {
+    private static class VPrintClassVisitor extends ClassVisitor {
+
+        public VPrintClassVisitor() {
+            super(Opcodes.ASM4);
+        }
 
         @Override
         public void visit(int i, int i1, String string,

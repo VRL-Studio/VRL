@@ -1,4 +1,23 @@
 -----------------------------------------------
+Version:	v0.4.2.8.5
+Date:		Fri, 14 Jun 2013 14:19:41 +0200
+-----------------------------------------------
+
+      Features:
+    
+    project controller can export projects as console applications
+     - works on Linux, OS X, Windows
+     - new comandline arguments added:
+     - install-plugin-help:        [yes,no] (defines whether to install plugin help packages)
+     - install-payload-plugins: [yes,no] (defines whether payload-plugins shall be installed)
+       NOTE: only relevant if calling from project.jar (project thet has been exported as console applocation)
+    
+    Fixes:
+    
+     - quick-fix for issue #1: https://github.com/miho/VRL/issues/1
+     - libraryplugin creator stores automatically generated plugin configurator code in jar file (improves debugging)
+
+-----------------------------------------------
 Version:	v0.4.2.8.4
 Date:		Mon, 29 Apr 2013 19:13:04 +0200
 -----------------------------------------------

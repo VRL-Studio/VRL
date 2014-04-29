@@ -60,7 +60,7 @@ import java.util.Collection;
  * @see eu.mihosoft.vrl.visual.MessageType
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-@ComponentInfo(name="MessageTypeSelection", instanciate=false)
+@ComponentInfo(name="MessageTypeSelection", instantiate=false)
 public class MessageTypeSelection extends Selection {
 
     private static final long serialVersionUID=1;

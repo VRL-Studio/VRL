@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.annotation.OutputInfo;
@@ -82,14 +81,19 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 
 /**
- * <p>Base class for type representations.</p> <p><b>Note:</b> inherit this
- * class to create a completely new type representation. Additionally, it is
- * possible to customize an already existing type representation. For textfield
- * based type representations,
+ * <p>
+ * Base class for type representations.</p>
+ * <p>
+ * <b>Note:</b> inherit this class to create a completely new type
+ * representation. Additionally, it is possible to customize an already existing
+ * type representation. For textfield based type representations,
  * {@link eu.mihosoft.vrl.types.VTextFieldBasedTypeRepresentation} is a good
  * starting point. Image based type representations should inherit
- * {@link eu.mihosoft.vrl.types.BufferedImageType}. </p> <p><b>Example (Groovy
- * code):</b></p> <p>The class to visualize:</p>
+ * {@link eu.mihosoft.vrl.types.BufferedImageType}. </p>
+ * <p>
+ * <b>Example (Groovy code):</b></p>
+ * <p>
+ * The class to visualize:</p>
  * <code>
  * <pre>
  * class Circle {
@@ -103,7 +107,8 @@ import javax.swing.text.Document;
  * </pre>
  * </code>
  *
- * <p>The corresponding type representation:</p>
+ * <p>
+ * The corresponding type representation:</p>
  * <code>
  * <pre>
  * &#064;TypeInfo(type=Circle.class, input = false, output = true, style="default")
@@ -144,7 +149,8 @@ import javax.swing.text.Document;
  * </pre>
  * </code>
  *
- * <p>And finally, a circle creator that uses the type representation:</p>
+ * <p>
+ * And finally, a circle creator that uses the type representation:</p>
  *
  * <code>
  * <pre>
@@ -158,12 +164,15 @@ import javax.swing.text.Document;
  * </pre>
  * </code>
  *
- * <p>The result should look like this:<p>
+ * <p>
+ * The result should look like this:
+ * <p>
  *
  * <br/> <img src="./doc-files/circlecreator.png"/> <br/>
  *
- * <p><b>Supported value options:</b><br> <ul> <li>hideConnector (defines
- * whether to hide the connector of this type representation)</li>
+ * <p>
+ * <b>Supported value options:</b><br> <ul> <li>hideConnector (defines whether
+ * to hide the connector of this type representation)</li>
  * <li>invokeOnChange (defines whether to invoke the method this type
  * representation belongs to on input change)</li> </ul>
  *
@@ -199,8 +208,8 @@ public abstract class TypeRepresentationBase extends VComponent
     private boolean hideConnector = false;
     private boolean invokeMethodOnValueChange = false;
     private CustomParamData customData = new CustomParamData();
-    private ArrayList<CapabilityChangedListener> capabilityChangedListeners =
-            new ArrayList<CapabilityChangedListener>();
+    private ArrayList<CapabilityChangedListener> capabilityChangedListeners
+            = new ArrayList<CapabilityChangedListener>();
     private boolean fullScreenMode = false;
     private boolean updateLayoutOnValueChange = true;
     private boolean noGUI = false;
@@ -210,23 +219,23 @@ public abstract class TypeRepresentationBase extends VComponent
     /**
      * list of action listeners
      */
-    private Collection<ActionListener> actionListeners =
-            new ArrayList<ActionListener>();
+    private Collection<ActionListener> actionListeners
+            = new ArrayList<ActionListener>();
     /**
      * Style key to access color that represents invalid values
      */
-    public static final String INVALID_VALUE_COLOR_KEY =
-            "TypeRepresentation:Value[invalid]:Color";
+    public static final String INVALID_VALUE_COLOR_KEY
+            = "TypeRepresentation:Value[invalid]:Color";
     /**
      * Style key to access color that represents valid values
      */
-    public static final String VALID_VALUE_COLOR_KEY =
-            "TypeRepresentation:Value[valid]:Color";
+    public static final String VALID_VALUE_COLOR_KEY
+            = "TypeRepresentation:Value[valid]:Color";
     /**
      * Style key to access color that represents values with warnings
      */
-    public static final String WARNING_VALUE_COLOR_KEY =
-            "TypeRepresentation:Value[warning]:Color";
+    public static final String WARNING_VALUE_COLOR_KEY
+            = "TypeRepresentation:Value[warning]:Color";
     public static final String SET_VIEW_VALUE_ACTION = "set-view-value";
 
     /**
@@ -314,8 +323,8 @@ public abstract class TypeRepresentationBase extends VComponent
      */
     public void setReturnTypeUpToDate() {
         if (parentMethod != null) {
-            TypeRepresentationBase retType =
-                    parentMethod.getReturnValue();
+            TypeRepresentationBase retType
+                    = parentMethod.getReturnValue();
             retType.setUpToDate(true);
         }
     }
@@ -374,8 +383,8 @@ public abstract class TypeRepresentationBase extends VComponent
                 equals(DataProcessingMode.UPDATE_OFF)) {
 
             // get the return type representation of this type representation
-            TypeRepresentationBase retType =
-                    parentMethod.getReturnValue();
+            TypeRepresentationBase retType
+                    = parentMethod.getReturnValue();
 
             // set return type representation to be not up to date
             retType.setUpToDate(false);
@@ -385,7 +394,6 @@ public abstract class TypeRepresentationBase extends VComponent
             // if the return value is connected then get the connections and
             // call the setReturnTypeOutdated() from the other type
             // representations
-
             // get the return connector
             Connector c = getParentMethod().getOutputConnector();
 
@@ -394,8 +402,8 @@ public abstract class TypeRepresentationBase extends VComponent
             if (c != null) {
 
                 // get all of the return value's connections
-                ArrayList<Connection> connections =
-                        getMainCanvas().getDataConnections().getAllWith(c);
+                ArrayList<Connection> connections
+                        = getMainCanvas().getDataConnections().getAllWith(c);
 
                 // for every connection
                 for (Connection connection : connections) {
@@ -405,28 +413,24 @@ public abstract class TypeRepresentationBase extends VComponent
                     Connector r = connection.getReceiver();
 
                     // and the type representation container it is atached to
-                    TypeRepresentationContainer returnTypeContainer =
-                            (TypeRepresentationContainer) r.getValueObject();
-
+                    TypeRepresentationContainer returnTypeContainer
+                            = (TypeRepresentationContainer) r.getValueObject();
 
                     // get the returntype representation of the container
-                    TypeRepresentationBase returnTypeRepresentation =
-                            returnTypeContainer.getMethod().getReturnValue();
+                    TypeRepresentationBase returnTypeRepresentation
+                            = returnTypeContainer.getMethod().getReturnValue();
 
+                    TypeRepresentationBase tb
+                            = returnTypeContainer.getTypeRepresentation();
 
-                    TypeRepresentationBase tb =
-                            returnTypeContainer.getTypeRepresentation();
-
-                    boolean differentMethods =
-                            !this.getParentMethod().
+                    boolean differentMethods
+                            = !this.getParentMethod().
                             equals(tb.getParentMethod());
-
 
                     if (differentMethods) {
 //                        tb.setValue(new EmptyObject());
                         tb.setValue(null);
                     }
-
 
                     // if the returntype representation is not up to date
                     // then do nothing because we want to prevent circular
@@ -472,8 +476,8 @@ public abstract class TypeRepresentationBase extends VComponent
     public boolean isReturnTypeUpToDate() {
         boolean result = false;
         if (parentMethod != null) {
-            TypeRepresentationBase retType =
-                    parentMethod.getReturnValue();
+            TypeRepresentationBase retType
+                    = parentMethod.getReturnValue();
             result = retType.isUpToDate();
         }
         return result;
@@ -709,10 +713,9 @@ public abstract class TypeRepresentationBase extends VComponent
         if (value != null) {
             validateValue();
 
-            double transparency =
-                    getParentMethod().getParentObject().getParentWindow().
+            double transparency
+                    = getParentMethod().getParentObject().getParentWindow().
                     getTransparency();
-
 
             if (!isHideConnector() && VSwingUtil.isVisible(getConnector())) {
 
@@ -879,7 +882,6 @@ public abstract class TypeRepresentationBase extends VComponent
 //        }
 //
 //        type = getCanvasClassLoader().reloadClass(type);
-
         if (type == null) {
             type = TypeUtil.getType(this.getClass());
         }
@@ -891,19 +893,19 @@ public abstract class TypeRepresentationBase extends VComponent
     public void emptyView() {
         deleteViewValue();
     }
-    
+
     public void deleteViewValue() {
         viewValue = null;
     }
-    
-     public void deleteValue() {
+
+    public void deleteValue() {
         value = null;
     }
 
     @Override
     public void setViewValue(Object o) {
         viewValue = o;
-        
+
         fireAction(new ActionEvent(this, 0, SET_VIEW_VALUE_ACTION));
     }
 
@@ -985,8 +987,8 @@ public abstract class TypeRepresentationBase extends VComponent
             getInputComponent().setPreferredSize(new Dimension(width, height));
 
             if (connector != null && connector.getValueObject() != null) {
-                TypeRepresentationContainer valueObject =
-                        (TypeRepresentationContainer) getConnector().getValueObject();
+                TypeRepresentationContainer valueObject
+                        = (TypeRepresentationContainer) getConnector().getValueObject();
                 valueObject.setMinimumSize(null);
                 valueObject.setPreferredSize(null);
                 valueObject.setMaximumSize(null);
@@ -1148,8 +1150,7 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Indicates whether
-     * <code>null</code> is a valid value.
+     * Indicates whether <code>null</code> is a valid value.
      *
      * @return <code>true</code> if <code>null</code> is a valid value;
      * <code>false</code> otherwise
@@ -1159,8 +1160,7 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Defines whether
-     * <code>null</code> is a valid value.
+     * Defines whether <code>null</code> is a valid value.
      *
      * @param nullValidInput the state to set
      */
@@ -1393,13 +1393,16 @@ public abstract class TypeRepresentationBase extends VComponent
      * Requests evaluation of the value options that are usually specified in
      * {@link eu.mihosoft.vrl.annotation.ParamInfo}. This method should be
      * overloaded in custom type representations if they depend on custom value
-     * options. <p><b>Note:</b> if a custom class does not directly extend
+     * options.
+     * <p>
+     * <b>Note:</b> if a custom class does not directly extend
      * {@link TypeRepresentationBase}, e.g., if it derives
      * {@link BufferedImageType} it is necessary to call the super method before
      * performing the custom evaluation as these classes implement this method
      * as well.</p>
      *
-     * <p><b>Sample Code:</b></p>
+     * <p>
+     * <b>Sample Code:</b></p>
      * <pre>
      * &#64;Override
      * protected void evaluationRequest(Script script) {
@@ -1423,9 +1426,12 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * <p> Defines whether to hide the conector of this type representation.
-     * </p> <p> <b>Note:</b> This method does not fire action events etc to
-     * notify the value options about the visibility state. </p>
+     * <p>
+     * Defines whether to hide the conector of this type representation.
+     * </p>
+     * <p>
+     * <b>Note:</b> This method does not fire action events etc to notify the
+     * value options about the visibility state. </p>
      *
      * @param state the state to set
      */
@@ -1510,9 +1516,11 @@ public abstract class TypeRepresentationBase extends VComponent
     /**
      * This method will be called when custom param data has been loaded from
      * file. Override this method to handle custom read operations or to convert
-     * the data to custom data structures. <p><b>Note:</b> changes to the data
-     * other than loading will not trigger this method. If a change notification
-     * is required, a custom solution must be provided. </p>
+     * the data to custom data structures.
+     * <p>
+     * <b>Note:</b> changes to the data other than loading will not trigger this
+     * method. If a change notification is required, a custom solution must be
+     * provided. </p>
      */
     public void evaluateCustomParamData() {
         //
@@ -1530,7 +1538,7 @@ public abstract class TypeRepresentationBase extends VComponent
 
     /**
      * The capability changed listeners of this window. To add listeners use the
-     * null null null     {@link CanvasWindow#addCapabilityListener(
+     * null null null null null null null null null null     {@link CanvasWindow#addCapabilityListener(
      * eu.mihosoft.vrl.visual.CapabilityChangedListener)} instead.
      *
      * @return the capabilityChangedListeners
@@ -1541,8 +1549,8 @@ public abstract class TypeRepresentationBase extends VComponent
 
     /**
      * Adds a capability changed listener to the capability manager. The
-     * listener will be removed if the
-     * <code>dispose()</code> method of this window is called.
+     * listener will be removed if the <code>dispose()</code> method of this
+     * window is called.
      *
      * @param listener the listener to add
      */
@@ -1666,8 +1674,8 @@ public abstract class TypeRepresentationBase extends VComponent
     /**
      * Indicates whether to prevent value serialization. Sometimes the value may
      * be too big or unimportant to be saved. This property can be controlled
-     * via the variable
-     * <code>serialization</code> in the options string of the param info.
+     * via the variable <code>serialization</code> in the options string of the
+     * param info.
      *
      * @return <code>true</code> if the value shall not be serialized;
      * <code>false</code> otherwise
@@ -1677,8 +1685,8 @@ public abstract class TypeRepresentationBase extends VComponent
         boolean paramSerialization = true;
 
         if (value != null) {
-            paramSerialization =
-                    ComponentUtil.isParameterSerializationEnabled(value.getClass());
+            paramSerialization
+                    = ComponentUtil.isParameterSerializationEnabled(value.getClass());
         }
 
         return !serialization || !paramSerialization;
@@ -1734,8 +1742,59 @@ public abstract class TypeRepresentationBase extends VComponent
                     null, ConnectionStatus.VALID);
         }
 
+        Message errorMsg = null;
+
+        String senderTypeName = getTypeString(tRep);
+        String receiverTypeName = getTypeString(this);
+
+        if (senderTypeName.equals(receiverTypeName)) {
+            errorMsg = new Message("Cannot establish connection:",
+                    "Connection: "
+                    + "Source/Target value type not equal!"
+                    + "<br>"
+                    + " -> Source: "
+                    + Message.EMPHASIZE_BEGIN
+                    + senderTypeName
+                    + Message.EMPHASIZE_END
+                    + "<br>"
+                    + " -> Target: "
+                    + Message.EMPHASIZE_BEGIN
+                    + receiverTypeName
+                    + Message.EMPHASIZE_END
+                    + "<br>"
+                    + ">> <b>Note:</b> even though the type names are equal the"
+                    + " corresponding classloaders are different."
+                    + "Reloading the project will solve this problem.",
+                    MessageType.ERROR_SINGLE);
+        } else {
+            errorMsg = new Message("Cannot establish connection:",
+                    "Connection: "
+                    + "Source/Target value type not equal!"
+                    + "<br>"
+                    + " -> Source: "
+                    + Message.EMPHASIZE_BEGIN
+                    + senderTypeName
+                    + Message.EMPHASIZE_END
+                    + "<br>"
+                    + " -> Target: "
+                    + Message.EMPHASIZE_BEGIN
+                    + receiverTypeName
+                    + Message.EMPHASIZE_END,
+                    MessageType.ERROR_SINGLE);
+        }
+
         return new ConnectionResult(
-                null, ConnectionStatus.ERROR_VALUE_TYPE_MISSMATCH);
+                errorMsg, ConnectionStatus.ERROR_VALUE_TYPE_MISSMATCH);
+    }
+
+    private String getTypeString(TypeRepresentationBase tRep) {
+        String typeName = "<unknown type>";
+
+        if (tRep.getType() != null) {
+            typeName = tRep.getType().getName();
+        }
+
+        return typeName;
     }
 
     /**
@@ -1767,8 +1826,9 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Enables parameter serialization (default). <p><b>Note:</b>May be
-     * overridden by custom param options.</p>
+     * Enables parameter serialization (default).
+     * <p>
+     * <b>Note:</b>May be overridden by custom param options.</p>
      *
      * @param serialization the serialization to set
      */
@@ -1777,8 +1837,9 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Disables parameter serialization. <p><b>Note:</b>May be overridden by
-     * custom param options.</p>
+     * Disables parameter serialization.
+     * <p>
+     * <b>Note:</b>May be overridden by custom param options.</p>
      *
      * @param serialization the serialization to set
      */

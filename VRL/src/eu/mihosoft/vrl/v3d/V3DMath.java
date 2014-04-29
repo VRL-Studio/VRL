@@ -245,7 +245,17 @@ public class V3DMath {
         // invert rotation angle
         AxisAngle4d rotation2 = new AxisAngle4d();
         rotation2.set(rotation);
-        double angle = rotation2.getAngle();
+        
+        // Mac OS X may show an error. But it compiles anyway.
+        //
+        // Reason:
+        //
+        // This is because Mac OS X comes with its own Java3D
+        // version. Some IDEs have it in their classpath.
+        //
+        // See https://github.com/miho/VRL/issues/15 for further reference
+        //
+        double angle = rotation2.getAngle(); 
         rotation2.setAngle(-angle);
 
         // set inverted rotation

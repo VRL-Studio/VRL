@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.animation.Animation;
@@ -59,7 +58,6 @@ import eu.mihosoft.vrl.animation.FrameListener;
 import eu.mihosoft.vrl.animation.LinearInterpolation;
 import eu.mihosoft.vrl.reflection.DefaultObjectRepresentation;
 import eu.mihosoft.vrl.system.VSysUtil;
-import eu.mihosoft.vrl.visual.ImageUtils;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -69,11 +67,13 @@ import java.awt.Insets;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
@@ -88,11 +88,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.InputMap;
 import javax.swing.JEditorPane;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.text.BadLocationException;
@@ -129,8 +131,8 @@ public class MessageBox extends VComponent implements
     private JPanel iconPane = new TransparentPanel();
     private int messagePointer;
     private Message currentMessage;
-    private TransparentLabel numberOfMessagesLabel =
-            new TransparentLabel("1/1");
+    private TransparentLabel numberOfMessagesLabel
+            = new TransparentLabel("1/1");
     private JPanel messagePanel = new TransparentPanel() {
 
         @Override
@@ -194,6 +196,26 @@ public class MessageBox extends VComponent implements
 
         messagePanel.setOpaque(false);
         this.add(messagePanel);
+
+        // add shortcuts
+        if (VSysUtil.isMacOSX()) {
+
+            InputMap keyMap = messageField.getInputMap();
+
+            KeyStroke keyC = KeyStroke.getKeyStroke(KeyEvent.VK_C,
+                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+            KeyStroke keyV = KeyStroke.getKeyStroke(KeyEvent.VK_V,
+                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+            KeyStroke keyX = KeyStroke.getKeyStroke(KeyEvent.VK_X,
+                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+            KeyStroke keyA = KeyStroke.getKeyStroke(KeyEvent.VK_A,
+                    Toolkit.getDefaultToolkit().getMenuShortcutKeyMask());
+
+            keyMap.put(keyC, DefaultEditorKit.copyAction);
+            keyMap.put(keyV, DefaultEditorKit.pasteAction);
+            keyMap.put(keyX, DefaultEditorKit.cutAction);
+            keyMap.put(keyA, DefaultEditorKit.selectAllAction);
+        }
 
         messageField.setAlignmentX(TOP_ALIGNMENT);
 
@@ -281,7 +303,6 @@ public class MessageBox extends VComponent implements
         iconPane.setOpaque(
                 false);
 
-
         this.add(iconPane);
 
         MessageCloseIcon close = new MessageCloseIcon(mainCanvas) {
@@ -334,8 +355,8 @@ public class MessageBox extends VComponent implements
                     // TODO find a better way to get transparency
                     if (c != null && (c instanceof Connector)) {
                         Connector connector = (Connector) c;
-                        CanvasWindow w =
-                                connector.getValueObject().getParentWindow();
+                        CanvasWindow w
+                                = connector.getValueObject().getParentWindow();
 
                         double transparency = w.getTransparency();
 
@@ -354,7 +375,7 @@ public class MessageBox extends VComponent implements
 
         messageField.addMouseListener(
                 new FieldAdapter());
-        
+
         messageField.addMouseMotionListener(new MouseMotionListener() {
 
             @Override
@@ -375,7 +396,6 @@ public class MessageBox extends VComponent implements
                 this);
         messageStream = new MessageStream(
                 this, getMessageStreamTitle(), MessageType.INFO, System.out);
-
 
         errorStream = new MessageStream(
                 this, getErrorStreamTitle(), MessageType.ERROR, System.err);
@@ -405,8 +425,6 @@ public class MessageBox extends VComponent implements
 //            builder.append("<h1>").append(m.getTitle()).append("</h1><br>\n").
 //                    append("<p>\n").append(m.getText()).append("\n</p>\n\n");
 //        }
-
-
         for (Message m : messages) {
             builder.append("Title: ").append(m.getTitle()).append("\n").
                     append("Message: ").append(m.getText()).append("\n\n");
@@ -571,10 +589,10 @@ public class MessageBox extends VComponent implements
             int bottom = getInsets().bottom;
             int right = getInsets().right;
 
-            shape =
-                    new RoundRectangle2D.Double(left, top,
-                    getWidth() - left - right,
-                    getHeight() - top - bottom, 20, 20);
+            shape
+                    = new RoundRectangle2D.Double(left, top,
+                            getWidth() - left - right,
+                            getHeight() - top - bottom, 20, 20);
 
             g2.fill(getShape());
 
@@ -585,18 +603,18 @@ public class MessageBox extends VComponent implements
 
             // TODO find another way than redefining shape
             // currently this has to be done because of stroke
-            shape =
-                    new RoundRectangle2D.Double(left, top,
-                    getWidth() - left - right + 1,
-                    getHeight() - top - bottom + 1, 20, 20);
+            shape
+                    = new RoundRectangle2D.Double(left, top,
+                            getWidth() - left - right + 1,
+                            getHeight() - top - bottom + 1, 20, 20);
 
             if (isBufferingEnabled()) {
                 g2.dispose();
 
-                buffer =
-                        ImageUtils.gradientMask(buffer,
-                        cachedMessageStyle.getBaseValues().getFloat(BOTTOM_TRANSPARENCY_KEY),
-                        cachedMessageStyle.getBaseValues().getFloat(TOP_TRANSPARENCY_KEY));
+                buffer
+                        = ImageUtils.gradientMask(buffer,
+                                cachedMessageStyle.getBaseValues().getFloat(BOTTOM_TRANSPARENCY_KEY),
+                                cachedMessageStyle.getBaseValues().getFloat(TOP_TRANSPARENCY_KEY));
             }
         }
         if (isBufferingEnabled()) {
@@ -657,7 +675,6 @@ public class MessageBox extends VComponent implements
         });
 
 //        AnimationManager manager = mainCanvas.getAnimationManager();
-
         getMainCanvas().getAnimationManager().addUniqueAnimation(a, 1);
 
         getMainCanvas().getDock().fadeIn(offset, duration);
@@ -705,16 +722,14 @@ public class MessageBox extends VComponent implements
 
                     @Override
                     public void run() {
-                        Animation updateAnimation =
-                                new ShowMessageBoxAnimation(MessageBox.this);
+                        Animation updateAnimation
+                                = new ShowMessageBoxAnimation(MessageBox.this);
                         updateAnimation.setDuration(0.1);
                         getMainCanvas().getAnimationManager().
                                 addAnimation(updateAnimation);
 
-
                     }
                 });
-
 
             }
         });
@@ -748,8 +763,7 @@ public class MessageBox extends VComponent implements
     /**
      * Indicates if unread messages are in the message list.
      *
-     * @return
-     * <code>true</code> if unread messages are in the list;
+     * @return <code>true</code> if unread messages are in the list;
      * <code>false</code> otherwise
      */
     public boolean unreadMessages() {
@@ -781,8 +795,8 @@ public class MessageBox extends VComponent implements
         numberOfMessagesLabel.setText(
                 messages.size() - messagePointer + "/" + messages.size());
 
-        numberOfMessages =
-                messages.size();
+        numberOfMessages
+                = messages.size();
         //notify message listener
 
         if (messageListener != null) {
@@ -804,7 +818,6 @@ public class MessageBox extends VComponent implements
 
         numberOfMessages = messages.size();
         //notify message listener
-
 
         if (messageListener != null) {
             messageListener.messageEvent(this);
@@ -882,8 +895,8 @@ public class MessageBox extends VComponent implements
      */
     private void insertHTML(JEditorPane editor, String html, int location) {
         //assumes editor is already set to "text/html" type
-        HTMLEditorKit kit =
-                (HTMLEditorKit) editor.getEditorKit();
+        HTMLEditorKit kit
+                = (HTMLEditorKit) editor.getEditorKit();
         Document doc = editor.getDocument();
         StringReader reader = new StringReader(html);
         try {
@@ -956,8 +969,8 @@ public class MessageBox extends VComponent implements
                                 + message.getText();
                     } else {
                         enableHTML();
-                        text =
-                                messageHeader(message)
+                        text
+                                = messageHeader(message)
                                 + messageBody(message)
                                 + messageFooter(message);
                     }
@@ -1030,7 +1043,6 @@ public class MessageBox extends VComponent implements
         int distance = Math.abs(getMaxMessageHeight() - getMessageHeight());
 
         // SHOW
-
         double showSpeedValue = (Double) getStyle().getBaseValues().get(
                 SHOW_ANIM_DURATION_KEY);
 
@@ -1040,7 +1052,6 @@ public class MessageBox extends VComponent implements
 
         if (!isOpening()) {
             showBox(0, showDuration);
-
 
         } // HIDE
 
@@ -1053,6 +1064,7 @@ public class MessageBox extends VComponent implements
 
         hideBox(
                 showDuration + showMessageDuration, hideDuration);
+
     }
 
     /**
@@ -1065,8 +1077,7 @@ public class MessageBox extends VComponent implements
     }
 
     /**
-     * @return
-     * <code>true</code> if the message box is opened (shown);
+     * @return <code>true</code> if the message box is opened (shown);
      * <code>false</code> otherwise
      */
     public boolean isOpened() {
@@ -1147,16 +1158,13 @@ public class MessageBox extends VComponent implements
         PulseIcon icon = new PulseIcon(getMainCanvas(), c, message.getType());
 
 //        pulse.setSize(80, 80);
-
         // TODO find a better way for the transparency
         // only has an effect if c != null
-
-
         if (c instanceof Connector) {
 
             Connector connector = (Connector) c;
-            CanvasWindow w =
-                    connector.getValueObject().getParentWindow();
+            CanvasWindow w
+                    = connector.getValueObject().getParentWindow();
 
             double transparency = w.getTransparency();
 
@@ -1177,8 +1185,8 @@ public class MessageBox extends VComponent implements
         }
 
         messages.add(message);
-        messagePointer =
-                messages.size() - 1;
+        messagePointer
+                = messages.size() - 1;
 
         // TODO: why do these two lines produce crashes (gui freezes)
         // if JTextPane is used? There occur no problems with TransparentLabel.
@@ -1291,7 +1299,6 @@ public class MessageBox extends VComponent implements
 //                int removeLength = Math.max(
 //                        log.getText().length() - maxLogSize,
 //                        messageHeader.length());
-
                 displayMsg = log.remove(log.getText().length() - maxLogSize);
                 displayMsg.setScrollToMessageEnd(true);
                 displayMsg.setLog(true);
@@ -1300,8 +1307,8 @@ public class MessageBox extends VComponent implements
             addUniqueMessage(displayMsg, null);
         } else {
 
-            int notifications =
-                    getMainCanvas().
+            int notifications
+                    = getMainCanvas().
                     getMessageBoxApplet().getNumberOfNotifications();
 
             if (notifications == 0) {
@@ -1341,7 +1348,6 @@ public class MessageBox extends VComponent implements
                     //                    }
                     //                    insertHTML(messageField, message,
                     //                            messageField.getDocument().getLength());
-
                     if (messageField.getDocument().getLength() > maxLogSize) {
                         int removeLength = messageField.getDocument().getLength() - maxLogSize;
                         messageFieldScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
@@ -1367,7 +1373,7 @@ public class MessageBox extends VComponent implements
 
         updateLayout(
                 (Integer) getStyle().getBaseValues().get(
-                MAX_HEIGHT_KEY));
+                        MAX_HEIGHT_KEY));
 
         messageField.revalidate();
 
@@ -1428,12 +1434,12 @@ public class MessageBox extends VComponent implements
                 equalCanvasChild = cObj.equals(c);
             }
 
-            boolean equalMessageType =
-                    i.getPulseIcon().getMessageType().equals(
-                    message.getType());
+            boolean equalMessageType
+                    = i.getPulseIcon().getMessageType().equals(
+                            message.getType());
 
-            boolean equalTitle =
-                    i.getTitle().equals(message.getTitle());
+            boolean equalTitle
+                    = i.getTitle().equals(message.getTitle());
 
             if (equalCanvasChild && equalMessageType && equalTitle) {
                 delList.add(i);
@@ -1454,8 +1460,8 @@ public class MessageBox extends VComponent implements
     /**
      * Updates the message box layout.
      *
-     * @param height custom messagebox height (
-     * <code>null</code> causes computation of the necessary height)
+     * @param height custom messagebox height ( <code>null</code> causes
+     * computation of the necessary height)
      */
     public void updateLayout(Integer height) {
         setMinimumSize(null);
@@ -1463,9 +1469,9 @@ public class MessageBox extends VComponent implements
         Integer newMessageHeight = null;
 
         // define maximum MessageBox height as specified in canvas style
-        Integer maxHeight =
-                (Integer) getStyle().getBaseValues().get(
-                MAX_HEIGHT_KEY);
+        Integer maxHeight
+                = (Integer) getStyle().getBaseValues().get(
+                        MAX_HEIGHT_KEY);
 
         if (maxHeight == null) {
             maxHeight = 0;
@@ -1489,13 +1495,11 @@ public class MessageBox extends VComponent implements
                     null);
 //            revalidate();
 
+            int preferredHeight
+                    = Math.min(getPreferredSize().height, maximumSize.height);
 
-            int preferredHeight =
-                    Math.min(getPreferredSize().height, maximumSize.height);
-
-            newMessageHeight =
-                    Math.max(preferredHeight, getMaxMessageHeight());
-
+            newMessageHeight
+                    = Math.max(preferredHeight, getMaxMessageHeight());
 
         } else {
             newMessageHeight = height;
@@ -1511,22 +1515,19 @@ public class MessageBox extends VComponent implements
         messageField.revalidate();
 
         // -15 to prevent text is hidden under right scrollbar
+        int messageFieldWidth
+                = messageFieldScrollPane.getSize().width - 15;
 
-        int messageFieldWidth =
-                messageFieldScrollPane.getSize().width - 15;
-
-        Dimension maxMessageFieldSize =
-                new Dimension(messageFieldWidth,
-                messageField.getMinimumSize().height);
+        Dimension maxMessageFieldSize
+                = new Dimension(messageFieldWidth,
+                        messageField.getMinimumSize().height);
 
         messageField.setMaximumSize(maxMessageFieldSize);
         messageField.setPreferredSize(maxMessageFieldSize);
 
-
         if (newMessageHeight >= maxHeight) {
             messageFieldScrollPane.setVerticalScrollBarPolicy(
                     JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-
 
         } else {
             messageFieldScrollPane.setVerticalScrollBarPolicy(
@@ -1581,8 +1582,7 @@ public class MessageBox extends VComponent implements
     /**
      * Indicates whether the message box is currently appearing (opening).
      *
-     * @return
-     * <code>true</code> if the message box is currently appearing;
+     * @return <code>true</code> if the message box is currently appearing;
      * <code>false</code> otherwises
      */
     public boolean isOpening() {

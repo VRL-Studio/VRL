@@ -563,9 +563,9 @@ public final class Transferable extends JPanel implements
             }
         }
 
-        if ((c instanceof CanvasWindow) && (c != null)) {
+        if (c instanceof CanvasWindow) {
 
-            VisualObject obj = null;
+            VisualObject obj;
 
             if (c instanceof VisualObject) {
                 obj = (VisualObject) c;
@@ -605,6 +605,8 @@ public final class Transferable extends JPanel implements
 
 //                    System.out.println("ConnectionResult: " + connectionResult.getStatus());
 
+//                    System.out.println(">> check-msg: " + connectionResult.getMessage());
+                    
                     setStatusMessage(connectionResult.getMessage());
 
                     // only continue if types of both typerepresentation objects
@@ -711,12 +713,12 @@ public final class Transferable extends JPanel implements
      */
     public void doConnect() {
         MessageBox mBox = getMainCanvas().getMessageBox();
+        
+        System.out.println(">> connection mouse gesture:");
 
         Connection connection = checkConnection();
 
         this.setLocation(0, 0);
-
-        System.out.println(">> connection mouse gesture:");
 
         System.out.println(">>> status: " + getConnectionStatus());
 

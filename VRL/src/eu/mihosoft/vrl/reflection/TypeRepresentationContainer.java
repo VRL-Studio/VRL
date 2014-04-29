@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.lang.visual.InputValue;
@@ -76,8 +75,9 @@ import eu.mihosoft.vrl.visual.VBoxLayout;
 import eu.mihosoft.vrl.visual.ValueObject;
 
 /**
- * A type representation container is a swing container that not only contains
- * a type representation but also a connector.
+ * A type representation container is a swing container that not only contains a
+ * type representation but also a connector.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class TypeRepresentationContainer extends JPanel implements IDObject, ValueObject {
@@ -90,10 +90,11 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
 
     /**
      * Constructor.
+     *
      * @param type the type representation that is to be displayed
      * @param method the method the visualized value belongs to
      * @param connectorType the type of the connector type
-     * @param mainCanvas the main cavas which displays the container 
+     * @param mainCanvas the main cavas which displays the container
      */
     public TypeRepresentationContainer(TypeRepresentationBase type,
             DefaultMethodRepresentation method, ConnectorType connectorType,
@@ -120,8 +121,8 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
             this.setAlignmentY(RIGHT_ALIGNMENT);
         }
 
-        boolean hideConnector =
-                type.isHideConnector()
+        boolean hideConnector
+                = type.isHideConnector()
                 || type.getType().equals(void.class);
 
         if (weAreInput) {
@@ -129,7 +130,6 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
                     ComponentOrientation.LEFT_TO_RIGHT);
             connector = new Input((VisualCanvas) mainCanvas);
             connector.setValueObject(this);
-
 
             JPanel p = new JPanel() {
 
@@ -154,8 +154,8 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
 
             connector.getTransferable().
                     setToolTipText("<html><b>type:</b> "
-                    + TypeUtil.getParamTypeName(
-                    type.getParamInfo(), type.getType()) + "</html>");
+                            + TypeUtil.getParamTypeName(
+                                    type.getParamInfo(), type.getType()) + "</html>");
 
         }
 
@@ -164,7 +164,6 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
             this.applyComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
             connector = new Output((VisualCanvas) mainCanvas);
             connector.setValueObject(this);
-
 
             JPanel p = new JPanel() {
 
@@ -190,9 +189,9 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
 
             connector.getTransferable().
                     setToolTipText("<html><b>type:</b> "
-                    + TypeUtil.getReturnTypeName(
-                    type.getParentMethod().getDescription().getMethodInfo(),
-                    type.getType()) + "</html>");
+                            + TypeUtil.getReturnTypeName(
+                                    type.getParentMethod().getDescription().getMethodInfo(),
+                                    type.getType()) + "</html>");
         }
 
         type.setConnector(connector);
@@ -213,6 +212,7 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
 
     /**
      * Returns the connector of the container.
+     *
      * @return
      */
     @Override
@@ -227,6 +227,7 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
 
     /**
      * Returns the type representation of the container.
+     *
      * @return the type representation of the container
      */
     public TypeRepresentationBase getTypeRepresentation() {
@@ -252,6 +253,7 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
 
     /**
      * Returns the method the type representation container is atached to.
+     *
      * @return the method the type representation container is atached to
      */
     public DefaultMethodRepresentation getMethod() {
@@ -267,12 +269,13 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
     public ConnectionResult compatible(ValueObject obj) {
 
         if (!(obj instanceof TypeRepresentationContainer)) {
+
             return new ConnectionResult(null,
                     ConnectionStatus.ERROR_VALUE_TYPE_MISSMATCH);
         }
 
-        TypeRepresentationContainer valueObj =
-                (TypeRepresentationContainer) obj;
+        TypeRepresentationContainer valueObj
+                = (TypeRepresentationContainer) obj;
 
         TypeRepresentationBase input = null;
         TypeRepresentationBase output = null;
@@ -284,7 +287,6 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
             output = getTypeRepresentation();
             input = valueObj.getTypeRepresentation();
         }
-
 
         boolean isInputOrOutputValue = getType().equals(InputValue.class)
                 || getType().equals(OutputValue.class)
@@ -298,39 +300,38 @@ public class TypeRepresentationContainer extends JPanel implements IDObject, Val
             if (getConnector().isOutput()) {
                 // if this connector is already connected we do not allow
                 // another connection
-                boolean alreadyConnected =
-                        getMethod().getMainCanvas().
+                boolean alreadyConnected
+                        = getMethod().getMainCanvas().
                         getDataConnections().alreadyConnected(connector);
 
                 if (alreadyConnected) {
                     return new ConnectionResult(
                             new Message("Cannot establish connection:",
-                            ">> this output connector is already"
-                            + " connected! Only one connection is allowed for"
-                            + " parameter definitions.",
-                            MessageType.ERROR),
+                                    ">> this output connector is already"
+                                    + " connected! Only one connection is allowed for"
+                                    + " parameter definitions.",
+                                    MessageType.ERROR),
                             ConnectionStatus.ERROR_INVALID);
                 }
             } else {
                 // if the output is already connected we do not allow another
                 // connection
-                boolean outputAlreadyConnected =
-                        getMethod().getMainCanvas().
+                boolean outputAlreadyConnected
+                        = getMethod().getMainCanvas().
                         getDataConnections().alreadyConnected(
-                        obj.getConnector());
+                                obj.getConnector());
 
                 if (outputAlreadyConnected) {
                     return new ConnectionResult(
                             new Message("Cannot establish connection:",
-                            ">> this output connector is already"
-                            + " connected! Only one connection is allowed for"
-                            + " parameter definitions.",
-                            MessageType.ERROR),
+                                    ">> this output connector is already"
+                                    + " connected! Only one connection is allowed for"
+                                    + " parameter definitions.",
+                                    MessageType.ERROR),
                             ConnectionStatus.ERROR_INVALID);
                 }
             }
         }
-
 
         if (input.isOutput()) {
             return new ConnectionResult(null,

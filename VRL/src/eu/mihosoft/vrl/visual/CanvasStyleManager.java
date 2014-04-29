@@ -49,31 +49,34 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
-import java.awt.Component;
+import eu.mihosoft.vrl.system.VSysUtil;
+import java.awt.event.KeyEvent;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.LookAndFeel;
+import javax.swing.InputMap;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.text.DefaultEditorKit;
 
 /**
- * This class manages Canvas styles. Depending on the style it also changes
- * the LookAndFeel.
+ * This class manages Canvas styles. Depending on the style it also changes the
+ * LookAndFeel.
+ *
  * @see javax.swing.LookAndFeel
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class CanvasStyleManager implements CanvasChild {
 
     private Canvas mainCanvas;
-    private HashSet<WeakReference<StyleChangedListener>> styleChangedListeners =
-            new HashSet<WeakReference<StyleChangedListener>>();
+    private HashSet<WeakReference<StyleChangedListener>> styleChangedListeners
+            = new HashSet<WeakReference<StyleChangedListener>>();
     public static final String DEFAULT_LOOK_AND_FEEL;
     private static final int REFRESH_COUNTER = 3;
 
@@ -84,11 +87,11 @@ public class CanvasStyleManager implements CanvasChild {
         if (System.getProperty("os.name").contains("Mac OS X")) {
 //            DEFAULT_LOOK_AND_FEEL =
 //                    "com.apple.laf.AquaLookAndFeel";
-            DEFAULT_LOOK_AND_FEEL =
-                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
+            DEFAULT_LOOK_AND_FEEL
+                    = "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
         } else {
-            DEFAULT_LOOK_AND_FEEL =
-                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
+            DEFAULT_LOOK_AND_FEEL
+                    = "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
         }
     }
 
@@ -100,6 +103,7 @@ public class CanvasStyleManager implements CanvasChild {
 
     /**
      * Constructor.
+     *
      * @param mainCanvas the main canvas
      */
     public CanvasStyleManager(Canvas mainCanvas) {
@@ -112,8 +116,8 @@ public class CanvasStyleManager implements CanvasChild {
     private void cleanListenerSet() {
 
         if (styleChangedListeners.size() % REFRESH_COUNTER == 0) {
-            ArrayList<WeakReference<StyleChangedListener>> delList =
-                    new ArrayList<WeakReference<StyleChangedListener>>();
+            ArrayList<WeakReference<StyleChangedListener>> delList
+                    = new ArrayList<WeakReference<StyleChangedListener>>();
 
             for (WeakReference<StyleChangedListener> weakReference : delList) {
                 if (weakReference.get() == null) {
@@ -129,8 +133,10 @@ public class CanvasStyleManager implements CanvasChild {
 
     /**
      * Adds a style changed listener to this style manager.
-     * <p><b>Note: </b></p> weak references are used! Thus, the user is responsible
+     * <p>
+     * <b>Note: </b></p> weak references are used! Thus, the user is responsible
      * for keeping a strong reference to the added listener.
+     *
      * @param l the listener to add
      */
     public void addStyleChangedListener(StyleChangedListener l) {
@@ -142,8 +148,10 @@ public class CanvasStyleManager implements CanvasChild {
 
     /**
      * Removes a style changed listener to this style manager.
+     *
      * @param l the listener to add
-     * @return <code>true</code> (as specified by {@link java.util.Collection#add})
+     * @return <code>true</code> (as specified by
+     * {@link java.util.Collection#add})
      */
     public boolean removeStyleChangedListener(StyleChangedListener l) {
         if (l == null) {
@@ -168,16 +176,16 @@ public class CanvasStyleManager implements CanvasChild {
     }
 
     /**
-     * Evaluates a canvas style. That is, applies color values to the canvas
-     * and the LookAndFeel. After evaluating the style all canvas changed
-     * listeners will be notified.
+     * Evaluates a canvas style. That is, applies color values to the canvas and
+     * the LookAndFeel. After evaluating the style all canvas changed listeners
+     * will be notified.
+     *
      * @param style the canvas style to evaluate
      */
     void evaluateStyle(Style style) {
         Style previousStyle = getMainCanvas().getStyle();
 
         getMainCanvas().setBackground(style.getBaseValues().getColor(Canvas.BACKGROUND_COLOR_KEY));
-
 
         getMainCanvas().getBackgroundImage().backgroundImageFromStyle(style);
 
@@ -194,7 +202,6 @@ public class CanvasStyleManager implements CanvasChild {
         }
 
         // Look and Feel related code
-
         // undo changes to laf specific ui defaults
         if (previousStyle != null) {
             for (String key : previousStyle.getLookAndFeelValues().getValues().keySet()) {
@@ -213,7 +220,6 @@ public class CanvasStyleManager implements CanvasChild {
         if (lookAndFeel == null) {
             lookAndFeel = DEFAULT_LOOK_AND_FEEL;
         }
-
 
         boolean foundLAF = true;
         try {
@@ -247,6 +253,14 @@ public class CanvasStyleManager implements CanvasChild {
             }
         }
 
+        // CMD-C etc for text fields
+        if (VSysUtil.isMacOSX()) {
+            InputMap im = (InputMap) UIManager.get("TextField.focusInputMap");
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_C, KeyEvent.META_DOWN_MASK), DefaultEditorKit.copyAction);
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_V, KeyEvent.META_DOWN_MASK), DefaultEditorKit.pasteAction);
+            im.put(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.META_DOWN_MASK), DefaultEditorKit.cutAction);
+        }
+
         // set laf specific ui defaults
         for (String key : style.getLookAndFeelValues().getValues().keySet()) {
             UIManager.put(key, style.getLookAndFeelValues().get(key));
@@ -269,7 +283,9 @@ public class CanvasStyleManager implements CanvasChild {
     }
 
     /**
-     * Puts a base value to the canvas style and notifies all style changed listeners.
+     * Puts a base value to the canvas style and notifies all style changed
+     * listeners.
+     *
      * @param k the key
      * @param v the value
      */
@@ -290,6 +306,7 @@ public class CanvasStyleManager implements CanvasChild {
     /**
      * Puts a nimbus value to the canvas style and notifies all style changed
      * listeners.
+     *
      * @param k the key
      * @param v the value
      */
@@ -310,6 +327,7 @@ public class CanvasStyleManager implements CanvasChild {
     /**
      * Puts a custom value to the canvas style and notifies all style changed
      * listeners.
+     *
      * @param k the key
      * @param v the value
      */

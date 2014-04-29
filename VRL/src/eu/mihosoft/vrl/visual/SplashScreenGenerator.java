@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.system.Constants;
@@ -68,6 +67,7 @@ public class SplashScreenGenerator {
 
     private static final Object lock = new Object();
     private String copyrightText = Constants.COPYRIGHT_SIMPLE;
+    private String appNameAndVersion;
 
     /**
      * @param aBootMessage the bootMessages to set
@@ -83,12 +83,39 @@ public class SplashScreenGenerator {
     }
 
     /**
+     * Defines the app name and version. The specified string will be displayed
+     * in the lower left corner of the spash screen.
+     *
+     * @param appNameAndVersion the app name and version
+     *
+     * @see #setCopyrightText(java.lang.String)
+     */
+    public void setAppNameAndVersion(String appNameAndVersion) {
+        this.appNameAndVersion = appNameAndVersion;
+
+        if (this.appNameAndVersion == null) {
+            this.appNameAndVersion = "";
+        }
+    }
+
+    public String getAppNameAndVersion() {
+        String result = this.appNameAndVersion;
+
+        return result;
+    }
+
+    /**
+     * Defines the copyright string that shall be shown on the spashscreen. The
+     * specified string will be displayed in the lower right corner of the spash
+     * screen.
+     *
      * @param aCopyrightText the copyrightText to set
+     * @see #setAppNameAndVersion(java.lang.String)
      */
     public void setCopyrightText(String aCopyrightText) {
         copyrightText = aCopyrightText;
     }
-    
+
     private SplashScreen splashScreen;
     private int maxFrame = 100;
     private static Integer frame = 0;
@@ -100,9 +127,9 @@ public class SplashScreenGenerator {
 
         g2.setFont(font);
 
-        Rectangle2D fontBounds =
-                font.getStringBounds(
-                copyrightText, g2.getFontRenderContext());
+        Rectangle2D fontBounds
+                = font.getStringBounds(
+                        copyrightText, g2.getFontRenderContext());
 
         double fontHeight = fontBounds.getHeight();
 
@@ -154,17 +181,16 @@ public class SplashScreenGenerator {
 //        g.setFont(font);
 //
 //        g.drawString(bootMessage, 10, 300);
-
         renderBootMessages(g);
 
         drawVersionAndCopyrightText(g);
-        
-        int color = 80+(int) ((1+Math.sin(20*frame))*40);
+
+        int color = 80 + (int) ((1 + Math.sin(20 * frame)) * 40);
 
         g.setColor(new Color(145, 156, 220, color));
 
         g.fillRect(1, 269,
-                (int)((splashScreen.getBounds().width / maxFrame) * frame - 2),
+                (int) ((splashScreen.getBounds().width / maxFrame) * frame - 2),
                 11);
 
 //        g.setFont(originalFont);
@@ -246,12 +272,12 @@ public class SplashScreenGenerator {
 
         Font originalFont = g2.getFont();
         Font font = new Font(Font.SANS_SERIF, Font.BOLD, 12);
-        
+
         // draw copyright string (used for studio)
         g2.setFont(font);
-        Rectangle2D fontBounds =
-                font.getStringBounds(
-                copyrightText, g2.getFontRenderContext());
+        Rectangle2D fontBounds
+                = font.getStringBounds(
+                        copyrightText, g2.getFontRenderContext());
 
         Rectangle2D splashBounds = splashScreen.getBounds();
 
@@ -259,22 +285,27 @@ public class SplashScreenGenerator {
         int y = (int) (splashBounds.getHeight() - fontBounds.getHeight() + 5);
 
         g2.drawString(copyrightText, x, y);
-        
-        
+
         // draw vrl version string
         font = new Font(Font.SANS_SERIF, Font.BOLD, 8);
         g2.setFont(font);
-        
-        String vrlText = "VRL "+Constants.VERSION_BASE;
-        
-        fontBounds =
-                font.getStringBounds(
-                vrlText, g2.getFontRenderContext());
+
+        String vrlText = "VRL " + Constants.VERSION_BASE;
+
+        String appText = vrlText;
+
+        if (!getAppNameAndVersion().isEmpty()) {
+            appText = getAppNameAndVersion() + " (" + vrlText + ")";
+        }
+
+        fontBounds
+                = font.getStringBounds(
+                        appText, g2.getFontRenderContext());
 
         x = 10;
         y = (int) (splashBounds.getHeight() - fontBounds.getHeight() + 2);
 
-        g2.drawString(vrlText, x, y);
+        g2.drawString(appText, x, y);
 
         g2.setFont(originalFont);
     }

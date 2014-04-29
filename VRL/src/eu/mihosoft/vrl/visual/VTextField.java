@@ -89,6 +89,16 @@ public class VTextField extends JTextField implements CanvasChild {
     private Style style;
     public static final String TEXT_FIELD_COLOR_KEY = "TextField:Color";
 
+    public VTextField() {
+        setBorder(new EmptyBorder(3, 3, 3, 3));
+
+        setOpaque(false);
+        
+        initialize();
+    }
+
+    
+    
     /**
      * Constructor.
      *

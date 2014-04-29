@@ -51,14 +51,20 @@
  */
 package eu.mihosoft.vrl.system;
 
-import eu.mihosoft.vrl.io.ClassPathUpdater;
-import eu.mihosoft.vrl.io.IOUtil;
 import eu.mihosoft.vrl.io.VJarUtil;
-import eu.mihosoft.vrl.reflection.VisualCanvas;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.jar.JarInputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -68,7 +74,27 @@ import java.util.logging.Logger;
  */
 public class VSessionRunner {
 
-    public void run(Object m, String[] args) {
+    /**
+     * Runs the main method of the specified object or fails with error if the
+     * object does not provide such a method.
+     *
+     * @param o object to run
+     * @param args command line arguments
+     * @deprecated since 09.04.2014. This method remains just for compatibility
+     * reasons and should not be used anymore.
+     */
+    @Deprecated
+    public void run(Object o, String[] args) {
+        run(args);
+    }
+
+    /**
+     * Runs the main method of the project's main method if the project is on
+     * the system path. Fails with error otherwise.
+     *
+     * @param args command line arguments
+     */
+    public void run(String[] args) {
 
         System.out.println("--------------------------------------------------------------------------------");
         System.out.println("=> VRL-" + eu.mihosoft.vrl.system.Constants.VERSION);
@@ -78,9 +104,77 @@ public class VSessionRunner {
         // load libraries and plugins
         VRL.initAll(args);
 
-        
-        ClassPathUpdater.addAllJarsInDirectory(
-                VRL.getPropertyFolderManager().getPluginFolder());
+        // creates a custom classloader that has the plugin classloaders as parent.
+        // it delegates classes to systemclassloader only if not from the project
+        // jar since the class versions in the system classloader are not in the
+        // plugin classloader hierarchy.
+        Object m = null;
+
+        try {
+
+            // find project jar
+            File projectJarFile = VJarUtil.getClassLocation(getClass().getClassLoader().
+                    loadClass("eu.mihosoft.vrl.user.Main"));
+
+            // find all project classes
+            final Collection<String> projectClassNames = VJarUtil.getClassNamesFromJar(projectJarFile);
+
+            // custom classloader which loads project classes explicitly from the project jar
+            // and not from the system classloader
+            ClassLoader clsLoader = new URLClassLoader(new URL[]{projectJarFile.toURI().toURL()},
+                    VRL.getConsoleAppClassLoader()) {
+
+                        Map<String, Class<?>> loadedClasses = new HashMap<String, Class<?>>();
+
+                        @Override
+                        protected Class<?> loadClass(String name, boolean resolve)
+                        throws ClassNotFoundException {
+
+                            // special case for project classes
+                            if (projectClassNames.contains(name)) {
+
+                                // if already loaded return the project class
+                                if (loadedClasses.containsKey(name)) {
+                                    return loadedClasses.get(name);
+                                }
+
+                                // if not already loaded load the project class
+                                try {
+                                    Class<?> cls = findClass(name);
+                                    loadedClasses.put(name, cls);
+                                    return cls;
+                                } catch (ClassNotFoundException ex) {
+                                    //Logger.getLogger(VSessionRunner.class.getName()).log(Level.SEVERE, null, ex);
+                                } catch (LinkageError er) {
+                                    Logger.getLogger(VSessionRunner.class.getName()).log(Level.SEVERE, null, er);
+                                }
+                            }
+
+                            // if not a project class then use normal
+                            // classloader delegation
+                            Class<?> cls = getParent().loadClass(name);
+                            return cls;
+                        }
+                    };
+
+            m = clsLoader.loadClass("eu.mihosoft.vrl.user.Main").newInstance();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(VSessionRunner.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(VSessionRunner.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(VSessionRunner.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(VSessionRunner.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VSessionRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        // classloading was not successful
+        if (m == null) {
+            System.out.println(
+                    VTerminalUtil.red(">> ERROR: cannot invoke Main.run(String[])! Class not found!\n"));
+        }
 
         System.out.println("--------------------------------------------------------------------------------");
         try {
@@ -95,7 +189,6 @@ public class VSessionRunner {
     private void runMain(Object m, String[] args) {
 
         // search for run method
-
         Method run = null;
 
         // 1.) try with string array

@@ -57,8 +57,8 @@ package eu.mihosoft.vrl.visual;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class ConnectionResult {
-    private Message message;
-    private ConnectionStatus status;
+    private final Message message;
+    private final ConnectionStatus status;
 
     public ConnectionResult(Message message, ConnectionStatus status) {
         this.message = message;

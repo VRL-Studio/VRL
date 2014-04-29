@@ -49,20 +49,16 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.dialogs;
 
 import eu.mihosoft.vrl.io.VProjectController;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 import eu.mihosoft.vrl.system.AbstractPluginDependency;
-import eu.mihosoft.vrl.system.PluginDependency;
+import eu.mihosoft.vrl.system.PluginConfigurator;
 import eu.mihosoft.vrl.system.VRL;
 import eu.mihosoft.vrl.visual.*;
-import eu.mihosoft.vrl.visual.VDialog.AnswerType;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -73,7 +69,6 @@ import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -83,8 +78,8 @@ import javax.swing.border.EmptyBorder;
 public class SelectUsedPluginsDialog {
 
     public static void show(final VProjectController projectController) {
-        final UsedPluginsDialogPanel componentPanel =
-                new UsedPluginsDialogPanel(projectController);
+        final UsedPluginsDialogPanel componentPanel
+                = new UsedPluginsDialogPanel(projectController);
 
         int answer = VDialog.showConfirmDialog(
                 projectController.getCurrentCanvas(),
@@ -127,7 +122,6 @@ class UsedPluginsDialogPanel extends VComponent {
         this.projectController = projectController;
 
 //        setLayout(new GridLayout());
-
         Box listBox = Box.createVerticalBox();
 
         listBox.setBorder(new EmptyBorder(5, 15, 5, 15));
@@ -136,8 +130,8 @@ class UsedPluginsDialogPanel extends VComponent {
         scrollPane.setMinimumSize(new Dimension(600, 400));
         add(scrollPane);
 
-        Collection<AbstractPluginDependency> projectDeps =
-                projectController.getProject().getProjectInfo().getPluginDependencies();
+        Collection<AbstractPluginDependency> projectDeps
+                = projectController.getProject().getProjectInfo().getPluginDependencies();
 
         for (AbstractPluginDependency pDep : VRL.getAvailablePlugins()) {
 
@@ -157,7 +151,7 @@ class UsedPluginsDialogPanel extends VComponent {
 
             PluginView view = new PluginView(
                     projectController.getCurrentCanvas(),
-                    pDep, used);
+                    pDep, used, isAutoSelected(pDep));
 
             listBox.add(view);
 
@@ -165,12 +159,23 @@ class UsedPluginsDialogPanel extends VComponent {
         }
     }
 
-    public boolean assignChanges() {
-        Collection<AbstractPluginDependency> projectDeps =
-                new ArrayList<AbstractPluginDependency>();
+    private boolean isAutoSelected(AbstractPluginDependency pDep) {
+        PluginConfigurator pConf
+                = VRL.getPluginByDependency(pDep.toPluginDependency());
 
-        Collection<AbstractPluginDependency> oldProjectDeps =
-                projectController.getProject().getProjectInfo().
+        if (pConf == null) {
+            return false;
+        } else {
+            return pConf.isAutomaticallySelected();
+        }
+    }
+
+    public boolean assignChanges() {
+        Collection<AbstractPluginDependency> projectDeps
+                = new ArrayList<AbstractPluginDependency>();
+
+        Collection<AbstractPluginDependency> oldProjectDeps
+                = projectController.getProject().getProjectInfo().
                 getPluginDependencies();
 
         for (AbstractPluginDependency pDep : VRL.getAvailablePlugins()) {
@@ -228,17 +233,20 @@ class PluginView extends VComponent {
     public static String ENABLED_ACTION_CMD = "plugin-enabled";
     public static String DISABLED_ACTION_CMD = "plugin-disabled";
     boolean selected;
+    boolean autoSelected;
 //    private ActionListener actionListener;
 
     public PluginView(
             VisualCanvas canvas,
-            AbstractPluginDependency pluginDependency, boolean selected /*
-             * ,ActionListener listener
-             */) {
+            AbstractPluginDependency pluginDependency, boolean selected,
+            boolean autoSelected/*
+     * ,ActionListener listener
+     */) {
         super(canvas);
         this.pluginDependency = pluginDependency;
 //        this.actionListener = listener;
         this.selected = selected;
+        this.autoSelected = autoSelected;
 
         setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -250,7 +258,7 @@ class PluginView extends VComponent {
 
         final JCheckBox checkBox = new JCheckBox();
         checkBox.setAlignmentX(Component.LEFT_ALIGNMENT);
-        checkBox.setSelected(selected);
+        checkBox.setSelected(selected || isAutoSelected());
         CanvasLabel label = new CanvasLabel(this, getPluginDependency().getName());
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -264,10 +272,20 @@ class PluginView extends VComponent {
 
         add(checkBox);
         add(label);
+
+        checkBox.setEnabled(!isAutoSelected());
+        if (isAutoSelected()) {
+            checkBox.setToolTipText("This plugin is always active and cannot be deactivated.");
+        }
+
     }
 
     public boolean isSelected() {
         return selected;
+    }
+
+    public boolean isAutoSelected() {
+        return autoSelected;
     }
 
     /**

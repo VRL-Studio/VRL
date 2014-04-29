@@ -65,16 +65,15 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipException;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipInputStream;
 
 /**
  *
@@ -114,7 +113,7 @@ public class VJarUtil {
      * @return a list containing the names of all classes
      * @throws IOException
      */
-    public static ArrayList<String> getClassNamesFromStream(
+    public static List<String> getClassNamesFromStream(
             JarInputStream jarInStream) throws IOException {
         ArrayList<String> result = new ArrayList<String>();
 
@@ -143,6 +142,16 @@ public class VJarUtil {
         jarInStream.close();
 
         return result;
+    }
+    
+    /**
+     * Returns the name of all classes in the specified file.
+     * @param f file to scan
+     * @return a list containing the names of all classes
+     * @throws IOException 
+     */
+    public static List<String> getClassNamesFromJar(File f) throws IOException {
+        return getClassNamesFromStream(new JarInputStream(new FileInputStream(f)));
     }
 
     /**
@@ -217,7 +226,7 @@ public class VJarUtil {
      */
     public static Collection<Class<?>> loadClasses(File f, ClassLoader loader) {
 
-        ArrayList<String> classNames = null;
+        List<String> classNames = null;
 
         try {
             classNames = VJarUtil.getClassNamesFromStream(
@@ -227,8 +236,8 @@ public class VJarUtil {
                         new URLClassLoader(new URL[]{f.toURI().toURL()});
             }
         } catch (IOException ex) {
-            System.err.println(
-                    ">> ERROR while loading classes from file: " + f.getName());
+//            System.err.println(
+//                    ">> ERROR while loading classes from file: " + f.getName());
             Logger.getLogger(
                     VJarUtil.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -240,17 +249,17 @@ public class VJarUtil {
                 classes.add(loader.loadClass(n));
 
             } catch (NoClassDefFoundError ex) {
-                System.err.println(">> ERROR: cannot add \"" + n +
-                        "\"");
-                System.err.println(" > cause: " + ex.toString());
+//                System.err.println(">> ERROR: cannot add \"" + n +
+//                        "\"");
+//                System.err.println(" > cause: " + ex.toString());
             } catch (Exception ex) {
-                System.err.println(">> ERROR: cannot add \"" + n +
-                        "\"");
-                System.err.println(" > cause: " + ex.toString());
+//                System.err.println(">> ERROR: cannot add \"" + n +
+//                        "\"");
+//                System.err.println(" > cause: " + ex.toString());
             } catch (java.lang.IncompatibleClassChangeError ex) {
-                System.err.println(">> ERROR: cannot add \"" + n +
-                        "\"");
-                System.err.println(" > cause: " + ex.toString());
+//                System.err.println(">> ERROR: cannot add \"" + n +
+//                        "\"");
+//                System.err.println(" > cause: " + ex.toString());
             } catch (Throwable tr) {
                 //
             }
@@ -373,8 +382,13 @@ public class VJarUtil {
                     + "on the local filesystem.");
         }
 
+        try {
+            urlString = URLDecoder.decode(urlString, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(VJarUtil.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
         urlString = urlString.replace("file:", "");
-        urlString = urlString.replace("%20", " ");
 
         int location = urlString.indexOf(".jar!");
 

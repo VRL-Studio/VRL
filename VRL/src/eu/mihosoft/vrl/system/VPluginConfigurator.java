@@ -57,13 +57,16 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- * Plugin classloader. This class should be used to create a VRL plugin. <p>
+ * Plugin classloader. This class should be used to create a VRL plugin.
+ * <p>
  * <b>Creating a Plugin:</b> almost every Java project can be converted to a VRL
- * plugin by providing a class that extends
- * <code>VPluginConfigurator</code>. The VRL run-time system can detect the
- * class and recognizes the Java library as plugins and performs the
- * registration as specified in the plugin configurator implementation. The code
- * below shows a possible implementation. </p> <p><b>Sample Code:</b></p>
+ * plugin by providing a class that extends <code>VPluginConfigurator</code>.
+ * The VRL run-time system can detect the class and recognizes the Java library
+ * as plugins and performs the registration as specified in the plugin
+ * configurator implementation. The code below shows a possible implementation.
+ * </p>
+ * <p>
+ * <b>Sample Code:</b></p>
  *
  * <pre><code>
  * import eu.mihosoft.vrl.system.*;
@@ -135,8 +138,8 @@ import java.util.ArrayList;
  */
 public abstract class VPluginConfigurator implements PluginConfigurator {
 
-    private ArrayList<PluginDependency> dependencies =
-            new ArrayList<PluginDependency>();
+    private ArrayList<PluginDependency> dependencies
+            = new ArrayList<PluginDependency>();
     private String description;
     private BufferedImage icon;
     private PluginIdentifier identifier;
@@ -146,6 +149,8 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
     private CopyrightInfoImpl copyrightInfo = new CopyrightInfoImpl();
     private PreferencePane preferencePane;
     private InitPluginAPI initAPI;
+    private boolean relevantForPersistence = true;
+    private boolean automaticallySelected = false;
 
     public VPluginConfigurator() {
     }
@@ -211,13 +216,13 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
     }
 
     /**
-     * Initializes native libraries via
-     * <code>System.loadLibrary()</code>. This method must not be used manually!
+     * Initializes native libraries via <code>System.loadLibrary()</code>. This
+     * method must not be used manually!
      */
     final void nativeInit(PluginDataController dC) {
 
-        nativeLibFolder =
-                VRL.addNativesPath(this, dC, !isLoadNativeLibraries());
+        nativeLibFolder
+                = VRL.addNativesPath(this, dC, !isLoadNativeLibraries());
     }
 
     /**
@@ -350,8 +355,7 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
      *
      * @param projectName the name of the project
      * @param copyrightStatement short copyright statement, such as (c) 2012
-     * @param projectPage url
-     * YourCompany
+     * @param projectPage url YourCompany
      * @param licenseName name of the license, e.g., BSD, LGPL etc.
      * @param licenseText license text
      */
@@ -370,6 +374,7 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
     /**
      * Adds a third-party copyright information to the copyright information of
      * this plugin.
+     *
      * @param projectName the name of the project
      * @param copyrightStatement short copyright statement, such as (c) 2012
      * TheirCompany
@@ -428,6 +433,52 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
     public void uninstall(InitPluginAPI iApi) {
         //
     }
+
+    /**
+     * @return the relevantForPersistence
+     */
+    @Override
+    public boolean isRelevantForPersistence() {
+        return relevantForPersistence;
+    }
+
+    /**
+     * Defines whether this plugin is relevant for project persistance. This
+     * property defaults to <code>true</code>.
+     *
+     * <p>
+     * <b>Note:</b> only disable this property if you are absolutely sure that
+     * classes and type representations that are provided by this plugin are not
+     * used for project persistence.
+     * </p>
+     * <p>
+     * If this plugin registers components, type representations or export
+     * packages this plugin is <b>relevant</b> for project persistance.
+     * </p>
+     * <p>
+     * Valid cases for disabling this property are plugins that only provide
+     * menu actions, editor configurationd etc.
+     * </p>
+     *
+     * @param relevantForPersistence the state to set
+     */
+    public void setRelevantForPersistence(boolean relevantForPersistence) {
+        this.relevantForPersistence = relevantForPersistence;
+    }
+
+    @Override
+    public boolean isAutomaticallySelected() {
+        return this.automaticallySelected;
+    }
+    
+    /**
+     * Defines whether this plugin shall be automatically selected.
+     * 
+     * @param automaticallySelected  the state to set
+     */
+    public void setAutomaticallySelected(boolean automaticallySelected) {
+        this.automaticallySelected = automaticallySelected;
+    }
 }
 
 class AccessPolicyImpl implements AccessPolicy {
@@ -435,8 +486,8 @@ class AccessPolicyImpl implements AccessPolicy {
     private boolean allowAll = false;
     private ArrayList<String> accessPatterns = new ArrayList<String>();
     private ArrayList<String> classNames = new ArrayList<String>();
-    private ArrayList<AccessPolicy> customPolicies =
-            new ArrayList<AccessPolicy>();
+    private ArrayList<AccessPolicy> customPolicies
+            = new ArrayList<AccessPolicy>();
 
     @Override
     public boolean accept(String className) {
@@ -453,8 +504,8 @@ class AccessPolicyImpl implements AccessPolicy {
 
         // if we allow all classes no further checks are necessary
         // however, default session package is excluded to prevent name clashes
-        boolean defaultPackage =
-                className.matches("eu\\.mihosoft\\.vrl\\.user\\..*");
+        boolean defaultPackage
+                = className.matches("eu\\.mihosoft\\.vrl\\.user\\..*");
         if (isAllowAll() && !defaultPackage) {
             return true;
         }
@@ -481,7 +532,6 @@ class AccessPolicyImpl implements AccessPolicy {
                 return true;
             }
         }
-
 
         return false;
     }
