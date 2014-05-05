@@ -204,7 +204,8 @@ class ScopeImpl implements Scope {
 
         var.setValue(constant);
         var.setConstant(true);
-
+        
+//        getControlFlow().assignConstant(id, varName, Argument.constArg(Type.fromObject(constant), constant));
     }
 
     @Override

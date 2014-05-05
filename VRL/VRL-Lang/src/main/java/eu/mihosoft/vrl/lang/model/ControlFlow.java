@@ -50,7 +50,6 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,6 +65,9 @@ public interface ControlFlow {
     public Invocation callStaticMethod(String id, IType type, String mName, IType returnType, boolean isVoid, IArgument... args);
     
     public Invocation callMethod(String id, String varName, MethodDeclaration mDec, IArgument... args);
+    
+    public AssignmentInvocation assignConstant(String id, String varName, IArgument arg);
+    public AssignmentInvocation assignVariable(String id, String varName, IArgument arg);
 
     public ScopeInvocation callScope(Scope scope);
 

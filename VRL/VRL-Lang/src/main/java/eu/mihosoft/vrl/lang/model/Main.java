@@ -50,16 +50,17 @@
 package eu.mihosoft.vrl.lang.model;
 
 import com.google.common.io.Files;
+import eu.mihosoft.vrl.base.IOUtil;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.IntStream;
-import org.codehaus.groovy.ast.expr.MethodCall;
 
 /**
  *
@@ -69,43 +70,107 @@ public class Main {
 
     public static void main(String[] args) {
         
-            //        VLanguageModel model = VLanguageFactory.newModel();
-//
-//        VClass clazz = model.newClass();
-//        clazz.setName("MyClass");
-//        
-//        VMethod m1 = model.newMethod();
-//        
-//        m1.setName("m1");
-//        m1.setModifiers(new Modifiers(Modifier.PUBLIC));
-//        m1.setReturnType(new Type("my.package.MyType"));
-//        m1.setParameters(new Parameter(new Type("java.lang.Integer"),"param1"),new Parameter(new Type("java.lang.Integer"),"param2"));
-//
-//        
-//        clazz.addMethod()
-        
-//        try {    
-//            System.in.read();
-//            
-//        } catch (IOException ex) {
-//            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        IOUtil.deleteDirectory(new File("java.txt"));
+        IOUtil.deleteDirectory(new File("groovy.txt"));
+
+//        for (int i = 0; i < 200; i += 50) {
+            for (int j = 1; j < 50; j += 10) {
+                compile(j, 200, j);
+            }
 //        }
-        
-        System.out.println("starting...");
+
+    }
+
+    static void compile(int i, int numClasses, int numMethods) {
+
+        IOUtil.deleteContainedFilesAndDirs(new File("test-src/myPackage"));
+
+        createCode("java", numClasses, numMethods);
+
+        System.out.println(" -> compiling...");
+
+        ProcessBuilder builder = new ProcessBuilder("/bin/bash", "-c", "cd test-src;javac myPackage/*.java");
+//        builder.directory(new File("test-src"));
+        builder.redirectErrorStream(true);
+        Process p = null;
+        long timeStamp = System.nanoTime();
+        try {
+            p = builder.start();
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        readProcessOutput(p);
+
+        double duration = (System.nanoTime() - timeStamp) * 1e-9;
+
+        System.out.println(" -> duration: " + duration);
+
+        appendTime(i, duration, new File("java.txt"));
+
+        IOUtil.deleteContainedFilesAndDirs(new File("test-src/myPackage"));
+
+        createCode("groovy", numClasses, numMethods);
+
+        System.out.println(" -> compiling...");
+
+//        builder = new ProcessBuilder("/bin/bash", "-c", "cd test-src;/home/miho/software/groovy/groovy-2.2.2/bin/groovyc myPackage/*.groovy");
+        builder = new ProcessBuilder("/bin/bash", "-c", "cd test-src;/home/miho/Downloads/groovy-1.8.9/bin/groovyc myPackage/*.groovy");
+        builder.directory(new File("test-src"));
+        p = null;
+        timeStamp = System.nanoTime();
+        try {
+            p = builder.start();
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        readProcessOutput(p);
+
+        duration = (System.nanoTime() - timeStamp) * 1e-9;
+
+        System.out.println(" -> duration: " + duration);
+
+        appendTime(i, duration, new File("groovy.txt"));
+    }
+
+    private static void appendTime(int i, double time, File f) {
+        try {
+            Files.append("" + i + " " + time + "\n", f, Charset.forName("UTF-8"));
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private static void readProcessOutput(Process p) {
+        BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+        String line = null;
+        try {
+            while ((line = br.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private static void createCode(String ending, int numClasses, int numMethods) {
+
+        System.out.println(">> creating code for " + ending + ", #cls: " + numClasses + " #methods: " + numMethods +"...");
 
         VisualCodeBuilder vCodeBuilder = new VisualCodeBuilder_Impl();
 
         List<CompilationUnitDeclaration> cuDeclarations = Collections.synchronizedList(new ArrayList<>());
-        
-        for (int i = 0; i < 100; i++) {
-            System.out.println("i: " + i);
-            CompilationUnitDeclaration cuDev = vCodeBuilder.declareCompilationUnit("File" + i + ".java", "myPackage");
-            ClassDeclaration cDec = deClareClass(vCodeBuilder, cuDev, "File" + i, i, 1000);
+
+        for (int i = 0; i < numClasses; i++) {
+//            System.out.println("i: " + i);
+            CompilationUnitDeclaration cuDev = vCodeBuilder.declareCompilationUnit("File" + i + "." + ending, "myPackage");
+            ClassDeclaration cDec = deClareClass(vCodeBuilder, cuDev, "File" + i, i, numMethods);
 
             cuDeclarations.add(cuDev);
         }
 
-        System.out.println("writing...");
+        System.out.println(" -> writing code for " + ending + "...");
 
         File srcDir = new File("test-src/myPackage");
         srcDir.mkdirs();
@@ -139,15 +204,14 @@ public class Main {
         for (int i = 1; i <= numMethods; i++) {
             MethodDeclaration mDec = vCodeBuilder.declareMethod(cDec, new Modifiers(Modifier.PUBLIC), Type.VOID, name + "M" + i, new Parameters(new Parameter(Type.INT, "v" + i)));
 
-            
             ForDeclaration forD = vCodeBuilder.declareFor(mDec, "i", 1, 10, i);
 
             if (prevMDec != null) {
                 vCodeBuilder.invokeMethod(forD, "this", prevMDec, Argument.varArg(forD.getVariable(forD.getVarName())));
-                
+
                 vCodeBuilder.declareVariable(forD, Type.INT, "j");
-            }            
-            
+            }
+
             prevMDec = mDec;
         }
 

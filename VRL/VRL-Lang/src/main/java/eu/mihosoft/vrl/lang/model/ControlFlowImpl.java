@@ -147,4 +147,34 @@ class ControlFlowImpl implements ControlFlow {
         return false;
     }
 
+    @Override
+    public AssignmentInvocation assignConstant(String id, String varName, IArgument arg) {
+        Variable var = parent.getVariable(varName);
+
+        if (var == null) {
+            throw new IllegalArgumentException("Variable " + varName + " does not exist!");
+        }
+        
+        AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
+        
+        getInvocations().add(invocation);
+        
+        return invocation;
+    }
+
+    @Override
+    public AssignmentInvocation assignVariable(String id, String varName, IArgument arg) {
+        Variable var = parent.getVariable(varName);
+
+        if (var == null) {
+            throw new IllegalArgumentException("Variable " + varName + " does not exist!");
+        }
+        
+        AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
+        
+        getInvocations().add(invocation);
+        
+        return invocation;
+    }
+
 }

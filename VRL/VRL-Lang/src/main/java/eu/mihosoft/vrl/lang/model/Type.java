@@ -177,5 +177,9 @@ public final class Type implements IType {
         }
         return true;
     }
+    
+    public static Type fromObject(Object o, boolean isReturnOrParamType) {
+        return null;
+    }
 
 }
