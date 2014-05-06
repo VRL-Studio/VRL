@@ -134,7 +134,7 @@ public class VRLVisualizationTransformation implements ASTTransformation {
     @Override
     public void visit(ASTNode[] astNodes, SourceUnit sourceUnit) {
 
-        StaticTypesTransformation transformation = new StaticTypesTransformation();
+        TypeCheckingTransform transformation = new TypeCheckingTransform();
         transformation.visit(astNodes, sourceUnit);
 
         VisualCodeBuilder_Impl codeBuilder = new VisualCodeBuilder_Impl();
@@ -149,6 +149,8 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 
         // apply transformation for each class in the specified source unit
         for (ClassNode clsNode : sourceUnit.getAST().getClasses()) {
+            
+            transformation.visit(clsNode, sourceUnit);
 
 //            if (!scopes.containsKey(clsNode.getName())) {
 //
@@ -569,7 +571,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         if (mTarget != null && mTarget.getReturnType() != null) {
             isVoid = mTarget.getReturnType().getName().toLowerCase().equals("void");
-            System.out.println("TYPECHECKED!!!");
+            //System.out.println("TYPECHECKED!!!");
+        } else {
+            System.out.println("NO TYPECHECKING!!!");
         }
 
         IType returnType;
@@ -582,6 +586,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         if (!isIdCall) {
             if (objectName != null) {
+                
+                System.out.println("RET-TYPE: " + returnType);
 
                 Invocation invocation = codeBuilder.invokeMethod(
                         currentScope, objectName,
@@ -593,9 +599,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 if (stateMachine.getBoolean("variable-declaration")) {
 
                     stateMachine.addToList("variable-declaration:assignment-invocations", invocation);
-
-//                    currentScope.getControlFlow().getInvocations().
-//                            remove(invocation);
 
                     System.out.println("DECL-add-inv: " + invocation);
 
@@ -930,8 +933,15 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         for (int i = 0; i < params.length; i++) {
             org.codehaus.groovy.ast.Parameter p = params[i];
+            
+            String pType = p.getType().getName();
+            
+            if (pType.startsWith("[L")) {
+                System.err.print("convertMethodParameters(): array param not supported! " + pType);
+                pType=pType.replace("[L", "").replace(";", "");
+            }
 
-            result[i] = new Parameter(new Type(p.getType().getName(), true), p.getName());
+            result[i] = new Parameter(new Type(pType, true), p.getName());
         }
 
         return new Parameters(result);

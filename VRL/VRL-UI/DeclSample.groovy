@@ -1,4 +1,4 @@
-package my.testpackage;
+
 @eu.mihosoft.vrl.instrumentation.VRLVisualization
 public class MyFileClass {
     
