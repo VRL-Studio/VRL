@@ -671,7 +671,7 @@ class CompilationUnitRenderer implements
     @Override
     public void render(CompilationUnitDeclaration e, CodeBuilder cb) {
 
-        if (e.getPackageName() != null || e.getPackageName().isEmpty()) {
+        if (e.getPackageName() != null && !e.getPackageName().isEmpty()) {
             cb.append("package ").append(e.getPackageName()).append(";").
                     newLine();
         }

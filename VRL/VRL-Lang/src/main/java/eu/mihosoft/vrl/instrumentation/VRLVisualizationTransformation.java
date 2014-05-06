@@ -318,8 +318,12 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+        String packageName ="";
 
-        String packageName = sourceUnit.getAST().getPackage().getName();
+        if (sourceUnit.getAST().getPackage()!=null) {
+            packageName = sourceUnit.getAST().getPackage().getName();
+        }
 
         if (packageName.endsWith(".")) {
             packageName = packageName.substring(0, packageName.length() - 1);

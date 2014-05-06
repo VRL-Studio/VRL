@@ -1,0 +1,46 @@
+// Note: "common.gradle" in the root project contains additional initialization
+//   for this project. This initialization is applied in the "build.gradle"
+//   of the root project.
+
+//apply from: 'https://repository-javafx-gradle-plugin.forge.cloudbees.com/snapshot/javafx.plugin'
+
+// NetBeans will automatically add "run" and "debug" tasks relying on the
+// "mainClass" property. You may however define the property prior executing
+// tasks by passing a "-PmainClass=<QUALIFIED_CLASS_NAME>" argument.
+//
+// Note however, that you may define your own "run" and "debug" task if you
+// prefer. In this case NetBeans will not add these tasks but you may rely on
+// your own implementation.
+
+apply plugin: 'groovy'
+
+if (!hasProperty('mainClass')) {
+    System.out.println("TEST")
+    ext.mainClass = 'Main'
+    mainClassName = mainClass;
+} else {
+    // TODO remove this (workaround)
+    ext.mainClass = 'Main'
+    mainClassName = mainClass;
+}
+
+
+
+//manifest.mainAttributes("Main-Class" : ext.mainClass)
+
+//javafx {
+//    mainClass = "eu.mihosoft.vrl.ui.codevisualization.Main"
+//}
+//
+//jfxDeploy {
+//    packaging = "image"
+//}
+
+//configurations.all {
+//    // check for updates every build
+//    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+//}
+
+dependencies {
+    compile project(":VRL-Lang")
+}

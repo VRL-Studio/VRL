@@ -359,7 +359,9 @@ public class MainWindowController implements Initializable {
         UIBinding.scopes.clear();
 
         GroovyClassLoader gcl = new GroovyClassLoader();
-        gcl.parseClass(editor.getText(), "Script");
+        gcl.parseClass(
+                "@eu.mihosoft.vrl.instrumentation.VRLVisualization\n"
+                        +editor.getText(), "Script");
 
         //if (!refresh) {
             loadUIData();
