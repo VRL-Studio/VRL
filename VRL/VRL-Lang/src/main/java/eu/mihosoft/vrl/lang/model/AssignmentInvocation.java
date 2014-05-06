@@ -12,5 +12,5 @@ package eu.mihosoft.vrl.lang.model;
  */
 public interface AssignmentInvocation extends Invocation{
     Variable getAssignmentVariable();   
-    IArgument getArgument();
+    IArgument getAssignmentArgument();
 }

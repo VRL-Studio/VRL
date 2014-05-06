@@ -154,11 +154,11 @@ class ControlFlowImpl implements ControlFlow {
         if (var == null) {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
-        
+
         AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
-        
+
         getInvocations().add(invocation);
-        
+
         return invocation;
     }
 
@@ -169,11 +169,37 @@ class ControlFlowImpl implements ControlFlow {
         if (var == null) {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
-        
+
         AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
-        
+
         getInvocations().add(invocation);
-        
+
+        return invocation;
+    }
+
+    @Override
+    public AssignmentInvocation assignInvocationResult(String id, String varName, Invocation invocation) {
+        Variable var = parent.getVariable(varName);
+
+        if (var == null) {
+            throw new IllegalArgumentException("Variable " + varName + " does not exist!");
+        }
+
+        AssignmentInvocationImpl result = new AssignmentInvocationImpl(parent, var, Argument.invArg(invocation));
+
+        getInvocations().add(result);
+
+        return result;
+    }
+
+    @Override
+    public DeclarationInvocation declareVariable(String id, IType type, String varName) {
+        Variable var = parent.createVariable(type, varName);
+
+        DeclarationInvocationImpl invocation = new DeclarationInvocationImpl(parent, var);
+
+        getInvocations().add(invocation);
+
         return invocation;
     }
 

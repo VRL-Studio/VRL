@@ -83,4 +83,9 @@ public final class Argument implements IArgument {
         return Type.VOID;
     }
 
+    @Override
+    public String toString() {
+        return "[Argument: argType=" + getArgType() + ", type=" + getType() + "]";
+    }
+
 }

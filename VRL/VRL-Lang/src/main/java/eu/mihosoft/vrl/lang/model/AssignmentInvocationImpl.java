@@ -13,12 +13,15 @@ package eu.mihosoft.vrl.lang.model;
 public class AssignmentInvocationImpl extends InvocationImpl implements AssignmentInvocation {
     
     private final Variable assignmentVariable;
-    private final IArgument argument;
+    private final IArgument assignmentArgument;
 
     public AssignmentInvocationImpl(Scope parent, Variable assignmentVariable, IArgument arg) {
-        super(parent, "", null, "assign " + assignmentVariable, assignmentVariable.getType(), false, false, true, new IArgument[0]);
+        super(parent, "", null, "assign " + assignmentVariable.getName(), assignmentVariable.getType(), false, false, true, new IArgument[0]);
         this.assignmentVariable = assignmentVariable;
-        this.argument = arg;
+        this.assignmentArgument = arg;
+        
+        getArguments().add(Argument.varArg(assignmentVariable));
+        getArguments().add(arg);
     }
 
     @Override
@@ -27,8 +30,8 @@ public class AssignmentInvocationImpl extends InvocationImpl implements Assignme
     }
 
     @Override
-    public IArgument getArgument() {
-        return this.argument;
+    public IArgument getAssignmentArgument() {
+        return this.assignmentArgument;
     }
     
 }

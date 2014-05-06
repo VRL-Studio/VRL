@@ -107,12 +107,8 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public Variable declareVariable(Scope scope, IType type, String varName) {
-        Variable result = scope.createVariable(type, varName);
-
-//        variables.push(varName);
-
-        return result;
+    public DeclarationInvocation declareVariable(Scope scope, IType type, String varName) {
+        return scope.declareVariable(idRequest.request(),type, varName);
     }
 
     @Deprecated
@@ -193,13 +189,18 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public void assignVariable(Scope scope, String varNameDest, String varNameSrc) {
-        scope.assignVariable(varNameDest, varNameSrc);
+    public AssignmentInvocation assignVariable(Scope scope, String varNameDest, String varNameSrc) {
+        return scope.assignVariable(varNameDest, varNameSrc);
     }
 
     @Override
-    public void assignConstant(Scope scope, String varName, Object constant) {
-        scope.assignConstant(varName, constant);
+    public AssignmentInvocation assignConstant(Scope scope, String varName, Object constant) {
+        return scope.assignConstant(varName, constant);
+    }
+    
+    @Override
+    public AssignmentInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation) {
+        return scope.assignInvocationResult(varName, invocation);
     }
 
     public void setIdRequest(IdRequest idRequest) {

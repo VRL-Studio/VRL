@@ -68,11 +68,16 @@ public interface ControlFlow {
     
     public AssignmentInvocation assignConstant(String id, String varName, IArgument arg);
     public AssignmentInvocation assignVariable(String id, String varName, IArgument arg);
+    public AssignmentInvocation assignInvocationResult(String id, String varName, Invocation invocation);
+    
+    public DeclarationInvocation declareVariable(String id, IType type, String varName);
 
     public ScopeInvocation callScope(Scope scope);
 
     public List<Invocation> getInvocations();
     
     public boolean isUsedAsInput(Invocation invocation);
+
+    
 }
 

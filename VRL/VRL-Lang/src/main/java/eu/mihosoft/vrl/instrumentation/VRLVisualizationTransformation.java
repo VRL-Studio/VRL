@@ -75,6 +75,8 @@ import eu.mihosoft.vrl.lang.model.CodeLocation;
 import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.CodeReader;
 import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.AssignmentInvocation;
+import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.workflow.FlowFactory;
@@ -84,9 +86,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -182,6 +186,10 @@ class StateMachine {
 
     private final Stack<Map<String, Object>> stateStack = new Stack<>();
 
+    public StateMachine() {
+        push("root", true);
+    }
+
     public void setBoolean(String name, boolean state) {
         stateStack.peek().put(name, state);
     }
@@ -208,6 +216,47 @@ class StateMachine {
         }
 
         return result;
+    }
+
+    public void setEntity(String name, CodeEntity entity) {
+        stateStack.peek().put(name, entity);
+    }
+
+    public Optional<CodeEntity> getEntity(String name) {
+        CodeEntity result = (CodeEntity) stateStack.peek().get(name);
+
+        return Optional.ofNullable(result);
+    }
+
+    public <T> List<T> addToList(String name, T element) {
+        
+        System.out.println("add-to-list: " + name + ", " + element);
+
+        Object obj = stateStack.peek().get(name);
+
+        if (obj == null) {
+            obj = new ArrayList<T>();
+        }
+
+        List<T> result = (List<T>) obj;
+        
+        stateStack.peek().put(name, result);
+        
+        result.add(element);
+
+        return result;
+
+    }
+
+    public <T> List<T> getList(String name) {
+        Object obj = stateStack.peek().get(name);
+
+        if (obj == null) {
+//            System.err.println("WARNING: list " + name + " was not available (will be created now)");
+            obj = new ArrayList<T>();
+        }
+
+        return (List<T>) obj;
     }
 
     public void push(String name, boolean state) {
@@ -529,19 +578,30 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         if (!isIdCall) {
             if (objectName != null) {
-//                codeBuilder.invokeMethod(currentScope, objectName, s.getMethod().getText(), isVoid,
-//                        returnValueName, arguments).setCode(getCode(s));
+
                 Invocation invocation = codeBuilder.invokeMethod(
                         currentScope, objectName,
                         s.getMethod().getText(),
                         returnType,
                         isVoid,
                         arguments);
+
+                if (stateMachine.getBoolean("variable-declaration")) {
+
+                    stateMachine.addToList("variable-declaration:assignment-invocations", invocation);
+
+//                    currentScope.getControlFlow().getInvocations().
+//                            remove(invocation);
+
+                    System.out.println("DECL-add-inv: " + invocation);
+
+                }
+                
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
-//                if (invocation.getReturnValue().isPresent()) {
+
                 returnVariables.put(s, invocation);
-//                
+
             } else if (s.getMethod().getText().equals("println")) {
 //                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
 //                        returnValueName, arguments).setCode(getCode(s));
@@ -562,7 +622,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     @Override
     public void visitDeclarationExpression(DeclarationExpression s) {
         System.out.println(" --> DECLARATION: " + s.getVariableExpression());
-        super.visitDeclarationExpression(s);
 
         if (currentScope instanceof ForDeclaration_Impl) {
 
@@ -590,13 +649,59 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         } else {
 
-            Variable variable = codeBuilder.declareVariable(currentScope, new Type(s.getVariableExpression().getType().getName(), true), s.getVariableExpression().getName());
+            stateMachine.setBoolean("variable-declaration", true);
 
-            // TODO range
-            if (s.getRightExpression() instanceof ConstantExpression) {
-                ConstantExpression ce = (ConstantExpression) s.getRightExpression();
-                codeBuilder.assignConstant(currentScope, s.getVariableExpression().getName(), ce.getValue());
+            DeclarationInvocation declInv
+                    = codeBuilder.declareVariable(currentScope,
+                            new Type(s.getVariableExpression().getType().getName(), true),
+                            s.getVariableExpression().getName());
+
+            setCodeRange(declInv, s);
+//
+//            stateMachine.setEntity("variable-declaration:declaration-invocation", declInv);
+
+            Variable variable = declInv.getDeclaredVariable();
+
+            System.out.println("decl: " + declInv);
+
+            if (s.getRightExpression() != null) {
+
+                if (s.getRightExpression() instanceof ConstantExpression) {
+                    ConstantExpression ce = (ConstantExpression) s.getRightExpression();
+
+                    System.out.println("ce: " + ce.getValue());
+
+                    AssignmentInvocation assignInv = codeBuilder.assignConstant(currentScope, variable.getName(), ce.getValue());
+                    setCodeRange(assignInv, s);
+                } else if (s.getRightExpression() instanceof MethodCallExpression) {
+
+                }
             }
+
+            super.visitDeclarationExpression(s);
+
+            
+
+            List<Invocation> assignmentInvocations = stateMachine.getList("variable-declaration:assignment-invocations");
+
+            if (!assignmentInvocations.isEmpty()) {
+
+                Invocation argumentInv = assignmentInvocations.get(assignmentInvocations.size()-1);
+
+//                Invocation argumentInvocation
+//                        
+//                        currentScope.getControlFlow().getInvocations().add(declInvIndex + 1, argumentInv);
+
+                Invocation assignInvocation = codeBuilder.assignInvocationResult(currentScope, declInv.getDeclaredVariable().getName(), argumentInv);
+
+                setCodeRange(assignInvocation, s);
+
+            } else {
+                System.err.println("EMPTY");
+            }
+
+            stateMachine.setBoolean("variable-declaration", false);
+
         }
     }
 
@@ -783,12 +888,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 VariableExpression ve = (VariableExpression) e;
 
                 Variable v = currentScope.getVariable(ve.getName());
-                
+
 //                if (v==null) {
 //                    System.out.println("WARNING: creating variable that should already exist: " + ve.getName());
 //                    v = VariableFactory.createObjectVariable(currentScope, new Type(ve.getType().getName(), true), ve.getName());
 //                }
-                
                 arguments[i] = Argument.varArg(v);
 
             }
@@ -804,7 +908,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
             if (e instanceof MethodCallExpression) {
                 System.out.println("TYPE: " + e);
-                arguments[i] = Argument.invArg(returnVariables.get((MethodCallExpression)e));
+                arguments[i] = Argument.invArg(returnVariables.get((MethodCallExpression) e));
             }
 
             if (arguments[i] == null) {

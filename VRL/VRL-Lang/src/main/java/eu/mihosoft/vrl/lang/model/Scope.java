@@ -73,10 +73,12 @@ public interface Scope extends CodeEntity {
     public Variable createVariable(IType type, String varName);
 
     public Variable createStaticVariable(IType type);
+    
+    public AssignmentInvocation assignInvocationResult(String varName, Invocation invocation);
 
-    public void assignConstant(String varName, Object constant);
+    public AssignmentInvocation assignConstant(String varName, Object constant);
 
-    public void assignVariable(String varNameDest, String varNameSrc);
+    public AssignmentInvocation assignVariable(String varNameDest, String varNameSrc);
 
     public ControlFlow getControlFlow();
 
@@ -101,5 +103,7 @@ public interface Scope extends CodeEntity {
     public boolean removeScope(Scope s);
     
 //    public VFlow getFlow();
+
+    public DeclarationInvocation declareVariable(String id, IType type, String varName);
 }
 

@@ -272,6 +272,11 @@ final class Utils {
                     continue;
                 }
 
+                if (ce.getRange() == null) {
+                    System.err.println("RANGE NULL for: " + ce);
+                    continue;
+                }
+
                 if (ce.getRange().contains(comment.getRange())) {
                     continue;
                 }
@@ -334,6 +339,21 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 //            renderParams(i, cb);
 //            cb.append(");");
 
+        } else if (i instanceof DeclarationInvocation) {
+            DeclarationInvocation decl = (DeclarationInvocation) i;
+            cb.append(decl.getDeclaredVariable().getType().getFullClassName().replace("java.lang.", "")).append(" ").append(decl.getDeclaredVariable().getName()).append(";").newLine();
+        } else if (i instanceof AssignmentInvocation) {
+
+            AssignmentInvocation assignInvocation = (AssignmentInvocation) i;
+            cb.append(assignInvocation.getAssignmentVariable().getName()).append(" = ");
+
+            if (assignInvocation.getAssignmentArgument().getArgType() == ArgumentType.CONSTANT) {
+                cb.append(assignInvocation.getAssignmentArgument().getConstant().get().toString()).newLine();
+            } else if (assignInvocation.getAssignmentArgument().getArgType() == ArgumentType.INVOCATION) {
+                render(assignInvocation.getAssignmentArgument().getInvocation().get(), cb, true);
+            } else {
+                cb.append("// assign-type " + assignInvocation.getAssignmentArgument().getArgType() + " not implemented").newLine();
+            }
         } else if (!i.isScope()) {
 
             if (!i.getVariableName().equals("this")) {

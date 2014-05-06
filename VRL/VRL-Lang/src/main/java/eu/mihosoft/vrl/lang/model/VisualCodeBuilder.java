@@ -58,13 +58,13 @@ public interface VisualCodeBuilder {
     
     CompilationUnitDeclaration declareCompilationUnit(String name, String packageName);
 
-    void assignConstant(Scope scope, String varName, Object constant);
+    AssignmentInvocation assignConstant(Scope scope, String varName, Object constant);
 
-    void assignVariable(Scope scope, String varNameDest, String varNameSrc);
+    AssignmentInvocation assignVariable(Scope scope, String varNameDest, String varNameSrc);
 
     void createInstance(Scope scope, IType type, String varName, IArgument... args);
 
-    Variable declareVariable(Scope scope, IType type, String varName);
+    DeclarationInvocation declareVariable(Scope scope, IType type, String varName);
 
     ForDeclaration declareFor(Scope scope, String varName, int from, int to, int inc);
     
@@ -79,4 +79,6 @@ public interface VisualCodeBuilder {
     Invocation invokeStaticMethod(Scope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args);
 
     Invocation invokeMethod(Scope scope, String varName, MethodDeclaration mDec, IArgument... args);
+
+    AssignmentInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation);
 }

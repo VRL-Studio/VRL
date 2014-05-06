@@ -6,8 +6,12 @@
 
 package eu.mihosoft.vrl.lang.model;
 
+/**
+ *
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ */
+public interface DeclarationInvocation extends Invocation, CodeEntity{
 
-
-public class VariableDeclarationImpl {
+    Variable getDeclaredVariable();
     
 }

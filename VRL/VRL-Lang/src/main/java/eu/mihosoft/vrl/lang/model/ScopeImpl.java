@@ -145,11 +145,11 @@ class ScopeImpl implements Scope {
 
     @Override
     public Variable createVariable(IType type, String varName) {
-        
-        if (getVariable(varName)!=null) {
-            throw new IllegalArgumentException("Variable '"+varName+"' does already exist!");
+
+        if (getVariable(varName) != null) {
+            throw new IllegalArgumentException("Variable '" + varName + "' does already exist!");
         }
-        
+
         Variable variable = new VariableImpl(this, type, varName, null, false);
         variables.put(varName, variable);
         return variable;
@@ -195,7 +195,7 @@ class ScopeImpl implements Scope {
     }
 
     @Override
-    public void assignConstant(String varName, Object constant) {
+    public AssignmentInvocation assignConstant(String varName, Object constant) {
         Variable var = getVariable(varName);
 
         if (var == null) {
@@ -204,12 +204,12 @@ class ScopeImpl implements Scope {
 
         var.setValue(constant);
         var.setConstant(true);
-        
-//        getControlFlow().assignConstant(id, varName, Argument.constArg(Type.fromObject(constant), constant));
+
+        return getControlFlow().assignConstant(id, varName, Argument.constArg(Type.fromObject(constant, false), constant));
     }
 
     @Override
-    public void assignVariable(String varNameDest, String varNameSrc) {
+    public AssignmentInvocation assignVariable(String varNameDest, String varNameSrc) {
         Variable varDest = getVariable(varNameDest);
         Variable varSrc = getVariable(varNameSrc);
 
@@ -222,6 +222,20 @@ class ScopeImpl implements Scope {
         }
 
         System.out.println(">> assignment: " + varNameDest + "=" + varNameSrc);
+
+        System.err.println("WARNING: impl missing!!!");
+        return getControlFlow().assignVariable(id, varNameSrc, null);
+    }
+
+    @Override
+    public AssignmentInvocation assignInvocationResult(String varName, Invocation invocation) {
+        Variable varDest = getVariable(varName);
+
+        if (varDest == null) {
+            throw new IllegalArgumentException("Variable " + varName + " does not exist!");
+        }
+        
+        return getControlFlow().assignInvocationResult(id, varName, invocation);
     }
 
     @Override
@@ -390,6 +404,11 @@ class ScopeImpl implements Scope {
         boolean result = scopes.remove(s);
 
         return result;
+    }
+
+    @Override
+    public DeclarationInvocation declareVariable(String id, IType type, String varName) {
+        return getControlFlow().declareVariable(id, type, varName);
     }
 
 }
