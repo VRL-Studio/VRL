@@ -15,6 +15,13 @@ public class A {
         m1(m1(1));
     }
     public int m2() {
+        
+        int a = 2;
+        
+        A aObj = new A();
+        
+        return 0
+        
     }
 }
 // <editor-fold defaultstate="collapsed" desc="VRL-Data">
