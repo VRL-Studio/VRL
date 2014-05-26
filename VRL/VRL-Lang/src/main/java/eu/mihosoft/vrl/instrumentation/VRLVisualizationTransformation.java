@@ -683,7 +683,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                             currentScope, variable.getName(), ce.getValue());
                     setCodeRange(assignInv, s);
                 } else if (s.getRightExpression() instanceof MethodCallExpression) {
-
+                    MethodCallExpression me = (MethodCallExpression) s.getRightExpression();
+                    
+                    BinaryOperatorInvocation assignInv = codeBuilder.assignInvocationResult(currentScope, variable.getName(), lastMethod);
                 }
             }
 

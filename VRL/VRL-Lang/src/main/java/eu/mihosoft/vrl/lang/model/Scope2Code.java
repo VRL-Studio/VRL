@@ -379,11 +379,11 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         }
 
         if (i.isConstructor()) {
-//            cb.append("new ").append(i.getReturnValueName()).
-//                    append("= new").append(i.getVariableName()).
-//                    append("(");
-//            renderParams(i, cb);
-//            cb.append(");");
+            cb.
+                    append("new ").append(i.getVariableName()).
+                    append("(");
+            renderArguments(i, cb);
+            cb.append(");");
 
         } else if (i instanceof DeclarationInvocation) {
             DeclarationInvocation decl = (DeclarationInvocation) i;
