@@ -325,6 +325,52 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         render(i, cb, false);
     }
 
+    private void renderOperator(Operator operator, CodeBuilder cb) {
+        switch (operator) {
+            case PLUS:
+                cb.append("+");
+                break;
+            case MINUS:
+                cb.append("-");
+                break;
+            case TIMES:
+                cb.append("*");
+                break;
+            case DIV:
+                cb.append("/");
+                break;
+            case ASSIGN:
+                cb.append("=");
+                break;
+            case PLUS_ASSIGN:
+                cb.append("+=");
+                break;
+            case MINUS_ASSIGN:
+                cb.append("-=");
+                break;
+            case TIMES_ASSIGN:
+                cb.append("*=");
+                break;
+            case DIV_ASSIGN:
+                cb.append("/=");
+                break;
+            case EQUALS:
+                cb.append("==");
+                break;
+            case NOT_EQUALS:
+                cb.append("!=");
+                break;
+            case AND:
+                cb.append("&&");
+                break;
+            case OR:
+                cb.append("||");
+                break;
+            default:
+                cb.append("/*operator type not implemented*/");
+        }
+    }
+
     private void render(Invocation i, CodeBuilder cb, boolean inParam) {
 
         if (!inParam && i.getParent().getControlFlow().isUsedAsInput(i)) {
@@ -341,19 +387,18 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
         } else if (i instanceof DeclarationInvocation) {
             DeclarationInvocation decl = (DeclarationInvocation) i;
-            cb.append(decl.getDeclaredVariable().getType().getFullClassName().replace("java.lang.", "")).append(" ").append(decl.getDeclaredVariable().getName()).append(";").newLine();
-        } else if (i instanceof AssignmentInvocation) {
+            cb.append(decl.getDeclaredVariable().getType().getFullClassName().
+                    replace("java.lang.", "")).append(" ").
+                    append(decl.getDeclaredVariable().getName()).append(";")
+                    .newLine();
+        } else if (i instanceof BinaryOperatorInvocation) {
 
-            AssignmentInvocation assignInvocation = (AssignmentInvocation) i;
-            cb.append(assignInvocation.getAssignmentVariable().getName()).append(" = ");
+            BinaryOperatorInvocation operatorInvocation = (BinaryOperatorInvocation) i;
+            
+            renderArgument(operatorInvocation.getLeftArgument(), cb);
+            renderOperator(operatorInvocation.getOperator(), cb);
+            renderArgument(operatorInvocation.getRightArgument(), cb);
 
-            if (assignInvocation.getAssignmentArgument().getArgType() == ArgumentType.CONSTANT) {
-                cb.append(assignInvocation.getAssignmentArgument().getConstant().get().toString()).newLine();
-            } else if (assignInvocation.getAssignmentArgument().getArgType() == ArgumentType.INVOCATION) {
-                render(assignInvocation.getAssignmentArgument().getInvocation().get(), cb, true);
-            } else {
-                cb.append("// assign-type " + assignInvocation.getAssignmentArgument().getArgType() + " not implemented").newLine();
-            }
         } else if (!i.isScope()) {
 
             if (!i.getVariableName().equals("this")) {
@@ -444,27 +489,32 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                 cb.append(", ");
             }
 
-            if (a.getArgType() == ArgumentType.CONSTANT) {
+            renderArgument(a, cb);
+        }
+    }
 
-                String constString = null;
+    private void renderArgument(IArgument arg, CodeBuilder cb) {
 
-                if (a.getType().equals(Type.STRING)) {
-                    constString = "\""
-                            + VLangUtils.addEscapeCharsToCode(a.getConstant().get().
-                                    toString()) + "\"";
-                } else {
-                    constString = a.getConstant().get().toString();
-                }
+        if (arg.getArgType() == ArgumentType.CONSTANT) {
 
-                cb.append(constString);
+            String constString = null;
 
-            } else if (a.getArgType() == ArgumentType.INVOCATION) {
-                render(a.getInvocation().get(), cb, true);
-            } else if (a.getArgType() == ArgumentType.VARIABLE) {
-                cb.append(a.getVariable().get().getName());
-            } else if (a.getArgType() == ArgumentType.NULL) {
-                cb.append("null");
+            if (arg.getType().equals(Type.STRING)) {
+                constString = "\""
+                        + VLangUtils.addEscapeCharsToCode(arg.getConstant().get().
+                                toString()) + "\"";
+            } else {
+                constString = arg.getConstant().get().toString();
             }
+
+            cb.append(constString);
+
+        } else if (arg.getArgType() == ArgumentType.INVOCATION) {
+            render(arg.getInvocation().get(), cb, true);
+        } else if (arg.getArgType() == ArgumentType.VARIABLE) {
+            cb.append(arg.getVariable().get().getName());
+        } else if (arg.getArgType() == ArgumentType.NULL) {
+            cb.append("null");
         }
     }
 }

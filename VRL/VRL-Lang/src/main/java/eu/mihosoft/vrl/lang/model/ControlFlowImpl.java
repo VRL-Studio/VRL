@@ -148,14 +148,16 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public AssignmentInvocation assignConstant(String id, String varName, IArgument arg) {
+    public BinaryOperatorInvocation assignConstant(String id, String varName, IArgument arg) {
         Variable var = parent.getVariable(varName);
 
         if (var == null) {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-        AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
+//        AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
+        
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, Argument.varArg(var), arg, Operator.ASSIGN);
 
         getInvocations().add(invocation);
 
@@ -163,14 +165,16 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public AssignmentInvocation assignVariable(String id, String varName, IArgument arg) {
+    public BinaryOperatorInvocation assignVariable(String id, String varName, IArgument arg) {
         Variable var = parent.getVariable(varName);
 
         if (var == null) {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-        AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
+//        AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
+        
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, Argument.varArg(var), arg, Operator.ASSIGN);
 
         getInvocations().add(invocation);
 
@@ -178,14 +182,16 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public AssignmentInvocation assignInvocationResult(String id, String varName, Invocation invocation) {
+    public BinaryOperatorInvocation assignInvocationResult(String id, String varName, Invocation invocation) {
         Variable var = parent.getVariable(varName);
 
         if (var == null) {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-        AssignmentInvocationImpl result = new AssignmentInvocationImpl(parent, var, Argument.invArg(invocation));
+//        AssignmentInvocationImpl result = new AssignmentInvocationImpl(parent, var, Argument.invArg(invocation));
+        
+        BinaryOperatorInvocation result = new BinaryOperatorInvocationImpl(parent, Argument.varArg(var), Argument.invArg(invocation), Operator.ASSIGN);
 
         getInvocations().add(result);
 
@@ -201,6 +207,15 @@ class ControlFlowImpl implements ControlFlow {
         getInvocations().add(invocation);
 
         return invocation;
+    }
+
+    @Override
+    public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg, IArgument rightArg, Operator operator) {
+       BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, leftArg, rightArg, operator);
+       
+       getInvocations().add(invocation);
+       
+       return invocation;
     }
 
 }

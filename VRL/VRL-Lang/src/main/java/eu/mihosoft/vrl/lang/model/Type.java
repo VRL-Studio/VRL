@@ -179,10 +179,9 @@ public final class Type implements IType {
     }
     
     public static Type fromObject(Object o, boolean isReturnOrParamType) {
+
+        return new Type(o.getClass().getName());
         
-        System.err.println("Type.fromObject() NOT SUPPORTED");
-        
-        return null;
     }
 
 }

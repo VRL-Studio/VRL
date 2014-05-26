@@ -189,17 +189,17 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public AssignmentInvocation assignVariable(Scope scope, String varNameDest, String varNameSrc) {
+    public BinaryOperatorInvocation assignVariable(Scope scope, String varNameDest, String varNameSrc) {
         return scope.assignVariable(varNameDest, varNameSrc);
     }
 
     @Override
-    public AssignmentInvocation assignConstant(Scope scope, String varName, Object constant) {
+    public BinaryOperatorInvocation assignConstant(Scope scope, String varName, Object constant) {
         return scope.assignConstant(varName, constant);
     }
     
     @Override
-    public AssignmentInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation) {
+    public BinaryOperatorInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation) {
         return scope.assignInvocationResult(varName, invocation);
     }
 
@@ -224,5 +224,16 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         
         return result;
     }
+
+    @Override
+    public BinaryOperatorInvocation invokeOperator(Scope scope, IArgument leftArg, IArgument rightArg, Operator operator) {
+        String id = idRequest.request();
+        
+        BinaryOperatorInvocation result = scope.getControlFlow().invokeOperator(id, leftArg, rightArg, operator);
+        
+        return result;
+    }
+
+
 
 }

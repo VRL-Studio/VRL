@@ -66,9 +66,9 @@ public interface ControlFlow {
     
     public Invocation callMethod(String id, String varName, MethodDeclaration mDec, IArgument... args);
     
-    public AssignmentInvocation assignConstant(String id, String varName, IArgument arg);
-    public AssignmentInvocation assignVariable(String id, String varName, IArgument arg);
-    public AssignmentInvocation assignInvocationResult(String id, String varName, Invocation invocation);
+    public BinaryOperatorInvocation assignConstant(String id, String varName, IArgument arg);
+    public BinaryOperatorInvocation assignVariable(String id, String varName, IArgument arg);
+    public BinaryOperatorInvocation assignInvocationResult(String id, String varName, Invocation invocation);
     
     public DeclarationInvocation declareVariable(String id, IType type, String varName);
 
@@ -77,6 +77,8 @@ public interface ControlFlow {
     public List<Invocation> getInvocations();
     
     public boolean isUsedAsInput(Invocation invocation);
+
+    public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg, IArgument rightArg, Operator operator);
 
     
 }

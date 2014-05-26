@@ -58,9 +58,9 @@ public interface VisualCodeBuilder {
     
     CompilationUnitDeclaration declareCompilationUnit(String name, String packageName);
 
-    AssignmentInvocation assignConstant(Scope scope, String varName, Object constant);
+    BinaryOperatorInvocation assignConstant(Scope scope, String varName, Object constant);
 
-    AssignmentInvocation assignVariable(Scope scope, String varNameDest, String varNameSrc);
+    BinaryOperatorInvocation assignVariable(Scope scope, String varNameDest, String varNameSrc);
 
     void createInstance(Scope scope, IType type, String varName, IArgument... args);
 
@@ -80,5 +80,7 @@ public interface VisualCodeBuilder {
 
     Invocation invokeMethod(Scope scope, String varName, MethodDeclaration mDec, IArgument... args);
 
-    AssignmentInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation);
+    BinaryOperatorInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation);
+    
+    BinaryOperatorInvocation invokeOperator(Scope scope, IArgument leftArg, IArgument rightArg, Operator operator);
 }

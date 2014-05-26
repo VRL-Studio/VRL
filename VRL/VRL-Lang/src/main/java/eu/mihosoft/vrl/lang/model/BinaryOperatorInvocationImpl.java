@@ -5,6 +5,8 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
+import java.util.Objects;
+
 /**
  *
  * @author miho
@@ -31,16 +33,19 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
             } else {
                 retType = leftArg.getVariable().get().getType();
             }
-        } else if(booleanOperator(operator)) {
-            if(leftArg.getArgType()==ArgumentType.VARIABLE
-                &&  rightArg.getArgType()==ArgumentType.VARIABLE  ) {
-                
+        } else if (booleanOperator(operator)) {
+            if (leftArg.getArgType() == ArgumentType.VARIABLE
+                    && rightArg.getArgType() == ArgumentType.VARIABLE) {
+
                 // check that leftArg and rightArg == const or var
-                
             }
         }
 
         setReturnType(retType);
+    }
+
+    private boolean pureAssignmentOperator(Operator operator) {
+        return operator == Operator.ASSIGN;
     }
 
     private boolean assignmentOperator(Operator operator) {
@@ -63,6 +68,49 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
                 || operator == Operator.AND;
     }
 
+    private boolean basicArithmeticOperator(Operator operator) {
+        return operator == Operator.PLUS
+                || operator == Operator.MINUS
+                || operator == Operator.TIMES
+                || operator == Operator.DIV;
+    }
+
+    private void validateInputs(Operator operator, IArgument leftArg, IArgument rightArg) {
+
+        boolean isVariableL = leftArg.getArgType() == ArgumentType.VARIABLE;
+        boolean isVariableR = rightArg.getArgType() == ArgumentType.VARIABLE;
+
+        boolean isAssignmentOperator = assignmentOperator(operator);
+        boolean isPureAssignmentOperator = pureAssignmentOperator(operator);
+        boolean isBooleanOperator = booleanOperator(operator);
+        boolean isBasicArithmeticOperator = basicArithmeticOperator(operator);
+
+        boolean isNumberL = number(leftArg);
+        boolean isNumberR = number(rightArg);
+
+        if (isAssignmentOperator) {
+            if (!isVariableL) {
+                throw new IllegalArgumentException("Left argument must be a variable!");
+            }
+//            if (isPureAssignmentOperator) {
+//                if (rightArg.getArgType() != ArgumentType.VARIABLE) {
+//                    throw new IllegalArgumentException("Right argument must be a variable!");
+//                }
+//            }
+        }
+//        else if (booleanOperator(operator)) {
+//            if (leftArg.getArgType() == ArgumentType.VARIABLE
+//                    && rightArg.getArgType() == ArgumentType.VARIABLE) {
+//
+//                // check that leftArg and rightArg == const or var
+//            }
+//        } else if (basicArithmeticOperator(operator)) {
+//            if (!leftArg.getArgType().) {
+//                
+//            }
+//        }
+    }
+
     @Override
     public IArgument getLeftArgument() {
         return this.leftArg;
@@ -76,6 +124,14 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
     @Override
     public Operator getOperator() {
         return this.operator;
+    }
+
+    private boolean number(IArgument leftArg) {
+        return Objects.equals(leftArg.getType(),Type.INT)
+                || Objects.equals(leftArg.getType(),Type.LONG)
+                || Objects.equals(leftArg.getType(),Type.SHORT)
+                || Objects.equals(leftArg.getType(),Type.FLOAT)
+                || Objects.equals(leftArg.getType(),Type.DOUBLE);
     }
 
 }

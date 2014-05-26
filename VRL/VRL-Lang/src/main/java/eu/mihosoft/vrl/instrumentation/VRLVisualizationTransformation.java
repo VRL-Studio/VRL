@@ -76,6 +76,7 @@ import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.CodeReader;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.AssignmentInvocation;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IType;
@@ -678,7 +679,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
                     System.out.println("ce: " + ce.getValue());
 
-                    AssignmentInvocation assignInv = codeBuilder.assignConstant(currentScope, variable.getName(), ce.getValue());
+                    BinaryOperatorInvocation assignInv = codeBuilder.assignConstant(
+                            currentScope, variable.getName(), ce.getValue());
                     setCodeRange(assignInv, s);
                 } else if (s.getRightExpression() instanceof MethodCallExpression) {
 

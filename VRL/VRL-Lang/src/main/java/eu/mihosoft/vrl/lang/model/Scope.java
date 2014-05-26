@@ -74,11 +74,11 @@ public interface Scope extends CodeEntity {
 
     public Variable createStaticVariable(IType type);
     
-    public AssignmentInvocation assignInvocationResult(String varName, Invocation invocation);
+    public BinaryOperatorInvocation assignInvocationResult(String varName, Invocation invocation);
 
-    public AssignmentInvocation assignConstant(String varName, Object constant);
+    public BinaryOperatorInvocation assignConstant(String varName, Object constant);
 
-    public AssignmentInvocation assignVariable(String varNameDest, String varNameSrc);
+    public BinaryOperatorInvocation assignVariable(String varNameDest, String varNameSrc);
 
     public ControlFlow getControlFlow();
 
