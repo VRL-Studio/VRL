@@ -73,7 +73,7 @@ class InvocationImpl implements Invocation {
     private final Scope parent;
     private boolean Static;
     private ICodeRange location;
-    private final IType returnType;
+    private IType returnType;
 //    private final Variable returnValue;
 
     public InvocationImpl(
@@ -286,6 +286,13 @@ class InvocationImpl implements Invocation {
      */
     public IType getReturnType() {
         return returnType;
+    }
+
+    /**
+     * @param returnType the returnType to set
+     */
+    protected void setReturnType(IType returnType) {
+        this.returnType = returnType;
     }
 
     
