@@ -374,7 +374,6 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
     private void render(Invocation i, CodeBuilder cb, boolean inParam) {
 
         if (!inParam && i.getParent().getControlFlow().isUsedAsInput(i)) {
-
             return;
         }
 
@@ -389,8 +388,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             DeclarationInvocation decl = (DeclarationInvocation) i;
             cb.append(decl.getDeclaredVariable().getType().getFullClassName().
                     replace("java.lang.", "")).append(" ").
-                    append(decl.getDeclaredVariable().getName()).append(";")
-                    .newLine();
+                    append(decl.getDeclaredVariable().getName()).append(";");
         } else if (i instanceof BinaryOperatorInvocation) {
 
             BinaryOperatorInvocation operatorInvocation = (BinaryOperatorInvocation) i;

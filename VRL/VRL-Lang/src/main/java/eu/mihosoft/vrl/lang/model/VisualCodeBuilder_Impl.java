@@ -160,13 +160,11 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public void createInstance(Scope scope, IType type, String varName, IArgument... args) {
+    public Invocation createInstance(Scope scope, IType type, String varName, IArgument... args) {
 
         String id = idRequest.request();
 
-        scope.getControlFlow().createInstance(id, type, varName, args);
-
-//        variables.push(varName);
+        return scope.getControlFlow().createInstance(id, type, varName, args);
     }
     
 
