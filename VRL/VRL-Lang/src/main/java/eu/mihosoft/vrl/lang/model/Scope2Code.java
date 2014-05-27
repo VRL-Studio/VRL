@@ -385,25 +385,19 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                     append("new ").append(i.getVariableName()).
                     append("(");
             renderArguments(i, cb);
-            cb.append(");");
+            cb.append(")");
 
         } else if (i instanceof DeclarationInvocation) {
             DeclarationInvocation decl = (DeclarationInvocation) i;
             cb.append(decl.getDeclaredVariable().getType().getFullClassName().
                     replace("java.lang.", "")).append(" ").
-                    append(decl.getDeclaredVariable().getName()).append(";");
+                    append(decl.getDeclaredVariable().getName());
         } else if (i instanceof BinaryOperatorInvocation) {
             BinaryOperatorInvocation operatorInvocation = (BinaryOperatorInvocation) i;
 
             renderArgument(operatorInvocation.getLeftArgument(), cb);
             renderOperator(operatorInvocation.getOperator(), cb);
             renderArgument(operatorInvocation.getRightArgument(), cb);
-
-            if (!inParam) {
-                if (!inParam) {
-                    cb.append(";");
-                }
-            }
 
         } else if (!i.isScope()) {
 
@@ -412,12 +406,10 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                         append(i.getVariableName()).
                         append(".");
             }
+
             cb.append(i.getMethodName()).append("(");
             renderArguments(i, cb);
             cb.append(")");
-            if (!inParam) {
-                cb.append(";");
-            }
         } else {
 
             ScopeInvocation si = (ScopeInvocation) i;
@@ -480,6 +472,10 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 //            }
         }
 
+        if (!inParam) {
+            cb.append(";");
+        }
+        
         if (newLine) {
             cb.newLine();
         }

@@ -49,6 +49,7 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
+import com.google.common.base.Objects;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
 import eu.mihosoft.vrl.lang.model.ForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.Variable;
@@ -823,14 +824,23 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
             if (!returnVariables.containsKey(s)) {
 
-                Invocation invocation = codeBuilder.invokeOperator(currentScope,
-                        convertExpressionToArgument(s.getLeftExpression()),
-                        convertExpressionToArgument(s.getRightExpression()),
-                        convertOperator(s));
+                Operator operator = convertOperator(s);
+                IArgument leftArg = convertExpressionToArgument(s.getLeftExpression());
+                IArgument rightArg = convertExpressionToArgument(s.getRightExpression());
+                
+                boolean emptyAssignment = (Objects.equal(Argument.NULL, rightArg) && operator == Operator.ASSIGN);
 
-                System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
+                if (!emptyAssignment) {
 
-                returnVariables.put(s, invocation);
+                    Invocation invocation = codeBuilder.invokeOperator(
+                            currentScope,
+                            leftArg, rightArg, operator
+                    );
+
+                    System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
+
+                    returnVariables.put(s, invocation);
+                }
             }
         }
 
