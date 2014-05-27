@@ -16,15 +16,22 @@ public class A {
     }
     public int m2() {
         
-        int a = 2;
+        int a;
         
-        A aObj = new A();
+        a = 2
+        
+        A aObj;
+        aObj = new A();
         
         int b = 2+3*5;
+        
+        m3(new A())
         
         return 0
         
     }
+    
+    void m3(A a) {}
 }
 // <editor-fold defaultstate="collapsed" desc="VRL-Data">
 /*<!VRL!><Type:VRL-Layout>
