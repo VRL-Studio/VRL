@@ -20,7 +20,7 @@ public class A {
         
         A aObj = new A();
         
-        int b = 2+3;
+        int b = 2+3*5;
         
         return 0
         
