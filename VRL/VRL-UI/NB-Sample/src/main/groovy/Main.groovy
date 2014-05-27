@@ -20,6 +20,8 @@ public class A {
         
         A aObj = new A();
         
+        int b = 2+3;
+        
         return 0
         
     }
