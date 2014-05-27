@@ -512,11 +512,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     @Override
     public void visitConstructorCallExpression(ConstructorCallExpression s) {
-        
+
         if (returnVariables.containsKey(s)) {
             return;
         }
-        
+
         System.out.println(" --> CONSTRUCTOR: " + s.getType());
 
         super.visitConstructorCallExpression(s);
@@ -534,7 +534,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             stateMachine.addToList("variable-declaration:assignment-invocations", invocation);
             System.out.println("DECL-add-inv: " + invocation);
         }
-        
+
         System.out.println("put val: " + s + " : " + invocation);
         returnVariables.put(s, invocation);
 
@@ -683,7 +683,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //            stateMachine.setEntity("variable-declaration:declaration-invocation", declInv);
 
 //            Variable variable = declInv.getDeclaredVariable();
-
             System.out.println("decl: " + declInv);
 
 //            if (s.getRightExpression() != null) {
@@ -698,7 +697,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                    setCodeRange(assignInv, s);
 //                }
 //            }
-
             super.visitDeclarationExpression(s);
 
 //            List<Invocation> assignmentInvocations = stateMachine.getList("variable-declaration:assignment-invocations");
@@ -717,7 +715,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //            } else {
 //                System.err.println("EMPTY");
 //            }
-
             stateMachine.setBoolean("variable-declaration", false);
 
         }
@@ -823,10 +820,18 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 //
             }
         } else {
-            codeBuilder.invokeOperator(currentScope,
-                    convertExpressionToArgument(s.getLeftExpression()),
-                    convertExpressionToArgument(s.getRightExpression()),
-                    convertOperator(s));
+
+            if (!returnVariables.containsKey(s)) {
+
+                Invocation invocation = codeBuilder.invokeOperator(currentScope,
+                        convertExpressionToArgument(s.getLeftExpression()),
+                        convertExpressionToArgument(s.getRightExpression()),
+                        convertOperator(s));
+
+                System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
+
+                returnVariables.put(s, invocation);
+            }
         }
 
         super.visitBinaryExpression(s);
@@ -926,7 +931,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 return Operator.OR;
             case org.codehaus.groovy.syntax.Types.LOGICAL_AND:
                 return Operator.AND;
-                
+
             default:
                 throw new UnsupportedOperationException(
                         "Operation " + be.getOperation().getText() + " not supported!");
@@ -943,59 +948,56 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     }
 
     private IArgument convertExpressionToArgument(Expression e) {
-        
+
+        stateMachine.push("convert-argument", true);
+
         System.out.println("convert-arg: " + e.getText());
+
+        IArgument result = null;
 
         if (e instanceof ConstantExpression) {
             ConstantExpression ce = (ConstantExpression) e;
 
             if (ce.isNullExpression()) {
-                return Argument.NULL;
+                result = Argument.NULL;
             } else {
-                return Argument.constArg(new Type(ce.getType().getName(), true), ce.getValue());
-
+                result = Argument.constArg(new Type(ce.getType().getName(), true), ce.getValue());
             }
-//                v = VariableFactory.createConstantVariable(currentScope, new Type(ce.getArgType().getName(), true), "", ce.getValue());
-        }
-
-        if (e instanceof VariableExpression) {
+        } else if (e instanceof VariableExpression) {
             VariableExpression ve = (VariableExpression) e;
 
             Variable v = currentScope.getVariable(ve.getName());
+            result = Argument.varArg(v);
 
-//                if (v==null) {
-//                    System.out.println("WARNING: creating variable that should already exist: " + ve.getName());
-//                    v = VariableFactory.createObjectVariable(currentScope, new Type(ve.getType().getName(), true), ve.getName());
-//                }
-            return Argument.varArg(v);
-
-        }
-
-        if (e instanceof PropertyExpression) {
+        } else if (e instanceof PropertyExpression) {
             PropertyExpression pe = (PropertyExpression) e;
 
             Variable v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.PROPERTYEXPR", true), "don't know");
+            result = Argument.varArg(v);
 
-            return Argument.varArg(v);
-
-        }
-
-        if (e instanceof MethodCallExpression) {
+        } else if (e instanceof MethodCallExpression) {
             System.out.println("TYPE: " + e);
-            return Argument.invArg(returnVariables.get((MethodCallExpression) e));
-        }
-        
-        if (e instanceof ConstructorCallExpression) {
+            result = Argument.invArg(returnVariables.get((MethodCallExpression) e));
+        } else if (e instanceof ConstructorCallExpression) {
             System.out.println("TYPE: " + e);
-            System.out.println("CONJSTR: " + returnVariables.get((ConstructorCallExpression) e));
+            System.out.println("CONSTRUCTOR: " + returnVariables.get((ConstructorCallExpression) e));
             visitConstructorCallExpression((ConstructorCallExpression) e);
-            return Argument.invArg(returnVariables.get((ConstructorCallExpression) e));
+            result = Argument.invArg(returnVariables.get((ConstructorCallExpression) e));
+        } else if (e instanceof BinaryExpression) {
+            System.out.println("TYPE: " + e);
+            System.out.println("BINARY-EXPR: " + returnVariables.get((BinaryExpression) e));
+            System.out.println("ARG: " + stateMachine.getBoolean("convert-argument"));
+            visitBinaryExpression((BinaryExpression) e);
+            result = Argument.invArg(returnVariables.get((BinaryExpression) e));
+        } else // if nothing worked so far, we assumen null arg
+        if (result == null) {
+            System.err.println(" -> UNSUPPORTED-ARG: " + e);
+            result = Argument.NULL;
         }
 
-        // if nothing worked so far, we assumen null arg
-        return Argument.NULL;
+        stateMachine.pop();
 
-//            arguments[i] = v;
+        return result;
     }
 
     private Parameters convertMethodParameters(org.codehaus.groovy.ast.Parameter... params) {

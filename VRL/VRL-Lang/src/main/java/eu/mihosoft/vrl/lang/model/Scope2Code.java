@@ -373,7 +373,10 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
     private void render(Invocation i, CodeBuilder cb, boolean inParam) {
 
-        if (!inParam && i.getParent().getControlFlow().isUsedAsInput(i)) {
+        boolean isUsedAsInput = i.getParent().getControlFlow().isUsedAsInput(i);
+        boolean newLine = !inParam;
+
+        if (!inParam && isUsedAsInput) {
             return;
         }
 
@@ -390,12 +393,17 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                     replace("java.lang.", "")).append(" ").
                     append(decl.getDeclaredVariable().getName()).append(";");
         } else if (i instanceof BinaryOperatorInvocation) {
-
             BinaryOperatorInvocation operatorInvocation = (BinaryOperatorInvocation) i;
-            
+
             renderArgument(operatorInvocation.getLeftArgument(), cb);
             renderOperator(operatorInvocation.getOperator(), cb);
             renderArgument(operatorInvocation.getRightArgument(), cb);
+
+            if (!inParam) {
+                if (!inParam) {
+                    cb.append(";");
+                }
+            }
 
         } else if (!i.isScope()) {
 
@@ -472,7 +480,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 //            }
         }
 
-        if (!inParam) {
+        if (newLine) {
             cb.newLine();
         }
     }

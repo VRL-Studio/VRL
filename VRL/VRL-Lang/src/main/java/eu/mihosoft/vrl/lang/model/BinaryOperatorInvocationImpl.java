@@ -19,7 +19,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
 
     public BinaryOperatorInvocationImpl(Scope parent, IArgument leftArg, IArgument rightArg, Operator operator) {
 
-        super(parent, "", null, "op ", Type.VOID, false, false, true, new IArgument[]{leftArg, rightArg});
+        super(parent, "", null, "op " + operator, Type.VOID, false, false, true, new IArgument[]{leftArg, rightArg});
 
         this.leftArg = leftArg;
         this.rightArg = rightArg;
@@ -133,5 +133,6 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
                 || Objects.equals(leftArg.getType(),Type.FLOAT)
                 || Objects.equals(leftArg.getType(),Type.DOUBLE);
     }
+
 
 }
