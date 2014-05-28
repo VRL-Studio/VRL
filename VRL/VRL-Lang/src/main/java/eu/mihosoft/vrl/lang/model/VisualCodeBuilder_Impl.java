@@ -151,10 +151,8 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
                     + " based implementations are not supported!");
         }
 
-        WhileDeclaration_Impl result = new WhileDeclaration_Impl(
+        WhileDeclaration result = new WhileDeclaration_Impl(
                 idRequest.request(), scope, check);
-
-        scope.getControlFlow().callScope(result);
 
         return result;
     }

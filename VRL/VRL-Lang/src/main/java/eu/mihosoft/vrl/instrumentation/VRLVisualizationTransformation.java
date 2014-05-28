@@ -78,6 +78,7 @@ import eu.mihosoft.vrl.lang.CodeReader;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.AssignmentInvocation;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IType;
@@ -467,34 +468,31 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     @Override
     public void visitWhileLoop(WhileStatement s) {
-        
+
         stateMachine.push("while-loop", true);
-        
+
         System.out.println(" --> WHILE-LOOP: " + s.getBooleanExpression());
         //currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
-        
-        if(s.getBooleanExpression().getExpression() == null ) {
-             throw new IllegalStateException("while-loop: must contain boolean"
+
+        if (s.getBooleanExpression().getExpression() == null) {
+            throw new IllegalStateException("while-loop: must contain boolean"
                     + " expression!");
         }
-        
-        if(!(s.getBooleanExpression().getExpression() instanceof BinaryExpression)) {
-             throw new IllegalStateException("while-loop: must contain boolean"
+
+        if (!(s.getBooleanExpression().getExpression() instanceof BinaryExpression)) {
+            throw new IllegalStateException("while-loop: must contain boolean"
                     + " expression!");
         }
-        
+
         currentScope = codeBuilder.declareWhile(currentScope,
                 convertExpressionToArgument(
-                        s.getBooleanExpression().getExpression()).getInvocation().get());
+                       s.getBooleanExpression().getExpression()).getInvocation().get());
         
         setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
-
         super.visitWhileLoop(s);
         currentScope = currentScope.getParent();
 
-//        currentScope.setCode(getCode(s));
-        
         stateMachine.pop();
     }
 
@@ -546,7 +544,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 currentScope, new Type(s.getType().getName(), false),
                 codeBuilder.createVariable(currentScope, new Type(s.getType().getName(), false)).getName(),
                 arguments);
-        
+
         setCodeRange(invocation, s);
 
         if (stateMachine.getBoolean("variable-declaration")) {
@@ -567,11 +565,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     @Override
     public void visitMethodCallExpression(MethodCallExpression s) {
-        
+
         if (returnVariables.containsKey(s)) {
             return;
         }
-        
+
         System.out.println(" --> METHOD: " + s.getMethodAsString());
 
         super.visitMethodCallExpression(s);
@@ -850,7 +848,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 Operator operator = convertOperator(s);
                 IArgument leftArg = convertExpressionToArgument(s.getLeftExpression());
                 IArgument rightArg = convertExpressionToArgument(s.getRightExpression());
-                
+
                 boolean emptyAssignment = (Objects.equal(Argument.NULL, rightArg) && operator == Operator.ASSIGN);
 
                 if (!emptyAssignment) {
@@ -859,11 +857,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                             currentScope,
                             leftArg, rightArg, operator
                     );
-                    
+
                     setCodeRange(invocation, s);
 
                     //System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
-
                     returnVariables.put(s, invocation);
                 }
             }
