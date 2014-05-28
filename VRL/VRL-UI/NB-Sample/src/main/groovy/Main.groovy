@@ -23,9 +23,17 @@ public class A {
         A aObj;
         aObj = new A();
         
-        int b = 2+3*5;
+        int b = 2+3*5+m2();
         
         m3(new A())
+        
+        for(int i = 1; i <= 10; i+=1) {
+            //
+        }
+        
+        while(a < b) {
+            println( "abc" )
+        }
         
         return 0
         
