@@ -530,6 +530,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 currentScope, new Type(s.getType().getName(), false),
                 codeBuilder.createVariable(currentScope, new Type(s.getType().getName(), false)).getName(),
                 arguments);
+        
+        setCodeRange(invocation, s);
 
         if (stateMachine.getBoolean("variable-declaration")) {
             stateMachine.addToList("variable-declaration:assignment-invocations", invocation);
@@ -841,6 +843,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                             currentScope,
                             leftArg, rightArg, operator
                     );
+                    
+                    setCodeRange(invocation, s);
 
                     //System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
 
