@@ -549,6 +549,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     @Override
     public void visitMethodCallExpression(MethodCallExpression s) {
+        
+        if (returnVariables.containsKey(s)) {
+            return;
+        }
+        
         System.out.println(" --> METHOD: " + s.getMethodAsString());
 
         super.visitMethodCallExpression(s);
@@ -837,7 +842,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                             leftArg, rightArg, operator
                     );
 
-                    System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
+                    //System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
 
                     returnVariables.put(s, invocation);
                 }
@@ -987,6 +992,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         } else if (e instanceof MethodCallExpression) {
             System.out.println("TYPE: " + e);
+            visitMethodCallExpression((MethodCallExpression) e);
             result = Argument.invArg(returnVariables.get((MethodCallExpression) e));
         } else if (e instanceof ConstructorCallExpression) {
             System.out.println("TYPE: " + e);
