@@ -360,6 +360,18 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             case NOT_EQUALS:
                 cb.append("!=");
                 break;
+            case LESS:
+                cb.append("<");
+                break;
+            case LESS_EQUALS:
+                cb.append("<=");
+                break;
+            case GREATER:
+                cb.append(">");
+                break;
+            case GREATER_EQUALS:
+                cb.append(">=");
+                break;
             case AND:
                 cb.append("&&");
                 break;
@@ -463,19 +475,41 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
                 cb.append("}");
 
+            } else if (s instanceof WhileDeclaration) {
+                WhileDeclaration whileD = (WhileDeclaration) s;
+                cb.append("while(");
+                renderArgument(Argument.invArg(whileD.getCheck()), cb);
+                cb.append(") {");
+
+                if (!s.getControlFlow().getInvocations().isEmpty()) {
+                    cb.newLine();
+                    cb.incIndentation();
+                }
+
+                Utils.renderComments(Scope2Code.renderedComments,
+                        whileD.getControlFlow().getInvocations(),
+                        whileD, cb, (CodeEntity ce) -> {
+
+                            if (ce instanceof Invocation) {
+                                render((Invocation) ce, cb);
+                            }
+                        });
+
+                if (!s.getControlFlow().getInvocations().isEmpty()) {
+                    cb.decIndentation();
+                }
+
+                cb.append("}");
+            } else {
+                cb.append("/*unsupported invocation*/");
             }
-//            else if (s instanceof WhileDeclaration) {
-//                WhileDeclaration whileD = (WhileDeclaration) s;
-//            }
-//            else if (s instanceof If) {
-//                ForDeclaration forD = (ForDeclaration) s;
-//            }
+
         }
 
-        if (!inParam) {
+        if (!inParam && !i.isScope()) {
             cb.append(";");
         }
-        
+
         if (newLine) {
             cb.newLine();
         }

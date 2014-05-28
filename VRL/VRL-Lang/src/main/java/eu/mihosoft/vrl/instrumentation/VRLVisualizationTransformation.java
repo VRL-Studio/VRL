@@ -82,6 +82,7 @@ import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.model.Operator;
+import eu.mihosoft.vrl.lang.model.WhileDeclaration;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
 import java.io.BufferedReader;
@@ -452,15 +453,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         if (!stateMachine.getBoolean("for-loop:incExpression")) {
             throw new IllegalStateException("for-loop: must contain binary"
-                    + " expressions of the form 'a <= b' with a, b being"
-                    + " constant integers!");
+                    + " expressions of the form 'i+=a' with i being"
+                    + " an integer variable and a being a constant integer!");
         }
 
-//        if (!stateMachine.getBoolean("for-loop:compareExpression")) {
-//            throw new IllegalStateException("for-loop: must contain binary"
-//                    + " expressions of the form 'a <= b' with a, b being"
-//                    + " constant integers!");
-//        }
         stateMachine.pop();
 
         currentScope = currentScope.getParent();
@@ -471,8 +467,26 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     @Override
     public void visitWhileLoop(WhileStatement s) {
+        
+        stateMachine.push("while-loop", true);
+        
         System.out.println(" --> WHILE-LOOP: " + s.getBooleanExpression());
-        currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
+        //currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
+        
+        if(s.getBooleanExpression().getExpression() == null ) {
+             throw new IllegalStateException("while-loop: must contain boolean"
+                    + " expression!");
+        }
+        
+        if(!(s.getBooleanExpression().getExpression() instanceof BinaryExpression)) {
+             throw new IllegalStateException("while-loop: must contain boolean"
+                    + " expression!");
+        }
+        
+        currentScope = codeBuilder.declareWhile(currentScope,
+                convertExpressionToArgument(
+                        s.getBooleanExpression().getExpression()).getInvocation().get());
+        
         setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
 
@@ -480,6 +494,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         currentScope = currentScope.getParent();
 
 //        currentScope.setCode(getCode(s));
+        
+        stateMachine.pop();
     }
 
     @Override
