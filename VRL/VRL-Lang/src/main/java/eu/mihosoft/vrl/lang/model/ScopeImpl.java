@@ -160,20 +160,20 @@ class ScopeImpl implements Scope {
         return variable;
     }
 
-    @Override
-    public Variable createVariable(IType type) {
-        String varNamePrefix = "vrlInternalVar";
-
-        int counter = 0;
-        String varName = varNamePrefix + counter;
-
-        while (getVariable(varName) != null) {
-            counter++;
-            varName = varNamePrefix + counter;
-        }
-
-        return createVariable(type, varName);
-    }
+//    @Override
+//    public Variable createVariable(IType type) {
+//        String varNamePrefix = "vrlInternalVar";
+//
+//        int counter = 0;
+//        String varName = varNamePrefix + counter;
+//
+//        while (getVariable(varName) != null) {
+//            counter++;
+//            varName = varNamePrefix + counter;
+//        }
+//
+//        return createVariable(type, varName);
+//    }
 
 //    @Override
 //    public Variable createVariable(Invocation invocation) {

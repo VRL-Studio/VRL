@@ -86,7 +86,7 @@ public interface Scope extends CodeEntity {
 
     public Scope getScopeById(String id);
 
-    public Variable createVariable(IType type);
+//    public Variable createVariable(IType type);
 //    public Variable createVariable(Invocation invocation);
 
     public DataFlow getDataFlow();
