@@ -111,15 +111,15 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         return scope.declareVariable(idRequest.request(),type, varName);
     }
 
-    @Deprecated
-    public Variable createVariable(Scope scope, IType type) {
-        
-        Variable result = scope.createVariable(type);
-
-//        variables.push(result.getName());
-
-        return result;
-    }
+//    @Deprecated
+//    public Variable createVariable(Scope scope, IType type) {
+//        
+//        Variable result = scope.createVariable(type);
+//
+////        variables.push(result.getName());
+//
+//        return result;
+//    }
 
     @Override
     public MethodDeclaration declareMethod(ClassDeclaration scope,
@@ -158,11 +158,11 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public Invocation createInstance(Scope scope, IType type, String varName, IArgument... args) {
+    public Invocation createInstance(Scope scope, IType type, IArgument... args) {
 
         String id = idRequest.request();
 
-        return scope.getControlFlow().createInstance(id, type, varName, args);
+        return scope.getControlFlow().createInstance(id, type, args);
     }
     
 

@@ -62,7 +62,7 @@ public interface VisualCodeBuilder {
 
     BinaryOperatorInvocation assignVariable(Scope scope, String varNameDest, String varNameSrc);
 
-    Invocation createInstance(Scope scope, IType type, String varName, IArgument... args);
+    Invocation createInstance(Scope scope, IType type, IArgument... args);
 
     DeclarationInvocation declareVariable(Scope scope, IType type, String varName);
 

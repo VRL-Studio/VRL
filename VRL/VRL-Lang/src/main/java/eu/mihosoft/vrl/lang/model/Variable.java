@@ -75,6 +75,8 @@ public interface Variable {
     public void setConstant(boolean b);
 
 //    public boolean isReturnValue();
+    
+    public DeclarationInvocation getDeclaration();
 
 //    public Optional<Invocation> getInvocation();
 }
@@ -87,32 +89,35 @@ class VariableImpl implements Variable {
     private Object value;
     private boolean constant;
     private boolean staticVar;
-    private Invocation invocation;
+//    private Invocation invocation;
+    private DeclarationInvocation invocation;
 
-    public VariableImpl(Scope scope, IType type, String varName, Object value, boolean constant) {
+    VariableImpl(Scope scope, IType type, String varName, Object value, boolean constant, DeclarationInvocation invocation) {
         this.scope = scope;
         this.type = type;
         this.varName = varName;
         this.value = value;
         this.constant = constant;
+        this.invocation = invocation;
     }
 
-    private VariableImpl(Scope scope, IType type) {
+    private VariableImpl(Scope scope, IType type, DeclarationInvocation invocation) {
         this.scope = scope;
         this.type = type;
         this.varName = type.getFullClassName();
         this.staticVar = true;
     }
 
-    public VariableImpl(Scope scope, String varName, Invocation invocation) {
+    VariableImpl(Scope scope, String varName, DeclarationInvocation invocation) {
         this.scope = scope;
         this.type = invocation.getReturnType();
-        this.invocation = invocation;
+//        this.invocation = invocation;
         this.varName = varName;
+        this.invocation = invocation;
     }
 
-    public static VariableImpl createStaticVar(Scope scope, IType type) {
-        return new VariableImpl(scope, type);
+    public static VariableImpl createStaticVar(Scope scope, IType type, DeclarationInvocation invocation) {
+        return new VariableImpl(scope, type, invocation);
     }
 
     @Override
@@ -206,5 +211,17 @@ class VariableImpl implements Variable {
 //    public boolean isReturnValue() {
 //        return invocation!=null;
 //    }
+
+    @Override
+    public DeclarationInvocation getDeclaration() {
+        return invocation;
+    }
+
+    /**
+     * @param invocation the invocation to set
+     */
+    public void setDeclaration(DeclarationInvocation invocation) {
+        this.invocation = invocation;
+    }
 
 }

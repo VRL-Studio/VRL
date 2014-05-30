@@ -542,7 +542,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         Invocation invocation = codeBuilder.createInstance(
                 currentScope, new Type(s.getType().getName(), false),
-                codeBuilder.createVariable(currentScope, new Type(s.getType().getName(), false)).getName(),
                 arguments);
 
         setCodeRange(invocation, s);
@@ -1002,10 +1001,12 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             result = Argument.varArg(v);
 
         } else if (e instanceof PropertyExpression) {
-            PropertyExpression pe = (PropertyExpression) e;
-
-            Variable v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.PROPERTYEXPR", true), "don't know");
-            result = Argument.varArg(v);
+//            PropertyExpression pe = (PropertyExpression) e;
+//
+//            Variable v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.PROPERTYEXPR", true), "don't know");
+//            result = Argument.varArg(v);
+            
+            throw new UnsupportedOperationException("vrl.internal.PROPERTYEXPR not supported");
 
         } else if (e instanceof MethodCallExpression) {
             System.out.println("TYPE: " + e);

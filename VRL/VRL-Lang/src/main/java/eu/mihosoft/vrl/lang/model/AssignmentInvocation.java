@@ -10,6 +10,7 @@ package eu.mihosoft.vrl.lang.model;
  *
  * @author miho
  */
+@Deprecated
 public interface AssignmentInvocation extends Invocation{
     Variable getAssignmentVariable();   
     IArgument getAssignmentArgument();

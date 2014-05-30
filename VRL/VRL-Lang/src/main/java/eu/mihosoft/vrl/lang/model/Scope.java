@@ -72,7 +72,7 @@ public interface Scope extends CodeEntity {
 
     public Variable createVariable(IType type, String varName);
 
-    public Variable createStaticVariable(IType type);
+//    public Variable createStaticVariable(IType type);
     
     public BinaryOperatorInvocation assignInvocationResult(String varName, Invocation invocation);
 
@@ -87,7 +87,7 @@ public interface Scope extends CodeEntity {
     public Scope getScopeById(String id);
 
     public Variable createVariable(IType type);
-    public Variable createVariable(Invocation invocation);
+//    public Variable createVariable(Invocation invocation);
 
     public DataFlow getDataFlow();
 

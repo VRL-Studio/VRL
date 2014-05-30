@@ -58,7 +58,7 @@ import java.util.List;
  */
 public interface ControlFlow {
 
-    public Invocation createInstance(String id, IType type, String varName, IArgument... args);
+    public Invocation createInstance(String id, IType type, IArgument... args);
 
     public Invocation callMethod(String id, String varName, String mName, IType returnType, boolean isVoid, IArgument... args);
     

@@ -142,15 +142,20 @@ class ScopeImpl implements Scope {
 
         return result;
     }
-
+    
     @Override
     public Variable createVariable(IType type, String varName) {
+        DeclarationInvocation inv = getControlFlow().declareVariable(id, type, varName);
+        return inv.getDeclaredVariable();
+    }
+
+    Variable _createVariable(IType type, String varName) {
 
         if (getVariable(varName) != null) {
             throw new IllegalArgumentException("Variable '" + varName + "' does already exist!");
         }
 
-        Variable variable = new VariableImpl(this, type, varName, null, false);
+        Variable variable = new VariableImpl(this, type, varName, null, false, null);
         variables.put(varName, variable);
         return variable;
     }
@@ -170,29 +175,36 @@ class ScopeImpl implements Scope {
         return createVariable(type, varName);
     }
 
-    @Override
-    public Variable createVariable(Invocation invocation) {
-        String varNamePrefix = "vrlInvocationVar";
+//    @Override
+//    public Variable createVariable(Invocation invocation) {
+//        String varNamePrefix = "vrlInvocationVar";
+//
+//        int counter = 0;
+//        String varName = varNamePrefix + counter;
+//
+//        while (getVariable(varName) != null) {
+//            counter++;
+//            varName = varNamePrefix + counter;
+//        }
+//
+//        Variable variable = new VariableImpl(this, varName, invocation);
+//        variables.put(varName, variable);
+//        return variable;
+//    }
 
-        int counter = 0;
-        String varName = varNamePrefix + counter;
-
-        while (getVariable(varName) != null) {
-            counter++;
-            varName = varNamePrefix + counter;
-        }
-
-        Variable variable = new VariableImpl(this, varName, invocation);
-        variables.put(varName, variable);
-        return variable;
-    }
-
-    @Override
-    public Variable createStaticVariable(IType type) {
-        Variable variable = VariableImpl.createStaticVar(parent, type);
-        variables.put(variable.getName(), variable);
-        return variable;
-    }
+//    @Override
+//    public Variable createStaticVariable(IType type) {
+//
+//        DeclarationInvocation inv = getControlFlow().declareStaticVariable(id, type, name);
+//        
+//        return inv.getDeclaredVariable();
+//    }
+//
+//    Variable _createStaticVariable(IType type) {
+//        Variable variable = VariableImpl.createStaticVar(parent, type, null);
+//        variables.put(variable.getName(), variable);
+//        return variable;
+//    }
 
     @Override
     public BinaryOperatorInvocation assignConstant(String varName, Object constant) {
