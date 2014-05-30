@@ -128,7 +128,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public ForDeclaration invokeForLoop(Scope scope, String varName, int from, int to, int inc) {
+    public ForDeclaration invokeForLoop(ControlFlowScope scope, String varName, int from, int to, int inc) {
 
         if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
             throw new UnsupportedOperationException("Unsupported parent scope specified."
@@ -143,7 +143,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public WhileDeclaration invokeWhileLoop(Scope scope, Invocation check) {
+    public WhileDeclaration invokeWhileLoop(ControlFlowScope scope, Invocation check) {
         
         if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
             throw new UnsupportedOperationException("Unsupported parent scope specified."
@@ -167,7 +167,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     
 
     @Override
-    public Invocation invokeMethod(Scope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args) {
+    public Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args) {
         String id = idRequest.request();
 
         Invocation result = scope.getControlFlow().callMethod(id, varName, mName, returnType, isVoid, args);
@@ -176,7 +176,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
     
     @Override
-    public Invocation invokeStaticMethod(Scope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args) {
+    public Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args) {
         String id = idRequest.request();
 
         Invocation result = scope.getControlFlow().callStaticMethod(id, type, mName, returnType, isVoid, args);
@@ -213,7 +213,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public Invocation invokeMethod(Scope scope, String varName, MethodDeclaration mDec, IArgument... args) {
+    public Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, IArgument... args) {
         String id = idRequest.request();
 
         Invocation result = scope.getControlFlow().callMethod(id, varName, mDec, args);

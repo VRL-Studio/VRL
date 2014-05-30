@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.lang.model;
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface ForDeclaration extends Scope{
+public interface ForDeclaration extends ControlFlowScope {
    String getVarName();
    int getFrom();
    int getTo();

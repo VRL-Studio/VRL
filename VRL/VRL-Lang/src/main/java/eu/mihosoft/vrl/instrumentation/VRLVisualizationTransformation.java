@@ -79,6 +79,7 @@ import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.AssignmentInvocation;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
+import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IType;
@@ -431,9 +432,13 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     @Override
     public void visitForLoop(ForStatement s) {
         System.out.println(" --> FOR-LOOP: " + s.getVariable());
+        
+        if (!(currentScope instanceof ControlFlowScope)) {
+            throw new RuntimeException("For-Loop can only be invoked inside ControlFlowScopes!");
+        }
 
         // predeclaration, ranges will be defined later
-        currentScope = codeBuilder.invokeForLoop(currentScope, null, 0, 0, 0);
+        currentScope = codeBuilder.invokeForLoop((ControlFlowScope)currentScope, null, 0, 0, 0);
         setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
 
@@ -483,8 +488,12 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             throw new IllegalStateException("while-loop: must contain boolean"
                     + " expression!");
         }
+        
+         if (!(currentScope instanceof ControlFlowScope)) {
+            throw new RuntimeException("While-Loop can only be invoked inside ControlFlowScopes!");
+        }
 
-        currentScope = codeBuilder.invokeWhileLoop(currentScope,
+        currentScope = codeBuilder.invokeWhileLoop((ControlFlowScope)currentScope,
                 convertExpressionToArgument(
                        s.getBooleanExpression().getExpression()).getInvocation().get());
         
@@ -570,6 +579,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         }
 
         System.out.println(" --> METHOD: " + s.getMethodAsString());
+        
 
         super.visitMethodCallExpression(s);
 
@@ -619,6 +629,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         } else {
             returnType = Type.VOID;
         }
+        
+        if (!(currentScope instanceof ControlFlowScope)) {
+            throw new RuntimeException("Method can only be invoked inside ControlFlowScopes!");
+        }
 
         if (!isIdCall) {
             if (objectName != null) {
@@ -626,7 +640,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 System.out.println("RET-TYPE: " + returnType);
 
                 Invocation invocation = codeBuilder.invokeMethod(
-                        currentScope, objectName,
+                        (ControlFlowScope)currentScope, objectName,
                         s.getMethod().getText(),
                         returnType,
                         isVoid,
@@ -649,7 +663,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
 //                        returnValueName, arguments).setCode(getCode(s));
                 Invocation invocation = codeBuilder.invokeStaticMethod(
-                        currentScope, new Type("System.out"),
+                        (ControlFlowScope)currentScope, new Type("System.out"),
                         s.getMethod().getText(), Type.VOID, isVoid,
                         arguments);
                 setCodeRange(invocation, s);

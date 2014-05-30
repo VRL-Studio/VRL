@@ -66,19 +66,19 @@ public interface VisualCodeBuilder {
 
     DeclarationInvocation declareVariable(Scope scope, IType type, String varName);
 
-    ForDeclaration invokeForLoop(Scope scope, String varName, int from, int to, int inc);
+    ForDeclaration invokeForLoop(ControlFlowScope scope, String varName, int from, int to, int inc);
     
     ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type, IModifiers modifiers, IExtends extendz, IExtends implementz);
 
     MethodDeclaration declareMethod(ClassDeclaration scope, IModifiers modifiers, IType returnType, String methodName, IParameters params);
 
-    WhileDeclaration invokeWhileLoop(Scope scope, Invocation check);
+    WhileDeclaration invokeWhileLoop(ControlFlowScope scope, Invocation check);
 
-    Invocation invokeMethod(Scope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args);
+    Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args);
     
-    Invocation invokeStaticMethod(Scope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args);
+    Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args);
 
-    Invocation invokeMethod(Scope scope, String varName, MethodDeclaration mDec, IArgument... args);
+    Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, IArgument... args);
 
     BinaryOperatorInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation);
     

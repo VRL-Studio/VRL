@@ -8,8 +8,8 @@ package eu.mihosoft.vrl.lang.model;
 import java.util.Objects;
 
 /**
- *
- * @author miho
+ * 
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class BinaryOperatorInvocationImpl extends InvocationImpl implements BinaryOperatorInvocation {
 
