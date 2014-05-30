@@ -1,4 +1,4 @@
-
+@eu.mihosoft.vrl.instrumentation.VRLVisualization
 public class Main {
     
     public int m1(int p1) {
@@ -8,38 +8,31 @@ public class Main {
     public int m2() {
     }
 }
-
+@eu.mihosoft.vrl.instrumentation.VRLVisualization
 public class A {
     
     public int m1(int p1) {
         m1(m1(1));
     }
     public int m2() {
-        
-        int a;
-        
-        a = 2
-        
+        Integer a;
+        a=2;
         A aObj;
-        aObj = new A();
-        
-        int b = 2+3*5+m2();
-        
-        m3(new A())
-        
-        for(int i = 1; i <= 10; i+=1) {
+        aObj=new A();
+        Integer b;
+        b=2+3*5+m2();
+        m3(new A());
+        for(int i = 1; i <= 10; i++) {
             //
+            println(i);
         }
-        
-        while(a < b) {
-            println( "abc" )
+        while(a<b) {
+            println("abc");
         }
-        
-        return 0
-        
     }
-    
-    void m3(A a) {}
+    public void m3(A a) {
+
+    }
 }
 // <editor-fold defaultstate="collapsed" desc="VRL-Data">
 /*<!VRL!><Type:VRL-Layout>
