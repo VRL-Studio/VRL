@@ -1,4 +1,4 @@
-@eu.mihosoft.vrl.instrumentation.VRLVisualization
+
 public class Main {
     
     public int m1(int p1) {
@@ -8,7 +8,7 @@ public class Main {
     public int m2() {
     }
 }
-@eu.mihosoft.vrl.instrumentation.VRLVisualization
+
 public class A {
     
     public int m1(int p1) {
