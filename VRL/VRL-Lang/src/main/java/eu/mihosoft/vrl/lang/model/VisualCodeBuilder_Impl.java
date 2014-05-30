@@ -128,7 +128,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public ForDeclaration declareFor(Scope scope, String varName, int from, int to, int inc) {
+    public ForDeclaration invokeForLoop(Scope scope, String varName, int from, int to, int inc) {
 
         if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
             throw new UnsupportedOperationException("Unsupported parent scope specified."
@@ -143,7 +143,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public WhileDeclaration declareWhile(Scope scope, Invocation check) {
+    public WhileDeclaration invokeWhileLoop(Scope scope, Invocation check) {
         
         if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
             throw new UnsupportedOperationException("Unsupported parent scope specified."

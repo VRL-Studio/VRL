@@ -52,6 +52,7 @@ package eu.mihosoft.vrl.lang.model;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import javafx.collections.ObservableList;
 
 /**
@@ -105,5 +106,7 @@ public interface Scope extends CodeEntity {
 //    public VFlow getFlow();
 
     public DeclarationInvocation declareVariable(String id, IType type, String varName);
+    
+    public Optional<ScopeInvocation> getInvocation();
 }
 

@@ -56,11 +56,11 @@ package eu.mihosoft.vrl.lang.model;
  */
 public interface DataRelation {
 
-    public void setSender(Invocation invocation);
+//    public void setSender(Invocation invocation);
 
     public Invocation getSender();
 
-    public void setReceiver(Invocation invocation);
+//    public void setReceiver(Invocation invocation);
 
     public Invocation getReceiver();
     

@@ -433,7 +433,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         System.out.println(" --> FOR-LOOP: " + s.getVariable());
 
         // predeclaration, ranges will be defined later
-        currentScope = codeBuilder.declareFor(currentScope, null, 0, 0, 0);
+        currentScope = codeBuilder.invokeForLoop(currentScope, null, 0, 0, 0);
         setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
 
@@ -484,7 +484,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                     + " expression!");
         }
 
-        currentScope = codeBuilder.declareWhile(currentScope,
+        currentScope = codeBuilder.invokeWhileLoop(currentScope,
                 convertExpressionToArgument(
                        s.getBooleanExpression().getExpression()).getInvocation().get());
         

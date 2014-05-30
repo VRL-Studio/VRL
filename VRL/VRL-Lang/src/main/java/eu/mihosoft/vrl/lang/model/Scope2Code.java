@@ -217,8 +217,8 @@ public class Scope2Code {
                                 Argument.varArg(m2.getVariable("v1")))),
                 Argument.varArg(m2.getVariable("v2")));
 
-        ForDeclaration forD1 = builder.declareFor(m2, "i", 1, 3, 1);
-        ForDeclaration forD2 = builder.declareFor(forD1, "j", 10, 9, -1);
+        ForDeclaration forD1 = builder.invokeForLoop(m2, "i", 1, 3, 1);
+        ForDeclaration forD2 = builder.invokeForLoop(forD1, "j", 10, 9, -1);
 
         builder.invokeMethod(forD2, "this", m1, Argument.varArg(forD2.getVariable("j")));
 

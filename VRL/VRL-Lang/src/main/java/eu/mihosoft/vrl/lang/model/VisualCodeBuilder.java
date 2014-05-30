@@ -66,13 +66,13 @@ public interface VisualCodeBuilder {
 
     DeclarationInvocation declareVariable(Scope scope, IType type, String varName);
 
-    ForDeclaration declareFor(Scope scope, String varName, int from, int to, int inc);
+    ForDeclaration invokeForLoop(Scope scope, String varName, int from, int to, int inc);
     
     ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type, IModifiers modifiers, IExtends extendz, IExtends implementz);
 
     MethodDeclaration declareMethod(ClassDeclaration scope, IModifiers modifiers, IType returnType, String methodName, IParameters params);
 
-    WhileDeclaration declareWhile(Scope scope, Invocation check);
+    WhileDeclaration invokeWhileLoop(Scope scope, Invocation check);
 
     Invocation invokeMethod(Scope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args);
     
