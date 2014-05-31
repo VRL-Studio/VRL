@@ -15,17 +15,21 @@ public class A {
         m1(m1(1));
     }
     public int m2() {
+        // declare a
         Integer a;
+        //assign
         a=2;
         A aObj;
         aObj=new A();
         Integer b;
         b=2+3*5+m2();
         m3(new A());
+        // for loop
         for(int i = 1; i <= 10; i++) {
             //
             println(i);
         }
+        // while loop
         while(a<b) {
             println("abc");
         }
