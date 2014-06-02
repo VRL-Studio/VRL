@@ -51,10 +51,10 @@ package eu.mihosoft.vrl.lang.model;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
+import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
+import eu.mihosoft.vrl.workflow.Connections;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  *
@@ -138,6 +138,13 @@ class DataFlowImpl implements DataFlow {
                 subScope.getDataFlow().create(subScope.getControlFlow());
             }
         }
+        
+        // create visual dataflow
+
+        Connections connections = controlFlow.getParent().getFlow().
+                getConnections(WorkflowUtil.DATA_FLOW);
+        
+        
 
     }
 

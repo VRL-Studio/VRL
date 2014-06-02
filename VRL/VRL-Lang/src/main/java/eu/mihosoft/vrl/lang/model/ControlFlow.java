@@ -79,6 +79,9 @@ public interface ControlFlow {
     public boolean isUsedAsInput(Invocation invocation);
 
     public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg, IArgument rightArg, Operator operator);
+    
+    // TODO 02.06.2014 switch to ControlFlowScope
+    public Scope getParent();
 
     
 }

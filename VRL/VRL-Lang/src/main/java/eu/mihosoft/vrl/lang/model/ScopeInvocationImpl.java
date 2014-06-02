@@ -52,7 +52,9 @@ package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.VNode;
+import java.util.Objects;
 
 /**
  *
@@ -65,6 +67,12 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
     public ScopeInvocationImpl(Scope s) {
         super(s, "", null, "scope", Type.VOID, false, true, true, new IArgument[0]);
         this.scope = s;
+        
+        VNode node = scope.getNode();
+        
+        node.setMainInput(node.addInput(WorkflowUtil.CONTROL_FLOW));
+        node.setMainOutput(scope.getNode().addOutput(WorkflowUtil.CONTROL_FLOW));
+              
     }
 
     /**

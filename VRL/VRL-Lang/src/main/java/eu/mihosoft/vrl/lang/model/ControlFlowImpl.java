@@ -85,12 +85,20 @@ class ControlFlowImpl implements ControlFlow {
 //
 //            }
 
-            flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().clear();
-            createConnections();
+            updateConnections();
+        });
+
+        flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().addListener(new ListChangeListener<Connection>() {
+
+            @Override
+            public void onChanged(ListChangeListener.Change<? extends Connection> c) {
+                updateInvocations();
+            }
         });
     }
 
-    private void createConnections() {
+    private void updateConnections() {
+        flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().clear();
         Invocation prevInvocation = null;
         for (Invocation invocation : invocations) {
 
@@ -101,6 +109,13 @@ class ControlFlowImpl implements ControlFlow {
             }
 
             prevInvocation = invocation;
+        }
+    }
+
+    private void updateInvocations() {
+        invocations.clear();
+        for (Connection connection : flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections()) {
+            invocations.add((Invocation) connection.getSender().getNode().getValueObject().getValue());
         }
     }
 
@@ -271,6 +286,11 @@ class ControlFlowImpl implements ControlFlow {
         getInvocations().add(invocation);
 
         return invocation;
+    }
+
+    @Override
+    public Scope getParent() {
+        return parent;
     }
 
 }

@@ -47,9 +47,9 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
+import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.VNode;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,28 +89,27 @@ class InvocationImpl implements Invocation {
         this.methodName = methodName;
         this.constructor = constructor;
         this.Void = isVoid;
-        
+
         this.Static = isStatic;
         this.returnType = returnType;
 
         arguments.addAll(Arrays.asList(args));
-        
+
 //        if (isVoid) {
 //            returnValue = null;
 //        } else {
 //            returnValue = parent.createVariable(this);
 //        }
-
         Variable var = null;
-        
-        try{
+
+        try {
             var = parent.getVariable(varName);
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             // will be checked later (see if below)
         }
 
         if (!isStatic && !isScope() && var == null) {
-            
+
             throw new IllegalArgumentException(
                     "Variable '"
                     + varName
@@ -119,12 +118,20 @@ class InvocationImpl implements Invocation {
             // check whether varName is a valid type
             Type type = new Type(varName);
         }
-        
+
         if (isScope()) {
             // nothing (see ScopeInvocationImpl)
         } else {
             node = parent.getFlow().newNode();
             node.getValueObject().setValue(this);
+
+            for (IArgument arg : args) {
+                node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().setValue(arg);
+            }
+
+            if (!Objects.equals(returnType, Type.VOID)) {
+                node.addOutput(WorkflowUtil.DATA_FLOW).getValueObject().setValue(returnType);
+            }
         }
     }
 
@@ -210,7 +217,6 @@ class InvocationImpl implements Invocation {
 //    public void setCode(String code) {
 //        this.code = code;
 //    }
-
     /**
      * @return the Static
      */
@@ -254,8 +260,6 @@ class InvocationImpl implements Invocation {
 //    public Optional<Variable> getReturnValue() {
 //        return Optional.ofNullable(returnValue);
 //    }
-
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -308,8 +312,5 @@ class InvocationImpl implements Invocation {
     public VNode getNode() {
         return this.node;
     }
-
-    
-   
 
 }
