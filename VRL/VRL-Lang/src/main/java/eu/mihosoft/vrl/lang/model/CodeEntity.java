@@ -68,6 +68,8 @@ public interface CodeEntity {
     
     public Scope getParent();
     
+    public VNode getNode();
+    
 //    public void setNode(VNode n);
     
 }

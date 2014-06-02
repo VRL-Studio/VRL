@@ -50,6 +50,7 @@
 
 package eu.mihosoft.vrl.lang.model;
 
+import eu.mihosoft.vrl.workflow.VNode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,6 +76,7 @@ class InvocationImpl implements Invocation {
     private ICodeRange location;
     private IType returnType;
 //    private final Variable returnValue;
+    private VNode node;
 
     public InvocationImpl(
             Scope parent,
@@ -116,6 +118,13 @@ class InvocationImpl implements Invocation {
         } else if (varName != null) {
             // check whether varName is a valid type
             Type type = new Type(varName);
+        }
+        
+        if (isScope()) {
+            // nothing (see ScopeInvocationImpl)
+        } else {
+            node = parent.getFlow().newNode();
+            node.getValueObject().setValue(this);
         }
     }
 
@@ -293,6 +302,11 @@ class InvocationImpl implements Invocation {
      */
     protected void setReturnType(IType returnType) {
         this.returnType = returnType;
+    }
+
+    @Override
+    public VNode getNode() {
+        return this.node;
     }
 
     

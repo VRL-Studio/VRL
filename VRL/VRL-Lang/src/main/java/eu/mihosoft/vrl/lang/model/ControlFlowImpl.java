@@ -49,12 +49,13 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.ControlFlow;
-import eu.mihosoft.vrl.lang.model.IType;
-import eu.mihosoft.vrl.lang.model.Invocation;
-import java.util.ArrayList;
+import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
+import eu.mihosoft.vrl.workflow.Connection;
+import eu.mihosoft.vrl.workflow.VFlow;
 import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -62,12 +63,45 @@ import java.util.List;
  */
 class ControlFlowImpl implements ControlFlow {
 
-    private final List<Invocation> invocations = new ArrayList<>();
+    private final ObservableList<Invocation> invocations = FXCollections.emptyObservableList();
 
     private final Scope parent;
+    private final VFlow flow;
 
     public ControlFlowImpl(Scope parent) {
         this.parent = parent;
+        this.flow = parent.getFlow();
+
+        initListeners();
+    }
+
+    private void initListeners() {
+        invocations.addListener((ListChangeListener.Change<? extends Invocation> c) -> {
+//            while(c.next()) {
+//                if (c.wasAdded()) {
+//                    //
+//                }
+//                ... TODO
+//
+//            }
+
+            flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().clear();
+            createConnections();
+        });
+    }
+
+    private void createConnections() {
+        Invocation prevInvocation = null;
+        for (Invocation invocation : invocations) {
+
+            if (prevInvocation != null) {
+                flow.connect(
+                        prevInvocation.getNode(), invocation.getNode(),
+                        WorkflowUtil.CONTROL_FLOW);
+            }
+
+            prevInvocation = invocation;
+        }
     }
 
     @Override
@@ -207,17 +241,17 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public DeclarationInvocation declareVariable(String id, IType type, String varName) {
-        VariableImpl var = (VariableImpl)((ScopeImpl)parent)._createVariable(type, varName);
+        VariableImpl var = (VariableImpl) ((ScopeImpl) parent)._createVariable(type, varName);
 
         DeclarationInvocationImpl invocation = new DeclarationInvocationImpl(parent, var);
-        
+
         var.setDeclaration(invocation);
 
         getInvocations().add(invocation);
 
         return invocation;
     }
-    
+
 //     @Override
 //    public DeclarationInvocation declareStaticVariable(String id, IType type, String varName) {
 //        VariableImpl var = (VariableImpl)((ScopeImpl)parent)._createStaticVariable(type, varName);
@@ -230,7 +264,6 @@ class ControlFlowImpl implements ControlFlow {
 //
 //        return invocation;
 //    }
-
     @Override
     public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg, IArgument rightArg, Operator operator) {
         BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, leftArg, rightArg, operator);

@@ -52,6 +52,7 @@ package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.workflow.VNode;
 
 /**
  *
@@ -82,6 +83,11 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
     @Override
     public ICodeRange getRange() {
         return scope.getRange();
+    }
+
+    @Override
+    public VNode getNode() {
+        return this.scope.getNode();
     }
 
 }

@@ -70,15 +70,23 @@ public class Main {
 
     public static void main(String[] args) {
         
-        IOUtil.deleteDirectory(new File("java.txt"));
-        IOUtil.deleteDirectory(new File("groovy.txt"));
+//        IOUtil.deleteDirectory(new File("java.txt"));
+//        IOUtil.deleteDirectory(new File("groovy.txt"));
+//
+////        for (int i = 0; i < 200; i += 50) {
+//            for (int j = 1; j < 50; j += 10) {
+//                compile(j, 200, j);
+//            }
+////        }
 
-//        for (int i = 0; i < 200; i += 50) {
-            for (int j = 1; j < 50; j += 10) {
-                compile(j, 200, j);
-            }
-//        }
-
+        
+        VisualCodeBuilder vCodeBuilder = new VisualCodeBuilder_Impl();
+        
+        CompilationUnitDeclaration cu = vCodeBuilder.declareCompilationUnit("MyFile.groovy", "my.package");
+        
+        
+        
+        
     }
 
     static void compile(int i, int numClasses, int numMethods) {

@@ -49,6 +49,10 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
+import eu.mihosoft.vrl.workflow.FlowFactory;
+import eu.mihosoft.vrl.workflow.VFlow;
+import eu.mihosoft.vrl.workflow.VNode;
+import eu.mihosoft.vrl.workflow.ValueObject;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -77,6 +81,7 @@ class ScopeImpl implements Scope {
     private ICodeRange location;
     private final ObservableList<Comment> comments = FXCollections.observableArrayList();
     private final ScopeInvocation invocation;
+    private VFlow flow;
 
     public ScopeImpl(String id, Scope parent, ScopeType type, String name, Object... scopeArgs) {
         this.id = id;
@@ -102,10 +107,18 @@ class ScopeImpl implements Scope {
             } else {
                 invocation = null;
             }
+            
+            flow = parent.getFlow().newSubFlow();
+            flow.getModel().getValueObject().setValue(this);
+            
         } else {
 
             invocation = null;
+            
+            flow = FlowFactory.newFlow();
         }
+        
+        
     }
 
     @Override
@@ -431,6 +444,16 @@ class ScopeImpl implements Scope {
     @Override
     public Optional<ScopeInvocation> getInvocation() {
         return Optional.ofNullable(invocation);
+    }
+
+    @Override
+    public VFlow getFlow() {
+        return this.flow;
+    }
+
+    @Override
+    public VNode getNode() {
+        return this.flow.getModel();
     }
 
 }

@@ -47,13 +47,13 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.CommentType;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.workflow.VNode;
 
 /**
  *
@@ -66,13 +66,14 @@ public class CommentImpl implements Comment {
     private String comment;
     private CommentType type = CommentType.UNDEFINED;
     private Scope parent;
+    private VNode node;
 
     public CommentImpl(String id, ICodeRange codeRange, String comment) {
         this.id = id;
         this.codeRange = codeRange;
         this.comment = comment;
     }
-    
+
     public CommentImpl(String id, ICodeRange codeRange, String comment, CommentType type) {
         this.id = id;
         this.codeRange = codeRange;
@@ -157,6 +158,16 @@ public class CommentImpl implements Comment {
      */
     public void setParent(Scope parent) {
         this.parent = parent;
+
+        if (parent != null) {
+            this.node = parent.getFlow().newNode();
+            this.node.getValueObject().setValue(this);
+        }
+    }
+
+    @Override
+    public VNode getNode() {
+        return this.node;
     }
 
 }
