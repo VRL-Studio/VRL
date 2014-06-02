@@ -49,6 +49,7 @@
  */
 package eu.mihosoft.vrl.ui.codevisualization;
 
+import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import com.thoughtworks.xstream.XStream;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ArgumentType;
