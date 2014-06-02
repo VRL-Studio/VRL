@@ -50,10 +50,9 @@
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
+import eu.mihosoft.vrl.workflow.Connector;
 import eu.mihosoft.vrl.workflow.VNode;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -130,7 +129,9 @@ class InvocationImpl implements Invocation {
             }
 
             if (!Objects.equals(returnType, Type.VOID)) {
-                node.addOutput(WorkflowUtil.DATA_FLOW).getValueObject().setValue(returnType);
+                Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
+                output.getValueObject().setValue(returnType);
+                node.setMainOutput(output);
             }
         }
     }
