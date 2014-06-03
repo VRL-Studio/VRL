@@ -63,7 +63,7 @@ import javafx.collections.ObservableList;
  */
 class ControlFlowImpl implements ControlFlow {
 
-    private final ObservableList<Invocation> invocations = FXCollections.emptyObservableList();
+    private final ObservableList<Invocation> invocations = FXCollections.observableArrayList();
 
     private final Scope parent;
     private final VFlow flow;
