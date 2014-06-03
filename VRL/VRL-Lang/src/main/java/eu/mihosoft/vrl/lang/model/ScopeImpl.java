@@ -89,6 +89,13 @@ class ScopeImpl implements Scope {
 
         this.type = type;
         this.name = name;
+        
+        if (parent!=null) {
+            flow = parent.getFlow().newSubFlow();
+        } else {
+            flow = FlowFactory.newFlow();
+        }
+        flow.getModel().getValueObject().setValue(this);
 
         this.scopeArgs = scopeArgs;
         this.controlFlow = new ControlFlowImpl(this);
@@ -108,16 +115,16 @@ class ScopeImpl implements Scope {
                 invocation = null;
             }
             
-            flow = parent.getFlow().newSubFlow();
+           
             
         } else {
 
             invocation = null;
             
-            flow = FlowFactory.newFlow();
+            
         }
         
-        flow.getModel().getValueObject().setValue(this);
+        
 
     }
 

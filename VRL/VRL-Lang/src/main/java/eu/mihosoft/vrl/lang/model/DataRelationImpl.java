@@ -62,11 +62,13 @@ class DataRelationImpl implements DataRelation {
     final private Invocation sender;
     final private Invocation receiver;
     final private IArgument receiverArg;
+    final private int receiverArgIndex;
 
-    public DataRelationImpl(Invocation sender, Invocation receiver, IArgument receiverArg) {
+    public DataRelationImpl(Invocation sender, Invocation receiver, IArgument receiverArg, int receiverArgIndex) {
         this.sender = sender;
         this.receiver = receiver;
         this.receiverArg = receiverArg;
+        this.receiverArgIndex = receiverArgIndex;
     }
 
 
@@ -103,6 +105,11 @@ class DataRelationImpl implements DataRelation {
     @Override
     public IArgument getReceiverArg() {
         return this.receiverArg;
+    }
+
+    @Override
+    public int getReceiverArgIndex() {
+       return this.receiverArgIndex;
     }
     
 }

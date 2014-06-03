@@ -53,6 +53,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.Connections;
+import eu.mihosoft.vrl.workflow.Connector;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,8 +67,8 @@ class DataFlowImpl implements DataFlow {
     ListMultimap<Invocation, DataRelation> relationsForSender = ArrayListMultimap.create();
     ListMultimap<Invocation, DataRelation> relationsForReceiver = ArrayListMultimap.create();
 
-    void createDataRelation(Invocation sender, Invocation receiver, IArgument receiverArg) {
-        DataRelationImpl relation = new DataRelationImpl(sender, receiver, receiverArg);
+    void createDataRelation(Invocation sender, Invocation receiver, IArgument receiverArg, int receiverArgIndex) {
+        DataRelationImpl relation = new DataRelationImpl(sender, receiver, receiverArg, receiverArgIndex);
 
         relations.add(relation);
         relationsForSender.put(sender, relation);
@@ -107,6 +108,7 @@ class DataFlowImpl implements DataFlow {
 //        }
         for (Invocation receiver : controlFlow.getInvocations()) {
             System.out.println(" -> receiver: " + receiver);
+            int argIndex = 0;
             for (IArgument a : receiver.getArguments()) {
 
 //                Variable v = a.getVariable().get();
@@ -126,25 +128,30 @@ class DataFlowImpl implements DataFlow {
 //                            + v.getName()
 //                            + "', " + sender.getMethodName());
 
-                    createDataRelation(sender, receiver, a);
+                    createDataRelation(sender, receiver, a, argIndex);
                 }
-
-            }
+                argIndex++;
+            } // end for arg
         }
 
+        // create visual dataflow
+        Connections connections = controlFlow.getParent().getFlow().
+                getConnections(WorkflowUtil.DATA_FLOW);
+        connections.getConnections().clear();
+        for (DataRelation dR : getRelations()) {
+            Connector sConn = dR.getSender().getNode().getMainOutput(WorkflowUtil.DATA_FLOW);
+            Connector rConn = dR.getReceiver().getNode().
+                    getInputs().get(dR.getReceiverArgIndex());
+            controlFlow.getParent().getFlow().connect(sConn, rConn);
+        }
+
+        // create subflows
         for (Invocation i : controlFlow.getInvocations()) {
             if (i instanceof ScopeInvocation) {
                 Scope subScope = ((ScopeInvocation) i).getScope();
                 subScope.getDataFlow().create(subScope.getControlFlow());
             }
         }
-        
-        // create visual dataflow
-
-        Connections connections = controlFlow.getParent().getFlow().
-                getConnections(WorkflowUtil.DATA_FLOW);
-        
-        
 
     }
 

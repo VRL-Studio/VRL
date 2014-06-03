@@ -66,6 +66,8 @@ public interface DataRelation {
     
     public IArgument getReceiverArg();
     
+    public int getReceiverArgIndex();
+    
 //    public String getInputVariable();
 //    public void setInputVariable(String name);
 }
