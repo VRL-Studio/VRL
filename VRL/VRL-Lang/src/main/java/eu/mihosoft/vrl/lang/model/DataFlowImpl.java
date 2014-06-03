@@ -66,8 +66,8 @@ class DataFlowImpl implements DataFlow {
     ListMultimap<Invocation, DataRelation> relationsForSender = ArrayListMultimap.create();
     ListMultimap<Invocation, DataRelation> relationsForReceiver = ArrayListMultimap.create();
 
-    void createDataRelation(Invocation sender, Invocation receiver) {
-        DataRelationImpl relation = new DataRelationImpl(sender, receiver);
+    void createDataRelation(Invocation sender, Invocation receiver, IArgument receiverArg) {
+        DataRelationImpl relation = new DataRelationImpl(sender, receiver, receiverArg);
 
         relations.add(relation);
         relationsForSender.put(sender, relation);
@@ -126,7 +126,7 @@ class DataFlowImpl implements DataFlow {
 //                            + v.getName()
 //                            + "', " + sender.getMethodName());
 
-                    createDataRelation(sender, receiver);
+                    createDataRelation(sender, receiver, a);
                 }
 
             }

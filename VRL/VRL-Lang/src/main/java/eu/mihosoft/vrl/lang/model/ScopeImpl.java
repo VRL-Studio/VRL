@@ -109,7 +109,6 @@ class ScopeImpl implements Scope {
             }
             
             flow = parent.getFlow().newSubFlow();
-            flow.getModel().getValueObject().setValue(this);
             
         } else {
 
@@ -118,7 +117,8 @@ class ScopeImpl implements Scope {
             flow = FlowFactory.newFlow();
         }
         
-        
+        flow.getModel().getValueObject().setValue(this);
+
     }
 
     @Override

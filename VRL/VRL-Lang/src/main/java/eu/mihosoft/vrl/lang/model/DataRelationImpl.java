@@ -59,19 +59,21 @@ import eu.mihosoft.vrl.lang.model.Invocation;
  */
 class DataRelationImpl implements DataRelation {
     
-    private Invocation sender;
-    private Invocation receiver;
+    final private Invocation sender;
+    final private Invocation receiver;
+    final private IArgument receiverArg;
 
-    public DataRelationImpl(Invocation sender, Invocation receiver) {
+    public DataRelationImpl(Invocation sender, Invocation receiver, IArgument receiverArg) {
         this.sender = sender;
         this.receiver = receiver;
+        this.receiverArg = receiverArg;
     }
 
 
 
-    public void setSender(Invocation invocation) {
-        this.sender = invocation;
-    }
+//    public void setSender(Invocation invocation) {
+//        this.sender = invocation;
+//    }
 
     @Override
     public Invocation getSender() {
@@ -79,9 +81,9 @@ class DataRelationImpl implements DataRelation {
     }
 
 
-    public void setReceiver(Invocation invocation) {
-        this.receiver = invocation;
-    }
+//    public void setReceiver(Invocation invocation) {
+//        this.receiver = invocation;
+//    }
 
     @Override
     public Invocation getReceiver() {
@@ -97,5 +99,10 @@ class DataRelationImpl implements DataRelation {
 //    public void setInputVariable(String name) {
 //        throw new UnsupportedOperationException("Not supported yet."); // TODO NB-AUTOGEN
 //    }
+
+    @Override
+    public IArgument getReceiverArg() {
+        return this.receiverArg;
+    }
     
 }
