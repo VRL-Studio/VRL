@@ -52,10 +52,12 @@ package eu.mihosoft.vrl.lang.model;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
+import eu.mihosoft.vrl.workflow.Connection;
 import eu.mihosoft.vrl.workflow.Connections;
 import eu.mihosoft.vrl.workflow.Connector;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.collections.ListChangeListener;
 
 /**
  *
@@ -66,6 +68,7 @@ class DataFlowImpl implements DataFlow {
     List<DataRelation> relations = new ArrayList<>();
     ListMultimap<Invocation, DataRelation> relationsForSender = ArrayListMultimap.create();
     ListMultimap<Invocation, DataRelation> relationsForReceiver = ArrayListMultimap.create();
+    private boolean currentlyUpdatingBecauseOfUIEvent;
 
     void createDataRelation(Invocation sender, Invocation receiver, IArgument receiverArg, int receiverArgIndex) {
         DataRelationImpl relation = new DataRelationImpl(sender, receiver, receiverArg, receiverArgIndex);
@@ -95,6 +98,12 @@ class DataFlowImpl implements DataFlow {
 
     @Override
     public void create(ControlFlow controlFlow) {
+
+        relations.clear();
+        relationsForSender.clear();
+        relationsForReceiver.clear();
+
+        initListeners(controlFlow);
 
         System.out.println(">> creating dataflow: ");
 
@@ -135,14 +144,17 @@ class DataFlowImpl implements DataFlow {
         }
 
         // create visual dataflow
-        Connections connections = controlFlow.getParent().getFlow().
-                getConnections(WorkflowUtil.DATA_FLOW);
-        connections.getConnections().clear();
-        for (DataRelation dR : getRelations()) {
-            Connector sConn = dR.getSender().getNode().getMainOutput(WorkflowUtil.DATA_FLOW);
-            Connector rConn = dR.getReceiver().getNode().
-                    getInputs().get(dR.getReceiverArgIndex());
-            controlFlow.getParent().getFlow().connect(sConn, rConn);
+        if (!currentlyUpdatingBecauseOfUIEvent) {
+            Connections connections = controlFlow.getParent().getFlow().
+                    getConnections(WorkflowUtil.DATA_FLOW);
+            connections.getConnections().clear();
+            for (DataRelation dR : getRelations()) {
+                Connector sConn = dR.getSender().getNode().
+                        getMainOutput(WorkflowUtil.DATA_FLOW);
+                Connector rConn = dR.getReceiver().getNode().
+                        getInputs().get(dR.getReceiverArgIndex());
+                controlFlow.getParent().getFlow().connect(sConn, rConn);
+            }
         }
 
         // create subflows
@@ -153,6 +165,16 @@ class DataFlowImpl implements DataFlow {
             }
         }
 
+    }
+
+    private void initListeners(ControlFlow controlFlow) {
+        controlFlow.getParent().getFlow().
+                getConnections(WorkflowUtil.DATA_FLOW).getConnections().addListener(
+                        (ListChangeListener.Change<? extends Connection> c) -> {
+                    currentlyUpdatingBecauseOfUIEvent = true;
+                    create(controlFlow);
+                    currentlyUpdatingBecauseOfUIEvent = false;
+        });
     }
 
 //    public void generateDataFlow() {
