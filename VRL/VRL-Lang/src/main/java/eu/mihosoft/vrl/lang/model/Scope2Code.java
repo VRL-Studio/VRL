@@ -179,7 +179,7 @@ public class Scope2Code {
 
         System.out.println("code from compiler 2:\n" + code);
 
-        scope.generateDataFlow();
+//        scope.generateDataFlow();
     }
 
     public static CompilationUnitDeclaration demoScope() {

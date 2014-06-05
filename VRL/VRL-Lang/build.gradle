@@ -42,3 +42,4 @@ dependencies {
     
     compile project(":VRL-Base")
 }
+>>>>>>> edfde2fa8318acd4050e514637d4dab05a5cc4fb

@@ -93,8 +93,8 @@ public interface Scope extends CodeEntity {
 
     public DataFlow getDataFlow();
 
-    @Deprecated
-    public void generateDataFlow();
+//    @Deprecated
+//    public void generateDataFlow();
 
     public Scope createScope(String id, ScopeType type, String name, Object[] args);
 

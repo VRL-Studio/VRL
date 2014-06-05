@@ -52,10 +52,13 @@ package eu.mihosoft.vrl.lang.model;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
+import eu.mihosoft.vrl.workflow.Connection;
 import eu.mihosoft.vrl.workflow.Connections;
 import eu.mihosoft.vrl.workflow.Connector;
+import eu.mihosoft.vrl.workflow.VNode;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.collections.ListChangeListener;
 
 /**
  *
@@ -66,6 +69,7 @@ class DataFlowImpl implements DataFlow {
     List<DataRelation> relations = new ArrayList<>();
     ListMultimap<Invocation, DataRelation> relationsForSender = ArrayListMultimap.create();
     ListMultimap<Invocation, DataRelation> relationsForReceiver = ArrayListMultimap.create();
+    private boolean currentlyUpdatingBecauseOfUIEvent;
 
     void createDataRelation(Invocation sender, Invocation receiver, IArgument receiverArg, int receiverArgIndex) {
         DataRelationImpl relation = new DataRelationImpl(sender, receiver, receiverArg, receiverArgIndex);
@@ -95,6 +99,12 @@ class DataFlowImpl implements DataFlow {
 
     @Override
     public void create(ControlFlow controlFlow) {
+
+        relations.clear();
+        relationsForSender.clear();
+        relationsForReceiver.clear();
+
+        initListeners(controlFlow);
 
         System.out.println(">> creating dataflow: ");
 
@@ -135,15 +145,7 @@ class DataFlowImpl implements DataFlow {
         }
 
         // create visual dataflow
-        Connections connections = controlFlow.getParent().getFlow().
-                getConnections(WorkflowUtil.DATA_FLOW);
-        connections.getConnections().clear();
-        for (DataRelation dR : getRelations()) {
-            Connector sConn = dR.getSender().getNode().getMainOutput(WorkflowUtil.DATA_FLOW);
-            Connector rConn = dR.getReceiver().getNode().
-                    getInputs().get(dR.getReceiverArgIndex());
-            controlFlow.getParent().getFlow().connect(sConn, rConn);
-        }
+        updateVisualDataFlowFromModel(controlFlow);
 
         // create subflows
         for (Invocation i : controlFlow.getInvocations()) {
@@ -153,6 +155,122 @@ class DataFlowImpl implements DataFlow {
             }
         }
 
+    }
+
+    private void updateVisualDataFlowFromModel(ControlFlow controlFlow) {
+//        if (!currentlyUpdatingBecauseOfUIEvent) {
+        Connections connections = controlFlow.getParent().getFlow().
+                getConnections(WorkflowUtil.DATA_FLOW);
+        connections.getConnections().clear();
+        for (DataRelation dR : getRelations()) {
+            Connector sConn = dR.getSender().getNode().
+                    getMainOutput(WorkflowUtil.DATA_FLOW);
+            Connector rConn = dR.getReceiver().getNode().
+                    getInputs().get(dR.getReceiverArgIndex());
+            controlFlow.getParent().getFlow().connect(sConn, rConn);
+        }
+//        }
+    }
+
+    private void updateDataFlowFromVisualChange(ControlFlow controlFlow,
+            ListChangeListener.Change<? extends Connection> change) {
+
+        while (change.next()) {
+            if (change.wasAdded()) {
+                for (Connection conn : change.getAddedSubList()) {
+                    VNode senderN = conn.getSender().getNode();
+                    VNode receiverN = conn.getReceiver().getNode();
+
+                    Invocation senderInv = (Invocation) senderN.getValueObject().getValue();//nodeInvocations.get(senderN.getId());
+                    Invocation receiverInv = (Invocation) receiverN.getValueObject().getValue();//nodeInvocations.get(receiverN.getId());
+
+                    int numConnections
+                            = senderN.getOutputs().filtered(
+                                    WorkflowUtil.moreThanConnections(1, "data")).size();
+
+                    if (numConnections > 0 && !(senderInv instanceof DeclarationInvocation)) {
+                        // TODO introduce var declaration to prevent multiple method calls for each dataflow connection 19.02.2014
+                        System.err.println("NORE THAN ONE DATAFLOW CONN!!! for invocation " + senderInv);
+                    }
+
+//                                Connector output = variableConnectors.get(
+//                                        getVariableId(senderN, senderInv.getReturnValue().get().getName()));
+//                                Connector input = variableConnectors.get(
+//                                        getVariableId(receiverN, senderInv.getReturnValue().get().getName()));
+                    // TODO if (senderInv equals variableinvocation) only invocations supported 18.02.2014
+                    try {
+
+//                        int argIndex = connectorsToArgIndex.get(conn.getReceiver().getId());
+                        int argIndex = connectorsToArgIndex(conn.getReceiver(), receiverInv);
+
+                        IArgument arg = Argument.NULL;
+
+                        if (senderInv instanceof DeclarationInvocation) {
+                            Argument.varArg(((DeclarationInvocation) senderInv).getDeclaredVariable());
+                        } else if (senderInv instanceof Invocation) {
+                            Argument.invArg(senderInv);
+                        } else {
+                            System.err.println("NOT Supported as argument: " + senderInv);
+                        }
+
+                        receiverInv.getArguments().set(
+                                argIndex,
+                                arg);
+//
+//                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
+
+                        //senderInv.getParent().generateDataFlow();
+                    } catch (Exception ex) {
+                        ex.printStackTrace(System.err);
+                    }
+                }
+            }
+
+            if (change.wasRemoved()) {
+                for (Connection conn : change.getRemoved()) {
+                    VNode senderN = conn.getSender().getNode();
+                    VNode receiverN = conn.getReceiver().getNode();
+
+//                    Invocation senderInv = nodeInvocations.get(senderN.getId());
+//                    Invocation receiverInv = nodeInvocations.get(receiverN.getId());
+                    Invocation senderInv = (Invocation) senderN.getValueObject().getValue();//nodeInvocations.get(senderN.getId());
+                    Invocation receiverInv = (Invocation) receiverN.getValueObject().getValue();//nodeInvocations.get(receiverN.getId());
+
+                    try {
+
+//                        int argIndex = connectorsToArgIndex.get(conn.getReceiver().getId());
+                        int argIndex = connectorsToArgIndex(conn.getReceiver(), receiverInv);
+
+                        receiverInv.getArguments().set(
+                                argIndex,
+                                Argument.NULL);
+
+//                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
+//                        senderInv.getParent().generateDataFlow();
+                    } catch (Exception ex) {
+                        ex.printStackTrace(System.err);
+                    }
+
+                }
+            }
+        } // end while
+        create(controlFlow);
+    }
+
+    private int connectorsToArgIndex(Connector connector, Invocation receiverInvocation) {
+        // TODO: ony use this for inputs and only for dataflow (args) 04.06.2014
+        return ((ArgumentValue) connector.getValueObject().getValue()).getArgIndex();
+    }
+
+    private void initListeners(ControlFlow controlFlow) {
+        controlFlow.getParent().getFlow().
+                getConnections(WorkflowUtil.DATA_FLOW).getConnections().addListener(
+                        (ListChangeListener.Change<? extends Connection> c) -> {
+//                            currentlyUpdatingBecauseOfUIEvent = true;
+//                            create(controlFlow);
+//                            currentlyUpdatingBecauseOfUIEvent = false;
+                            updateDataFlowFromVisualChange(controlFlow, c);
+                        });
     }
 
 //    public void generateDataFlow() {
