@@ -124,8 +124,10 @@ class InvocationImpl implements Invocation {
             node = parent.getFlow().newNode();
             node.getValueObject().setValue(this);
 
+            int argIndex = 0;
             for (IArgument arg : args) {
-                node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().setValue(arg);
+                node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().setValue(new ArgumentValue(argIndex, arg));
+                argIndex++;
             }
 
             if (!Objects.equals(returnType, Type.VOID)) {
