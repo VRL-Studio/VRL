@@ -361,30 +361,30 @@ class ScopeImpl implements Scope {
         return dataFlow;
     }
 
-    @Override
-    public void generateDataFlow() {
-
-        System.out.println("DATAFLOW---------------------------------");
-
-        for (Invocation i : controlFlow.getInvocations()) {
-//            System.out.println("invocation: " + i);
-            for (IArgument a : i.getArguments()) {
-                System.out.println("--> arg: " + a + ", " + i);
-            }
-
-            if (i instanceof ScopeInvocation) {
-                ((ScopeInvocation) i).getScope().generateDataFlow();
-            }
-        }
-
-        boolean isClassOrScript = getType() == ScopeType.CLASS || getType() == ScopeType.NONE || getType() == ScopeType.COMPILATION_UNIT;
-
-        if (isClassOrScript) {
-            for (Scope s : getScopes()) {
-                s.generateDataFlow();
-            }
-        }
-    }
+//    @Override
+//    public void generateDataFlow() {
+//
+//        System.out.println("DATAFLOW---------------------------------");
+//
+//        for (Invocation i : controlFlow.getInvocations()) {
+////            System.out.println("invocation: " + i);
+//            for (IArgument a : i.getArguments()) {
+//                System.out.println("--> arg: " + a + ", " + i);
+//            }
+//
+//            if (i instanceof ScopeInvocation) {
+//                ((ScopeInvocation) i).getScope().generateDataFlow();
+//            }
+//        }
+//
+//        boolean isClassOrScript = getType() == ScopeType.CLASS || getType() == ScopeType.NONE || getType() == ScopeType.COMPILATION_UNIT;
+//
+//        if (isClassOrScript) {
+//            for (Scope s : getScopes()) {
+//                s.generateDataFlow();
+//            }
+//        }
+//    }
 
     @Override
     public Scope createScope(String id, ScopeType type, String name, Object[] args) {

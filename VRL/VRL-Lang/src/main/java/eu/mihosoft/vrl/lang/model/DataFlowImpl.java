@@ -203,29 +203,29 @@ class DataFlowImpl implements DataFlow {
 //                        int argIndex = connectorsToArgIndex.get(conn.getReceiver().getId());
                         int argIndex = connectorsToArgIndex(conn.getReceiver(), receiverInv);
 
-                        IArgument arg = Argument.NULL; 
-                        
+                        IArgument arg = Argument.NULL;
+
                         if (senderInv instanceof DeclarationInvocation) {
-                            Argument.varArg(((DeclarationInvocation)senderInv).getDeclaredVariable());
+                            Argument.varArg(((DeclarationInvocation) senderInv).getDeclaredVariable());
                         } else if (senderInv instanceof Invocation) {
                             Argument.invArg(senderInv);
                         } else {
-                             System.err.println("NOT Supported as argument: " + senderInv);
-                        }        
-                        
+                            System.err.println("NOT Supported as argument: " + senderInv);
+                        }
+
                         receiverInv.getArguments().set(
                                 argIndex,
                                 arg);
 //
 //                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
 
-                        senderInv.getParent().generateDataFlow();
+                        //senderInv.getParent().generateDataFlow();
                     } catch (Exception ex) {
                         ex.printStackTrace(System.err);
                     }
                 }
             }
-            
+
             if (change.wasRemoved()) {
                 for (Connection conn : change.getRemoved()) {
                     VNode senderN = conn.getSender().getNode();
@@ -246,14 +246,15 @@ class DataFlowImpl implements DataFlow {
                                 Argument.NULL);
 
 //                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
-                        senderInv.getParent().generateDataFlow();
+//                        senderInv.getParent().generateDataFlow();
                     } catch (Exception ex) {
                         ex.printStackTrace(System.err);
                     }
 
                 }
             }
-        }
+        } // end while
+        create(controlFlow);
     }
 
     private int connectorsToArgIndex(Connector connector, Invocation receiverInvocation) {
