@@ -887,7 +887,7 @@ public class MainWindowController implements Initializable {
 //
 //                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
 
-                                    senderInv.getParent().generateDataFlow();
+//                                    senderInv.getParent().generateDataFlow();
                                 } catch (Exception ex) {
                                     ex.printStackTrace(System.err);
                                 }
@@ -910,7 +910,7 @@ public class MainWindowController implements Initializable {
                                             Argument.NULL);
 
 //                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
-                                    senderInv.getParent().generateDataFlow();
+//                                    senderInv.getParent().generateDataFlow();
                                 } catch (Exception ex) {
                                     ex.printStackTrace(System.err);
                                 }
