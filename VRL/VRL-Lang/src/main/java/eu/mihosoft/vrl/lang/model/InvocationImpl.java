@@ -53,6 +53,7 @@ import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.Connector;
 import eu.mihosoft.vrl.workflow.VNode;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -308,6 +309,7 @@ class InvocationImpl implements Invocation {
     /**
      * @return the returnType
      */
+    @Override
     public IType getReturnType() {
         return returnType;
     }
@@ -316,6 +318,18 @@ class InvocationImpl implements Invocation {
      * @param returnType the returnType to set
      */
     protected void setReturnType(IType returnType) {
+        
+        List<Connector> connectorsToRemove = 
+                node.getOutputs().filtered(o->o.getType().equals(WorkflowUtil.DATA_FLOW));
+        
+        node.getOutputs().removeAll(connectorsToRemove);
+
+        if (!Objects.equals(returnType, Type.VOID)) {
+            Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
+            output.getValueObject().setValue(returnType);
+            node.setMainOutput(output);
+        }
+
         this.returnType = returnType;
     }
 

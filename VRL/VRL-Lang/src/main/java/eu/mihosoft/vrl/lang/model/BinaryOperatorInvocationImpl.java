@@ -8,7 +8,7 @@ package eu.mihosoft.vrl.lang.model;
 import java.util.Objects;
 
 /**
- * 
+ *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class BinaryOperatorInvocationImpl extends InvocationImpl implements BinaryOperatorInvocation {
@@ -37,12 +37,18 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
             if (leftArg.getArgType() == ArgumentType.VARIABLE
                     && rightArg.getArgType() == ArgumentType.VARIABLE) {
 
-                // check that leftArg and rightArg == const or var
+                // TODO: check that leftArg and rightArg == const or var
+                
+                
+                
+                retType = Type.OBJECT;
             }
+        } else if (basicArithmeticOperator(operator)) {
+            retType = Type.OBJECT;
         }
 
         setReturnType(retType);
-        
+
         getNode().setTitle("op " + operator);
     }
 
@@ -129,12 +135,11 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
     }
 
     private boolean number(IArgument leftArg) {
-        return Objects.equals(leftArg.getType(),Type.INT)
-                || Objects.equals(leftArg.getType(),Type.LONG)
-                || Objects.equals(leftArg.getType(),Type.SHORT)
-                || Objects.equals(leftArg.getType(),Type.FLOAT)
-                || Objects.equals(leftArg.getType(),Type.DOUBLE);
+        return Objects.equals(leftArg.getType(), Type.INT)
+                || Objects.equals(leftArg.getType(), Type.LONG)
+                || Objects.equals(leftArg.getType(), Type.SHORT)
+                || Objects.equals(leftArg.getType(), Type.FLOAT)
+                || Objects.equals(leftArg.getType(), Type.DOUBLE);
     }
-
 
 }

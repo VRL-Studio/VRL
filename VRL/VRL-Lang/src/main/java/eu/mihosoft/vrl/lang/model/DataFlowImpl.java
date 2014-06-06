@@ -53,6 +53,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.Connection;
+import eu.mihosoft.vrl.workflow.ConnectionResult;
 import eu.mihosoft.vrl.workflow.Connections;
 import eu.mihosoft.vrl.workflow.Connector;
 import eu.mihosoft.vrl.workflow.VNode;
@@ -69,7 +70,8 @@ class DataFlowImpl implements DataFlow {
     List<DataRelation> relations = new ArrayList<>();
     ListMultimap<Invocation, DataRelation> relationsForSender = ArrayListMultimap.create();
     ListMultimap<Invocation, DataRelation> relationsForReceiver = ArrayListMultimap.create();
-    private boolean currentlyUpdatingBecauseOfUIEvent;
+    private boolean currentlyUpdatingFromModel;
+    private boolean currentlyUpdatingFromUI;
 
     void createDataRelation(Invocation sender, Invocation receiver, IArgument receiverArg, int receiverArgIndex) {
         DataRelationImpl relation = new DataRelationImpl(sender, receiver, receiverArg, receiverArgIndex);
@@ -104,7 +106,7 @@ class DataFlowImpl implements DataFlow {
         relationsForSender.clear();
         relationsForReceiver.clear();
 
-        initListeners(controlFlow);
+//        initListeners(controlFlow);
 
         System.out.println(">> creating dataflow: ");
 
@@ -133,12 +135,12 @@ class DataFlowImpl implements DataFlow {
                 }
 
                 if (sender != null) {
-//                    System.out.println(
-//                            " --> sender found for '"
-//                            + v.getName()
-//                            + "', " + sender.getMethodName());
+                    System.out.println(
+                            " --> sender found " + sender.getMethodName());
 
                     createDataRelation(sender, receiver, a, argIndex);
+                } else {
+                    System.err.println(" -> argType " + a.getArgType() + " not supported!");
                 }
                 argIndex++;
             } // end for arg
@@ -147,33 +149,60 @@ class DataFlowImpl implements DataFlow {
         // create visual dataflow
         updateVisualDataFlowFromModel(controlFlow);
 
+//        // create subflows
+//        for (Invocation i : controlFlow.getInvocations()) {
+//            if (i instanceof ScopeInvocation) {
+//                Scope subScope = ((ScopeInvocation) i).getScope();
+//                subScope.getDataFlow().create(subScope.getControlFlow());
+//            }
+//        }
         // create subflows
-        for (Invocation i : controlFlow.getInvocations()) {
-            if (i instanceof ScopeInvocation) {
-                Scope subScope = ((ScopeInvocation) i).getScope();
-                subScope.getDataFlow().create(subScope.getControlFlow());
-            }
+        for (Scope scope : controlFlow.getParent().getScopes()) {
+            scope.getDataFlow().create(scope.getControlFlow());
         }
 
+//                boolean isClassOrScript = getType() == ScopeType.CLASS || getType() == ScopeType.NONE || getType() == ScopeType.COMPILATION_UNIT;
+//
+//        if (isClassOrScript) {
+//            for (Scope s : getScopes()) {
+//                ((ScopeImpl)s).generateDataFlow();
+//            }
+//        }
     }
 
     private void updateVisualDataFlowFromModel(ControlFlow controlFlow) {
-//        if (!currentlyUpdatingBecauseOfUIEvent) {
-        Connections connections = controlFlow.getParent().getFlow().
-                getConnections(WorkflowUtil.DATA_FLOW);
-        connections.getConnections().clear();
-        for (DataRelation dR : getRelations()) {
-            Connector sConn = dR.getSender().getNode().
-                    getMainOutput(WorkflowUtil.DATA_FLOW);
-            Connector rConn = dR.getReceiver().getNode().
-                    getInputs().get(dR.getReceiverArgIndex());
-            controlFlow.getParent().getFlow().connect(sConn, rConn);
+        if (!currentlyUpdatingFromUI) {
+            currentlyUpdatingFromModel = true;
+
+            Connections connections = controlFlow.getParent().getFlow().
+                    getConnections(WorkflowUtil.DATA_FLOW);
+            connections.getConnections().clear();
+
+            for (DataRelation dR : getRelations()) {
+                Connector sConn = dR.getSender().getNode().
+                        getMainOutput(WorkflowUtil.DATA_FLOW);
+                Connector rConn = dR.getReceiver().getNode().
+                        getInputs().filtered(i->i.getType().equals(WorkflowUtil.DATA_FLOW)).get(dR.getReceiverArgIndex());
+                
+                ConnectionResult compatible = controlFlow.getParent().getFlow().connect(sConn, rConn);
+                
+                if (!compatible.getStatus().isCompatible()) {
+                    System.err.println("Connection not compatible! " + compatible.getStatus().getMessage());
+                }
+            }
+
+            currentlyUpdatingFromModel = false;
         }
-//        }
     }
 
     private void updateDataFlowFromVisualChange(ControlFlow controlFlow,
             ListChangeListener.Change<? extends Connection> change) {
+
+        if (currentlyUpdatingFromModel) {
+            return;
+        }
+
+        currentlyUpdatingFromUI = true;
 
         while (change.next()) {
             if (change.wasAdded()) {
@@ -219,7 +248,8 @@ class DataFlowImpl implements DataFlow {
 //
 //                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
 
-                        //senderInv.getParent().generateDataFlow();
+//                        senderInv.getParent().generateDataFlow();
+                        ((ScopeImpl) senderInv.getParent()).generateDataFlow();
                     } catch (Exception ex) {
                         ex.printStackTrace(System.err);
                     }
@@ -247,6 +277,7 @@ class DataFlowImpl implements DataFlow {
 
 //                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
 //                        senderInv.getParent().generateDataFlow();
+                        ((ScopeImpl) senderInv.getParent()).generateDataFlow();
                     } catch (Exception ex) {
                         ex.printStackTrace(System.err);
                     }
@@ -254,6 +285,8 @@ class DataFlowImpl implements DataFlow {
                 }
             }
         } // end while
+
+        currentlyUpdatingFromUI = false;
         create(controlFlow);
     }
 
@@ -269,7 +302,9 @@ class DataFlowImpl implements DataFlow {
 //                            currentlyUpdatingBecauseOfUIEvent = true;
 //                            create(controlFlow);
 //                            currentlyUpdatingBecauseOfUIEvent = false;
+
                             updateDataFlowFromVisualChange(controlFlow, c);
+
                         });
     }
 

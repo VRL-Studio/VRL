@@ -368,11 +368,13 @@ class ScopeImpl implements Scope {
         return dataFlow;
     }
 
-//    @Override
-//    public void generateDataFlow() {
-//
-//        System.out.println("DATAFLOW---------------------------------");
-//
+    @Override
+    public void generateDataFlow() {
+
+        System.out.println("DATAFLOW---------------------------------");
+        
+        getDataFlow().create(controlFlow);
+
 //        for (Invocation i : controlFlow.getInvocations()) {
 ////            System.out.println("invocation: " + i);
 //            for (IArgument a : i.getArguments()) {
@@ -380,7 +382,8 @@ class ScopeImpl implements Scope {
 //            }
 //
 //            if (i instanceof ScopeInvocation) {
-//                ((ScopeInvocation) i).getScope().generateDataFlow();
+//                ScopeImpl invocationScope = (ScopeImpl) ((ScopeInvocation) i).getScope();
+//                invocationScope.generateDataFlow();
 //            }
 //        }
 //
@@ -388,10 +391,12 @@ class ScopeImpl implements Scope {
 //
 //        if (isClassOrScript) {
 //            for (Scope s : getScopes()) {
-//                s.generateDataFlow();
+//                ((ScopeImpl)s).generateDataFlow();
 //            }
 //        }
-//    }
+    }
+    
+    
     @Override
     public Scope createScope(String id, ScopeType type, String name, Object[] args) {
         Scope scope = new ScopeImpl(id, this, type, name, args);
