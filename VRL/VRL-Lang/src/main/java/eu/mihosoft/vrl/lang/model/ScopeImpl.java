@@ -89,8 +89,8 @@ class ScopeImpl implements Scope {
 
         this.type = type;
         this.name = name;
-        
-        if (parent!=null) {
+
+        if (parent != null) {
             flow = parent.getFlow().newSubFlow();
         } else {
             flow = FlowFactory.newFlow();
@@ -114,17 +114,12 @@ class ScopeImpl implements Scope {
             } else {
                 invocation = null;
             }
-            
-           
-            
+
         } else {
 
             invocation = null;
-            
-            
+
         }
-        
-        
 
     }
 
@@ -385,7 +380,6 @@ class ScopeImpl implements Scope {
 //            }
 //        }
 //    }
-
     @Override
     public Scope createScope(String id, ScopeType type, String name, Object[] args) {
         Scope scope = new ScopeImpl(id, this, type, name, args);
@@ -436,6 +430,10 @@ class ScopeImpl implements Scope {
     @Override
     public boolean removeScope(Scope s) {
         boolean result = scopes.remove(s);
+
+        if (result) {
+            flow.getNodes().remove(s.getNode());
+        }
 
         return result;
     }
