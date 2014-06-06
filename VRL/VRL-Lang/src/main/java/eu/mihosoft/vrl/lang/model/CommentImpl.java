@@ -160,8 +160,10 @@ public class CommentImpl implements Comment {
         this.parent = parent;
 
         if (parent != null) {
-            this.node = parent.getFlow().newNode();
-            this.node.getValueObject().setValue(this);
+            // TODO: how shall we integrate comments? 06.06.2014
+//            this.node = parent.getFlow().newNode();
+//            this.node.getValueObject().setValue(this);
+//            this.node.setTitle("//");
         }
     }
 
