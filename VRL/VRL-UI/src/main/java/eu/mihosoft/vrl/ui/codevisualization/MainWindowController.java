@@ -180,6 +180,8 @@ public class MainWindowController implements Initializable {
         rootPane = root;
 
         flow = FlowFactory.newFlow();
+        flow.setVisible(true);
+        UIBinding.setRootFlow(flow);
 
         fileMonitor = new FileAlterationMonitor(3000);
 
@@ -189,12 +191,10 @@ public class MainWindowController implements Initializable {
             Logger.getLogger(MainWindowController.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
-        
+
 //        VCodeEditor vEditor = new VCodeEditor(" the code ");
 //        
 //        canvas.getContentPane().getChildren().add(vEditor.getNode());
-        
-        
     }
 
     @FXML
@@ -350,44 +350,21 @@ public class MainWindowController implements Initializable {
             return;
         }
 
-        nodeInvocations.clear();
-        invocationNodes.clear();
-        nodeToScopes.clear();
-        variableConnectors.clear();
-        connectorsToArgIndex.clear();
-        variableArgumentIndex.clear();
-
         UIBinding.scopes.clear();
 
         GroovyClassLoader gcl = new GroovyClassLoader();
         gcl.parseClass(
                 "@eu.mihosoft.vrl.instrumentation.VRLVisualization\n"
-                        +editor.getText(), "Script");
+                + editor.getText(), "Script");
 
         //if (!refresh) {
-            loadUIData();
+        loadUIData();
         //}
-
-        System.out.println("UPDATE UI");
-
-        flow.clear();
-
-        flow.setSkinFactories();
-
-        System.out.println("FLOW: " + flow.getSubControllers().size());
-
-        flow.getModel().setVisible(true);
 
         if (UIBinding.scopes == null) {
             System.err.println("NO SCOPES");
             isRunningCodeToScope = false;
             return;
-        }
-
-        for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
-            for (Scope s : scopeList) {
-                scopeToFlow(s, flow);
-            }
         }
 
         FXSkinFactory skinFactory = new FXSkinFactory(rootPane);
@@ -400,6 +377,7 @@ public class MainWindowController implements Initializable {
 //        Layout layout = LayoutFactory.newDefaultLayout();
 //        layout.doLayout(flow);
         isRunningCodeToScope = false;
+
     }
 
     public void dataFlowToFlow(Scope scope, VFlow parent) {
