@@ -66,6 +66,8 @@ class ClassDeclaration_Impl extends ScopeImpl implements ClassDeclaration {
         metadata = (ClassDeclarationMetaData) getScopeArgs()[0];
         
         createVariable(getClassType(), "this");
+        
+        getNode().setTitle("class " + type.getShortName());
     }
 
     @Override

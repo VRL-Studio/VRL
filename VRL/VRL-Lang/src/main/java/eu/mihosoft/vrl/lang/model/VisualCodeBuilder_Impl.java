@@ -101,7 +101,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     public CompilationUnitDeclaration declareCompilationUnit(String name, String packageName) {
 //        IType type = new Type(name); // TODO validation
         
-        return new CompilationUnitDeclaration_Impl(idRequest.request(), null, name, packageName);
+        return new CompilationUnitDeclaration_Impl(idRequest.request(), null, name, packageName, UIBinding.getRootFlow());
         
 //        return createScope(null, ScopeType.COMPILATION_UNIT, name, new Object[0]);
     }

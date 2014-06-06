@@ -69,6 +69,8 @@ class MethodDeclaration_Impl extends ScopeImpl implements MethodDeclaration {
         super(id, parent, ScopeType.METHOD, methodName, new MethodDeclarationMetaData(returnType, modifiers, params));
         metadata = (MethodDeclarationMetaData) getScopeArgs()[0];
 
+        getNode().setTitle("method " + methodName + "()");
+        
         createParamVariables();
     }
 

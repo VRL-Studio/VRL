@@ -71,7 +71,7 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
         VNode node = scope.getNode();
         
         node.setMainInput(node.addInput(WorkflowUtil.CONTROL_FLOW));
-        node.setMainOutput(scope.getNode().addOutput(WorkflowUtil.CONTROL_FLOW));
+        node.setMainOutput(node.addOutput(WorkflowUtil.CONTROL_FLOW));
               
     }
 

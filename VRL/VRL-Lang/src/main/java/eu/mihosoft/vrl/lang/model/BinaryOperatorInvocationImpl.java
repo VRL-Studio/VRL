@@ -42,6 +42,8 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
         }
 
         setReturnType(retType);
+        
+        getNode().setTitle("op " + operator);
     }
 
     private boolean pureAssignmentOperator(Operator operator) {

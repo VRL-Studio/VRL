@@ -83,18 +83,26 @@ class ScopeImpl implements Scope {
     private final ScopeInvocation invocation;
     private VFlow flow;
 
-    public ScopeImpl(String id, Scope parent, ScopeType type, String name, Object... scopeArgs) {
+    public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
         this.id = id;
         this.parent = parent;
 
         this.type = type;
         this.name = name;
 
-        if (parent != null) {
-            flow = parent.getFlow().newSubFlow();
-        } else {
-            flow = FlowFactory.newFlow();
+        if (flowParent == null) {
+
+            if (parent != null) {
+                flowParent = parent.getFlow();
+            } else {
+                flowParent = FlowFactory.newFlow();
+            }
         }
+
+        flow = flowParent.newSubFlow();
+
+        flow.getModel().setTitle(name);
+        flow.setVisible(true);
         flow.getModel().getValueObject().setValue(this);
 
         this.scopeArgs = scopeArgs;
@@ -109,7 +117,8 @@ class ScopeImpl implements Scope {
                         + " Only " + ScopeImpl.class + " based implementations are supported!");
             }
 
-            if (parent.getType() != ScopeType.CLASS && parent.getType() != ScopeType.NONE && parent.getType() != ScopeType.COMPILATION_UNIT) {
+            if (parent.getType() != ScopeType.CLASS && parent.getType()
+                    != ScopeType.NONE && parent.getType() != ScopeType.COMPILATION_UNIT) {
                 invocation = parent.getControlFlow().callScope(this);
             } else {
                 invocation = null;
@@ -120,7 +129,10 @@ class ScopeImpl implements Scope {
             invocation = null;
 
         }
+    }
 
+    public ScopeImpl(String id, Scope parent, ScopeType type, String name, Object... scopeArgs) {
+        this(id, parent, type, name, null, scopeArgs);
     }
 
     @Override

@@ -51,6 +51,7 @@
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.VLangUtils;
+import eu.mihosoft.vrl.workflow.VFlow;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,14 +63,16 @@ public class CompilationUnitDeclaration_Impl extends ScopeImpl implements Compil
     
     private CompilationUnitMetaData metadata;
 
-    public CompilationUnitDeclaration_Impl(String id, Scope parent, String name, String packageName) {
-        super(id, parent, ScopeType.COMPILATION_UNIT, name, new Object[0]);
+    public CompilationUnitDeclaration_Impl(String id, Scope parent, String name, String packageName, VFlow rootFlow) {
+        super(id, parent, ScopeType.COMPILATION_UNIT, name, rootFlow, new Object[0]);
         
         if (!VLangUtils.isPackageNameValid(packageName)) {
             throw new IllegalArgumentException("Specified package name is invalid: ' " + packageName + "'");
         }
         
         metadata = new CompilationUnitMetaData(packageName);
+        
+        getNode().setTitle("file " + name);
     }
 
     @Override

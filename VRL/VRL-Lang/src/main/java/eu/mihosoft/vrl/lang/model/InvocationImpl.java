@@ -124,9 +124,14 @@ class InvocationImpl implements Invocation {
             node = parent.getFlow().newNode();
             node.getValueObject().setValue(this);
 
+            node.setMainInput(node.addInput(WorkflowUtil.CONTROL_FLOW));
+            node.setMainOutput(node.addOutput(WorkflowUtil.CONTROL_FLOW));
+
             int argIndex = 0;
             for (IArgument arg : args) {
-                node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().setValue(new ArgumentValue(argIndex, arg));
+                System.out.println("addInput: " + arg);
+                node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().
+                        setValue(new ArgumentValue(argIndex, arg));
                 argIndex++;
             }
 
@@ -135,7 +140,10 @@ class InvocationImpl implements Invocation {
                 output.getValueObject().setValue(returnType);
                 node.setMainOutput(output);
             }
+
+            node.setTitle(varName + "." + methodName + "()");
         }
+
     }
 
     @Override
