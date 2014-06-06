@@ -17,7 +17,7 @@ import java.util.function.Predicate;
 public class WorkflowUtil {
     
     public static final String CONTROL_FLOW = "control";
-    public static final String DATA_FLOW = "control";
+    public static final String DATA_FLOW = "data";
     public static final String EVENT_FLOW = "event";
     
 
