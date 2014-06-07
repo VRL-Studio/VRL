@@ -2,8 +2,6 @@
 
 apply plugin: 'base' // To add "clean" task to the root project.
 
-cobertura.coverageFormats = ['html', 'xml'] // coveralls plugin depends on xml format report
-
 // define projects that shall not be deployed via maven
 project.ext.set("skipMaven",["VRL-Lang:CommentParser","VRL-UI:NB-Sample"])
 
