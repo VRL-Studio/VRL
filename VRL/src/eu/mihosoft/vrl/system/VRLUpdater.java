@@ -120,7 +120,6 @@ public class VRLUpdater {
                 public void update(Observable o, Object o1) {
                     Download d = (Download) o;
 
-
                     long currentTime = System.currentTimeMillis();
 
                     if (timestamp == 0 || currentTime - timestamp > 1000) {
@@ -158,16 +157,16 @@ public class VRLUpdater {
             // wait for signature to complete
             VSwingUtil.newWaitController().requestConcurrentWait(
                     new ProceedRequest() {
-                @Override
-                public boolean proceed() {
-                    if (repositorySignatureDownload != null) {
-                        return repositorySignatureDownload.getStatus()
+                        @Override
+                        public boolean proceed() {
+                            if (repositorySignatureDownload != null) {
+                                return repositorySignatureDownload.getStatus()
                                 != Download.DOWNLOADING;
-                    } else {
-                        return true;
-                    }
-                }
-            });
+                            } else {
+                                return true;
+                            }
+                        }
+                    });
 
             // downloading repository
             repositoryDownload = new Download(
@@ -183,7 +182,6 @@ public class VRLUpdater {
                 @Override
                 public void update(Observable o, Object o1) {
                     Download d = (Download) o;
-
 
                     long currentTime = System.currentTimeMillis();
 
@@ -319,7 +317,6 @@ public class VRLUpdater {
     public void downloadUpdate(final RepositoryEntry update,
             final VRLDownloadAction action) {
 
-
         if (isDownloadingUpdate() || isDownloadingRepository()) {
             System.out.println(">> VRLUpdater: download in progress."
                     + " Please wait!");
@@ -400,7 +397,6 @@ public class VRLUpdater {
                             updateDownload = null;
                         }
 
-
                         System.out.println(
                                 " --> finished download: "
                                 + d.getTargetFile());
@@ -408,8 +404,8 @@ public class VRLUpdater {
                         action.startVerification(d);
 
                         if (isVerificationEnabled()) {
-                            verificationSuccessful =
-                                    d.verifySHA1(update.getSHA1Checksum());
+                            verificationSuccessful
+                                    = d.verifySHA1(update.getSHA1Checksum());
                         }
 
                         action.stopVerification(d, verificationSuccessful);
@@ -470,6 +466,12 @@ public class VRLUpdater {
      */
     public void setUpdateURL(URL updateURL) {
         this.updateURL = updateURL;
+
+        try {
+            this.updateSignatureURL = new URL(this.updateURL.toExternalForm() + ".asc");
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(VRLUpdater.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -489,8 +491,8 @@ public class VRLUpdater {
     private List<RepositoryEntry> searchForPossibleUpdates(
             Repository repository) {
 
-        List<RepositoryEntry> updates =
-                new ArrayList<RepositoryEntry>();
+        List<RepositoryEntry> updates
+                = new ArrayList<RepositoryEntry>();
 
         // search for possible updates
         for (RepositoryEntry e : repository.getEntries()) {

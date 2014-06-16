@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.reflection.VisualCanvas;
@@ -57,13 +56,14 @@ import java.awt.image.BufferedImage;
 
 /**
  * Configures VRL plugin packages and is responsible for register type
- * representations with the type representation of a given canvas.
+ * representations and components with the type factory of a given canvas.
+ *
  * @see VisualCanvas
  * @see eu.mihosoft.vrl.reflection.TypeRepresentationFactory
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public interface PluginConfigurator {
-    
+
     /**
      * Key for accessing the "installed" property of the plugin config.
      */
@@ -72,87 +72,111 @@ public interface PluginConfigurator {
      * Key for accessing the "timestamp" property of the plugin config.
      */
     public static final String TIMESTAMP_KEY = "PluginConfigurator:timestamp";
-    
+
     /**
      * Registers VRL plugin type representations with the type representation
      * factory of a given canvas and optionally performs other tasks such as
      * configuring additional components.
-     * @param canvas the canvas to register with
+     *
+     * @param api the api to register with
      */
     public void register(PluginAPI api);
 
     /**
      * Reverts VRL plugin registration. That is, it removes the type
      * representations of the VRL plugin and reverts all configurations.
-     * @param canvas the canvas to unregister from
+     *
+     * @param api the api to unregister from
      */
     public void unregister(PluginAPI api);
 
     /**
      * Returns a plugin description. Descriptions should use basic HTML
      * formatting.
+     *
      * @return a plugin description
      */
     public String getDescription();
 
     /**
      * Returns a plugin icon.
+     *
      * @return a plugin icon
      */
     public BufferedImage getIcon();
 
     /**
      * Returns the plugin version info.
+     *
      * @return the plugin version info
      */
     public PluginIdentifier getIdentifier();
 
-
     /**
      * Initializes this plugin configurator. This can be used to prepare
      * resources such as loading or compiling classes.
+     *
      * @param iApi plugin api for initialization (contains configuration etc.)
      */
     public void init(InitPluginAPI iApi);
 
     /**
      * Returns the plugins this plugin depends on.
+     *
      * @return the plugins this plugin depends on
      */
     public PluginDependency[] getDependencies();
-    
+
     /**
-     * Returns the access policy which defines the access rules for 
-     * plugins that depend on this plugin.
+     * Returns the access policy which defines the access rules for plugins that
+     * depend on this plugin.
      */
     public AccessPolicy getAccessPolicy();
-    
+
     /**
      * Returns the copyright info of this plugin.
      */
     public CopyrightInfo getCopyrightInfo();
-    
+
     /*
      * Returns the preference pane of this plugin.
      */
     public PreferencePane getPreferencePane();
-    
+
     /**
      * Shuts down this plugin configurator. This can be used to release
      * resources or terminate associated processes.
      */
     public void shutdown();
-    
+
     /**
      * Installs this plugin.
+     *
      * @param iApi plugin api for initialization (contains configuration etc.)
      */
     public void install(InitPluginAPI iApi);
-    
+
     /**
      * Uninstalls this plugin.
+     *
      * @param iApi plugin api for uninitialization (contains configuration etc.)
      */
     public void uninstall(InitPluginAPI iApi);
+
+    /**
+     * Indicates whether this plugin is relevant for project persistence.
+     *
+     * @return <code>true</code> if this plugin is relevant for project
+     * persistance; <code>false</code> otherwise
+     */
+    public boolean isRelevantForPersistence();
+
+    /**
+     * Indicates whether this plugin shall be automatically selected.
+     *
+     * @return <code>true</code> if this plugin shall be automatically selected;
+     * <code>false</code> otherwise
+     */
+    public boolean isAutomaticallySelected();
 
 }

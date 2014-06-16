@@ -422,6 +422,8 @@ public class VRLPlugin extends VPluginConfigurator {
         s.getBaseValues().set(VCodeEditor.BACKGROUND_COLOR_KEY, new Color(85, 85, 85));
         s.getBaseValues().set(VCodeEditor.BORDER_COLOR_KEY, new Color(100, 100, 100));
     }
+
+
 }
 
 class DarkStyle {

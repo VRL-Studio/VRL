@@ -130,8 +130,7 @@ public class VRL {
             = new HashMap<String, String>();
     /**
      * Defines how often the weak reference list shall be cleaned, i.e., how
-     * often
-     * <code>null</code>-references shall be removed from the canvas list.
+     * often <code>null</code>-references shall be removed from the canvas list.
      */
     private static final int REFRESH_INTERVAL = 3;
     /**
@@ -335,8 +334,7 @@ public class VRL {
 
     /**
      * Initializes the VRL run-time system using default plugin/library location
-     * (relative path:
-     * <code>custom-lib</code>).
+     * (relative path: <code>custom-lib</code>).
      */
     public static void initAll() {
         initAll(new String[0]);
@@ -1054,6 +1052,51 @@ public class VRL {
     }
 
     /**
+     * Returns a classloader for VRL based console applications. It contains the
+     * external classloaders of all active plugins.
+     *
+     * @return a classloader for VRL based console applications
+     */
+    public static ClassLoader getConsoleAppClassLoader() {
+
+        Collection<ClassLoader> usedClassLoaders = new ArrayList<ClassLoader>();
+
+        VClassLoader loader
+                = new VClassLoader(new PluginClassLoader(usedClassLoaders));
+
+        for (PluginConfigurator plugin : plugins.values()) {
+
+            ClassLoader extLoader = externalCLMap.get(
+                    plugin.getIdentifier().getName());
+
+            if (extLoader != null) {
+                usedClassLoaders.add(extLoader);
+            }
+        }
+
+        return loader;
+    }
+
+    /**
+     * Returns the plugin specified by the given plugin dependency.
+     *
+     * @param pDep the pluign dependency
+     * @return the requested plugin if this plugin exists; <code>null</code>
+     * otherwise
+     */
+    public static PluginConfigurator getPluginByDependency(PluginDependency pDep) {
+
+        for (PluginConfigurator plugin : plugins.values()) {
+
+            if (pDep.verify(plugin.getIdentifier())) {
+                return plugin;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Registers a canvas. The canvas will be stored as weak reference. Thus, it
      * is not necessary to unregister the canvas to allow garbage collection.
      *
@@ -1101,12 +1144,15 @@ public class VRL {
 
             // if not vrl plugin check whether we need to register with canvas
             if (!plugin.getIdentifier().getName().equals("VRL")) {
-                boolean used = false;
 
-                for (PluginDependency pDep : usedPlugins) {
-                    if (pDep.verify(plugin.getIdentifier())) {
-                        used = true;
-                        break;
+                boolean used = plugin.isAutomaticallySelected();
+
+                if (!used) {
+                    for (PluginDependency pDep : usedPlugins) {
+                        if (pDep.verify(plugin.getIdentifier())) {
+                            used = true;
+                            break;
+                        }
                     }
                 }
 
@@ -1183,7 +1229,9 @@ public class VRL {
     }
 
     /**
-     * <p> Returns all Canvas instances that are currently in use. </p> <p>
+     * <p>
+     * Returns all Canvas instances that are currently in use. </p>
+     * <p>
      * <b>Note:</b> for performance critical use cases cache the result of this
      * method because it must convert weak references to a normal list. On the
      * other hand, to be sure you only get Canvas instances that are really in
@@ -1325,7 +1373,7 @@ public class VRL {
                         //                    + VJarUtil.getClassLocation(registeredPlugin.getClass()).getAbsolutePath()
                         + "\".";
 
-            // TODO enable this again, this was just done to prevent ugly errors
+                // TODO enable this again, this was just done to prevent ugly errors
                 // when running from netbeans
                 if (registrationError != null) {
                     registrationError += "<br>" + errorMsg;
@@ -2393,7 +2441,8 @@ public class VRL {
     /**
      * Returns the plugin classloader. It contains all internal plugin
      * classloaders of the plugins that are root nodes in the dependency graph.
-     * <p><b>Note:</b> Only use this classloader for serialization. Using it in
+     * <p>
+     * <b>Note:</b> Only use this classloader for serialization. Using it in
      * other situations violates the plugin visibility rule. Only exported api
      * may be used from outside a plugins. In most cases
      * {@link VRL#getExternalPluginClassLoader()} sould be used.</p>
@@ -2425,8 +2474,7 @@ public class VRL {
     }
 
     /**
-     * Unlocks the property folder and calls
-     * <code>System.exit()</code>.
+     * Unlocks the property folder and calls <code>System.exit()</code>.
      *
      * @param retval exit value
      */
@@ -2492,9 +2540,11 @@ public class VRL {
     /**
      * Returns the external plugin classloader. It cann access all external
      * plugin classloaders of the plugins that are root nodes in the dependency
-     * graph. <p><b>Note:</b> This classloader has only access to exported api.
-     * If you need access to the plugin classloader for serialization you should
-     * use {@link VRL#getInternalPluginClassLoader()} sould be used.</p>
+     * graph.
+     * <p>
+     * <b>Note:</b> This classloader has only access to exported api. If you
+     * need access to the plugin classloader for serialization you should use
+     * {@link VRL#getInternalPluginClassLoader()} sould be used.</p>
      *
      * @return the external plugin classLoader
      */
@@ -2526,8 +2576,10 @@ public class VRL {
     }
 
     /**
-     * Returns the current project controller. <p><b>Note: </b>Do not cache the
-     * result as the reference may be replaced. </p>
+     * Returns the current project controller.
+     * <p>
+     * <b>Note: </b>Do not cache the result as the reference may be replaced.
+     * </p>
      *
      * @return the projectController
      */
