@@ -220,7 +220,14 @@ public class LoadFileStringType extends TypeRepresentationBase {
 
     @Override
     public String getValueAsCode() {
+        
+        Object v = getValue();
+
+        if (v == null) {
+            return "null";
+        }
+
         return "\""
-                + VLangUtils.addEscapesToCode(getValue().toString()) + "\"";
+                + VLangUtils.addEscapesToCode(v.toString()) + "\"";
     }
 }
