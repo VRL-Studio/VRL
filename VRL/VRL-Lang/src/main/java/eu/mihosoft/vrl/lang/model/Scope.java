@@ -54,6 +54,7 @@ import eu.mihosoft.vrl.workflow.VFlow;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 import javafx.collections.ObservableList;
 
 /**
@@ -111,5 +112,7 @@ public interface Scope extends CodeEntity {
     public Optional<ScopeInvocation> getInvocation();
     
     public VFlow getFlow();
+    
+    public void visitScopeAndAllSubElements(Consumer<CodeEntity> consumer);
 }
 

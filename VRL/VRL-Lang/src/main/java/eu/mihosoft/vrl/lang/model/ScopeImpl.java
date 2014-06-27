@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -476,6 +477,17 @@ class ScopeImpl implements Scope {
     @Override
     public VNode getNode() {
         return this.flow.getModel();
+    }
+    
+    @Override
+    public void visitScopeAndAllSubElements(Consumer<CodeEntity> consumer) {
+        consumer.accept(this);
+        getControlFlow().getInvocations().forEach(consumer);
+        getComments().forEach(consumer);
+        
+        for (Scope scope : getScopes()) {
+            scope.visitScopeAndAllSubElements(consumer);
+        }
     }
 
 }
