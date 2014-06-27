@@ -1,14 +1,14 @@
-
+@eu.mihosoft.vrl.instrumentation.VRLVisualization
 public class Main {
     
     public int m1(int p1) {
-        m1(1);
-        m1(2);
+        m2(1);
+        m2(m2(1));
     }
-    public int m2() {
+    public int m2(int p1) {
     }
 }
-
+@eu.mihosoft.vrl.instrumentation.VRLVisualization
 public class A {
     
     public int m1(int p1) {
@@ -35,69 +35,192 @@ public class A {
         }
     }
     public void m3(A a) {
-
     }
+}
+@eu.mihosoft.vrl.instrumentation.VRLVisualization
+public class B {
+    
 }
 // <editor-fold defaultstate="collapsed" desc="VRL-Data">
 /*<!VRL!><Type:VRL-Layout>
 <map>
   <entry>
-    <string>Script:A:m2</string>
+    <string>Script:Main:m1:inv:m2:0</string>
     <layout>
-      <x>56.249823535606744</x>
-      <y>332.81145591900656</y>
-      <width>400.0</width>
-      <height>300.0</height>
-      <contentVisible>false</contentVisible>
+      <x>3.587164618851304</x>
+      <y>172.1839017048626</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:Main:m1:inv:m2:1</string>
+    <layout>
+      <x>306.00848201031516</x>
+      <y>146.4655982271594</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:Main:m1:inv:m2</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:inv:declare a</string>
+    <layout>
+      <x>0.0</x>
+      <y>560.8915761256095</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:inv:declare b</string>
+    <layout>
+      <x>830.6666886492496</x>
+      <y>78.3384820678401</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:Main:inv:declare this</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>234.10035214108893</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:for:var=i:inv:println</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:inv:op PLUS</string>
+    <layout>
+      <x>1479.7937330693323</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:inv:op LESS</string>
+    <layout>
+      <x>1958.4359490217184</x>
+      <y>958.8848387896746</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:while:inv:println</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:B:inv:declare this</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:for:var=i:inv:scope</string>
+    <layout>
+      <x>1960.5489501990564</x>
+      <y>783.1994093111539</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:inv:declare aObj</string>
+    <layout>
+      <x>184.55851414374825</x>
+      <y>282.0754641921999</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
     <string>Script</string>
     <layout>
-      <x>5.589400632311936</x>
-      <y>0.0</y>
+      <x>93.17021070620295</x>
+      <y>285.9704930717249</y>
       <width>1450.7323227049023</width>
       <height>1294.9093456787427</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
-    <string>Script:A:m1</string>
+    <string>Script:A:m2:inv:&lt;init&gt;</string>
     <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>300.0</height>
+      <x>553.4454789518314</x>
+      <y>263.93573262797634</y>
+      <width>200.0</width>
+      <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
-    <string>Script:Main:m2</string>
+    <string>Script:A:m2:inv:op TIMES</string>
     <layout>
-      <x>126.67247599730884</x>
-      <y>396.7214907608024</y>
-      <width>400.0</width>
-      <height>300.0</height>
-      <contentVisible>false</contentVisible>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:Main:m1</string>
-    <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>300.0</height>
+      <x>1123.2870168256973</x>
+      <y>32.577259205444534</y>
+      <width>200.0</width>
+      <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
-    <string>Script:A:m1:inv:m1</string>
+    <string>Script:A:m2:while</string>
     <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>100.0</height>
+      <x>2229.089204601076</x>
+      <y>950.532666725818</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:inv:op PLUS:0</string>
+    <layout>
+      <x>1662.4055073419122</x>
+      <y>296.82560815896426</y>
+      <width>200.0</width>
+      <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
@@ -105,7 +228,7 @@ public class A {
     <string>Script:A:m1:inv:m1:0</string>
     <layout>
       <x>122.66608452993668</x>
-      <y>211.493249189546</y>
+      <y>217.38934003058185</y>
       <width>400.0</width>
       <height>100.0</height>
       <contentVisible>true</contentVisible>
@@ -122,12 +245,142 @@ public class A {
     </layout>
   </entry>
   <entry>
-    <string>Script:Main:m1:inv:m1</string>
+    <string>Script:A:inv:declare this</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2</string>
+    <layout>
+      <x>13.025737187285108</x>
+      <y>572.3929264915944</y>
+      <width>400.0</width>
+      <height>300.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m1</string>
+    <layout>
+      <x>12.956127198564078</x>
+      <y>250.85009344990937</y>
+      <width>400.0</width>
+      <height>300.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:Main:m2</string>
+    <layout>
+      <x>2.2732768141351003</x>
+      <y>501.4788493468769</y>
+      <width>400.0</width>
+      <height>300.0</height>
+      <contentVisible>false</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:Main:m1</string>
+    <layout>
+      <x>2.8103893750716082</x>
+      <y>171.05246839134284</y>
+      <width>400.0</width>
+      <height>300.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:for:var=i</string>
+    <layout>
+      <x>1960.5489501990564</x>
+      <y>783.1994093111539</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m3</string>
+    <layout>
+      <x>463.0564293166182</x>
+      <y>248.16377275328207</y>
+      <width>270.5192061309481</width>
+      <height>150.0</height>
+      <contentVisible>false</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m1:inv:m1</string>
     <layout>
       <x>0.0</x>
       <y>0.0</y>
       <width>400.0</width>
-      <height>100.0</height>
+      <height>105.89609084103586</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:inv:op ASSIGN:1</string>
+    <layout>
+      <x>1958.6159847666372</x>
+      <y>300.60237301719906</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:inv:op ASSIGN:0</string>
+    <layout>
+      <x>549.5299251425457</x>
+      <y>95.56691882869663</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:inv:&lt;init&gt;:0</string>
+    <layout>
+      <x>1957.3273411450245</x>
+      <y>461.6828257187865</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:inv:m3</string>
+    <layout>
+      <x>1959.2603065774438</x>
+      <y>624.051922041986</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:while:inv:scope</string>
+    <layout>
+      <x>2229.089204601076</x>
+      <y>950.532666725818</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:B</string>
+    <layout>
+      <x>23.797874645737593</x>
+      <y>862.6729559079877</y>
+      <width>200.0</width>
+      <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
@@ -142,12 +395,22 @@ public class A {
     </layout>
   </entry>
   <entry>
-    <string>Script:Main:m1:inv:m1:0</string>
+    <string>Script:A:m2:inv:op ASSIGN</string>
     <layout>
-      <x>90.22894555450871</x>
-      <y>203.4574262503628</y>
-      <width>400.0</width>
-      <height>100.0</height>
+      <x>186.97448280911595</x>
+      <y>468.4814762907447</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:A:m2:inv:m2</string>
+    <layout>
+      <x>1422.123094855592</x>
+      <y>301.3854837790562</y>
+      <width>200.0</width>
+      <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
