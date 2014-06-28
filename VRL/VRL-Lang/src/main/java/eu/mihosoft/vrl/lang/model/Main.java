@@ -51,6 +51,8 @@ package eu.mihosoft.vrl.lang.model;
 
 import com.google.common.io.Files;
 import eu.mihosoft.vrl.base.IOUtil;
+import static eu.mihosoft.vrl.lang.model.Scope2Code.demoScope;
+import static eu.mihosoft.vrl.lang.model.Scope2Code.getCode;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -80,11 +82,19 @@ public class Main {
 ////        }
 
         
-        VisualCodeBuilder vCodeBuilder = new VisualCodeBuilder_Impl();
+//        VisualCodeBuilder vCodeBuilder = new VisualCodeBuilder_Impl();
+//        
+//        CompilationUnitDeclaration cu = vCodeBuilder.declareCompilationUnit("MyFile.groovy", "myPackage");
         
-        CompilationUnitDeclaration cu = vCodeBuilder.declareCompilationUnit("MyFile.groovy", "my.package");
         
+        CompilationUnitDeclaration scope = demoScope();
+        String mName = scope.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getName();
         
+        System.out.println("mName: " + mName);
+        
+        String demoCode = getCode(scope);
+        
+        System.out.println(demoCode);
         
         
     }

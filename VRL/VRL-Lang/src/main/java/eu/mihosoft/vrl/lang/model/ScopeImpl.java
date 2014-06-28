@@ -59,6 +59,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 /**
@@ -105,6 +106,8 @@ class ScopeImpl implements Scope {
         flow.setVisible(true);
         flow.getModel().getValueObject().setValue(this);
 
+        initScopeListeners();
+
         this.scopeArgs = scopeArgs;
         this.controlFlow = new ControlFlowImpl(this);
         this.dataFlow = new DataFlowImpl();
@@ -129,6 +132,37 @@ class ScopeImpl implements Scope {
             invocation = null;
 
         }
+    }
+
+    private void initScopeListeners() {
+        scopes.addListener((ListChangeListener.Change<? extends Scope> c) -> {
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    for(Scope s : c.getAddedSubList()) {
+                    if (s.getParent() != this)
+                       throw new UnsupportedOperationException(
+                                "Todo (21.06.2014): Flow model needs support for adding scopes!"
+                                        + "Switching scope parent currently not supported!");
+                    }
+                }
+
+                if (c.wasRemoved()) {
+                    for (Scope s : c.getRemoved()) {
+                        flow.getNodes().remove(s.getNode());
+                    }
+                }
+            }
+        });
+        
+        flow.getNodes().addListener((ListChangeListener.Change<? extends VNode> c) -> {
+           while(c.next()) {
+               if (c.wasRemoved()) {
+                   c.getRemoved().stream().filter(n->n.getValueObject().getValue() instanceof ScopeImpl).
+                           map(n->(ScopeImpl)n.getValueObject().getValue()).
+                           forEach(s-> removeScope(s));
+               }
+           }
+        });
     }
 
     public ScopeImpl(String id, Scope parent, ScopeType type, String name, Object... scopeArgs) {
@@ -372,7 +406,7 @@ class ScopeImpl implements Scope {
     public void generateDataFlow() {
 
         System.out.println("DATAFLOW---------------------------------");
-        
+
         getDataFlow().create(controlFlow);
 
 //        for (Invocation i : controlFlow.getInvocations()) {
@@ -395,8 +429,7 @@ class ScopeImpl implements Scope {
 //            }
 //        }
     }
-    
-    
+
     @Override
     public Scope createScope(String id, ScopeType type, String name, Object[] args) {
         Scope scope = new ScopeImpl(id, this, type, name, args);
@@ -447,10 +480,6 @@ class ScopeImpl implements Scope {
     @Override
     public boolean removeScope(Scope s) {
         boolean result = scopes.remove(s);
-
-        if (result) {
-            flow.getNodes().remove(s.getNode());
-        }
 
         return result;
     }
