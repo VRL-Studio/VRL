@@ -96,6 +96,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -134,14 +135,7 @@ public class MainWindowController implements Initializable {
     private Pane view;
     private Pane rootPane;
     private VFlow flow;
-    private final Map<CodeEntity, String> invocationNodes = new HashMap<>();
-    private final Map<String, Invocation> nodeInvocations = new HashMap<>();
-    private final Map<String, Scope> nodeToScopes = new HashMap<>();
-    private final Map<String, Connector> variableConnectors = new HashMap<>();
-    private final Map<String, Integer> connectorsToArgIndex = new HashMap<>();
-    private final Map<String, Integer> variableArgumentIndex = new HashMap<>();
-    private final Map<Invocation, Connector> invocationOutputs = new HashMap<>();
-    private final Map<Invocation, Connector> invocationInputs = new HashMap<>();
+
     private final Map<String, LayoutData> layoutData = new HashMap<>();
 
     private final Set<String> loadLayoutIds = new HashSet<String>();
@@ -151,7 +145,6 @@ public class MainWindowController implements Initializable {
 
     private Stage mainWindow;
 
-    private boolean isRunningScopeToFlow;
     private boolean isRunningCodeToScope;
 
     /**
@@ -183,6 +176,9 @@ public class MainWindowController implements Initializable {
         flow.setVisible(true);
         UIBinding.setRootFlow(flow);
 
+        FXSkinFactory skinFactory = new FXSkinFactory(rootPane);
+        flow.setSkinFactories(skinFactory);
+
         fileMonitor = new FileAlterationMonitor(3000);
 
         try {
@@ -191,6 +187,18 @@ public class MainWindowController implements Initializable {
             Logger.getLogger(MainWindowController.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
+
+        flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().addListener(
+                (ListChangeListener.Change<? extends Connection> c) -> {
+                    updateCode((Scope) UIBinding.getRootFlow().getModel().getValueObject().getValue());
+                    System.out.println("changed cflow: " + c);
+                });
+
+        flow.getConnections(WorkflowUtil.DATA_FLOW).getConnections().addListener(
+                (ListChangeListener.Change<? extends Connection> c) -> {
+                    updateCode((Scope) UIBinding.getRootFlow().getModel().getValueObject().getValue());
+                    System.out.println("changed dflow: " + c);
+                });
 
 //        VCodeEditor vEditor = new VCodeEditor(" the code ");
 //        
@@ -351,6 +359,7 @@ public class MainWindowController implements Initializable {
         }
 
         UIBinding.scopes.clear();
+        UIBinding.getRootFlow().clear();
 
         GroovyClassLoader gcl = new GroovyClassLoader();
         gcl.parseClass(
@@ -367,194 +376,63 @@ public class MainWindowController implements Initializable {
             return;
         }
 
-        FXSkinFactory skinFactory = new FXSkinFactory(rootPane);
-        flow.setSkinFactories(skinFactory);
+        for (List<Scope> sList : UIBinding.scopes.values()) {
+            for (Scope scope : sList) {
+                scope.generateDataFlow();
+            }
+        }
 
         applyPositions();
 
         saveUIData();
 
-//        Layout layout = LayoutFactory.newDefaultLayout();
-//        layout.doLayout(flow);
         isRunningCodeToScope = false;
 
-    }
-
-    public void dataFlowToFlow(Scope scope, VFlow parent) {
-
-        DataFlow dataflow = scope.getDataFlow();
-        dataflow.create(scope.getControlFlow());
-
-        for (Invocation i : scope.getControlFlow().getInvocations()) {
-
-//            Variable retValue = scope.getVariable(i.getReturnValueName());
-            List<DataRelation> relations = dataflow.getRelationsForReceiver(i);
-
-//            System.out.println("relations: " + relations.size());
-            for (DataRelation dataRelation : relations) {
-
-                Connector output = invocationOutputs.get(dataRelation.getSender());
-                Connector input = invocationInputs.get(dataRelation.getSender());
-
-                ConnectionResult result = parent.connect(output, input);
-
-            }
-        }
-    }
-
-    public VFlow scopeToFlow(Scope scope, VFlow parent) {
-
-        isRunningScopeToFlow = true;
-
-        boolean isClassOrScript = scope.getType() == ScopeType.CLASS
-                || scope.getType() == ScopeType.COMPILATION_UNIT
-                || scope.getType() == ScopeType.NONE;
-
-        VFlow result = parent.newSubFlow();
-
-        addCloseNodeListener(result.getModel());
-        addControlflowListener(scope, result);
-        addDataflowListener(scope, result);
-//        invocationNodes.put(scope, result.getModel());
-        nodeToScopes.put(result.getModel().getId(), scope);
-
-        String title = "" + scope.getType() + " "
-                + scope.getName() + "(): " + scope.getId();
-
-        if (isClassOrScript) {
-            result.getModel().setWidth(550);
-            result.getModel().setHeight(800);
-            result.setVisible(true);
-        } else {
-            result.getModel().setWidth(400);
-            result.getModel().setHeight(300);
-        }
-
-        result.getModel().setTitle(title);
-
-//        System.out.println("Title: " + title + ", " + scope.getType());
-        VNode prevNode = null;
-
-        List<Invocation> invocations = new ArrayList<>();
-        invocations.addAll(scope.getControlFlow().getInvocations());
-
-        for (Invocation i : invocations) {
-
-            VNode n;
-
-            if (i.isScope() && !isClassOrScript) {
-
-                ScopeInvocation sI = (ScopeInvocation) i;
-                n = scopeToFlow(sI.getScope(), result).getModel();
-
-                invocationNodes.put(i, n.getId());
-                nodeInvocations.put(n.getId(), i);
-
-            } else {
-                n = result.newNode();
-                String mTitle = "" + i.getVariableName() + "."
-                        + i.getMethodName() + "(): " + i.getId();
-                n.setTitle(mTitle);
-
-                invocationNodes.put(i, n.getId());
-                nodeInvocations.put(n.getId(), i);
-            }
-
-            n.setMainInput(n.addInput("control"));
-            n.setMainOutput(n.addOutput("control"));
-
-            if (prevNode != null) {
-                result.connect(prevNode, n, "control");
-            }
-
-            int index = 0;
-            for (IArgument a : i.getArguments()) {
-
-                Connector input = n.addInput("data");
-//                System.out.println(" > Write Connector: ");
-//                variableConnectors.put(getVariableId(n, v), input);
-//                System.out.println("-> adding input: " + getVariableId(n, v));
-//                variableArgumentIndex.put(getVariableId(n, v), index);
-                connectorsToArgIndex.put(input.getId(), index);
-
-                if (a.getArgType() == ArgumentType.INVOCATION) {
-                    invocationInputs.put(a.getInvocation().get(), input);
-                } else if (a.getArgType() == ArgumentType.VARIABLE) {
-                    invocationInputs.put(a.getVariable().get().getDeclaration(), input);
-                    variableConnectors.put(getVariableId(n, a.getVariable().get()), input);
-                }
-
-                index++;
-            }
-
-            if (!i.isVoid()) {
-                Connector output = n.addOutput("data");
-                invocationOutputs.put(i, output);
-//                Variable v = scope.getVariable(i.getReturnValue().get().getName());
-//                System.out.println(" > Write Connector: ");
-//                variableConnectors.put(getVariableId(n, v), output);
-
-            }
-
-//            if (!applyPosition(n)) {
-            n.setWidth(400);
-            n.setHeight(100);
-//            }
-
-            prevNode = n;
-        }
-
-        if (isClassOrScript) {
-            for (Scope s : scope.getScopes()) {
-                scopeToFlow(s, result);
-            }
-        }
-
-        dataFlowToFlow(scope, result);
-
-        isRunningScopeToFlow = false;
-
-        return result;
     }
 
     private void savePositions() {
 
         layoutData.clear();
 
-        nodeToScopes.keySet().
-                forEach(id -> savePosition(flow.getNodeLookup().getById(id)));
-        nodeInvocations.keySet().
-                forEach(id -> savePosition(flow.getNodeLookup().getById(id)));
+//        nodeToScopes.keySet().
+//                forEach(id -> savePosition(flow.getNodeLookup().getById(id)));
+//        nodeInvocations.keySet().
+//                forEach(id -> savePosition(flow.getNodeLookup().getById(id)));
+        if (UIBinding.scopes.values().
+                iterator().hasNext()) {
+            CompilationUnitDeclaration cud
+                    = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                    iterator().next().get(0);
+
+            cud.visitScopeAndAllSubElements(s -> {
+                savePosition(s);
+            });
+        }
+
     }
 
     private void applyPositions() {
-        nodeToScopes.keySet().
-                forEach(id -> applyPosition(flow.getNodeLookup().getById(id)));
-        nodeInvocations.keySet().
-                forEach(id -> applyPosition(flow.getNodeLookup().getById(id)));
-    }
+//        nodeToScopes.keySet().
+//                forEach(id -> applyPosition(flow.getNodeLookup().getById(id)));
+//        nodeInvocations.keySet().
+//                forEach(id -> applyPosition(flow.getNodeLookup().getById(id)));
 
-    private CodeEntity nodeToCodeEntity(VNode n) {
-        boolean isScope = nodeToScopes.get(n.getId()) != null;
-        boolean isInvocation = nodeInvocations.get(n.getId()) != null;
+        if (UIBinding.scopes.values().
+                iterator().hasNext()) {
+            CompilationUnitDeclaration cud
+                    = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                    iterator().next().get(0);
 
-        CodeEntity cE = null;
-
-        if (isScope) {
-            cE = nodeToScopes.get(n.getId());
-        } else if (isInvocation) {
-            cE = nodeInvocations.get(n.getId());
+            cud.visitScopeAndAllSubElements(s -> {
+                applyPosition(s);
+            });
         }
-
-//        System.out.println("ce: " + cE.getId());
-        return cE;
     }
 
-    private boolean applyPosition(VNode n) {
+    private boolean applyPosition(CodeEntity cE) {
+        Objects.requireNonNull(cE);
 
-        CodeEntity cE = nodeToCodeEntity(n);
-
-        if (cE == null) {
+        if (cE.getNode() == null) {
             return false;
         }
 
@@ -567,21 +445,22 @@ public class MainWindowController implements Initializable {
             return false;
         }
 
-        d.apply(n);
+        d.apply(cE.getNode());
 
         return true;
     }
 
-    private void savePosition(VNode n) {
+    private void savePosition(CodeEntity cE) {
 
-        CodeEntity cE = nodeToCodeEntity(n);
+        Objects.requireNonNull(cE);
 
-        if (cE == null) {
-            System.out.println("cannot save pos for " + n.getTitle());
+        if (cE.getNode() == null) {
             return;
         }
 
-        layoutData.put(codeId(cE, false), new LayoutData(n));
+        layoutData.put(
+                codeId(cE, false),
+                new LayoutData(cE.getNode()));
 
     }
 
@@ -723,41 +602,6 @@ public class MainWindowController implements Initializable {
         return result;
     }
 
-    private void addCloseNodeListener(VFlowModel flow) {
-        flow.getNodes().addListener(
-                (ListChangeListener.Change<? extends VNode> change) -> {
-                    while (change.next()) {
-
-                        change.getRemoved().forEach(removedN -> {
-
-                            Scope s = nodeToScopes.get(removedN.getId());
-
-                            if (s != null) {
-                                if (s.getParent() != null) {
-                                    s.getParent().removeScope(s);
-                                }
-                            } else {
-                                Invocation i = nodeInvocations.get(removedN.getId());
-
-                                if (i != null) {
-                                    if (i.getParent() != null) {
-                                        i.getParent().getControlFlow().
-                                        getInvocations().remove(i);
-                                    }
-                                }
-                            }
-
-                        });
-
-                        if (change.wasRemoved()) {
-                            Scope rootScope = nodeToScopes.get(flow.getId());
-                            updateCode(rootScope);
-                        }
-                    }
-                }
-        );
-    }
-
     private boolean isRoot(VNode node, String connectionType) {
 
         Predicate<Connector> notConnected = (Connector c) -> {
@@ -772,132 +616,6 @@ public class MainWindowController implements Initializable {
         };
 
         return rootNode.test(node);
-    }
-
-    private void addControlflowListener(Scope rootScope, VFlow result) {
-        result.getConnections("control").getConnections().addListener(
-                (ListChangeListener.Change<? extends Connection> change) -> {
-
-                    try {
-
-                        if (isRunningCodeToScope) {
-                            return;
-                        }
-
-                        List<VNode> roots = result.getNodes().filtered(WorkflowUtil.nodeNotConnected("control"));
-
-                        // clear current control flow
-                        rootScope.getControlFlow().getInvocations().clear();
-
-                        List<List<VNode>> paths = new ArrayList<>();
-
-                        // follow controlflow from roots to end
-                        roots.forEach(
-                                r -> {
-//                                System.out.println("-- root " + r.getTitle() + " --");
-
-                                    List<VNode> path = getPath(r, "control");
-
-//                                path.forEach(
-//                                        n -> System.out.println("n->" + n.getTitle()));
-                                    paths.add(path);
-                                }
-                        );
-
-                        paths.forEach(path
-                                -> path.forEach(node
-                                        -> {
-                            System.out.println("-->adding inv: " + nodeInvocations.get(node.getId()) + " :: " + isRunningCodeToScope);
-                            rootScope.getControlFlow().
-                            getInvocations().add(nodeInvocations.get(node.getId()));
-                        }
-                                )
-                        );
-                        updateCode(rootScope);
-                    } catch (Exception ex) {
-                        ex.printStackTrace(System.err);
-                    }
-                });
-
-    }
-
-    private void addDataflowListener(Scope rootScope, VFlow result) {
-        result.getConnections("data").getConnections().addListener(
-                (ListChangeListener.Change<? extends Connection> change) -> {
-
-                    if (isRunningCodeToScope) {
-                        return;
-                    }
-
-                    while (change.next()) {
-                        if (change.wasAdded()) {
-                            for (Connection conn : change.getAddedSubList()) {
-                                VNode senderN = conn.getSender().getNode();
-                                VNode receiverN = conn.getReceiver().getNode();
-
-                                Invocation senderInv = nodeInvocations.get(senderN.getId());
-                                Invocation receiverInv = nodeInvocations.get(receiverN.getId());
-
-                                int numConnections
-                                = senderN.getOutputs().filtered(
-                                        WorkflowUtil.moreThanConnections(1, "data")).size();
-
-                                if (numConnections > 0) {
-                                    // TODO introduce var declaration to prevent multiple method calls for each dataflow connection 19.02.2014
-                                    System.out.println("NORE THAN ONE DATAFLOW CONN!!! for invocation " + senderInv);
-                                }
-
-//                                Connector output = variableConnectors.get(
-//                                        getVariableId(senderN, senderInv.getReturnValue().get().getName()));
-//                                Connector input = variableConnectors.get(
-//                                        getVariableId(receiverN, senderInv.getReturnValue().get().getName()));
-                                // TODO if (senderInv equals variableinvocation) only invocations supported 18.02.2014
-                                try {
-
-//                                    Variable retVal = senderInv.getReturnValue().get();
-//                                    String varId = getVariableId(receiverN, retVal.getName());
-//                                    System.out.println("varId: " + varId);
-                                    int argIndex = connectorsToArgIndex.get(conn.getReceiver().getId());
-
-                                    receiverInv.getArguments().set(
-                                            argIndex,
-                                            Argument.invArg(senderInv));
-//
-//                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
-
-//                                    senderInv.getParent().generateDataFlow();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace(System.err);
-                                }
-                            }
-                        }
-                        if (change.wasRemoved()) {
-                            for (Connection conn : change.getRemoved()) {
-                                VNode senderN = conn.getSender().getNode();
-                                VNode receiverN = conn.getReceiver().getNode();
-
-                                Invocation senderInv = nodeInvocations.get(senderN.getId());
-                                Invocation receiverInv = nodeInvocations.get(receiverN.getId());
-
-                                try {
-
-                                    int argIndex = connectorsToArgIndex.get(conn.getReceiver().getId());
-
-                                    receiverInv.getArguments().set(
-                                            argIndex,
-                                            Argument.NULL);
-
-//                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
-//                                    senderInv.getParent().generateDataFlow();
-                                } catch (Exception ex) {
-                                    ex.printStackTrace(System.err);
-                                }
-
-                            }
-                        }
-                    }
-                    updateCode(rootScope);
-                });
     }
 
     private void updateCode(Scope rootScope) {
@@ -978,10 +696,6 @@ public class MainWindowController implements Initializable {
         return id;
     }
 
-    public Connector getVariableById(VNode n, String varName) {
-        return variableConnectors.get(getVariableId(n, varName));
-    }
-
     /**
      * @return the mainWindow
      */
@@ -1018,6 +732,9 @@ class LayoutData {
     }
 
     public LayoutData(VNode n) {
+
+        Objects.requireNonNull(n);
+
         this.x = n.getX();
         this.y = n.getY();
         this.width = n.getWidth();

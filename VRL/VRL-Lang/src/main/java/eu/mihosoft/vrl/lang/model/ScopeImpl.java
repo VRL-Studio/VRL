@@ -58,6 +58,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -84,7 +85,7 @@ class ScopeImpl implements Scope {
     private final ScopeInvocation invocation;
     private VFlow flow;
 
-    public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
+public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
         this.id = id;
         this.parent = parent;
 
@@ -133,7 +134,7 @@ class ScopeImpl implements Scope {
 
         }
     }
-
+    
     private void initScopeListeners() {
         scopes.addListener((ListChangeListener.Change<? extends Scope> c) -> {
             while (c.next()) {
@@ -406,7 +407,7 @@ class ScopeImpl implements Scope {
     public void generateDataFlow() {
 
         System.out.println("DATAFLOW---------------------------------");
-
+        
         getDataFlow().create(controlFlow);
 
 //        for (Invocation i : controlFlow.getInvocations()) {
@@ -429,7 +430,8 @@ class ScopeImpl implements Scope {
 //            }
 //        }
     }
-
+    
+    
     @Override
     public Scope createScope(String id, ScopeType type, String name, Object[] args) {
         Scope scope = new ScopeImpl(id, this, type, name, args);
@@ -481,6 +483,10 @@ class ScopeImpl implements Scope {
     public boolean removeScope(Scope s) {
         boolean result = scopes.remove(s);
 
+        if (result) {
+            flow.getNodes().remove(s.getNode());
+        }
+
         return result;
     }
 
@@ -506,5 +512,17 @@ class ScopeImpl implements Scope {
     public VNode getNode() {
         return this.flow.getModel();
     }
+    
+    @Override
+    public void visitScopeAndAllSubElements(Consumer<CodeEntity> consumer) {
+        consumer.accept(this);
+        getControlFlow().getInvocations().forEach(consumer);
+        getComments().forEach(consumer);
+        
+        for (Scope scope : getScopes()) {
+            scope.visitScopeAndAllSubElements(consumer);
+        }
+    }
 
 }
+
