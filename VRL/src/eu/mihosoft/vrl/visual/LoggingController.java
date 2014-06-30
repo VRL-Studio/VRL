@@ -126,7 +126,7 @@ public class LoggingController {
             @Override
             public void publish(LogRecord record) {
                 // we redirect logs to the out/err stream since we replaced
-                // them with custom instances that ar visible in the log
+                // them with custom instances that are visible in the log
                 // window
                 // reason: all output (logger, sout, serr, etc.) is collected.
                 if (record.getLevel() == Level.SEVERE 
