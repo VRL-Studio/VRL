@@ -78,10 +78,13 @@ import eu.mihosoft.vrl.lang.CodeReader;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.AssignmentInvocation;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
+import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.model.Operator;
+import eu.mihosoft.vrl.lang.model.WhileDeclaration;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
 import java.io.BufferedReader;
@@ -429,9 +432,13 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     @Override
     public void visitForLoop(ForStatement s) {
         System.out.println(" --> FOR-LOOP: " + s.getVariable());
+        
+        if (!(currentScope instanceof ControlFlowScope)) {
+            throw new RuntimeException("For-Loop can only be invoked inside ControlFlowScopes!");
+        }
 
         // predeclaration, ranges will be defined later
-        currentScope = codeBuilder.declareFor(currentScope, null, 0, 0, 0);
+        currentScope = codeBuilder.invokeForLoop((ControlFlowScope)currentScope, null, 0, 0, 0);
         setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
 
@@ -452,15 +459,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         if (!stateMachine.getBoolean("for-loop:incExpression")) {
             throw new IllegalStateException("for-loop: must contain binary"
-                    + " expressions of the form 'a <= b' with a, b being"
-                    + " constant integers!");
+                    + " expressions of the form 'i+=a' with i being"
+                    + " an integer variable and a being a constant integer!");
         }
 
-//        if (!stateMachine.getBoolean("for-loop:compareExpression")) {
-//            throw new IllegalStateException("for-loop: must contain binary"
-//                    + " expressions of the form 'a <= b' with a, b being"
-//                    + " constant integers!");
-//        }
         stateMachine.pop();
 
         currentScope = currentScope.getParent();
@@ -471,15 +473,36 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     @Override
     public void visitWhileLoop(WhileStatement s) {
+
+        stateMachine.push("while-loop", true);
+
         System.out.println(" --> WHILE-LOOP: " + s.getBooleanExpression());
-        currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
+        //currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
+
+        if (s.getBooleanExpression().getExpression() == null) {
+            throw new IllegalStateException("while-loop: must contain boolean"
+                    + " expression!");
+        }
+
+        if (!(s.getBooleanExpression().getExpression() instanceof BinaryExpression)) {
+            throw new IllegalStateException("while-loop: must contain boolean"
+                    + " expression!");
+        }
+        
+         if (!(currentScope instanceof ControlFlowScope)) {
+            throw new RuntimeException("While-Loop can only be invoked inside ControlFlowScopes!");
+        }
+
+        currentScope = codeBuilder.invokeWhileLoop((ControlFlowScope)currentScope,
+                convertExpressionToArgument(
+                       s.getBooleanExpression().getExpression()).getInvocation().get());
+        
         setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
-
         super.visitWhileLoop(s);
         currentScope = currentScope.getParent();
 
-//        currentScope.setCode(getCode(s));
+        stateMachine.pop();
     }
 
     @Override
@@ -528,8 +551,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         Invocation invocation = codeBuilder.createInstance(
                 currentScope, new Type(s.getType().getName(), false),
-                codeBuilder.createVariable(currentScope, new Type(s.getType().getName(), false)).getName(),
                 arguments);
+
+        setCodeRange(invocation, s);
 
         if (stateMachine.getBoolean("variable-declaration")) {
             stateMachine.addToList("variable-declaration:assignment-invocations", invocation);
@@ -549,7 +573,13 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     @Override
     public void visitMethodCallExpression(MethodCallExpression s) {
+
+        if (returnVariables.containsKey(s)) {
+            return;
+        }
+
         System.out.println(" --> METHOD: " + s.getMethodAsString());
+        
 
         super.visitMethodCallExpression(s);
 
@@ -599,6 +629,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         } else {
             returnType = Type.VOID;
         }
+        
+        if (!(currentScope instanceof ControlFlowScope)) {
+            throw new RuntimeException("Method can only be invoked inside ControlFlowScopes!");
+        }
 
         if (!isIdCall) {
             if (objectName != null) {
@@ -606,7 +640,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 System.out.println("RET-TYPE: " + returnType);
 
                 Invocation invocation = codeBuilder.invokeMethod(
-                        currentScope, objectName,
+                        (ControlFlowScope)currentScope, objectName,
                         s.getMethod().getText(),
                         returnType,
                         isVoid,
@@ -629,7 +663,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
 //                        returnValueName, arguments).setCode(getCode(s));
                 Invocation invocation = codeBuilder.invokeStaticMethod(
-                        currentScope, new Type("System.out"),
+                        (ControlFlowScope)currentScope, new Type("System.out"),
                         s.getMethod().getText(), Type.VOID, isVoid,
                         arguments);
                 setCodeRange(invocation, s);
@@ -827,7 +861,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 Operator operator = convertOperator(s);
                 IArgument leftArg = convertExpressionToArgument(s.getLeftExpression());
                 IArgument rightArg = convertExpressionToArgument(s.getRightExpression());
-                
+
                 boolean emptyAssignment = (Objects.equal(Argument.NULL, rightArg) && operator == Operator.ASSIGN);
 
                 if (!emptyAssignment) {
@@ -837,8 +871,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                             leftArg, rightArg, operator
                     );
 
-                    System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
+                    setCodeRange(invocation, s);
 
+                    //System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
                     returnVariables.put(s, invocation);
                 }
             }
@@ -980,13 +1015,16 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             result = Argument.varArg(v);
 
         } else if (e instanceof PropertyExpression) {
-            PropertyExpression pe = (PropertyExpression) e;
-
-            Variable v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.PROPERTYEXPR", true), "don't know");
-            result = Argument.varArg(v);
+//            PropertyExpression pe = (PropertyExpression) e;
+//
+//            Variable v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.PROPERTYEXPR", true), "don't know");
+//            result = Argument.varArg(v);
+            
+            throw new UnsupportedOperationException("vrl.internal.PROPERTYEXPR not supported");
 
         } else if (e instanceof MethodCallExpression) {
             System.out.println("TYPE: " + e);
+            visitMethodCallExpression((MethodCallExpression) e);
             result = Argument.invArg(returnVariables.get((MethodCallExpression) e));
         } else if (e instanceof ConstructorCallExpression) {
             System.out.println("TYPE: " + e);

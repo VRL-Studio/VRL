@@ -71,7 +71,7 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public Invocation createInstance(String id, IType type, String varName, IArgument... args) {
+    public Invocation createInstance(String id, IType type, IArgument... args) {
         Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), "<init>", type, true, false, true, args);
         getInvocations().add(result);
         return result;
@@ -134,6 +134,16 @@ class ControlFlowImpl implements ControlFlow {
 
         for (Invocation inv : invocations) {
 
+            if (inv instanceof ScopeInvocation) {
+                ScopeInvocation sInv = (ScopeInvocation) inv;
+                if (sInv.getScope() instanceof WhileDeclaration) {
+                    WhileDeclaration whileD = (WhileDeclaration) sInv.getScope();
+                    if (invocation == whileD.getCheck()) {
+                        return true;
+                    }
+                }
+            }
+
             for (IArgument arg : inv.getArguments()) {
 
                 if (arg.getArgType() == ArgumentType.INVOCATION) {
@@ -156,7 +166,6 @@ class ControlFlowImpl implements ControlFlow {
         }
 
 //        AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
-        
         BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, Argument.varArg(var), arg, Operator.ASSIGN);
 
         getInvocations().add(invocation);
@@ -173,7 +182,6 @@ class ControlFlowImpl implements ControlFlow {
         }
 
 //        AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
-        
         BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, Argument.varArg(var), arg, Operator.ASSIGN);
 
         getInvocations().add(invocation);
@@ -190,7 +198,6 @@ class ControlFlowImpl implements ControlFlow {
         }
 
 //        AssignmentInvocationImpl result = new AssignmentInvocationImpl(parent, var, Argument.invArg(invocation));
-        
         BinaryOperatorInvocation result = new BinaryOperatorInvocationImpl(parent, Argument.varArg(var), Argument.invArg(invocation), Operator.ASSIGN);
 
         getInvocations().add(result);
@@ -200,22 +207,37 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public DeclarationInvocation declareVariable(String id, IType type, String varName) {
-        Variable var = parent.createVariable(type, varName);
+        VariableImpl var = (VariableImpl)((ScopeImpl)parent)._createVariable(type, varName);
 
         DeclarationInvocationImpl invocation = new DeclarationInvocationImpl(parent, var);
+        
+        var.setDeclaration(invocation);
 
         getInvocations().add(invocation);
 
         return invocation;
     }
+    
+//     @Override
+//    public DeclarationInvocation declareStaticVariable(String id, IType type, String varName) {
+//        VariableImpl var = (VariableImpl)((ScopeImpl)parent)._createStaticVariable(type, varName);
+//
+//        DeclarationInvocationImpl invocation = new DeclarationInvocationImpl(parent, var);
+//        
+//        var.setDeclaration(invocation);
+//
+//        getInvocations().add(invocation);
+//
+//        return invocation;
+//    }
 
     @Override
     public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg, IArgument rightArg, Operator operator) {
-       BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, leftArg, rightArg, operator);
-       
-       getInvocations().add(invocation);
-       
-       return invocation;
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, leftArg, rightArg, operator);
+
+        getInvocations().add(invocation);
+
+        return invocation;
     }
 
 }

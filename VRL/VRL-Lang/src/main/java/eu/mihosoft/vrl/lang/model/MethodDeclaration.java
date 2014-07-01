@@ -50,13 +50,11 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import java.util.List;
-
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface MethodDeclaration extends Scope{
+public interface MethodDeclaration extends ControlFlowScope {
 
     IModifiers getModifiers();
 

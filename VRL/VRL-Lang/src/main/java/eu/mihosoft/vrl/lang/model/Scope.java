@@ -52,6 +52,7 @@ package eu.mihosoft.vrl.lang.model;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import javafx.collections.ObservableList;
 
 /**
@@ -72,7 +73,7 @@ public interface Scope extends CodeEntity {
 
     public Variable createVariable(IType type, String varName);
 
-    public Variable createStaticVariable(IType type);
+//    public Variable createStaticVariable(IType type);
     
     public BinaryOperatorInvocation assignInvocationResult(String varName, Invocation invocation);
 
@@ -86,8 +87,8 @@ public interface Scope extends CodeEntity {
 
     public Scope getScopeById(String id);
 
-    public Variable createVariable(IType type);
-    public Variable createVariable(Invocation invocation);
+//    public Variable createVariable(IType type);
+//    public Variable createVariable(Invocation invocation);
 
     public DataFlow getDataFlow();
 
@@ -105,5 +106,7 @@ public interface Scope extends CodeEntity {
 //    public VFlow getFlow();
 
     public DeclarationInvocation declareVariable(String id, IType type, String varName);
+    
+    public Optional<ScopeInvocation> getInvocation();
 }
 

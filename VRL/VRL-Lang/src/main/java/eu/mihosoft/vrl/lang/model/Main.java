@@ -204,7 +204,7 @@ public class Main {
         for (int i = 1; i <= numMethods; i++) {
             MethodDeclaration mDec = vCodeBuilder.declareMethod(cDec, new Modifiers(Modifier.PUBLIC), Type.VOID, name + "M" + i, new Parameters(new Parameter(Type.INT, "v" + i)));
 
-            ForDeclaration forD = vCodeBuilder.declareFor(mDec, "i", 1, 10, i);
+            ForDeclaration forD = vCodeBuilder.invokeForLoop(mDec, "i", 1, 10, i);
 
             if (prevMDec != null) {
                 vCodeBuilder.invokeMethod(forD, "this", prevMDec, Argument.varArg(forD.getVariable(forD.getVarName())));

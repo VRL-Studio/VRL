@@ -58,11 +58,11 @@ import eu.mihosoft.vrl.lang.model.Scope;
  */
 public class VariableFactory {
 
-    public static Variable createObjectVariable(Scope scope, Type type, String varName) {
-        return new VariableImpl(scope, type, varName, null, false);
-    }
-
-    public static Variable createConstantVariable(Scope scope, Type type, String varName, Object constant) {
-        return new VariableImpl(scope, type, varName, constant, true);
-    }
+//    public static Variable createObjectVariable(Scope scope, Type type, String varName) {
+//        return new VariableImpl(scope, type, varName, null, false);
+//    }
+//
+//    public static Variable createConstantVariable(Scope scope, Type type, String varName, Object constant) {
+//        return new VariableImpl(scope, type, varName, constant, true);
+//    }
 }

@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -95,11 +94,10 @@ class DataFlowImpl implements DataFlow {
 
     @Override
     public void create(ControlFlow controlFlow) {
-        
-        System.out.println(">> creating dataflow: ");
-        
-//        Map<Integer, Invocation> senders = new HashMap<>();
 
+        System.out.println(">> creating dataflow: ");
+
+//        Map<Integer, Invocation> senders = new HashMap<>();
 //        for (Invocation i : controlFlow.getInvocations()) {
 //            System.out.println(" --> i:" + i.getMethodName());
 //            if (!i.isVoid()) {
@@ -107,30 +105,30 @@ class DataFlowImpl implements DataFlow {
 //                senders.put(i.getReturnValue().get().getName(), i);
 //            }
 //        }
-
         for (Invocation receiver : controlFlow.getInvocations()) {
+            System.out.println(" -> receiver: " + receiver);
             for (IArgument a : receiver.getArguments()) {
-                
-                if (a.getArgType() != ArgumentType.INVOCATION) {
-                    continue;
-                }
-                
+
 //                Variable v = a.getVariable().get();
-
 //                Invocation sender = senders.get(v.getName());
-
 //                System.out.println(">> searching sender for " + v.getName() + " with type " + v.getType());
+                Invocation sender = null;
 
-                 Invocation sender = a.getInvocation().get();
-                
+                if (a.getArgType() == ArgumentType.INVOCATION) {
+                    sender = a.getInvocation().get();
+                } else if (a.getArgType() == ArgumentType.VARIABLE) {
+                    sender = a.getVariable().get().getDeclaration();
+                }
+
                 if (sender != null) {
 //                    System.out.println(
 //                            " --> sender found for '"
 //                            + v.getName()
 //                            + "', " + sender.getMethodName());
-                    
+
                     createDataRelation(sender, receiver);
                 }
+
             }
         }
 

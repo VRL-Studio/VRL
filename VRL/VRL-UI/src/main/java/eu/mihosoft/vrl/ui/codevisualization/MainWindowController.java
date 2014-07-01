@@ -501,6 +501,7 @@ public class MainWindowController implements Initializable {
                 if (a.getArgType() == ArgumentType.INVOCATION) {
                     invocationInputs.put(a.getInvocation().get(), input);
                 } else if (a.getArgType() == ArgumentType.VARIABLE) {
+                    invocationInputs.put(a.getVariable().get().getDeclaration(), input);
                     variableConnectors.put(getVariableId(n, a.getVariable().get()), input);
                 }
 

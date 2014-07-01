@@ -68,7 +68,7 @@ class DataRelationImpl implements DataRelation {
     }
 
 
-    @Override
+
     public void setSender(Invocation invocation) {
         this.sender = invocation;
     }
@@ -78,7 +78,7 @@ class DataRelationImpl implements DataRelation {
         return sender;
     }
 
-    @Override
+
     public void setReceiver(Invocation invocation) {
         this.receiver = invocation;
     }

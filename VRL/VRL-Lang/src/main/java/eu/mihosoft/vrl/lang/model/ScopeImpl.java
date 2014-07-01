@@ -49,12 +49,11 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -77,6 +76,7 @@ class ScopeImpl implements Scope {
 //    private List<Scope> readOnlyScopes;
     private ICodeRange location;
     private final ObservableList<Comment> comments = FXCollections.observableArrayList();
+    private final ScopeInvocation invocation;
 
     public ScopeImpl(String id, Scope parent, ScopeType type, String name, Object... scopeArgs) {
         this.id = id;
@@ -98,8 +98,13 @@ class ScopeImpl implements Scope {
             }
 
             if (parent.getType() != ScopeType.CLASS && parent.getType() != ScopeType.NONE && parent.getType() != ScopeType.COMPILATION_UNIT) {
-                parent.getControlFlow().callScope(this);
+                invocation = parent.getControlFlow().callScope(this);
+            } else {
+                invocation = null;
             }
+        } else {
+
+            invocation = null;
         }
     }
 
@@ -145,55 +150,64 @@ class ScopeImpl implements Scope {
 
     @Override
     public Variable createVariable(IType type, String varName) {
+        DeclarationInvocation inv = getControlFlow().declareVariable(id, type, varName);
+        return inv.getDeclaredVariable();
+    }
+
+    Variable _createVariable(IType type, String varName) {
 
         if (getVariable(varName) != null) {
             throw new IllegalArgumentException("Variable '" + varName + "' does already exist!");
         }
 
-        Variable variable = new VariableImpl(this, type, varName, null, false);
+        Variable variable = new VariableImpl(this, type, varName, null, false, null);
         variables.put(varName, variable);
         return variable;
     }
 
-    @Override
-    public Variable createVariable(IType type) {
-        String varNamePrefix = "vrlInternalVar";
-
-        int counter = 0;
-        String varName = varNamePrefix + counter;
-
-        while (getVariable(varName) != null) {
-            counter++;
-            varName = varNamePrefix + counter;
-        }
-
-        return createVariable(type, varName);
-    }
-
-    @Override
-    public Variable createVariable(Invocation invocation) {
-        String varNamePrefix = "vrlInvocationVar";
-
-        int counter = 0;
-        String varName = varNamePrefix + counter;
-
-        while (getVariable(varName) != null) {
-            counter++;
-            varName = varNamePrefix + counter;
-        }
-
-        Variable variable = new VariableImpl(this, varName, invocation);
-        variables.put(varName, variable);
-        return variable;
-    }
-
-    @Override
-    public Variable createStaticVariable(IType type) {
-        Variable variable = VariableImpl.createStaticVar(parent, type);
-        variables.put(variable.getName(), variable);
-        return variable;
-    }
-
+//    @Override
+//    public Variable createVariable(IType type) {
+//        String varNamePrefix = "vrlInternalVar";
+//
+//        int counter = 0;
+//        String varName = varNamePrefix + counter;
+//
+//        while (getVariable(varName) != null) {
+//            counter++;
+//            varName = varNamePrefix + counter;
+//        }
+//
+//        return createVariable(type, varName);
+//    }
+//    @Override
+//    public Variable createVariable(Invocation invocation) {
+//        String varNamePrefix = "vrlInvocationVar";
+//
+//        int counter = 0;
+//        String varName = varNamePrefix + counter;
+//
+//        while (getVariable(varName) != null) {
+//            counter++;
+//            varName = varNamePrefix + counter;
+//        }
+//
+//        Variable variable = new VariableImpl(this, varName, invocation);
+//        variables.put(varName, variable);
+//        return variable;
+//    }
+//    @Override
+//    public Variable createStaticVariable(IType type) {
+//
+//        DeclarationInvocation inv = getControlFlow().declareStaticVariable(id, type, name);
+//        
+//        return inv.getDeclaredVariable();
+//    }
+//
+//    Variable _createStaticVariable(IType type) {
+//        Variable variable = VariableImpl.createStaticVar(parent, type, null);
+//        variables.put(variable.getName(), variable);
+//        return variable;
+//    }
     @Override
     public BinaryOperatorInvocation assignConstant(String varName, Object constant) {
         Variable var = getVariable(varName);
@@ -234,7 +248,7 @@ class ScopeImpl implements Scope {
         if (varDest == null) {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
-        
+
         return getControlFlow().assignInvocationResult(id, varName, invocation);
     }
 
@@ -409,6 +423,14 @@ class ScopeImpl implements Scope {
     @Override
     public DeclarationInvocation declareVariable(String id, IType type, String varName) {
         return getControlFlow().declareVariable(id, type, varName);
+    }
+
+    /**
+     * @return the invocation
+     */
+    @Override
+    public Optional<ScopeInvocation> getInvocation() {
+        return Optional.ofNullable(invocation);
     }
 
 }

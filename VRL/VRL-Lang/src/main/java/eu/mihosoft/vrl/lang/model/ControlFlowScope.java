@@ -7,11 +7,9 @@
 package eu.mihosoft.vrl.lang.model;
 
 /**
- *
- * @author miho
+ * 
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-@Deprecated
-public interface AssignmentInvocation extends Invocation{
-    Variable getAssignmentVariable();   
-    IArgument getAssignmentArgument();
+public interface ControlFlowScope extends Scope{
+    
 }
