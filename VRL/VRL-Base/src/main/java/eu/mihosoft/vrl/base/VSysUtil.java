@@ -505,6 +505,15 @@ public class VSysUtil {
      * @throws IOException
      */
     public static void addNativeLibraryPath(String path) throws IOException {
+        
+        // alternative idea:
+        // http://blog.cedarsoft.com/2010/11/setting-java-library-path-programmatically/
+        //
+        // System.setProperty( "java.library.path", "/path/to/libs" );
+        // Field fieldSysPath = ClassLoader.class.getDeclaredField( "sys_paths" );
+        // fieldSysPath.setAccessible( true );
+        // fieldSysPath.set( null, null );
+        
         try {
             // This enables the java.library.path to be modified at runtime
             // Idea comes from a Sun engineer at
