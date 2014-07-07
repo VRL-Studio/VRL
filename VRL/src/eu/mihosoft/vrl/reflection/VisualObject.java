@@ -72,6 +72,8 @@ import java.io.NotSerializableException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -256,6 +258,10 @@ public class VisualObject extends CanvasWindow {
 
     }
 
+    /**
+     * Closes the controlflow connection if this object is removed, i.e., sender
+     * is connected with receiver.
+     */
     private void closeControlFlowConnection() {
 
         ControlFlowConnector input = getObjectRepresentation().getControlFlowInput();
@@ -263,22 +269,22 @@ public class VisualObject extends CanvasWindow {
 
         List<Connection> inputConnections = getMainCanvas().
                 getControlFlowConnections().getAllWith(input);
-        
-         List<Connection> outputConnections = getMainCanvas().
+
+        List<Connection> outputConnections = getMainCanvas().
                 getControlFlowConnections().getAllWith(output);
 
         // we cannot connect if no input or output present
         if (inputConnections.isEmpty() || outputConnections.isEmpty()) {
             return;
         }
-        
-        for(Connection senderConnection : inputConnections) {
-            for(Connection receiverConnection : outputConnections) {
+
+        for (Connection senderConnection : inputConnections) {
+            for (Connection receiverConnection : outputConnections) {
                 Connector sender = senderConnection.getSender();
                 Connector receiver = receiverConnection.getReceiver();
-                
+
                 getMainCanvas().getControlFlowConnections().add(sender, receiver);
-                
+
             }
         }
     }
@@ -438,6 +444,125 @@ public class VisualObject extends CanvasWindow {
         });
 
         getPopup().add(item);
+
+        initControlflowMenuActions();
+    }
+
+    private void initControlflowMenuActions() {
+        
+        getPopup().addSeparator();
+        
+        JMenuItem item = new JMenuItem("Experimental: Reconnect Controlflow of Selected Objects");
+        
+        item.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createControlFlowByPositionOfSelectedObjects();
+            }
+        });
+        
+        getPopup().add(item);
+        
+        item = new JMenuItem("Experimental: Remove from ControlFlow");
+        
+        item.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                closeControlFlowConnection();
+                
+                getMainCanvas().getControlFlowConnections().
+                        removeAllWith(VisualObject.this);
+                
+            }
+        });
+        
+        getPopup().add(item);
+    }
+    
+    private void createControlFlowByPositionOfSelectedObjects() {
+                List<VisualObject> selectedObjects = new ArrayList<VisualObject>();
+
+        for (Selectable s : getMainCanvas().getClipBoard()) {
+            if (s instanceof VisualObject) {
+                selectedObjects.add((VisualObject) s);
+            }
+        }
+
+        // no objects to connect
+        if (selectedObjects.size() < 2) {
+            return;
+        }
+
+        Comparator<VisualObject> compareByDistance = new Comparator<VisualObject>() {
+
+            @Override
+            public int compare(VisualObject o1, VisualObject o2) {
+
+                Point o1Loc = o1.getLocation();
+                Point o2Loc = o2.getLocation();
+
+                int dist1Squared = o1Loc.x * o1Loc.x + o1Loc.y * o1Loc.y;
+                int dist2Squared = o2Loc.x * o2Loc.x + o2Loc.y * o2Loc.y;
+
+                if (dist1Squared < dist2Squared) {
+                    return -1;
+                }
+
+                if (dist1Squared > dist2Squared) {
+                    return 1;
+                }
+
+                if (o1Loc.x < o2Loc.x) {
+                    return -1;
+                }
+                if (o1Loc.x > o2Loc.x) {
+                    return +1;
+                }
+
+                if (o1Loc.y < o2Loc.y) {
+                    return -1;
+                }
+                if (o1Loc.y > o2Loc.y) {
+                    return +1;
+                }
+
+                return 0;
+            }
+        };
+
+        Collections.sort(selectedObjects, compareByDistance);
+
+        // remove previous connections
+        for (int i = 0; i < selectedObjects.size(); i++) {
+            
+            ControlFlowConnector selectedIn = selectedObjects.get(i).getObjectRepresentation().getControlFlowInput();
+            ControlFlowConnector selectedOut = selectedObjects.get(i).getObjectRepresentation().getControlFlowOutput();
+            
+            if (i > 0) {
+                getMainCanvas().getControlFlowConnections().removeAllWith(selectedIn);
+            }
+            
+            if (i < selectedObjects.size() -1) {
+                getMainCanvas().getControlFlowConnections().removeAllWith(selectedOut);
+            }
+            
+        }
+
+        VisualObject prev = null;
+
+        for (VisualObject vObj : selectedObjects) {
+
+            if (prev != null) {
+                getMainCanvas().getControlFlowConnections().add(
+                        prev.getObjectRepresentation().getControlFlowOutput(),
+                        vObj.getObjectRepresentation().getControlFlowInput());
+            }
+
+            prev = vObj;
+        }
     }
 
     private void updateCode() {
