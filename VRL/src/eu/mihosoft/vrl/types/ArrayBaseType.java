@@ -95,6 +95,7 @@ import java.awt.event.MouseEvent;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.List;
 import javax.swing.Box;
 import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
@@ -709,7 +710,7 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
             for (TypeRepresentationContainer tC : getTypeContainers()) {
                 Connector c = tC.getTypeRepresentation().getConnector();
-                ArrayList<Connection> receivers =
+                List<Connection> receivers =
                         getMainCanvas().getDataConnections().getAllWith(c);
 
                 for (Connection conn : receivers) {

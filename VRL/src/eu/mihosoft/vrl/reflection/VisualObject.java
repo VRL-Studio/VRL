@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.annotation.AskIfCloseMethodInfo;
@@ -73,6 +72,7 @@ import java.io.NotSerializableException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenuItem;
@@ -81,10 +81,9 @@ import javax.swing.JMenuItem;
  * This class represents the visual identity of a Java object. It is the attempt
  * to provide a fully functional representation of any Java object that can be
  * analyzed by Javas Reflection API. For the automatic GUI generation to work it
- * is neccessary that a so called
- * <code>TypeRepresentation</code> exists for all types that are used by the
- * object. These type representations have to be added to the type factory of
- * the visual canvas.
+ * is neccessary that a so called <code>TypeRepresentation</code> exists for all
+ * types that are used by the object. These type representations have to be
+ * added to the type factory of the visual canvas.
  *
  * @see TypeRepresentation
  * @see TypeRepresentationFactory
@@ -98,7 +97,7 @@ public class VisualObject extends CanvasWindow {
     /**
      * Object representation.
      */
-    private DefaultObjectRepresentation objectRepresentation;
+    private final DefaultObjectRepresentation objectRepresentation;
     private EditSourceIcon sourceIcon;
     private AbstractCode code;
 
@@ -119,15 +118,14 @@ public class VisualObject extends CanvasWindow {
 
         this.add(objectRepresentation);
 
-
-        CapabilityChangedListener capabilityChangedListener =
-                new CapabilityChangedListener() {
+        CapabilityChangedListener capabilityChangedListener
+                = new CapabilityChangedListener() {
 
                     @Override
                     public void capabilityChanged(
                             CapabilityManager manager, Integer bit) {
-                        defineCapabilities();
-                    }
+                                defineCapabilities();
+                            }
                 };
 
         addCapabilityListener(capabilityChangedListener);
@@ -145,9 +143,9 @@ public class VisualObject extends CanvasWindow {
             VisualCanvas mainCanvas) {
         super("", mainCanvas);
 
-        objectRepresentation =
-                (DefaultObjectRepresentation) contentProvider.getContent(
-                mainCanvas).get(0);
+        objectRepresentation
+                = (DefaultObjectRepresentation) contentProvider.getContent(
+                        mainCanvas).get(0);
 
         add(objectRepresentation);
 
@@ -167,8 +165,8 @@ public class VisualObject extends CanvasWindow {
             @Override
             public void componentMoved(ComponentEvent ce) {
                 try {
-                    ArrayList<Connection> connections =
-                            VisualObject.this.getMainCanvas().
+                    List<Connection> connections
+                            = VisualObject.this.getMainCanvas().
                             getControlFlowConnections().
                             getAllWith(VisualObject.this);
 
@@ -196,7 +194,6 @@ public class VisualObject extends CanvasWindow {
 
         this.validate();
 
-
         addActionListener(new CanvasActionListener() {
 
             @Override
@@ -211,8 +208,11 @@ public class VisualObject extends CanvasWindow {
                             vObj.setActive(true);
                         }
                     }
+                } else if (e.getActionCommand().equals(CanvasWindow.CLOSE_ACTION)) {
+                    closeControlFlowConnection();
                 }
             }
+
         });
 
         String title = objectRepresentation.getName();
@@ -236,11 +236,9 @@ public class VisualObject extends CanvasWindow {
 //            }
 //        }
 //      ***
-
         this.setTitle(title);
 
         initMenu();
-
 
         // define reference connectors
         ObjectInfo objInfo = getObjectRepresentation().
@@ -254,6 +252,34 @@ public class VisualObject extends CanvasWindow {
         if (objInfo == null || objInfo.referenceOut()) {
             getTitleBar().setRightConnector(
                     getObjectRepresentation().getReferenceOutput());
+        }
+
+    }
+
+    private void closeControlFlowConnection() {
+
+        ControlFlowConnector input = getObjectRepresentation().getControlFlowInput();
+        ControlFlowConnector output = getObjectRepresentation().getControlFlowOutput();
+
+        List<Connection> inputConnections = getMainCanvas().
+                getControlFlowConnections().getAllWith(input);
+        
+         List<Connection> outputConnections = getMainCanvas().
+                getControlFlowConnections().getAllWith(output);
+
+        // we cannot connect if no input or output present
+        if (inputConnections.isEmpty() || outputConnections.isEmpty()) {
+            return;
+        }
+        
+        for(Connection senderConnection : inputConnections) {
+            for(Connection receiverConnection : outputConnections) {
+                Connector sender = senderConnection.getSender();
+                Connector receiver = receiverConnection.getReceiver();
+                
+                getMainCanvas().getControlFlowConnections().add(sender, receiver);
+                
+            }
         }
     }
 
@@ -344,9 +370,9 @@ public class VisualObject extends CanvasWindow {
 
                 ComponentUtil.addObject(vCanvas.getInspector().
                         getObject(getObjectRepresentation().
-                        getObjectID()).getClass(), vCanvas,
+                                getObjectID()).getClass(), vCanvas,
                         new Point(getLocation().x + 20,
-                        getLocation().y + yOffset + 20),
+                                getLocation().y + yOffset + 20),
                         false);
             }
         });
@@ -369,9 +395,9 @@ public class VisualObject extends CanvasWindow {
 
                     VisualObject vObj = vCanvas.addObject(
                             vCanvas.getInspector().getObject(
-                            getObjectRepresentation().getObjectID()),
+                                    getObjectRepresentation().getObjectID()),
                             new Point(getLocation().x + 20,
-                            getLocation().y + 20));
+                                    getLocation().y + 20));
 
                     vObj.addSourceIcon();
 
@@ -395,7 +421,7 @@ public class VisualObject extends CanvasWindow {
 
                 Class<?> cls = vCanvas.getInspector().getObjectClass(
                         getObjectRepresentation());
-                
+
                 // reload class
                 cls = vCanvas.getClassLoader().reloadClass(cls);
 
@@ -416,14 +442,14 @@ public class VisualObject extends CanvasWindow {
 
     private void updateCode() {
         try {
-            VisualCanvas mainCanvas =
-                    (VisualCanvas) getMainCanvas();
+            VisualCanvas mainCanvas
+                    = (VisualCanvas) getMainCanvas();
             // gather code
             int objID = getObjectRepresentation().getObjectID();
             Object obj = mainCanvas.getInspector().getObject(objID);
-            code =
-                    mainCanvas.getCodes().getByName(
-                    obj.getClass().getName());
+            code
+                    = mainCanvas.getCodes().getByName(
+                            obj.getClass().getName());
         } catch (Exception ex) {
             // cannot add icon
             ex.printStackTrace(System.err);
@@ -444,8 +470,8 @@ public class VisualObject extends CanvasWindow {
 
             if (sourceIcon == null) {
 
-                final VisualCanvas vCanvas =
-                        (VisualCanvas) getMainCanvas();
+                final VisualCanvas vCanvas
+                        = (VisualCanvas) getMainCanvas();
                 int objID = getObjectRepresentation().getObjectID();
                 final String className = vCanvas.getInspector().
                         getObject(objID).getClass().getName();
@@ -457,14 +483,14 @@ public class VisualObject extends CanvasWindow {
 
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        VisualCanvas mainCanvas =
-                                (VisualCanvas) getMainCanvas();
+                        VisualCanvas mainCanvas
+                                = (VisualCanvas) getMainCanvas();
 
                         updateCode();
 
                         if (code == null
                                 && ComponentUtil.isVisualSessionComponent(
-                                componentClass)) {
+                                        componentClass)) {
                             try {
                                 System.out.println(">> adding source icon: visual");
                                 vCanvas.getProjectController().open(className);
@@ -477,23 +503,23 @@ public class VisualObject extends CanvasWindow {
                             }
                         } else if (code == null
                                 && ComponentUtil.isCodeSessionComponent(
-                                componentClass)) {
+                                        componentClass)) {
                             try {
                                 System.out.println(">> adding source icon: code");
-                                File codeFile =
-                                        vCanvas.getProjectController().
+                                File codeFile
+                                        = vCanvas.getProjectController().
                                         getProject().
                                         getSourceFileByEntryName(
-                                        componentClass.getName());
+                                                componentClass.getName());
 
                                 TextLoader loader = new TextLoader();
                                 String text = (String) loader.loadFile(codeFile);
 
-                                GroovyCodeEditorComponent editComponent =
-                                        new GroovyCodeEditorComponent(text);
+                                GroovyCodeEditorComponent editComponent
+                                        = new GroovyCodeEditorComponent(text);
 
-                                CanvasWindow window =
-                                        vCanvas.addObject(editComponent);
+                                CanvasWindow window
+                                        = vCanvas.addObject(editComponent);
 
                                 int winPosX = getX()
                                         - (window.getWidth() - getWidth()) / 2;
@@ -512,7 +538,6 @@ public class VisualObject extends CanvasWindow {
 //                                        componentClass.getName());
 //                                
 //                                window.setTitle(title);
-
                             } catch (IOException ex) {
                                 Logger.getLogger(VisualObject.class.getName()).
                                         log(Level.SEVERE, null, ex);
@@ -523,9 +548,9 @@ public class VisualObject extends CanvasWindow {
 
                         System.out.println(">> adding source icon: deprecated");
 
-                        CanvasWindow window =
-                                new GroovyCodeWindow(mainCanvas,
-                                code.getCode());
+                        CanvasWindow window
+                                = new GroovyCodeWindow(mainCanvas,
+                                        code.getCode());
                         getMainCanvas().getWindows().
                                 add(window);
 
@@ -611,7 +636,6 @@ public class VisualObject extends CanvasWindow {
 //               return c;
 //           }
 //        }
-
         for (Connector c : getConnectors()) {
             if (c.isSelected()) {
                 return c;
@@ -661,7 +685,6 @@ public class VisualObject extends CanvasWindow {
 //                jC.revalidate();
 //            }
 //        }
-
         getObjectRepresentation().revalidate();
 
         super.minimize();
@@ -684,11 +707,11 @@ public class VisualObject extends CanvasWindow {
 
     @Override
     public void dispose() {
-        
+
         if (isDisposed()) {
             return;
         }
-        
+
         try {
             getMainCanvas().getMessageBox().removeObjectReferences(
                     getObjectRepresentation());
