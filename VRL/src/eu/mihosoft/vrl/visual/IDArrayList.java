@@ -52,7 +52,11 @@
 
 package eu.mihosoft.vrl.visual;
 
+import eu.mihosoft.vrl.system.Constants;
+import eu.mihosoft.vrl.system.VMessage;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * This is an extended version of
@@ -81,11 +85,15 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
         DEBUG = state;
     }
     private IDTable idTable = new IDTable();
-    private IDTable originalIdTable = new IDTable();
+    private final IDTable originalIdTable = new IDTable();
     private static boolean DEBUG;
+    private static final List<Thread> threads = new ArrayList<Thread>();
 
     @Override
     public boolean add(E e) {
+        
+        checkThatAccessIsSingleThreaded();
+        
         int id = getNewId();
         e.setID(id);
 
@@ -93,7 +101,7 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
             System.err.println(
                     "ID already exists : "
                     + getById(id).getID() + " : " + getById(id));
-            System.exit(1);
+            VMessage.criticalErrorDetected();
         }
 
 //        System.out.println(">> IDArrayList: entry added.");
@@ -103,6 +111,19 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
         updateIdTable();
 
         return result;
+    }
+
+    private void checkThatAccessIsSingleThreaded() {
+        if (!threads.contains(Thread.currentThread())) {
+            System.out.println(">> IDArrayList: adding thread " + Thread.currentThread());
+            threads.add(Thread.currentThread());
+        }
+        
+        if (threads.size()>1) {
+            System.err.println(">> IDArrayList: accessing this list from more than one thread is not supported! Number of threads = " + threads.size());
+            
+            VMessage.criticalErrorDetected();
+        }
     }
 
     /**
@@ -126,6 +147,8 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
 
     @Override
     public void add(int index, E e) {
+        
+        checkThatAccessIsSingleThreaded();
 
         int id = getNewId();
 
@@ -145,12 +168,15 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * @return <code>true</code> (as specified by {@link Collection#add})
      */
     public boolean addWithID(E e, int ID) {
+        
+        checkThatAccessIsSingleThreaded();
 
         boolean result = false;
 
         if (getById(ID) != null) {
             System.out.println(">> IDArrayList: element with equal id already"
                     + " exists!");
+            VMessage.criticalErrorDetected();
         } else {
             e.setID(ID);
 
@@ -171,6 +197,9 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * <code>null</code> otherwise
      */
     public E getById(int ID) {
+        
+        checkThatAccessIsSingleThreaded();
+        
         E element = null;
         for (E e : this) {
             if (e.getID() == ID) {
@@ -188,6 +217,9 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * <code>null</code> otherwise
      */
     public Integer getIndexById(int ID) {
+        
+        checkThatAccessIsSingleThreaded();
+        
         Integer result = null;
         for (int i = 0; i < size(); i++) {
 
@@ -206,6 +238,9 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * <code>null</code> otherwise
      */
     public Integer getIdByIndex(int index) {
+        
+        checkThatAccessIsSingleThreaded();
+        
         return get(index).getID();
     }
 
@@ -221,6 +256,8 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * @see IDTable
      */
     public int getNewId() {
+        
+        checkThatAccessIsSingleThreaded();
 
 //        System.out.println(">> *** ID-Search ***");
 
@@ -290,6 +327,9 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * @param idTable the idTable to set
      */
     public void setIdTable(IDTable idTable) {
+        
+        checkThatAccessIsSingleThreaded();
+        
         this.idTable = idTable;
 
         // now set the id of every object entry to the value defined in the
@@ -318,11 +358,16 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * @return the id table of this list
      */
     public IDTable getIdTable() {
+        
+        checkThatAccessIsSingleThreaded();
+        
         return idTable;
     }
 
     @Override
     public E remove(int index) {
+        
+        checkThatAccessIsSingleThreaded();
 
         E result = super.remove(index);
 
@@ -339,12 +384,18 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * @return <code>true</code> (as specified by {@link Collection#remove})
      */
     public boolean removeByID(int id) {
+        
+        checkThatAccessIsSingleThreaded();
+        
         return remove(getById(id));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public boolean remove(Object o) {
+        
+        checkThatAccessIsSingleThreaded();
+        
         boolean result = false;
 
         if (o instanceof IDObject) {
