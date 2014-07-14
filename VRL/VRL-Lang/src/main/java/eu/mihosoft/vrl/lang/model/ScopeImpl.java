@@ -60,6 +60,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 /**
@@ -84,7 +85,7 @@ class ScopeImpl implements Scope {
     private final ScopeInvocation invocation;
     private VFlow flow;
 
-    public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
+public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
         this.id = id;
         this.parent = parent;
 
@@ -105,6 +106,8 @@ class ScopeImpl implements Scope {
         flow.getModel().setTitle(name);
         flow.setVisible(true);
         flow.getModel().getValueObject().setValue(this);
+
+        initScopeListeners();
 
         this.scopeArgs = scopeArgs;
         this.controlFlow = new ControlFlowImpl(this);
@@ -130,6 +133,37 @@ class ScopeImpl implements Scope {
             invocation = null;
 
         }
+    }
+    
+    private void initScopeListeners() {
+        scopes.addListener((ListChangeListener.Change<? extends Scope> c) -> {
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    for(Scope s : c.getAddedSubList()) {
+                    if (s.getParent() != this)
+                       throw new UnsupportedOperationException(
+                                "Todo (21.06.2014): Flow model needs support for adding scopes!"
+                                        + "Switching scope parent currently not supported!");
+                    }
+                }
+
+                if (c.wasRemoved()) {
+                    for (Scope s : c.getRemoved()) {
+                        flow.getNodes().remove(s.getNode());
+                    }
+                }
+            }
+        });
+        
+        flow.getNodes().addListener((ListChangeListener.Change<? extends VNode> c) -> {
+           while(c.next()) {
+               if (c.wasRemoved()) {
+                   c.getRemoved().stream().filter(n->n.getValueObject().getValue() instanceof ScopeImpl).
+                           map(n->(ScopeImpl)n.getValueObject().getValue()).
+                           forEach(s-> removeScope(s));
+               }
+           }
+        });
     }
 
     public ScopeImpl(String id, Scope parent, ScopeType type, String name, Object... scopeArgs) {
@@ -491,3 +525,4 @@ class ScopeImpl implements Scope {
     }
 
 }
+
