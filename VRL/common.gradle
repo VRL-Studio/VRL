@@ -12,6 +12,7 @@ apply plugin: 'application'
 // overriding this property in subprojects is not allowed
 sourceCompatibility = '1.8'
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+//[compileJava, compileTestJava]*.options*.compilerArgs = ['-g:source,lines,vars']
 
 // maven repositories for dependency resolution
 repositories {
