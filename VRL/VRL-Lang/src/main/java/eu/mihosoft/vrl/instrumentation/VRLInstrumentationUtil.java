@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.instrumentation;
 
 import java.lang.reflect.InvocationTargetException;
@@ -95,12 +94,12 @@ public class VRLInstrumentationUtil {
         } else {
             result = org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(o, mName, args);
         }
-        
+
         System.out.println(" --> returning " + result);
 
         return result;
     }
-    
+
     /**
      * Do not call manually! This method will be used by AST transformations to
      * instrument method calls.
@@ -115,7 +114,7 @@ public class VRLInstrumentationUtil {
      */
     public static Object __instrumentCode(int scopeId, boolean staticCall, Object o, String mName, Object[] args) throws Throwable {
 
-        System.out.println(" --> calling " + mName + "(...): scope=" + scopeId);
+        System.out.println(" --> calling " + o.toString() + "." + mName + "(...): scope=" + scopeId);
 
         Object result = null;
 
@@ -124,7 +123,7 @@ public class VRLInstrumentationUtil {
         } else {
             result = org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(o, mName, args);
         }
-        
+
         System.out.println(" --> returning " + result);
 
         return result;
