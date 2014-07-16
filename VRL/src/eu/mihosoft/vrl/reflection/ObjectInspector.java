@@ -107,7 +107,7 @@ public class ObjectInspector {
         ObjectDescription oDesc = getObjectDescription(getObject(mDesc.getObjectID()));
         String methodName = oDesc.getName() + "." + mDesc.getMethodName() + "()";
 
-        System.out.println("Method \""
+        System.err.println("Method \""
                 + methodName + "\" can't be invoked:" + message);
     }
 
@@ -122,7 +122,7 @@ public class ObjectInspector {
         ObjectDescription oDesc = getObjectDescription(getObject(mDesc.getObjectID()));
         String methodName = oDesc.getName() + "." + mDesc.getMethodName() + "()";
 
-        System.out.println("Method \""
+        System.err.println("Method \""
                 + methodName + "\" can't be invoked:" + ex.toString());
     }
 
@@ -166,7 +166,7 @@ public class ObjectInspector {
             methodDescription.setReturnValue(proxy.invoke(methodDescription));
             if (!methodDescription.getReturnType().
                     equals(methodDescription.getReturnValue().getClass())) {
-                System.out.println(
+                System.err.println(
                         ">> ProxyObject: wrong type of return value!");
                 generateErrorMessage(">> ProxyObject:"
                         + " wrong type of return value!",
@@ -202,7 +202,7 @@ public class ObjectInspector {
                         + "(): " + ex.toString(),
                         methodDescription);
             } catch (IllegalArgumentException ex) {
-                System.out.println(">> ObjectInspector:"
+                System.err.println(">> ObjectInspector:"
                         + " invoked method with wrong arguments!");
 
                 String yourParamStr = "";
@@ -229,9 +229,9 @@ public class ObjectInspector {
                             += m.getParameterTypes()[i].getName() + " ";
                 }
 
-                System.out.println(
+                System.err.println(
                         "   your parameters:     " + yourParamStr);
-                System.out.println(
+                System.err.println(
                         "   expected parameters: " + expectedParamStr);
 
                 generateErrorMessage(methodDescription.getMethodName()
@@ -391,7 +391,7 @@ public class ObjectInspector {
         if (objectInfo != null
                 && objectInfo.instances()
                 <= numberOfInstances(o.getClass().getName())) {
-            System.out.println(">> Cannot add Object: only "
+            System.err.println(">> Cannot add Object: only "
                     + objectInfo.instances() + " instances allowed!");
             return false;
         }
@@ -888,10 +888,10 @@ public class ObjectInspector {
             }
         }
 
-        if (result == null) {
-            System.err.println(">> MethodDescription not found!"
-                    + " Wrong name or wrong parameters?");
-        }
+//        if (result == null) {
+//            System.err.println(">> MethodDescription not found!"
+//                    + " Wrong name or wrong parameters?");
+//        }
 
         return result;
     }
