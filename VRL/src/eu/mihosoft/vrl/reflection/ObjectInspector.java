@@ -214,8 +214,8 @@ public class ObjectInspector {
                             i < methodDescription.getParameters().length; i++) {
                         Object parameter = methodDescription.getParameters()[i];
                         if (parameter != null) {
-                            yourParamStr +=
-                                    parameter.getClass().getName() + " ";
+                            yourParamStr
+                                    += parameter.getClass().getName() + " ";
                         } else {
                             yourParamStr += "null ";
                         }
@@ -225,8 +225,8 @@ public class ObjectInspector {
                 }
 
                 for (int i = 0; i < m.getParameterTypes().length; i++) {
-                    expectedParamStr +=
-                            m.getParameterTypes()[i].getName() + " ";
+                    expectedParamStr
+                            += m.getParameterTypes()[i].getName() + " ";
                 }
 
                 System.out.println(
@@ -439,8 +439,8 @@ public class ObjectInspector {
         if (o instanceof ProxyObject) {
             ProxyObject proxy = (ProxyObject) o;
 
-            result =
-                    proxy.getObjectDescription();
+            result
+                    = proxy.getObjectDescription();
 
             result.setName(o.getClass().getName());
 
@@ -532,15 +532,15 @@ public class ObjectInspector {
 
                 Class[] parameterTypes = theMethods[i].getParameterTypes();
 
-                Annotation[][] allParameterAnnotations =
-                        theMethods[i].getParameterAnnotations();
+                Annotation[][] allParameterAnnotations
+                        = theMethods[i].getParameterAnnotations();
 
                 ArrayList<String> paramNames = new ArrayList<String>();
 
-                ArrayList<ParamInfo> paramAnnotations =
-                        new ArrayList<ParamInfo>();
-                ArrayList<ParamGroupInfo> paramGroupAnnotations =
-                        new ArrayList<ParamGroupInfo>();
+                ArrayList<ParamInfo> paramAnnotations
+                        = new ArrayList<ParamInfo>();
+                ArrayList<ParamGroupInfo> paramGroupAnnotations
+                        = new ArrayList<ParamGroupInfo>();
 
                 // retrieving annotation information for each parameter
                 for (int j = 0; j < allParameterAnnotations.length; j++) {
@@ -574,16 +574,16 @@ public class ObjectInspector {
                 } // end for j
 
                 // convert list to array
-                String[] parameterNames =
-                        paramNames.toArray(new String[paramNames.size()]);
+                String[] parameterNames
+                        = paramNames.toArray(new String[paramNames.size()]);
 
-                ParamInfo[] parameterAnnotations =
-                        paramAnnotations.toArray(
-                        new ParamInfo[paramAnnotations.size()]);
+                ParamInfo[] parameterAnnotations
+                        = paramAnnotations.toArray(
+                                new ParamInfo[paramAnnotations.size()]);
 
-                ParamGroupInfo[] parameterGroupAnnotations =
-                        paramGroupAnnotations.toArray(
-                        new ParamGroupInfo[paramGroupAnnotations.size()]);
+                ParamGroupInfo[] parameterGroupAnnotations
+                        = paramGroupAnnotations.toArray(
+                                new ParamGroupInfo[paramGroupAnnotations.size()]);
 
                 Class returnType = theMethods[i].getReturnType();
 
@@ -594,7 +594,6 @@ public class ObjectInspector {
                 int modifiers = theMethods[i].getModifiers();
 
                 String modifierString = Modifier.toString(modifiers);
-
 
                 // Method Annotations
                 Annotation[] annotations = theMethods[i].getAnnotations();
@@ -624,14 +623,14 @@ public class ObjectInspector {
 
                 if (theMethods[i].getAnnotation(ReferenceMethodInfo.class) != null) {
                     hasCustomReferenceMethod = true;
-                    MethodDescription customReferenceMethod =
-                            new MethodDescription(objID,
-                            0,
-                            methodString, methodTitle, null, parameterTypes,
-                            parameterNames, parameterAnnotations,
-                            parameterGroupAnnotations,
-                            returnType, returnValueName, interactive,
-                            methodInfo, outputInfo);
+                    MethodDescription customReferenceMethod
+                            = new MethodDescription(objID,
+                                    0,
+                                    methodString, methodTitle, null, parameterTypes,
+                                    parameterNames, parameterAnnotations,
+                                    parameterGroupAnnotations,
+                                    returnType, returnValueName, interactive,
+                                    methodInfo, outputInfo);
 
                     if (customReferenceMethod.getParameterTypes() == null
                             || customReferenceMethod.getParameterTypes().length != 1) {
@@ -673,7 +672,6 @@ public class ObjectInspector {
             } // end for i
 
             // Object name
-
             if (objectInfo != null && !objectInfo.name().equals("")) {
                 result.setName(objectInfo.name());
             }
@@ -714,10 +712,9 @@ public class ObjectInspector {
         }
 
         //objects.getById(objID).setObject(newObj);
-
-        Collection<Object> instances =
-                getObjectsByClassName(newObj.getClass().
-                getName());
+        Collection<Object> instances
+                = getObjectsByClassName(newObj.getClass().
+                        getName());
 
         if (instances.size() <= objID) {
             addObject(newObj);
@@ -767,14 +764,13 @@ public class ObjectInspector {
         ArrayList<Object> newInstances = new ArrayList<Object>();
         ArrayList<Object> oldInstances = new ArrayList<Object>();
 
-        Collection<Object> instances =
-                getObjectsByClassName(cls.getName());
+        Collection<Object> instances
+                = getObjectsByClassName(cls.getName());
 
 //        if (instances.isEmpty()) {
 //            throw new IllegalStateException(
 //                    "Cannot replace. No instances found!");
 //        }
-
         for (Object oldObj : instances) {
             Object newObj;
 
@@ -854,7 +850,8 @@ public class ObjectInspector {
      * @param o object of the method
      * @param methodName name of the method
      * @param params method parameters
-     * @return description of the method
+     * @return description of the method or <code>null</code> if the requested
+     * method could not be found
      */
     public MethodDescription getMethodDescription(Object o,
             String methodName, Class... params) {
@@ -892,7 +889,7 @@ public class ObjectInspector {
         }
 
         if (result == null) {
-            System.out.println(">> MethodDescription not found!"
+            System.err.println(">> MethodDescription not found!"
                     + " Wrong name or wrong parameters?");
         }
 
@@ -918,7 +915,6 @@ public class ObjectInspector {
 //            Class c = p.getClass();
 //            paramTypes.add(c);
 //        }
-
         for (MethodDescription mDesc : oDesc.getMethods()) {
             if (mDesc.getMethodName().equals(methodName)) {
                 boolean isEqual = true;
@@ -966,10 +962,9 @@ public class ObjectInspector {
             paramTypes.add(c);
         }
 
-        MethodDescription methodDescription =
-                this.getMethodDescription(o, methodName,
-                paramTypes.toArray(new Class[]{}));
-
+        MethodDescription methodDescription
+                = this.getMethodDescription(o, methodName,
+                        paramTypes.toArray(new Class[]{}));
 
         if (methodDescription != null) {
             this.invoke(methodDescription);

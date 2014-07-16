@@ -49,14 +49,12 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io.vrlx;
 
 import eu.mihosoft.vrl.visual.Canvas;
 import eu.mihosoft.vrl.io.Base64;
-import eu.mihosoft.vrl.reflection.CallOptionEvaluationTask;
-import eu.mihosoft.vrl.reflection.CallOptionsEvaluator;
-import eu.mihosoft.vrl.reflection.ComponentUtil;
+import eu.mihosoft.vrl.lang.visual.StartObject;
+import eu.mihosoft.vrl.lang.visual.StopObject;
 import eu.mihosoft.vrl.reflection.DefaultMethodRepresentation;
 import eu.mihosoft.vrl.reflection.DefaultObjectRepresentation;
 import eu.mihosoft.vrl.reflection.MethodDescription;
@@ -79,6 +77,7 @@ import java.util.Collection;
 /**
  * Abstract representation of an object. This class is only used for XML
  * serialization.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class AbstractObjectRepresentation
@@ -110,6 +109,7 @@ public class AbstractObjectRepresentation
      * <p>
      * Creates a new instance from visual object.
      * </p>
+     *
      * @param obj the visual object that is to be used for instanciation
      * @throws NotSerializableException
      */
@@ -133,8 +133,8 @@ public class AbstractObjectRepresentation
             }
         }
 
-        Collection<DefaultMethodRepresentation> methods =
-                obj.getObjectRepresentation().getInvocationList();
+        Collection<DefaultMethodRepresentation> methods
+                = obj.getObjectRepresentation().getInvocationList();
         for (DefaultMethodRepresentation mRep : methods) {
 
             // if mRep is not a reference method, add it
@@ -149,12 +149,12 @@ public class AbstractObjectRepresentation
                 obj.getObjectRepresentation().getConnectorIDTables());
 
 //        System.out.println("IDTable: " + getConnectorIDTables());
-
     }
 
     /**
      * Assigns properties to object representation. This method is used to
      * assign properties loaded from XML session file.
+     *
      * @param o the o representation that is associated with this abstract
      * object representation
      */
@@ -168,11 +168,18 @@ public class AbstractObjectRepresentation
 //            DefaultMethodRepresentation method =
 //                    o.getMethodBySignature(m.getMethodName(),
 //                    m.getParameterTypeNames());
+            MethodDescription method
+                    = o.getMethodDescriptionBySignature(m.getMethodName(),
+                            m.getParameterTypeNames());
 
-            MethodDescription method =
-                    o.getMethodDescriptionBySignature(m.getMethodName(),
-                    m.getParameterTypeNames());
-
+            // since 16.07.2014 we changed the method signature of Start and Stop
+            // however, this does not affect the workflow and will therefore be
+            // ignored
+            boolean isStartObject = canvas.getInspector().
+                    getObject(o.getObjectID()).getClass() == StartObject.class;
+            boolean isStopObject = canvas.getInspector().
+                    getObject(o.getObjectID()).getClass() == StopObject.class;
+            boolean isNotStartOrStopObject = !isStartObject && !isStopObject;
 
             if (method == null) {
 
@@ -185,9 +192,12 @@ public class AbstractObjectRepresentation
                         + "()\" because the interface of the method has changed"
                         + " or the method has been removed.";
                 System.err.println(msg);
-                canvas.getMessageBox().addMessage(
-                        "Cannot assign method properties:",
-                        msg, o, MessageType.WARNING);
+
+                if (isNotStartOrStopObject) {
+                    canvas.getMessageBox().addMessage(
+                            "Cannot assign method properties:",
+                            msg, o, MessageType.WARNING);
+                }
                 continue;
             }
 
@@ -205,11 +215,10 @@ public class AbstractObjectRepresentation
 //                o.removeMethodFromView(method);
 //            }
 
-
             if (mRep != null) {
                 m.assignProperties(mRep);
             }
-            
+
         } // end for m
 
         String missingMethods = "";
@@ -235,6 +244,15 @@ public class AbstractObjectRepresentation
 
         o.setMethodOrder(getMethodOrder());
 
+        // since 16.07.2014 we changed the method signature of Start and Stop
+        // however, this does not affect the workflow and will therefore be
+        // ignored
+        boolean isStartObject = canvas.getInspector().
+                getObject(o.getObjectID()).getClass() == StartObject.class;
+        boolean isStopObject = canvas.getInspector().
+                getObject(o.getObjectID()).getClass() == StopObject.class;
+        boolean isNotStartOrStopObject = !isStartObject && !isStopObject;
+
         if (!missingMethods.isEmpty()) {
             String msg = "The interface of component "
                     + Message.EMPHASIZE_BEGIN + o.getName()
@@ -246,9 +264,12 @@ public class AbstractObjectRepresentation
                     + " Please check the controlflow of this"
                     + " component!";
             System.err.println(msg);
-            canvas.getMessageBox().addMessage(
-                    "Interface changed:",
-                    msg, o, MessageType.WARNING);
+
+            if (isNotStartOrStopObject) {
+                canvas.getMessageBox().addMessage(
+                        "Interface changed:",
+                        msg, o, MessageType.WARNING);
+            }
         }
     }
 
@@ -260,7 +281,6 @@ public class AbstractObjectRepresentation
             VisualCanvas visualCanvas = (VisualCanvas) mainCanvas;
             VisualObjectInspector inspector = visualCanvas.getInspector();
 
-
             // check if object has already been added
             Object object = inspector.getObject(getObjID());
 
@@ -270,9 +290,9 @@ public class AbstractObjectRepresentation
                 inspector.addObject(object, getObjID());
             }
 
-            DefaultObjectRepresentation oRep =
-                    inspector.generateObjectRepresentation(object,
-                    getConnectorIDTables(), getVisualID());
+            DefaultObjectRepresentation oRep
+                    = inspector.generateObjectRepresentation(object,
+                            getConnectorIDTables(), getVisualID());
 
             result.add(oRep);
         }
@@ -283,6 +303,7 @@ public class AbstractObjectRepresentation
     /**
      * Decodes and returns the object that is saved as compressed base64 string
      * using the class loader of the specified canvas object.
+     *
      * @param mainCanvas the canvas object that is used for class loading
      * @return the object that is saved as compressed base64 string
      */
@@ -297,6 +318,7 @@ public class AbstractObjectRepresentation
 
     /**
      * Returns the base64 encoded object data as string.
+     *
      * @return the base64 encoded object data as string
      */
     public String getObjectData() {
@@ -305,6 +327,7 @@ public class AbstractObjectRepresentation
 
     /**
      * Sets the object data string.
+     *
      * @param objectData the object data to set
      */
     public void setObjectData(String objectData) {
@@ -313,6 +336,7 @@ public class AbstractObjectRepresentation
 
     /**
      * Returns the object id.
+     *
      * @return the object id
      */
     public Integer getObjID() {
@@ -321,6 +345,7 @@ public class AbstractObjectRepresentation
 
     /**
      * Defines the object id.
+     *
      * @param objID the object id to set
      */
     public void setObjID(Integer objID) {
@@ -380,15 +405,13 @@ public class AbstractObjectRepresentation
         int inspectorID = vObj.getObjectRepresentation().getObjectID();
 
 //        Object o = mainCanvas.getInspector().getObject(inspectorID);
-
 //        AbstractCode code =
 //                mainCanvas.getCodes().getByClass(o.getClass());
-
 //        if (code != null || ComponentUtil.isVisualSessionComponent(o.getClass())) {
-            try {
-                vObj.addSourceIcon();
-            } catch (Exception ex) {
-            }
+        try {
+            vObj.addSourceIcon();
+        } catch (Exception ex) {
+        }
 //        }
 
         if (!abstractWindow.getVisible()) {
@@ -404,7 +427,6 @@ public class AbstractObjectRepresentation
 //                mainCanvas.getInspector().getObjectDescription(o),
 //                getVisualID(),
 //                callOptionsEvaluator));
-
         return window;
     }
 

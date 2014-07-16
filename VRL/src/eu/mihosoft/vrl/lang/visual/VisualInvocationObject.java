@@ -99,6 +99,8 @@ public class VisualInvocationObject {
 
                 @Override
                 public void run() {
+                    startObject.invocationStarted();
+                    stopObject.invocationStarted();
                     running = true;
                     try {
                         if (canvas.isInvokeWaitEffect()) {
@@ -153,6 +155,8 @@ public class VisualInvocationObject {
                     
                     thread = null;
                     running = false;
+                    startObject.invocationStopped();
+                    stopObject.invocationStopped();
                 }
             };
             startObject.thread = thread;

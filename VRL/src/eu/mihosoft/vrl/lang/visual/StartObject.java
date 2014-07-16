@@ -55,7 +55,10 @@ package eu.mihosoft.vrl.lang.visual;
 import eu.mihosoft.vrl.annotation.ComponentInfo;
 import eu.mihosoft.vrl.annotation.MethodInfo;
 import eu.mihosoft.vrl.annotation.ObjectInfo;
+import eu.mihosoft.vrl.reflection.DefaultMethodRepresentation;
+import eu.mihosoft.vrl.reflection.WorkflowEvent;
 import eu.mihosoft.vrl.types.CanvasRequest;
+import eu.mihosoft.vrl.types.MethodRequest;
 import java.io.Serializable;
 
 /**
@@ -72,9 +75,12 @@ public class StartObject implements Serializable {
     private static final long serialVersionUID = 1L;
     private transient VisualInvocationObject invocation;
     public transient Thread thread;
+    private transient DefaultMethodRepresentation mRep;
 
     @MethodInfo(name = " ", buttonText = "start", hideCloseIcon=true)
-    public void start(CanvasRequest cReq) {
+    public void start(CanvasRequest cReq, MethodRequest mReq) {
+        
+        mRep = mReq.getMethod();
 
         if (invocation == null) {
             invocation = new VisualInvocationObject();
@@ -84,6 +90,17 @@ public class StartObject implements Serializable {
             if (invocation.init(cReq.getCanvas())) {
                 invocation.invoke();
             }
+        } else {
+            cReq.getCanvas().fireWorkflowEvent(WorkflowEvent.STOP_WORKFLOW);
+            invocation.stop();
         }
+    }
+
+    void invocationStarted() {
+        mRep.changeInvokeButtonTextIfButtonIsPresent("stop");
+    }
+
+    void invocationStopped() {
+        mRep.changeInvokeButtonTextIfButtonIsPresent("start");
     }
 }
