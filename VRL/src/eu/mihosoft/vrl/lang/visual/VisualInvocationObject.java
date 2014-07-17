@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.lang.visual;
 
 import eu.mihosoft.vrl.reflection.DefaultMethodRepresentation;
@@ -91,7 +90,7 @@ public class VisualInvocationObject {
 
     public synchronized void invoke() {
         final MessageBox mBox = canvas.getMessageBox();
-        
+
         running = true;
 
         if (thread == null) {
@@ -128,17 +127,16 @@ public class VisualInvocationObject {
                                 if (canvas.isInvokeWaitEffect()) {
                                     mRep.stopWaitEffect();
                                 }
-                                
+
                                 if (!mRep.areParamsValid()) {
                                     break;
                                 }
                             }
                         }
                     } catch (Throwable ex) {
-                        
+
                         // error output is now handled by objectinspector
                         // TODO cleanup
-
 //                        String message = ex.toString();
 //
 //                        if (ex.getCause() != null) {
@@ -147,18 +145,15 @@ public class VisualInvocationObject {
 //
 //                        mBox.addMessage("Cannot invoke Method:",
 //                                message, MessageType.ERROR);
-
 //                        Logger.getLogger(
 //                                VisualInvocationObject.class.getName()).
 //                                log(Level.SEVERE, null, ex);
                     }
-                    
+
                     thread = null;
                     running = false;
-                    startObject.invocationStopped();
-                    stopObject.invocationStopped();
                 }
-            };
+            }; // end VThread
             startObject.thread = thread;
             stopObject.invocationObj = this;
 
