@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.ICodeRange;
@@ -68,13 +67,13 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
     public ScopeInvocationImpl(Scope s) {
         super(s, "", null, "scope", Type.VOID, false, true, true, new IArgument[0]);
         this.scope = s;
-        
+
         VNode node = scope.getNode();
-        
+
         node.getValueObject().setValue(this);
-        
+
         node.setMainInput(node.addInput(WorkflowUtil.CONTROL_FLOW));
-        node.setMainOutput(node.addOutput(WorkflowUtil.CONTROL_FLOW));      
+        node.setMainOutput(node.addOutput(WorkflowUtil.CONTROL_FLOW));
     }
 
     /**
@@ -100,28 +99,8 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
         return this.scope.getNode();
     }
     
-    private ObservableCodeImpl getObservable() {
-        if (observableCode==null) {
-            observableCode = new ObservableCodeImpl();
-        }
-        
-        return observableCode;
-    }
-
-    @Override
-    public void addEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
-        getObservable().addEventHandler(type, eventHandler);
-    }
-
-    @Override
-    public void removeEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
-        getObservable().removeEventHandler(type, eventHandler);
-    }
-
-    @Override
-    public void fireEvent(CodeEvent evt) {
-        getObservable().fireEvent(evt);
-    }
+    
+    // TODO 19.07.2014: think about relation between scope invocation
+    //                  and scope in terms of event handling.
 
 }
-

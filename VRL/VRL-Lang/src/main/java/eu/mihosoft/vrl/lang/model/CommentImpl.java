@@ -194,6 +194,10 @@ public class CommentImpl implements Comment {
     @Override
     public void fireEvent(CodeEvent evt) {
         getObservable().fireEvent(evt);
+
+        if (!evt.isCaptured() && getParent() != null) {
+            getParent().fireEvent(evt);
+        }
     }
 
 }

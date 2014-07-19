@@ -319,10 +319,10 @@ class InvocationImpl implements Invocation {
      * @param returnType the returnType to set
      */
     protected void setReturnType(IType returnType) {
-        
-        List<Connector> connectorsToRemove = 
-                node.getOutputs().filtered(o->o.getType().equals(WorkflowUtil.DATA_FLOW));
-        
+
+        List<Connector> connectorsToRemove
+                = node.getOutputs().filtered(o -> o.getType().equals(WorkflowUtil.DATA_FLOW));
+
         node.getOutputs().removeAll(connectorsToRemove);
 
         if (!Objects.equals(returnType, Type.VOID)) {
@@ -338,13 +338,12 @@ class InvocationImpl implements Invocation {
     public VNode getNode() {
         return this.node;
     }
-    
-    
-     private ObservableCodeImpl getObservable() {
-        if (observableCode==null) {
+
+    private ObservableCodeImpl getObservable() {
+        if (observableCode == null) {
             observableCode = new ObservableCodeImpl();
         }
-        
+
         return observableCode;
     }
 
@@ -361,6 +360,10 @@ class InvocationImpl implements Invocation {
     @Override
     public void fireEvent(CodeEvent evt) {
         getObservable().fireEvent(evt);
+
+        if (!evt.isCaptured() && getParent() != null) {
+            getParent().fireEvent(evt);
+        }
     }
 
 }
