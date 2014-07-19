@@ -84,8 +84,9 @@ class ScopeImpl implements Scope {
     private final ObservableList<Comment> comments = FXCollections.observableArrayList();
     private final ScopeInvocation invocation;
     private VFlow flow;
+    private ObservableCodeImpl observableCode;
 
-public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
+    public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
         this.id = id;
         this.parent = parent;
 
@@ -134,16 +135,17 @@ public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flo
 
         }
     }
-    
+
     private void initScopeListeners() {
         scopes.addListener((ListChangeListener.Change<? extends Scope> c) -> {
             while (c.next()) {
                 if (c.wasAdded()) {
-                    for(Scope s : c.getAddedSubList()) {
-                    if (s.getParent() != this)
-                       throw new UnsupportedOperationException(
-                                "Todo (21.06.2014): Flow model needs support for adding scopes!"
-                                        + "Switching scope parent currently not supported!");
+                    for (Scope s : c.getAddedSubList()) {
+                        if (s.getParent() != this) {
+                            throw new UnsupportedOperationException(
+                                    "Todo (21.06.2014): Flow model needs support for adding scopes!"
+                                    + "Switching scope parent currently not supported!");
+                        }
                     }
                 }
 
@@ -154,15 +156,15 @@ public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flo
                 }
             }
         });
-        
+
         flow.getNodes().addListener((ListChangeListener.Change<? extends VNode> c) -> {
-           while(c.next()) {
-               if (c.wasRemoved()) {
-                   c.getRemoved().stream().filter(n->n.getValueObject().getValue() instanceof ScopeImpl).
-                           map(n->(ScopeImpl)n.getValueObject().getValue()).
-                           forEach(s-> removeScope(s));
-               }
-           }
+            while (c.next()) {
+                if (c.wasRemoved()) {
+                    c.getRemoved().stream().filter(n -> n.getValueObject().getValue() instanceof ScopeImpl).
+                            map(n -> (ScopeImpl) n.getValueObject().getValue()).
+                            forEach(s -> removeScope(s));
+                }
+            }
         });
     }
 
@@ -407,7 +409,7 @@ public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flo
     public void generateDataFlow() {
 
         System.out.println("DATAFLOW---------------------------------");
-        
+
         getDataFlow().create(controlFlow);
 
 //        for (Invocation i : controlFlow.getInvocations()) {
@@ -430,8 +432,7 @@ public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flo
 //            }
 //        }
     }
-    
-    
+
     @Override
     public Scope createScope(String id, ScopeType type, String name, Object[] args) {
         Scope scope = new ScopeImpl(id, this, type, name, args);
@@ -512,17 +513,43 @@ public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flo
     public VNode getNode() {
         return this.flow.getModel();
     }
-    
+
     @Override
     public void visitScopeAndAllSubElements(Consumer<CodeEntity> consumer) {
         consumer.accept(this);
         getControlFlow().getInvocations().forEach(consumer);
         getComments().forEach(consumer);
-        
+
         for (Scope scope : getScopes()) {
             scope.visitScopeAndAllSubElements(consumer);
         }
     }
 
-}
+    private ObservableCodeImpl getObservable() {
+        if (observableCode == null) {
+            observableCode = new ObservableCodeImpl();
+        }
 
+        return observableCode;
+    }
+
+    @Override
+    public void addEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().addEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void removeEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().removeEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void fireEvent(CodeEvent evt) {
+        getObservable().fireEvent(evt);
+
+        if (!evt.isCaptured() && getParent() != null) {
+            getParent().fireEvent(evt);
+        }
+    }
+
+}

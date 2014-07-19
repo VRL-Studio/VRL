@@ -63,6 +63,7 @@ import java.util.Objects;
 class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
 
     private final Scope scope;
+    private ObservableCodeImpl observableCode;
 
     public ScopeInvocationImpl(Scope s) {
         super(s, "", null, "scope", Type.VOID, false, true, true, new IArgument[0]);
@@ -97,6 +98,29 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
     @Override
     public VNode getNode() {
         return this.scope.getNode();
+    }
+    
+    private ObservableCodeImpl getObservable() {
+        if (observableCode==null) {
+            observableCode = new ObservableCodeImpl();
+        }
+        
+        return observableCode;
+    }
+
+    @Override
+    public void addEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().addEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void removeEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().removeEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void fireEvent(CodeEvent evt) {
+        getObservable().fireEvent(evt);
     }
 
 }

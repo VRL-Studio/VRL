@@ -67,6 +67,7 @@ public class CommentImpl implements Comment {
     private CommentType type = CommentType.UNDEFINED;
     private Scope parent;
     private VNode node;
+    private ObservableCodeImpl observableCode;
 
     public CommentImpl(String id, ICodeRange codeRange, String comment) {
         this.id = id;
@@ -170,6 +171,29 @@ public class CommentImpl implements Comment {
     @Override
     public VNode getNode() {
         return this.node;
+    }
+
+    private ObservableCodeImpl getObservable() {
+        if (observableCode == null) {
+            observableCode = new ObservableCodeImpl();
+        }
+
+        return observableCode;
+    }
+
+    @Override
+    public void addEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().addEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void removeEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().removeEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void fireEvent(CodeEvent evt) {
+        getObservable().fireEvent(evt);
     }
 
 }

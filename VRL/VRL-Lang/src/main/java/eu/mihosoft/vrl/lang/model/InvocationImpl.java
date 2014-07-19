@@ -77,6 +77,7 @@ class InvocationImpl implements Invocation {
     private IType returnType;
 //    private final Variable returnValue;
     private VNode node;
+    private ObservableCodeImpl observableCode;
 
     public InvocationImpl(
             Scope parent,
@@ -336,6 +337,30 @@ class InvocationImpl implements Invocation {
     @Override
     public VNode getNode() {
         return this.node;
+    }
+    
+    
+     private ObservableCodeImpl getObservable() {
+        if (observableCode==null) {
+            observableCode = new ObservableCodeImpl();
+        }
+        
+        return observableCode;
+    }
+
+    @Override
+    public void addEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().addEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void removeEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().removeEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void fireEvent(CodeEvent evt) {
+        getObservable().fireEvent(evt);
     }
 
 }
