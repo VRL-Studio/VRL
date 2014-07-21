@@ -20,9 +20,12 @@ public class InstrumentationTest {
         new GroovyShell().parse(
                 "@eu.mihosoft.vrl.instrumentation.VRLInstrumentation\n"
                 + "public class A {\n"
+                + "    public boolean m3(int i) {return i < 3;}\n"
                 + "    \n"
                 + "    public void m2(int p1) {\n"
-                + "        A.m1(A.m1(1));\n"
+                + "        for(int i = 0; m3(i);i++) {\n"
+                + "            A.m1(A.m1(1));\n"
+                + "        }"
                 + "    }\n"
                 + "    public static int m1(int p1) {\n"
                 + "        println(\"p1: \" + (p1+1));\n"
