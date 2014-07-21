@@ -23,12 +23,16 @@ jar {
     from project("CommentParser").sourceSets.main.output
 }
 
-sourcesJar {
-    from project("CommentParser").sourceSets.main.allSource
+if (project.getTasks().findByPath("sourcesJar")){
+    sourcesJar { 
+        from project("CommentParser").sourceSets.main.allSource
+    }
 }
 
-javadocJar {
-    from project("CommentParser").projectDir.path + '/build/docs/javadoc'
+if (project.getTasks().findByPath("sourcesJar")){
+    javadocJar {
+        from project("CommentParser").projectDir.path + '/build/docs/javadoc'
+    }
 }
 
 dependencies {
