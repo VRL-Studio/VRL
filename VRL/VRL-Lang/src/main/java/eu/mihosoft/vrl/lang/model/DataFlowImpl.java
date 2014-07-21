@@ -133,8 +133,6 @@ class DataFlowImpl implements DataFlow {
                     sender = a.getInvocation().get();
                 } else if (a.getArgType() == ArgumentType.VARIABLE) {
                     sender = a.getVariable().get().getDeclaration();
-                    
-                    System.err.println("var-decl: " + a.getVariable());
                 }
 
                 if (sender != null) {
