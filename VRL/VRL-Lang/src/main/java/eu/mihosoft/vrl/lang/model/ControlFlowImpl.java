@@ -52,6 +52,8 @@ package eu.mihosoft.vrl.lang.model;
 import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.Connection;
 import eu.mihosoft.vrl.workflow.VFlow;
+import eu.mihosoft.vrl.workflow.VNode;
+import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -91,6 +93,7 @@ class ControlFlowImpl implements ControlFlow {
             if (!currentlyUpdatingInvocations) {
                 updateConnections();
             }
+
         });
 
         flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().addListener(new ListChangeListener<Connection>() {
@@ -124,10 +127,40 @@ class ControlFlowImpl implements ControlFlow {
     private void updateInvocations() {
         currentlyUpdatingInvocations = true;
         invocations.clear();
-        for (Connection connection : flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections()) {
-            invocations.add((Invocation) connection.getSender().getNode().getValueObject().getValue());
-        }
+//        for (Connection connection : flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections()) {
+//            
+//            Invocation senderInv = (Invocation) connection.getSender().getNode().getValueObject().getValue();
+//            Invocation receiverInv = (Invocation) connection.getReceiver().getNode().getValueObject().getValue();
+//            if (!invocations.contains(senderInv)) {
+//                invocations.add(senderInv);
+//            }
+//             if (!invocations.contains(receiverInv)) {
+//                invocations.add(receiverInv);
+//            }
+//            
+//        }
+
+        List<VNode> roots = flow.getNodes().filtered(WorkflowUtil.nodeNotConnected(WorkflowUtil.CONTROL_FLOW));
+
+        List<List<VNode>> paths = new ArrayList<>();
+
+        // follow controlflow from roots to end
+        roots.forEach(
+                r -> {
+                    List<VNode> path = WorkflowUtil.getPath(r, WorkflowUtil.CONTROL_FLOW);
+                    paths.add(path);
+                }
+        );
+
+        paths.forEach(path -> path.forEach(
+                node -> {
+                    getInvocations().add((Invocation) node.getValueObject().getValue());
+                }
+        )
+        );
+
         currentlyUpdatingInvocations = false;
+        getParent().fireEvent(new CodeEvent(CodeEventType.CHANGE, parent));
     }
 
     @Override

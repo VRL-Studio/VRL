@@ -72,6 +72,7 @@ class DataFlowImpl implements DataFlow {
     ListMultimap<Invocation, DataRelation> relationsForReceiver = ArrayListMultimap.create();
     private boolean currentlyUpdatingFromModel;
     private boolean currentlyUpdatingFromUI;
+    private boolean listenersInitialized = false;
 
     void createDataRelation(Invocation sender, Invocation receiver, IArgument receiverArg, int receiverArgIndex) {
         DataRelationImpl relation = new DataRelationImpl(sender, receiver, receiverArg, receiverArgIndex);
@@ -106,7 +107,7 @@ class DataFlowImpl implements DataFlow {
         relationsForSender.clear();
         relationsForReceiver.clear();
 
-//        initListeners(controlFlow);
+        initListeners(controlFlow);
 
         System.out.println(">> creating dataflow: ");
 
@@ -176,16 +177,20 @@ class DataFlowImpl implements DataFlow {
 
             Connections connections = controlFlow.getParent().getFlow().
                     getConnections(WorkflowUtil.DATA_FLOW);
-            connections.getConnections().clear();
+
+//            connections.getConnections().clear();
+            for (Connection c : new ArrayList<Connection>(connections.getConnections())) {
+                controlFlow.getParent().getFlow().getConnections(WorkflowUtil.DATA_FLOW).remove(c);
+            }
 
             for (DataRelation dR : getRelations()) {
                 Connector sConn = dR.getSender().getNode().
                         getMainOutput(WorkflowUtil.DATA_FLOW);
                 Connector rConn = dR.getReceiver().getNode().
-                        getInputs().filtered(i->i.getType().equals(WorkflowUtil.DATA_FLOW)).get(dR.getReceiverArgIndex());
-                
+                        getInputs().filtered(i -> i.getType().equals(WorkflowUtil.DATA_FLOW)).get(dR.getReceiverArgIndex());
+
                 ConnectionResult compatible = controlFlow.getParent().getFlow().connect(sConn, rConn);
-                
+
                 if (!compatible.getStatus().isCompatible()) {
                     System.err.println("Connection not compatible! " + compatible.getStatus().getMessage());
                 }
@@ -287,7 +292,7 @@ class DataFlowImpl implements DataFlow {
         } // end while
 
         currentlyUpdatingFromUI = false;
-        create(controlFlow);
+//        create(controlFlow);
     }
 
     private int connectorsToArgIndex(Connector connector, Invocation receiverInvocation) {
@@ -296,6 +301,9 @@ class DataFlowImpl implements DataFlow {
     }
 
     private void initListeners(ControlFlow controlFlow) {
+        if (listenersInitialized) {
+            return;
+        }
         controlFlow.getParent().getFlow().
                 getConnections(WorkflowUtil.DATA_FLOW).getConnections().addListener(
                         (ListChangeListener.Change<? extends Connection> c) -> {
@@ -305,7 +313,10 @@ class DataFlowImpl implements DataFlow {
 
                             updateDataFlowFromVisualChange(controlFlow, c);
 
+                            controlFlow.getParent().fireEvent(new CodeEvent(CodeEventType.CHANGE, controlFlow.getParent()));
+
                         });
+        listenersInitialized = true;
     }
 
 //    public void generateDataFlow() {

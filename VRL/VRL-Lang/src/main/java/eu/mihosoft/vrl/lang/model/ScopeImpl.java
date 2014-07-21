@@ -155,6 +155,8 @@ class ScopeImpl implements Scope {
                     }
                 }
             }
+            
+            fireEvent(new CodeEvent(CodeEventType.CHANGE, this));
         });
 
         flow.getNodes().addListener((ListChangeListener.Change<? extends VNode> c) -> {
