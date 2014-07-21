@@ -100,7 +100,8 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
     public final void setVarName(String varName) {
         metadata.setVarName(varName);
         if (varName != null && !varName.isEmpty()) {
-            Variable v = _createVariable(Type.INT, varName);
+//            Variable v = _createVariable(Type.INT, varName);
+            declareVariable("UNDEFINED", Type.INT, varName);
         }
     }
 

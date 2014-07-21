@@ -133,12 +133,13 @@ class DataFlowImpl implements DataFlow {
                     sender = a.getInvocation().get();
                 } else if (a.getArgType() == ArgumentType.VARIABLE) {
                     sender = a.getVariable().get().getDeclaration();
+                    
+                    System.err.println("var-decl: " + a.getVariable());
                 }
 
                 if (sender != null) {
                     System.out.println(
                             " --> sender found " + sender.getMethodName());
-
                     createDataRelation(sender, receiver, a, argIndex);
                 } else {
                     System.err.println(" -> argType " + a.getArgType() + " not supported!");
