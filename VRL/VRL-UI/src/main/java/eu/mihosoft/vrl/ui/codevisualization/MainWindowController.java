@@ -59,6 +59,7 @@ import eu.mihosoft.vrl.lang.model.ScopeType;
 import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
+import eu.mihosoft.vrl.lang.model.CodeEventType;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.CommentType;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
@@ -138,14 +139,12 @@ public class MainWindowController implements Initializable {
 
     private final Map<String, LayoutData> layoutData = new HashMap<>();
 
-    private final Set<String> loadLayoutIds = new HashSet<String>();
+    private final Set<String> loadLayoutIds = new HashSet<>();
 
     private FileAlterationMonitor fileMonitor;
     private FileAlterationObserver observer;
 
     private Stage mainWindow;
-
-    private boolean isRunningCodeToScope;
 
     /**
      * Initializes the controller class.
@@ -236,7 +235,7 @@ public class MainWindowController implements Initializable {
     public void onSaveAction(ActionEvent e) {
         updateCode(UIBinding.scopes.values().iterator().next().get(0));
 
-        updateView(false);
+        updateView();
 
         saveDocument(false);
     }
@@ -274,7 +273,7 @@ public class MainWindowController implements Initializable {
     @FXML
     public void onSaveAsAction(ActionEvent e) {
         saveDocument(true);
-        updateView(false);
+//        updateView();
     }
 
     @FXML
@@ -305,7 +304,7 @@ public class MainWindowController implements Initializable {
             editor.setText(new String(Files.readAllBytes(
                     Paths.get(currentDocument.getAbsolutePath())), "UTF-8"));
 
-            updateView(false);
+            updateView();
 
         } catch (IOException ex) {
             Logger.getLogger(MainWindowController.class.getName()).
@@ -330,7 +329,7 @@ public class MainWindowController implements Initializable {
                                     Files.readAllBytes(
                                             Paths.get(currentDocument.getAbsolutePath())),
                                     "UTF-8"));
-                            updateView(true);
+                            updateView();
                         } catch (UnsupportedEncodingException ex) {
                             Logger.getLogger(MainWindowController.class.getName()).
                                     log(Level.SEVERE, null, ex);
@@ -347,9 +346,7 @@ public class MainWindowController implements Initializable {
 
     }
 
-    private void updateView(boolean refresh) {
-
-        isRunningCodeToScope = true;
+    private void updateView() {
 
         savePositions();
 
@@ -366,27 +363,26 @@ public class MainWindowController implements Initializable {
                 "@eu.mihosoft.vrl.instrumentation.VRLVisualization\n"
                 + editor.getText(), "Script");
 
-        //if (!refresh) {
         loadUIData();
-        //}
 
         if (UIBinding.scopes == null) {
             System.err.println("NO SCOPES");
-            isRunningCodeToScope = false;
             return;
         }
 
         for (List<Scope> sList : UIBinding.scopes.values()) {
             for (Scope scope : sList) {
                 scope.generateDataFlow();
+                scope.addEventHandler(CodeEventType.CHANGE, evt -> {
+                    updateCode((CompilationUnitDeclaration) UIBinding.scopes.values().
+                            iterator().next().get(0));
+                });
             }
         }
 
         applyPositions();
 
         saveUIData();
-
-        isRunningCodeToScope = false;
 
     }
 
