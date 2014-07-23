@@ -105,6 +105,8 @@ class ControlFlowImpl implements ControlFlow {
                 }
             }
         });
+        
+        
     }
 
     private void updateConnections() {

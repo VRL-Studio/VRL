@@ -452,7 +452,7 @@ class ScopeImpl implements Scope {
         return null;
     }
 
-    void addScope(ScopeImpl s) {
+    void addScope(Scope s) {
         scopes.add(s);
     }
 
