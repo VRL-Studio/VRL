@@ -678,7 +678,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     public void visitDeclarationExpression(DeclarationExpression s) {
         System.out.println(" --> DECLARATION: " + s.getVariableExpression());
 
-        if (currentScope instanceof ForDeclaration_Impl) {
+        if (currentScope instanceof ForDeclaration_Impl 
+                && !stateMachine.getBoolean("for-loop:declaration")) {
 
             ForDeclaration_Impl forD = (ForDeclaration_Impl) currentScope;
 
@@ -756,7 +757,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     @Override
     public void visitBinaryExpression(BinaryExpression s) {
 
-        if (currentScope instanceof ForDeclaration_Impl) {
+        if (stateMachine.getBoolean("for-loop") 
+                && !stateMachine.getBoolean("for-loop:compareExpression") 
+                && !stateMachine.getBoolean("for-loop:incExpression")) {
 
             ForDeclaration_Impl forD = (ForDeclaration_Impl) currentScope;
 
@@ -871,9 +874,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
                     setCodeRange(invocation, s);
 
-                    //System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
+                    System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
                     returnVariables.put(s, invocation);
                 }
+            } else {
+                System.out.println("containsRet: " + returnVariables.get(s));
             }
         }
 
@@ -889,7 +894,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     @Override
     public void visitPostfixExpression(PostfixExpression s) {
 
-        if (currentScope instanceof ForDeclaration_Impl) {
+        if (stateMachine.getBoolean("for-loop")) {
 
             ForDeclaration_Impl forD = (ForDeclaration_Impl) currentScope;
 
