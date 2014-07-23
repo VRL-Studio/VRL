@@ -615,7 +615,7 @@ public class MainWindowController implements Initializable {
     }
 
     private void updateCode(Scope rootScope) {
-        System.out.println("Scope: UPDATED");
+        System.out.println("Scope: UpdateCode");
         String code = Scope2Code.getCode(
                 (CompilationUnitDeclaration) getRootScope(rootScope));
         editor.setText(code);
