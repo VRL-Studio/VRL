@@ -465,7 +465,17 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                         forD, cb, (CodeEntity ce) -> {
 
                             if (ce instanceof Invocation) {
-                                render((Invocation) ce, cb);
+
+                                boolean isForLoopVariable = false;
+
+                                if (ce instanceof DeclarationInvocation) {
+                                    String declVarName = ((DeclarationInvocation) ce).getDeclaredVariable().getName();
+                                    isForLoopVariable = declVarName.equals(forD.getVarName());
+                                }
+
+                                if (!isForLoopVariable) {
+                                    render((Invocation) ce, cb);
+                                }
                             }
                         });
 
@@ -648,7 +658,6 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
 
 //        cb.append("@eu.mihosoft.vrl.instrumentation.VRLVisualization").
 //                newLine();
-
         createModifiers(cd, cb);
         cb.append("class ");
         cb.append(new Type(cd.getName()).getShortName());
