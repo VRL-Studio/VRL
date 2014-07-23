@@ -108,8 +108,10 @@ class DataFlowImpl implements DataFlow {
         relationsForReceiver.clear();
 
         initListeners(controlFlow);
+        
+        String rand = "rand: "+(int)(Math.random()*100) + " :: ";
 
-        System.out.println(">> creating dataflow: ");
+        System.out.println( rand + ">> creating dataflow: ");
 
 //        Map<Integer, Invocation> senders = new HashMap<>();
 //        for (Invocation i : controlFlow.getInvocations()) {
@@ -120,13 +122,13 @@ class DataFlowImpl implements DataFlow {
 //            }
 //        }
         for (Invocation receiver : controlFlow.getInvocations()) {
-            System.out.println(" -> receiver: " + receiver);
+            System.out.println(rand+ " -> receiver: " + receiver);
             int argIndex = 0;
             for (IArgument a : receiver.getArguments()) {
 
 //                Variable v = a.getVariable().get();
 //                Invocation sender = senders.get(v.getName());
-//                System.out.println(">> searching sender for " + v.getName() + " with type " + v.getType());
+                System.out.println(rand+ ">> searching sender for " + receiver.getMethodName() + " " + a);
                 Invocation sender = null;
 
                 if (a.getArgType() == ArgumentType.INVOCATION) {
@@ -136,11 +138,11 @@ class DataFlowImpl implements DataFlow {
                 }
 
                 if (sender != null) {
-                    System.out.println(
+                    System.out.println(rand +
                             " --> sender found " + sender.getMethodName());
                     createDataRelation(sender, receiver, a, argIndex);
                 } else {
-                    System.err.println(" -> argType " + a.getArgType() + " not supported!");
+                    System.out.println(rand + " -> argType " + a.getArgType() + " not supported!");
                 }
                 argIndex++;
             } // end for arg
@@ -239,9 +241,9 @@ class DataFlowImpl implements DataFlow {
                         IArgument arg = Argument.NULL;
 
                         if (senderInv instanceof DeclarationInvocation) {
-                            Argument.varArg(((DeclarationInvocation) senderInv).getDeclaredVariable());
+                            arg = Argument.varArg(((DeclarationInvocation) senderInv).getDeclaredVariable());
                         } else if (senderInv instanceof Invocation) {
-                            Argument.invArg(senderInv);
+                            arg = Argument.invArg(senderInv);
                         } else {
                             System.err.println("NOT Supported as argument: " + senderInv);
                         }

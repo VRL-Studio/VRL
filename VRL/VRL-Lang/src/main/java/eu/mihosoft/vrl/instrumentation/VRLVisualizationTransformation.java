@@ -76,7 +76,6 @@ import eu.mihosoft.vrl.lang.model.CodeLocation;
 import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.CodeReader;
 import eu.mihosoft.vrl.lang.model.Argument;
-import eu.mihosoft.vrl.lang.model.AssignmentInvocation;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
@@ -129,8 +128,6 @@ import org.codehaus.groovy.transform.StaticTypesTransformation;
 import org.codehaus.groovy.transform.stc.StaticTypesMarker;
 
 /**
- * Adds instrumentation to each method call. Use {@link VRLVisualization} to
- * request this transformation.
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
@@ -139,6 +136,10 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 
     @Override
     public void visit(ASTNode[] astNodes, SourceUnit sourceUnit) {
+        
+         if (UIBinding.scopes.containsKey(sourceUnit.getName())) {
+             return;
+         }
 
         TypeCheckingTransform transformation = new TypeCheckingTransform();
         transformation.visit(astNodes, sourceUnit);
@@ -173,9 +174,6 @@ public class VRLVisualizationTransformation implements ASTTransformation {
             }
         }
 
-//        sourceUnit.getSource().getReader().
-//        
-//        astNodes[0].get
         /*
          //
          */
@@ -933,12 +931,12 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         return rootScope;
     }
 
-    /**
-     * @param rootScope the rootScope to set
-     */
-    public void setRootScope(Scope rootScope) {
-        this.rootScope = rootScope;
-    }
+//    /**
+//     * @param rootScope the rootScope to set
+//     */
+//    public void setRootScope(Scope rootScope) {
+//        this.rootScope = rootScope;
+//    }
 
     private Operator convertOperator(BinaryExpression be) {
         switch (be.getOperation().getType()) {
