@@ -351,4 +351,13 @@ class ControlFlowImpl implements ControlFlow {
         return parent;
     }
 
+    @Override
+    public ReturnStatementInvocation returnValue(String id, IArgument arg) {
+        ReturnStatementInvocation invocation = new ReturnStatementInvocationImpl(parent, arg);
+        
+        getInvocations().add(invocation);
+        
+        return invocation;
+    }
+
 }

@@ -79,6 +79,8 @@ public interface VisualCodeBuilder {
     Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args);
 
     Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, IArgument... args);
+    
+    ReturnStatementInvocation returnValue(ControlFlowScope scope, IArgument arg);
 
     BinaryOperatorInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation);
     

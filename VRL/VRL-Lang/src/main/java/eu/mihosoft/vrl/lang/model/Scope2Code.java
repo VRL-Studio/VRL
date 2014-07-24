@@ -411,6 +411,10 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             renderOperator(operatorInvocation.getOperator(), cb);
             renderArgument(operatorInvocation.getRightArgument(), cb);
 
+        } else if (i instanceof ReturnStatementInvocation) {
+            ReturnStatementInvocation retInvocation = (ReturnStatementInvocation) i;
+            cb.append("return ");
+            renderArgument(retInvocation.getArgument(), cb);
         } else if (!i.isScope()) {
 
             if (!i.getVariableName().equals("this")) {

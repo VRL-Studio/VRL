@@ -230,6 +230,15 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         return result;
     }
 
+    @Override
+    public ReturnStatementInvocation returnValue(ControlFlowScope scope, IArgument arg) {
+        String id = idRequest.request();
+        
+        ReturnStatementInvocation result = scope.getControlFlow().returnValue(id, arg);
+        
+        return result;
+    }
+
 
 
 }

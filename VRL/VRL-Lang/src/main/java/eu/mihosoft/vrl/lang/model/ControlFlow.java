@@ -83,6 +83,8 @@ public interface ControlFlow {
     // TODO 02.06.2014 switch to ControlFlowScope
     public Scope getParent();
 
+    public ReturnStatementInvocation returnValue(String id, IArgument arg);
+
     
 }
 

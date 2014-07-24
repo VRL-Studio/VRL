@@ -82,6 +82,7 @@ import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IType;
+import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.WhileDeclaration;
 import eu.mihosoft.vrl.workflow.FlowFactory;
@@ -122,6 +123,7 @@ import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.EmptyStatement;
 import org.codehaus.groovy.ast.stmt.ForStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
+import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.transform.StaticTypesTransformation;
@@ -419,6 +421,16 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         currentScope = currentScope.getParent();
 
 //        currentScope.setCode(getCode(s));
+    }
+    
+    @Override
+    public void visitReturnStatement(ReturnStatement s) {
+        if (currentScope instanceof ControlFlowScope) {
+            ControlFlowScope cfS = (ControlFlowScope) currentScope;
+//            MethodDeclaration mD = (MethodDeclaration) currentScope;
+            IArgument arg = convertExpressionToArgument(s.getExpression());
+            codeBuilder.returnValue(cfS, arg);
+        }
     }
 
 //    @Override
