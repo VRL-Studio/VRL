@@ -108,10 +108,10 @@ class DataFlowImpl implements DataFlow {
         relationsForReceiver.clear();
 
         initListeners(controlFlow);
-        
-        String rand = "rand: "+(int)(Math.random()*100) + " :: ";
 
-        System.out.println( rand + ">> creating dataflow: ");
+        String rand = "rand: " + (int) (Math.random() * 100) + " :: ";
+
+        System.out.println(rand + ">> creating dataflow: ");
 
 //        Map<Integer, Invocation> senders = new HashMap<>();
 //        for (Invocation i : controlFlow.getInvocations()) {
@@ -122,13 +122,13 @@ class DataFlowImpl implements DataFlow {
 //            }
 //        }
         for (Invocation receiver : controlFlow.getInvocations()) {
-            System.out.println(rand+ " -> receiver: " + receiver);
+            System.out.println(rand + " -> receiver: " + receiver);
             int argIndex = 0;
             for (IArgument a : receiver.getArguments()) {
 
 //                Variable v = a.getVariable().get();
 //                Invocation sender = senders.get(v.getName());
-                System.out.println(rand+ ">> searching sender for " + receiver.getMethodName() + " " + a);
+                System.out.println(rand + ">> searching sender for " + receiver.getMethodName() + " " + a);
                 Invocation sender = null;
 
                 if (a.getArgType() == ArgumentType.INVOCATION) {
@@ -138,8 +138,8 @@ class DataFlowImpl implements DataFlow {
                 }
 
                 if (sender != null) {
-                    System.out.println(rand +
-                            " --> sender found " + sender.getMethodName());
+                    System.out.println(rand
+                            + " --> sender found " + sender.getMethodName());
                     createDataRelation(sender, receiver, a, argIndex);
                 } else {
                     System.out.println(rand + " -> argType " + a.getArgType() + " not supported!");
@@ -264,6 +264,9 @@ class DataFlowImpl implements DataFlow {
 
             if (change.wasRemoved()) {
                 for (Connection conn : change.getRemoved()) {
+
+                    System.out.println("removed: " + conn);
+
                     VNode senderN = conn.getSender().getNode();
                     VNode receiverN = conn.getReceiver().getNode();
 
@@ -274,6 +277,19 @@ class DataFlowImpl implements DataFlow {
 
                     try {
 
+                        List<DataRelation> delList = new ArrayList<>();
+
+                        for (DataRelation dR : getRelationsForSender(senderInv)) {
+                            if (dR.getReceiver().equals(receiverInv)) {
+                                delList.add(dR);
+                            }
+                        }
+                        
+                        for(DataRelation dR : delList) {
+                            System.out.println("remove: " + dR);
+                            getRelations().remove(dR);
+                        }
+
 //                        int argIndex = connectorsToArgIndex.get(conn.getReceiver().getId());
                         int argIndex = connectorsToArgIndex(conn.getReceiver(), receiverInv);
 
@@ -281,7 +297,7 @@ class DataFlowImpl implements DataFlow {
                                 argIndex,
                                 Argument.NULL);
 
-//                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
+                        System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
 //                        senderInv.getParent().generateDataFlow();
                         ((ScopeImpl) senderInv.getParent()).generateDataFlow();
                     } catch (Exception ex) {

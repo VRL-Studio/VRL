@@ -112,4 +112,9 @@ class DataRelationImpl implements DataRelation {
        return this.receiverArgIndex;
     }
     
+    @Override
+    public String toString() {
+        return "[" + sender +  " -> " + receiver + "]";
+    }
+    
 }
