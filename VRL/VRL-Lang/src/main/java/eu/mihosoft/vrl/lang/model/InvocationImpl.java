@@ -144,6 +144,7 @@ class InvocationImpl implements Invocation {
             }
 
             node.setTitle(varName + "." + methodName + "()");
+            
         }
 
     }

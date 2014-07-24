@@ -105,8 +105,17 @@ class ControlFlowImpl implements ControlFlow {
                 }
             }
         });
-        
-        
+
+        flow.getNodes().addListener((ListChangeListener.Change<? extends VNode> c) -> {
+            if (c.next()) {
+                if (!c.getRemoved().isEmpty()) {
+                    if (!currentlyUpdatingConnections) {
+                        updateInvocations();
+                    }
+                }
+            }
+        });
+
     }
 
     private void updateConnections() {
