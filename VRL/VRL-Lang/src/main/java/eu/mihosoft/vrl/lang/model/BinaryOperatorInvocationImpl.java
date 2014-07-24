@@ -13,16 +13,12 @@ import java.util.Objects;
  */
 public class BinaryOperatorInvocationImpl extends InvocationImpl implements BinaryOperatorInvocation {
 
-    private final IArgument leftArg;
-    private final IArgument rightArg;
     private final Operator operator;
 
     public BinaryOperatorInvocationImpl(Scope parent, IArgument leftArg, IArgument rightArg, Operator operator) {
 
         super(parent, "", null, "op " + operator, Type.VOID, false, false, true, new IArgument[]{leftArg, rightArg});
 
-        this.leftArg = leftArg;
-        this.rightArg = rightArg;
         this.operator = operator;
 
         IType retType = Type.VOID;
@@ -119,12 +115,12 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
 
     @Override
     public IArgument getLeftArgument() {
-        return this.leftArg;
+        return getArguments().get(0);
     }
 
     @Override
     public IArgument getRightArgument() {
-        return this.rightArg;
+        return getArguments().get(1);
     }
 
     @Override
