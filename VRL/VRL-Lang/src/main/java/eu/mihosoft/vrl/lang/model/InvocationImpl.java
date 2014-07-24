@@ -78,6 +78,7 @@ class InvocationImpl implements Invocation {
 //    private final Variable returnValue;
     private VNode node;
     private ObservableCodeImpl observableCode;
+    private boolean textRenderingEnabled = true;
 
     public InvocationImpl(
             Scope parent,
@@ -365,6 +366,20 @@ class InvocationImpl implements Invocation {
         if (!evt.isCaptured() && getParent() != null) {
             getParent().fireEvent(evt);
         }
+    }
+
+    /**
+     * @return the textRenderingEnabled
+     */
+    public boolean isTextRenderingEnabled() {
+        return textRenderingEnabled;
+    }
+
+    /**
+     * @param textRenderingEnabled the textRenderingEnabled to set
+     */
+    public void setTextRenderingEnabled(boolean textRenderingEnabled) {
+        this.textRenderingEnabled = textRenderingEnabled;
     }
 
 }

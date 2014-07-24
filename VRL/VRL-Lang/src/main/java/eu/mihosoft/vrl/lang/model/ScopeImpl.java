@@ -85,6 +85,7 @@ class ScopeImpl implements Scope {
     private final ScopeInvocation invocation;
     private VFlow flow;
     private ObservableCodeImpl observableCode;
+    private boolean textRenderingEnabled = true;
 
     public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
         this.id = id;
@@ -217,6 +218,12 @@ class ScopeImpl implements Scope {
     @Override
     public Variable createVariable(IType type, String varName) {
         DeclarationInvocation inv = getControlFlow().declareVariable(id, type, varName);
+        return inv.getDeclaredVariable();
+    }
+    
+    Variable createParamVariable(IType type, String varName) {
+        DeclarationInvocationImpl inv = (DeclarationInvocationImpl)getControlFlow().declareVariable(id, type, varName);
+        inv.setTextRenderingEnabled(false);
         return inv.getDeclaredVariable();
     }
 
@@ -552,6 +559,13 @@ class ScopeImpl implements Scope {
         if (!evt.isCaptured() && getParent() != null) {
             getParent().fireEvent(evt);
         }
+    }
+
+    /**
+     * @return the textRenderingEnabled
+     */
+    public boolean isTextRenderingEnabled() {
+        return textRenderingEnabled;
     }
 
 }

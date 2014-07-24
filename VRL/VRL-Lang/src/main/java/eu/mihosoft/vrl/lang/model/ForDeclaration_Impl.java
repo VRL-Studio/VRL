@@ -101,7 +101,7 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
         metadata.setVarName(varName);
         if (varName != null && !varName.isEmpty()) {
 //            Variable v = _createVariable(Type.INT, varName);
-            createVariable(Type.INT, varName);
+            createParamVariable(Type.INT, varName);
         }
     }
 

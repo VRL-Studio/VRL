@@ -70,6 +70,8 @@ public interface CodeEntity extends ObservableCode, EventSender{
     
     public VNode getNode();
     
+    public boolean isTextRenderingEnabled();
+    
 //    public void setNode(VNode n);
     
 

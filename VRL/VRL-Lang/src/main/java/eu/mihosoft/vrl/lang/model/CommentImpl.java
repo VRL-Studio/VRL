@@ -68,6 +68,7 @@ public class CommentImpl implements Comment {
     private Scope parent;
     private VNode node;
     private ObservableCodeImpl observableCode;
+    private boolean textRenderingEnabled = true;
 
     public CommentImpl(String id, ICodeRange codeRange, String comment) {
         this.id = id;
@@ -198,6 +199,13 @@ public class CommentImpl implements Comment {
         if (!evt.isCaptured() && getParent() != null) {
             getParent().fireEvent(evt);
         }
+    }
+
+    /**
+     * @return the textRenderingEnabled
+     */
+    public boolean isTextRenderingEnabled() {
+        return textRenderingEnabled;
     }
 
 }

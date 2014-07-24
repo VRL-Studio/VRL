@@ -602,7 +602,7 @@ class MethodDeclarationRenderer implements CodeRenderer<MethodDeclaration> {
                 Scope2Code.renderedComments,
                 e.getControlFlow().getInvocations(), e, cb, (CodeEntity ce) -> {
 
-                    if (ce instanceof Invocation) {
+                    if (ce instanceof Invocation && ce.isTextRenderingEnabled()) {
                         invocationRenderer.render((Invocation) ce, cb);
                     }
                 });

@@ -77,7 +77,7 @@ class MethodDeclaration_Impl extends ScopeImpl implements MethodDeclaration {
     private void createParamVariables() {
         for (IParameter p : metadata.getParams().getParamenters()) {
 
-            _createVariable(p.getType(), p.getName());
+            createParamVariable(p.getType(), p.getName());
         }
         
     }
