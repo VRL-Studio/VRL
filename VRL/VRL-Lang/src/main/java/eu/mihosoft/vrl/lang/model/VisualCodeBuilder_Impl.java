@@ -143,7 +143,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public WhileDeclaration invokeWhileLoop(ControlFlowScope scope, Invocation check) {
+    public WhileDeclaration invokeWhileLoop(ControlFlowScope scope, IArgument check) {
         
         if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
             throw new UnsupportedOperationException("Unsupported parent scope specified."

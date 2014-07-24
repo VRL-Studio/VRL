@@ -484,7 +484,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             } else if (s instanceof WhileDeclaration) {
                 WhileDeclaration whileD = (WhileDeclaration) s;
                 cb.append("while(");
-                renderArgument(Argument.invArg(whileD.getCheck()), cb);
+                renderArgument(whileD.getCheck(), cb);
                 cb.append(") {");
 
                 if (!s.getControlFlow().getInvocations().isEmpty()) {

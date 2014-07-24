@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.lang.model;
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface WhileDeclaration extends ControlFlowScope{
-    Invocation getCheck();
+public interface WhileDeclaration extends ControlFlowScope, ControlFlowStatement{
+    IArgument getCheck();
 }
 

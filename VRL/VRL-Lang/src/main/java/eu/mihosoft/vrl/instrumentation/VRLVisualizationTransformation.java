@@ -505,7 +505,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         currentScope = codeBuilder.invokeWhileLoop((ControlFlowScope)currentScope,
                 convertExpressionToArgument(
-                       s.getBooleanExpression().getExpression()).getInvocation().get());
+                       s.getBooleanExpression().getExpression()));
         
         setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
