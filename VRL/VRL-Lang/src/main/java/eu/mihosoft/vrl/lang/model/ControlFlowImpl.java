@@ -165,7 +165,10 @@ class ControlFlowImpl implements ControlFlow {
 
         paths.forEach(path -> path.forEach(
                 node -> {
-                    getInvocations().add((Invocation) node.getValueObject().getValue());
+                    Object valueObject = node.getValueObject().getValue();
+                    if (valueObject instanceof Invocation) {
+                        getInvocations().add((Invocation) valueObject);
+                    }
                 }
         )
         );
