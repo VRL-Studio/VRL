@@ -415,6 +415,12 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             ReturnStatementInvocation retInvocation = (ReturnStatementInvocation) i;
             cb.append("return ");
             renderArgument(retInvocation.getArgument(), cb);
+        }  else if (i instanceof BreakInvocation) {
+            BreakInvocation breakInvocation = (BreakInvocation) i;
+            cb.append("break");
+        }   else if (i instanceof ContinueInvocation) {
+            ContinueInvocation continueInvocation = (ContinueInvocation) i;
+            cb.append("continue");
         } else if (!i.isScope()) {
 
             if (!i.getVariableName().equals("this")) {

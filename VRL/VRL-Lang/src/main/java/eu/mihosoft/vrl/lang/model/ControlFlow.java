@@ -85,6 +85,10 @@ public interface ControlFlow {
 
     public ReturnStatementInvocation returnValue(String id, IArgument arg);
 
+    public BreakInvocation invokeBreak(String id);
+
+    public ContinueInvocation invokeContinue(String id);
+
     
 }
 

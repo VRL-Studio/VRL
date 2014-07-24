@@ -73,6 +73,9 @@ public interface VisualCodeBuilder {
     MethodDeclaration declareMethod(ClassDeclaration scope, IModifiers modifiers, IType returnType, String methodName, IParameters params);
 
     WhileDeclaration invokeWhileLoop(ControlFlowScope scope, IArgument check);
+    
+    BreakInvocation invokeBreak(ControlFlowScope scope);
+    ContinueInvocation invokeContinue(ControlFlowScope scope);
 
     Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args);
     

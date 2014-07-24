@@ -354,9 +354,27 @@ class ControlFlowImpl implements ControlFlow {
     @Override
     public ReturnStatementInvocation returnValue(String id, IArgument arg) {
         ReturnStatementInvocation invocation = new ReturnStatementInvocationImpl(parent, arg);
-        
+
         getInvocations().add(invocation);
-        
+
+        return invocation;
+    }
+
+    @Override
+    public BreakInvocation invokeBreak(String id) {
+        BreakInvocation invocation = new BreakInvocationImpl(parent);
+
+        getInvocations().add(invocation);
+
+        return invocation;
+    }
+
+    @Override
+    public ContinueInvocation invokeContinue(String id) {
+        ContinueInvocation invocation = new ContinueInvocationImpl(parent);
+
+        getInvocations().add(invocation);
+
         return invocation;
     }
 
