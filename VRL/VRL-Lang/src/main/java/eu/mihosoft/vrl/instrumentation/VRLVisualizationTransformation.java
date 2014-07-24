@@ -494,10 +494,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                     + " expression!");
         }
 
-        if (!(s.getBooleanExpression().getExpression() instanceof BinaryExpression)) {
-            throw new IllegalStateException("while-loop: must contain boolean"
-                    + " expression!");
-        }
+//        if (!(s.getBooleanExpression().getExpression() instanceof BinaryExpression)) {
+//            throw new IllegalStateException("while-loop: must contain boolean"
+//                    + " expression!");
+//        }
         
          if (!(currentScope instanceof ControlFlowScope)) {
             throw new RuntimeException("While-Loop can only be invoked inside ControlFlowScopes!");
