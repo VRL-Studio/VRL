@@ -464,19 +464,10 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                         forD.getControlFlow().getInvocations(),
                         forD, cb, (CodeEntity ce) -> {
 
-                            if (ce instanceof Invocation) {
-//
-                                boolean isForLoopVariable = false;
+                            if (ce instanceof Invocation
+                            && ce.isTextRenderingEnabled()) {
 
-                                if (ce instanceof DeclarationInvocation) {
-                                    String declVarName = ((DeclarationInvocation) ce).getDeclaredVariable().getName();
-                                    isForLoopVariable = declVarName.equals(forD.getVarName());
-                                    System.out.println("declVarName: " + isForLoopVariable + ": " + forD.getVarName());
-                                }
-
-                                if (!isForLoopVariable) {
-                                    render((Invocation) ce, cb);
-                                }
+                                render((Invocation) ce, cb);
                             }
                         });
 
