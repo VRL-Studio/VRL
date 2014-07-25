@@ -80,7 +80,7 @@ class ScopeImpl implements Scope {
     private final ObservableList<Scope> scopes = FXCollections.observableArrayList();
 //    private String code;
 //    private List<Scope> readOnlyScopes;
-    private ICodeRange location;
+    private ICodeRange range;
     private final ObservableList<Comment> comments = FXCollections.observableArrayList();
     private final ScopeInvocation invocation;
     private VFlow flow;
@@ -222,8 +222,13 @@ class ScopeImpl implements Scope {
     }
     
     Variable createParamVariable(IType type, String varName) {
+        return createParamVariable(type, varName, null);
+    }
+    
+    Variable createParamVariable(IType type, String varName, ICodeRange range) {
         DeclarationInvocationImpl inv = (DeclarationInvocationImpl)getControlFlow().declareVariable(id, type, varName);
         inv.setTextRenderingEnabled(false);
+        inv.setRange(range);
         return inv.getDeclaredVariable();
     }
 
@@ -468,7 +473,7 @@ class ScopeImpl implements Scope {
      */
     @Override
     public ICodeRange getRange() {
-        return location;
+        return range;
     }
 
     /**
@@ -476,7 +481,7 @@ class ScopeImpl implements Scope {
      */
     @Override
     public void setRange(ICodeRange location) {
-        this.location = location;
+        this.range = location;
     }
 
     @Override

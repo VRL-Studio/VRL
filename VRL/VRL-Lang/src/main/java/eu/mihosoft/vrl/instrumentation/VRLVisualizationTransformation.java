@@ -78,6 +78,7 @@ import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
+import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.workflow.FlowFactory;
@@ -185,7 +186,7 @@ public class VRLVisualizationTransformation implements ASTTransformation {
     }
 }
 
-class StateMachine {
+final class StateMachine {
 
     private final Stack<Map<String, Object>> stateStack = new Stack<>();
 
@@ -704,7 +705,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             ForDeclaration_Impl forD = (ForDeclaration_Impl) currentScope;
 
             if (!stateMachine.getBoolean("for-loop:declaration")) {
-                forD.setVarName(s.getVariableExpression().getName());
+                forD.setVarName(s.getVariableExpression().getName(), setCodeRange(s));
 
                 if (!(s.getRightExpression() instanceof ConstantExpression)) {
                     throw new IllegalStateException("In for-loop: variable '" + forD.getVarName()
@@ -1071,7 +1072,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     }
 
     private Parameters convertMethodParameters(org.codehaus.groovy.ast.Parameter... params) {
-
         Parameter[] result = new Parameter[params.length];
 
         for (int i = 0; i < params.length; i++) {
@@ -1084,7 +1084,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 pType = pType.replace("[L", "").replace(";", "");
             }
 
-            result[i] = new Parameter(new Type(pType, true), p.getName());
+            result[i] = new Parameter(new Type(pType, true), p.getName(), setCodeRange(p));
         }
 
         return new Parameters(result);
@@ -1157,6 +1157,14 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+    
+    private ICodeRange setCodeRange(ASTNode astNode) {
+
+        return new CodeRange(
+                astNode.getLineNumber() - 1, astNode.getColumnNumber() - 1,
+                astNode.getLastLineNumber() - 1, astNode.getLastColumnNumber() - 1,
+                codeReader);
     }
 
     private void setRootCodeRange(Scope scope, Reader codeReader) {

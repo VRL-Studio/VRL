@@ -191,7 +191,7 @@ class InvocationImpl implements Invocation {
             result += a + ", ";
         }
 
-        result += "]";
+        result += "] ]";
 
         return result;
     }
