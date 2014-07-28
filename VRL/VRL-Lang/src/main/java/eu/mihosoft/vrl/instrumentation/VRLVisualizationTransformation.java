@@ -601,6 +601,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             visitEmptyStatement((EmptyStatement) elseBlock);
         } else {
 
+            stateMachine.push("else-statement", true);
+            
             currentScope = codeBuilder.invokeElse((ControlFlowScope) currentScope);
 
             setCodeRange(currentScope, s);
@@ -609,6 +611,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             elseBlock.visit(this);
 
             currentScope = currentScope.getParent();
+            
+            stateMachine.pop();
         }
 
         stateMachine.pop();
