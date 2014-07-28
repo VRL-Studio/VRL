@@ -543,32 +543,61 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     }
 
     @Override
-    public void visitIfElse(IfStatement ifElse) {
-        System.out.println(" --> IF-STATEMENT: " + ifElse.getBooleanExpression());
+    public void visitIfElse(IfStatement s) {
+//        System.out.println(" --> IF-STATEMENT: " + ifElse.getBooleanExpression());
+//
+//        currentScope = codeBuilder.createScope(currentScope, ScopeType.IF, "if", new Object[0]);
+//
+//        ifElse.getBooleanExpression().visit(this);
+//        ifElse.getIfBlock().visit(this);
+//
+//        currentScope = currentScope.getParent();
+//
+//        currentScope = codeBuilder.createScope(currentScope, ScopeType.ELSE, "else", new Object[0]);
+//        setCodeRange(currentScope, ifElse);
+//        addCommentsToScope(currentScope, comments);
+//
+//        Statement elseBlock = ifElse.getElseBlock();
+//        if (elseBlock instanceof EmptyStatement) {
+//            // dispatching to EmptyStatement will not call back visitor, 
+//            // must call our visitEmptyStatement explicitly
+//            visitEmptyStatement((EmptyStatement) elseBlock);
+//        } else {
+//            elseBlock.visit(this);
+//        }
+//
+//        currentScope = currentScope.getParent();
+//
+////        currentScope.setCode(getCode(ifElse));
+        
+         stateMachine.push("if-statement", true);
 
-        currentScope = codeBuilder.createScope(currentScope, ScopeType.IF, "if", new Object[0]);
+        System.out.println(" --> IF-STATEMENT: " + s.getBooleanExpression());
+        //currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
 
-        ifElse.getBooleanExpression().visit(this);
-        ifElse.getIfBlock().visit(this);
-
-        currentScope = currentScope.getParent();
-
-        currentScope = codeBuilder.createScope(currentScope, ScopeType.ELSE, "else", new Object[0]);
-        setCodeRange(currentScope, ifElse);
-        addCommentsToScope(currentScope, comments);
-
-        Statement elseBlock = ifElse.getElseBlock();
-        if (elseBlock instanceof EmptyStatement) {
-            // dispatching to EmptyStatement will not call back visitor, 
-            // must call our visitEmptyStatement explicitly
-            visitEmptyStatement((EmptyStatement) elseBlock);
-        } else {
-            elseBlock.visit(this);
+        if (s.getBooleanExpression().getExpression() == null) {
+            throw new IllegalStateException("if-statement: must contain boolean"
+                    + " expression!");
         }
 
+//        if (!(s.getBooleanExpression().getExpression() instanceof BinaryExpression)) {
+//            throw new IllegalStateException("while-loop: must contain boolean"
+//                    + " expression!");
+//        }
+        if (!(currentScope instanceof ControlFlowScope)) {
+            throw new RuntimeException("If-Statement can only be invoked inside ControlFlowScopes!");
+        }
+
+        currentScope = codeBuilder.invokeIf((ControlFlowScope) currentScope,
+                convertExpressionToArgument(
+                        s.getBooleanExpression().getExpression()));
+
+        setCodeRange(currentScope, s);
+        addCommentsToScope(currentScope, comments);
+        super.visitIfElse(s);
         currentScope = currentScope.getParent();
 
-//        currentScope.setCode(getCode(ifElse));
+        stateMachine.pop();
     }
 
     @Override

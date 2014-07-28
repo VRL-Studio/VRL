@@ -89,5 +89,7 @@ public interface VisualCodeBuilder {
     
     BinaryOperatorInvocation invokeOperator(Scope scope, IArgument leftArg, IArgument rightArg, Operator operator);
     
-    public NotInvocation invokeNot(ControlFlowScope scope, IArgument arg);
+    NotInvocation invokeNot(ControlFlowScope scope, IArgument arg);
+    
+    IfDeclaration invokeIf(ControlFlowScope scope, IArgument check);
 }

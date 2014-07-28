@@ -516,6 +516,31 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                 }
 
                 cb.append("}");
+            } else if (s instanceof IfDeclaration) {
+                IfDeclaration ifD = (IfDeclaration) s;
+                cb.append("if(");
+                renderArgument(ifD.getCheck(), cb);
+                cb.append(") {");
+
+                if (!s.getControlFlow().getInvocations().isEmpty()) {
+                    cb.newLine();
+                    cb.incIndentation();
+                }
+
+                Utils.renderComments(Scope2Code.renderedComments,
+                        ifD.getControlFlow().getInvocations(),
+                        ifD, cb, (CodeEntity ce) -> {
+
+                            if (ce instanceof Invocation) {
+                                render((Invocation) ce, cb);
+                            }
+                        });
+
+                if (!s.getControlFlow().getInvocations().isEmpty()) {
+                    cb.decIndentation();
+                }
+
+                cb.append("}");
             } else {
                 cb.append("/*unsupported invocation*/");
             }

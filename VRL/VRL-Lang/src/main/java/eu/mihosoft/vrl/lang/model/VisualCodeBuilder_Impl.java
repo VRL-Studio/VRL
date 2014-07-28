@@ -254,6 +254,22 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         return result;
     }
 
+    
+        @Override
+    public IfDeclaration invokeIf(ControlFlowScope scope, IArgument check) {
+        
+        if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
+            throw new UnsupportedOperationException("Unsupported parent scope specified."
+                    + " Class " + ScopeType.CLASS + " or " + ScopeType.INTERFACE
+                    + " based implementations are not supported!");
+        }
+
+        IfDeclaration result = new IfDeclarationImpl(
+                idRequest.request(), scope, check);
+
+        return result;
+    }
+
 
 
 }
