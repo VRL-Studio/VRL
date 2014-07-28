@@ -245,6 +245,15 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         return result;
     }
 
+    @Override
+    public NotInvocation invokeNot(ControlFlowScope scope, IArgument arg) {
+        String id = idRequest.request();
+        
+        NotInvocation result = scope.getControlFlow().invokeNot(id, arg);
+        
+        return result;
+    }
+
 
 
 }

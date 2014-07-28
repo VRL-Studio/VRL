@@ -71,6 +71,7 @@ public final class Type implements IType {
     public static final IType SHORT = new Type("short");
     public static final IType FLOAT = new Type("float");
     public static final IType DOUBLE = new Type("double");
+    public static final IType BOOLEAN = new Type("boolean");
     public static final IType CHAR = new Type("char");
     public static final IType STRING = new Type("java.lang.String");
     public static final IType OBJECT = new Type("java.lang.Object");

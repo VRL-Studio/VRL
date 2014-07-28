@@ -89,6 +89,8 @@ public interface ControlFlow {
 
     public ContinueInvocation invokeContinue(String id);
 
+    public NotInvocation invokeNot(String id, IArgument arg);
+
     
 }
 

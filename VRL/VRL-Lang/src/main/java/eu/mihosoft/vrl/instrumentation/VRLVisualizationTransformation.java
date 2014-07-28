@@ -111,6 +111,7 @@ import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
 import org.codehaus.groovy.ast.expr.DeclarationExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.expr.NotExpression;
 import org.codehaus.groovy.ast.expr.PostfixExpression;
 import org.codehaus.groovy.ast.expr.PrefixExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
@@ -441,6 +442,22 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         if (currentScope instanceof ControlFlowScope) {
             ControlFlowScope cfS = (ControlFlowScope) currentScope;
             codeBuilder.invokeContinue(cfS);
+        }
+    }
+
+    @Override
+    public void visitNotExpression(NotExpression n) {
+
+        if (returnVariables.containsKey(n)) {
+            return;
+        }
+
+        if (currentScope instanceof ControlFlowScope) {
+            ControlFlowScope cfS = (ControlFlowScope) currentScope;
+            IArgument arg = convertExpressionToArgument(n.getExpression());
+            Invocation notInvocation = codeBuilder.invokeNot(cfS, arg);
+            setCodeRange(notInvocation, n);
+            returnVariables.put(n, notInvocation);
         }
     }
 
@@ -1060,6 +1077,12 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             System.out.println("ARG: " + stateMachine.getBoolean("convert-argument"));
             visitBinaryExpression((BinaryExpression) e);
             result = Argument.invArg(returnVariables.get((BinaryExpression) e));
+        } else if (e instanceof NotExpression) {
+            System.out.println("TYPE: " + e);
+            System.out.println("NOT-EXPR: " + returnVariables.get((NotExpression) e));
+            System.out.println("ARG: " + stateMachine.getBoolean("convert-argument"));
+            visitNotExpression((NotExpression) e);
+            result = Argument.invArg(returnVariables.get((NotExpression) e));
         } else // if nothing worked so far, we assumen null arg
         if (result == null) {
             System.err.println(" -> UNSUPPORTED-ARG: " + e);
@@ -1158,7 +1181,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         }
 
     }
-    
+
     private ICodeRange setCodeRange(ASTNode astNode) {
 
         return new CodeRange(

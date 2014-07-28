@@ -378,4 +378,13 @@ class ControlFlowImpl implements ControlFlow {
         return invocation;
     }
 
+    @Override
+    public NotInvocation invokeNot(String id, IArgument arg) {
+        NotInvocation invocation = new NotInvocationImpl(parent, arg);
+
+        getInvocations().add(invocation);
+
+        return invocation;
+    }
+
 }
