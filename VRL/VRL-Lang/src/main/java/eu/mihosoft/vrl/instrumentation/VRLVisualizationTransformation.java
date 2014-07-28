@@ -569,21 +569,16 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //        currentScope = currentScope.getParent();
 //
 ////        currentScope.setCode(getCode(ifElse));
-        
-         stateMachine.push("if-statement", true);
+
+        stateMachine.push("if-statement", true);
 
         System.out.println(" --> IF-STATEMENT: " + s.getBooleanExpression());
-        //currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
 
         if (s.getBooleanExpression().getExpression() == null) {
             throw new IllegalStateException("if-statement: must contain boolean"
                     + " expression!");
         }
 
-//        if (!(s.getBooleanExpression().getExpression() instanceof BinaryExpression)) {
-//            throw new IllegalStateException("while-loop: must contain boolean"
-//                    + " expression!");
-//        }
         if (!(currentScope instanceof ControlFlowScope)) {
             throw new RuntimeException("If-Statement can only be invoked inside ControlFlowScopes!");
         }
@@ -594,8 +589,27 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
-        super.visitIfElse(s);
+
+        s.getIfBlock().visit(this);
+
         currentScope = currentScope.getParent();
+
+        Statement elseBlock = s.getElseBlock();
+        if (elseBlock instanceof EmptyStatement) {
+            // dispatching to EmptyStatement will not call back visitor, 
+            // must call our visitEmptyStatement explicitly
+            visitEmptyStatement((EmptyStatement) elseBlock);
+        } else {
+
+            currentScope = codeBuilder.invokeElse((ControlFlowScope) currentScope);
+
+            setCodeRange(currentScope, s);
+            addCommentsToScope(currentScope, comments);
+
+            elseBlock.visit(this);
+
+            currentScope = currentScope.getParent();
+        }
 
         stateMachine.pop();
     }

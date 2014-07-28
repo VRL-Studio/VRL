@@ -47,12 +47,10 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
-
 
 /**
  *
@@ -62,7 +60,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 
 //    private final Stack<String> variables = new Stack<>();
     private IdRequest idRequest = new IdRequest() {
-        
+
         private IdGenerator generator = FlowFactory.newIdGenerator();
 
         @Override
@@ -74,7 +72,6 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 //    String popVariable() {
 //        return variables.pop();
 //    }
-
     @Deprecated
     public Scope createScope(Scope parent, ScopeType type, String name, Object... args) {
         if (parent != null) {
@@ -83,20 +80,19 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
             return new ScopeImpl(idRequest.request(), null, type, name, args);
         }
     }
-    
-    
+
     @Override
     public CompilationUnitDeclaration declareCompilationUnit(String name, String packageName) {
 //        IType type = new Type(name); // TODO validation
-        
+
         return new CompilationUnitDeclaration_Impl(idRequest.request(), null, name, packageName, UIBinding.getRootFlow());
-        
+
 //        return createScope(null, ScopeType.COMPILATION_UNIT, name, new Object[0]);
     }
 
     @Override
     public DeclarationInvocation declareVariable(Scope scope, IType type, String varName) {
-        return scope.declareVariable(idRequest.request(),type, varName);
+        return scope.declareVariable(idRequest.request(), type, varName);
     }
 
 //    @Deprecated
@@ -108,7 +104,6 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 //
 //        return result;
 //    }
-
     @Override
     public MethodDeclaration declareMethod(ClassDeclaration scope,
             IModifiers modifiers, IType returnType, String methodName, IParameters params) {
@@ -132,7 +127,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 
     @Override
     public WhileDeclaration invokeWhileLoop(ControlFlowScope scope, IArgument check) {
-        
+
         if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
             throw new UnsupportedOperationException("Unsupported parent scope specified."
                     + " Class " + ScopeType.CLASS + " or " + ScopeType.INTERFACE
@@ -152,7 +147,6 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 
         return scope.getControlFlow().createInstance(id, type, args);
     }
-    
 
     @Override
     public Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args) {
@@ -162,7 +156,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 
         return result;
     }
-    
+
     @Override
     public Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args) {
         String id = idRequest.request();
@@ -181,7 +175,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     public BinaryOperatorInvocation assignConstant(Scope scope, String varName, Object constant) {
         return scope.assignConstant(varName, constant);
     }
-    
+
     @Override
     public BinaryOperatorInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation) {
         return scope.assignInvocationResult(varName, invocation);
@@ -194,9 +188,9 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     @Override
     public ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type, IModifiers modifiers, IExtends extendz, IExtends implementz) {
         String id = idRequest.request();
-        
+
         ClassDeclaration result = new ClassDeclaration_Impl(id, scope, type, modifiers, extendz, implementz);
-        
+
         return result;
     }
 
@@ -205,59 +199,58 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         String id = idRequest.request();
 
         Invocation result = scope.getControlFlow().callMethod(id, varName, mDec, args);
-        
+
         return result;
     }
 
     @Override
     public BinaryOperatorInvocation invokeOperator(Scope scope, IArgument leftArg, IArgument rightArg, Operator operator) {
         String id = idRequest.request();
-        
+
         BinaryOperatorInvocation result = scope.getControlFlow().invokeOperator(id, leftArg, rightArg, operator);
-        
+
         return result;
     }
 
     @Override
     public ReturnStatementInvocation returnValue(ControlFlowScope scope, IArgument arg) {
         String id = idRequest.request();
-        
+
         ReturnStatementInvocation result = scope.getControlFlow().returnValue(id, arg);
-        
+
         return result;
     }
 
     @Override
     public BreakInvocation invokeBreak(ControlFlowScope scope) {
         String id = idRequest.request();
-        
+
         BreakInvocation result = scope.getControlFlow().invokeBreak(id);
-        
+
         return result;
     }
-    
-     @Override
+
+    @Override
     public ContinueInvocation invokeContinue(ControlFlowScope scope) {
         String id = idRequest.request();
-        
+
         ContinueInvocation result = scope.getControlFlow().invokeContinue(id);
-        
+
         return result;
     }
 
     @Override
     public NotInvocation invokeNot(ControlFlowScope scope, IArgument arg) {
         String id = idRequest.request();
-        
+
         NotInvocation result = scope.getControlFlow().invokeNot(id, arg);
-        
+
         return result;
     }
 
-    
-        @Override
+    @Override
     public IfDeclaration invokeIf(ControlFlowScope scope, IArgument check) {
-        
+
         if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
             throw new UnsupportedOperationException("Unsupported parent scope specified."
                     + " Class " + ScopeType.CLASS + " or " + ScopeType.INTERFACE
@@ -270,6 +263,17 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         return result;
     }
 
+    public Scope invokeElse(ControlFlowScope scope) {
+        if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
+            throw new UnsupportedOperationException("Unsupported parent scope specified."
+                    + " Class " + ScopeType.CLASS + " or " + ScopeType.INTERFACE
+                    + " based implementations are not supported!");
+        }
 
+        ElseDeclaration result = new ElseDeclarationImpl(
+                idRequest.request(), scope);
+
+        return result;
+    }
 
 }
