@@ -19,6 +19,10 @@ public class IfDeclarationImpl extends ScopeImpl implements IfDeclaration {
 
         super(id, parent, ScopeType.IF, ScopeType.IF.name(), new IfDeclarationMetaData(arg));
     }
+    
+    IfDeclarationImpl(String id, Scope parent, ScopeType scopeType, String name, Object... scopeArgs) {
+         super(id, parent, scopeType, name, scopeArgs);
+    }
 
     @Override
     public IArgument getCheck() {

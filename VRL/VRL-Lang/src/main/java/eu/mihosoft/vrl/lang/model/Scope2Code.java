@@ -518,7 +518,13 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                 cb.append("}");
             } else if (s instanceof IfDeclaration) {
                 IfDeclaration ifD = (IfDeclaration) s;
-                cb.append("if(");
+
+                if (ifD instanceof ElseIfDeclaration) {
+                    cb.append("else if (");
+                } else {
+                    cb.append("if (");
+                }
+
                 renderArgument(ifD.getCheck(), cb);
                 cb.append(") {");
 
@@ -541,7 +547,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                 }
 
                 cb.append("}");
-            }  else if (s instanceof ElseDeclaration) {
+            } else if (s instanceof ElseDeclaration) {
                 ElseDeclaration elseD = (ElseDeclaration) s;
                 cb.append("else {");
 
@@ -564,7 +570,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                 }
 
                 cb.append("}");
-            }else {
+            } else {
                 cb.append("/*unsupported invocation*/");
             }
 

@@ -116,6 +116,7 @@ import org.codehaus.groovy.ast.expr.PostfixExpression;
 import org.codehaus.groovy.ast.expr.PrefixExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
+import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.BreakStatement;
 import org.codehaus.groovy.ast.stmt.ContinueStatement;
 import org.codehaus.groovy.ast.stmt.EmptyStatement;
@@ -570,6 +571,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //
 ////        currentScope.setCode(getCode(ifElse));
 
+        boolean isElseIf = stateMachine.getBoolean("else-statement:else-is-if");
+
         stateMachine.push("if-statement", true);
 
         System.out.println(" --> IF-STATEMENT: " + s.getBooleanExpression());
@@ -583,9 +586,15 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             throw new RuntimeException("If-Statement can only be invoked inside ControlFlowScopes!");
         }
 
-        currentScope = codeBuilder.invokeIf((ControlFlowScope) currentScope,
-                convertExpressionToArgument(
-                        s.getBooleanExpression().getExpression()));
+        if (isElseIf) {
+            currentScope = codeBuilder.invokeElseIf((ControlFlowScope) currentScope,
+                    convertExpressionToArgument(
+                            s.getBooleanExpression().getExpression()));
+        } else {
+            currentScope = codeBuilder.invokeIf((ControlFlowScope) currentScope,
+                    convertExpressionToArgument(
+                            s.getBooleanExpression().getExpression()));
+        }
 
         setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
@@ -602,16 +611,22 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         } else {
 
             stateMachine.push("else-statement", true);
-            
-            currentScope = codeBuilder.invokeElse((ControlFlowScope) currentScope);
 
-            setCodeRange(currentScope, s);
-            addCommentsToScope(currentScope, comments);
+            boolean elseIsIf = (elseBlock instanceof IfStatement);
 
-            elseBlock.visit(this);
+            stateMachine.setBoolean("else-statement:else-is-if", elseIsIf);
+
+            if (elseIsIf) {
+                visitIfElse((IfStatement) elseBlock);
+            } else {
+                currentScope = codeBuilder.invokeElse((ControlFlowScope) currentScope);
+                setCodeRange(currentScope, s);
+                addCommentsToScope(currentScope, comments);
+                elseBlock.visit(this);
+            }
 
             currentScope = currentScope.getParent();
-            
+
             stateMachine.pop();
         }
 
