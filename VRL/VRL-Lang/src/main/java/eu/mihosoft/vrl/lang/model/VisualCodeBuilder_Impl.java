@@ -291,4 +291,19 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         return result;
     }
 
+    @Override
+    public BinaryOperatorInvocation assign(Scope scope, String varName, IArgument arg) {
+        if (arg.getArgType() == ArgumentType.CONSTANT) {
+            return assignConstant(scope, varName, arg.getConstant().get());
+        } else if (arg.getArgType() == ArgumentType.VARIABLE) {
+            return assignVariable(scope, varName, arg.getVariable().get().getName());
+        }
+        if (arg.getArgType() == ArgumentType.INVOCATION) {
+            return assignInvocationResult(scope, varName, arg.getInvocation().get());
+        }
+
+        throw new UnsupportedOperationException("Unsupported argument specified: "
+                + arg + ". Supported assignment args are 'CONSTANT', 'VARIABLE' and 'INVOCATION'.");
+    }
+
 }

@@ -100,6 +100,7 @@ import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
+import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.BinaryExpression;
@@ -280,9 +281,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     private SourceUnit sourceUnit;
     private VisualCodeBuilder_Impl codeBuilder;
-    private Scope rootScope;
+    private final Scope rootScope;
     private Scope currentScope;
-    private Invocation lastMethod;
     private Stack<String> vIdStack = new Stack<>();
     private final StateMachine stateMachine = new StateMachine();
     private IdGenerator generator = FlowFactory.newIdGenerator();
@@ -772,6 +772,43 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             }
         }
 
+    }
+
+    @Override
+    public void visitField(FieldNode field) {
+        if (!(currentScope instanceof ClassDeclaration)) {
+            throwErrorMessage("Field '"
+                    + field.getName()
+                    + "' cannot be declared inside a scope of type '"
+                    + currentScope.getType() + "'.", field);
+
+            return;
+        }
+
+        String varType = field.getType().getName();
+        String varName = field.getName();
+
+        DeclarationInvocation declInv
+                = codeBuilder.declareVariable(currentScope,
+                        new Type(varType, true),
+                        varName);
+
+        Expression initialValueExpression = field.getInitialExpression();
+
+        if (initialValueExpression != null) {
+            
+            throwErrorMessage("Direct field initialization currently not supported. Field '"
+                    + field.getName()
+                    + "' cannot be initialized. Please move initialization to a constructor.", initialValueExpression);
+            
+            return;
+//            TODO 30.07.2014 : fix this!
+//            codeBuilder.assign(currentScope, varName,
+//                    convertExpressionToArgument(initialValueExpression)
+//            );
+        }
+
+        setCodeRange(declInv, field);
     }
 
     @Override
