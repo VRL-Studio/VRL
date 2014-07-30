@@ -790,7 +790,7 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
 
         boolean first = true;
 
-        for (IType type : cd.getExtends().getTypes()) {
+        for (IType type : cd.getImplements().getTypes()) {
             if (first) {
                 first = false;
             } else {
