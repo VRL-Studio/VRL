@@ -743,8 +743,9 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
     private void createDeclaredVariables(ClassDeclaration cd, CodeBuilder cb) {
         for (Variable v : cd.getVariables()) {
             if (!"this".equals(v.getName())) {
+                cb.newLine();
                 createModifiers(v, cb);
-                cb.newLine().append(v.getType().getFullClassName()).
+                cb.append(v.getType().getFullClassName()).
                         append(" ").append(v.getName()).append(";").newLine();
             }
         }
@@ -756,11 +757,16 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
             cb.append(Utils.modifierToName(m)).append(" ");
         }
     }
-    
+
     private void createModifiers(Variable v, CodeBuilder cb) {
-//        for (Modifier m : v.getModifiers().getModifiers()) {
-//            cb.append(Utils.modifierToName(m)).append(" ");
-//        }
+
+        if (!v.isField()) {
+            return;
+        }
+
+        for (Modifier m : v.getModifiers().get().getModifiers()) {
+            cb.append(Utils.modifierToName(m)).append(" ");
+        }
     }
 
     private void createExtends(ClassDeclaration cd, CodeBuilder cb) {

@@ -792,6 +792,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 = codeBuilder.declareVariable(currentScope,
                         new Type(varType, true),
                         varName);
+        
+        IModifiers fieldModifiers = convertModifiers(field.getModifiers());
+        
+        declInv.getDeclaredVariable().setModifiers(fieldModifiers);
 
         Expression initialValueExpression = field.getInitialExpression();
 
