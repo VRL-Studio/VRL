@@ -183,6 +183,10 @@ public class WorkflowUtil {
     public static List<VNode> getPath(VNode sender, String connectionType) {
 
         List<VNode> result = new ArrayList<>();
+        
+        if (sender.getMainOutput(connectionType)==null) {
+            return result;
+        }
 
         if (!isRoot(sender, connectionType)) {
             System.err.println("sender is no root!");
