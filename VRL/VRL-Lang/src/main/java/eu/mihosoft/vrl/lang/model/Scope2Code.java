@@ -413,6 +413,19 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             boolean rightArgNeedsParantheses
                     = operatorInvocation.getRightArgument().getArgType()
                     == ArgumentType.INVOCATION;
+            
+            // no parantheses around not operator
+            if (letArgNeedsParantheses) {
+                letArgNeedsParantheses = !(operatorInvocation.getLeftArgument()
+                        .getInvocation().get() instanceof NotInvocation);
+            }
+             // no parantheses around not operator
+            if (rightArgNeedsParantheses) {
+                rightArgNeedsParantheses = !(operatorInvocation.getRightArgument()
+                        .getInvocation().get() instanceof NotInvocation);
+            }
+            
+            
             if (letArgNeedsParantheses) {
                 cb.append("(");
             }
