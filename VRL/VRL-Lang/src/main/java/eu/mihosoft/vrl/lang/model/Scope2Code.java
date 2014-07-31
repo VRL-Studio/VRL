@@ -407,9 +407,29 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         } else if (i instanceof BinaryOperatorInvocation) {
             BinaryOperatorInvocation operatorInvocation = (BinaryOperatorInvocation) i;
 
+            boolean letArgNeedsParantheses
+                    = operatorInvocation.getLeftArgument().getArgType()
+                    == ArgumentType.INVOCATION;
+            boolean rightArgNeedsParantheses
+                    = operatorInvocation.getRightArgument().getArgType()
+                    == ArgumentType.INVOCATION;
+            if (letArgNeedsParantheses) {
+                cb.append("(");
+            }
             renderArgument(operatorInvocation.getLeftArgument(), cb);
+            if (letArgNeedsParantheses) {
+                cb.append(")");
+            }
+            cb.append(" ");
             renderOperator(operatorInvocation.getOperator(), cb);
+            cb.append(" ");
+            if (rightArgNeedsParantheses) {
+                cb.append("(");
+            }
             renderArgument(operatorInvocation.getRightArgument(), cb);
+            if (rightArgNeedsParantheses) {
+                cb.append(")");
+            }
 
         } else if (i instanceof ReturnStatementInvocation) {
             ReturnStatementInvocation retInvocation = (ReturnStatementInvocation) i;
@@ -423,8 +443,17 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             cb.append("continue");
         } else if (i instanceof NotInvocation) {
             NotInvocation notInvocation = (NotInvocation) i;
+            boolean argNeedsParantheses
+                    = notInvocation.getArgument().getArgType()
+                    == ArgumentType.INVOCATION;
             cb.append("!");
+            if (argNeedsParantheses) {
+                cb.append("(");
+            }
             renderArgument(notInvocation.getArgument(), cb);
+            if (argNeedsParantheses) {
+                cb.append(")");
+            }
         } else if (!i.isScope()) {
 
             if (!i.getVariableName().equals("this")) {
@@ -723,7 +752,7 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
         cb.append(new Type(cd.getName()).getShortName());
         createExtends(cd, cb);
         createImplements(cd, cb);
-        cb.append(" {").newLine();
+        cb.append(" {").newLine().newLine();
         cb.incIndentation();
 
         createDeclaredVariables(cd, cb);
@@ -743,7 +772,6 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
     private void createDeclaredVariables(ClassDeclaration cd, CodeBuilder cb) {
         for (Variable v : cd.getVariables()) {
             if (!"this".equals(v.getName())) {
-                cb.newLine();
                 createModifiers(v, cb);
                 cb.append(v.getType().getFullClassName()).
                         append(" ").append(v.getName()).append(";").newLine();
