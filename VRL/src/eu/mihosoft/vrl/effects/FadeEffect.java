@@ -55,9 +55,6 @@ package eu.mihosoft.vrl.effects;
 import eu.mihosoft.vrl.animation.Animation;
 import eu.mihosoft.vrl.animation.FrameListener;
 import eu.mihosoft.vrl.animation.LinearInterpolation;
-import eu.mihosoft.vrl.reflection.DefaultMethodRepresentation;
-import eu.mihosoft.vrl.reflection.DefaultObjectRepresentation;
-import eu.mihosoft.vrl.reflection.VisualObject;
 import eu.mihosoft.vrl.visual.Connection;
 import eu.mihosoft.vrl.visual.CanvasWindow;
 import java.awt.AlphaComposite;
@@ -69,7 +66,7 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Effect for fading components in and out.
@@ -336,7 +333,7 @@ class FadeAnimation extends Animation implements FrameListener {
         // TODO put that inside of another frame listener
         if (c instanceof CanvasWindow && ((CanvasWindow)c).getMainCanvas()!=null) {
             CanvasWindow obj = (CanvasWindow) c;
-            ArrayList<Connection> connections =
+            List<Connection> connections =
                     obj.getMainCanvas().getDataConnections().getAllWith(obj);
             
             connections.addAll(

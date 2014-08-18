@@ -52,14 +52,19 @@
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.io.ConfigurationFile;
-import eu.mihosoft.vrl.io.IOUtil;
-import eu.mihosoft.vrl.io.VPropertyFolderManager;
 import eu.mihosoft.vrl.system.Messaging;
 import eu.mihosoft.vrl.system.RedirectableStream;
-import eu.mihosoft.vrl.system.VRL;
 import java.awt.Color;
-import java.io.File;
 import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Formatter;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -72,13 +77,13 @@ public class LoggingController {
 
     private static final PrintStream OUT = System.out;
     private static final PrintStream ERR = System.err;
-    private JTextArea view;
+    private final JTextArea view;
     private RedirectableStream out;
     private RedirectableStream err;
     private RedirectableStream msgout;
     public static final String SHOW_OUT_LOG_KEY = "Log:show-out";
     public static final String SHOW_ERR_LOG_KEY = "Log:show-err";
-    private ConfigurationFile config;
+    private final ConfigurationFile config;
     private LogBackground logBackground;
 
     public LoggingController(JTextArea view, ConfigurationFile config) {
@@ -107,6 +112,42 @@ public class LoggingController {
         System.setOut(out);
         System.setErr(err);
 
+
+        // add a custom log handler that redirects to vrl streams
+        Logger rootLogger = Logger.getLogger("");
+        rootLogger.addHandler(new Handler() {
+            
+            private final Formatter formatter = new SimpleFormatter();
+
+            {
+                setLevel(Level.ALL);
+            }
+
+            @Override
+            public void publish(LogRecord record) {
+                // we redirect logs to the out/err stream since we replaced
+                // them with custom instances that are visible in the log
+                // window
+                // reason: all output (logger, sout, serr, etc.) is collected.
+                if (record.getLevel() == Level.SEVERE 
+                        || record.getLevel() == Level.WARNING) {
+                    System.err.println(formatter.format(record));
+                } else {
+                    System.out.println(formatter.format(record));
+                }
+            }
+
+            @Override
+            public void flush() {
+                //
+            }
+
+            @Override
+            public void close() throws SecurityException {
+                //
+            }
+        });
+
         view.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
@@ -129,7 +170,6 @@ public class LoggingController {
                 }
             }
         });
-
 
         // return if loading is not possible: nothing to initialize
         if (!config.load()) {

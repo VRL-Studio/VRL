@@ -49,32 +49,38 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.lang.visual;
 
 import eu.mihosoft.vrl.annotation.ComponentInfo;
 import eu.mihosoft.vrl.annotation.MethodInfo;
 import eu.mihosoft.vrl.annotation.ObjectInfo;
+import eu.mihosoft.vrl.reflection.DefaultMethodRepresentation;
+import eu.mihosoft.vrl.reflection.VisualCanvas;
+import eu.mihosoft.vrl.reflection.WorkflowEvent;
 import eu.mihosoft.vrl.types.CanvasRequest;
+import eu.mihosoft.vrl.types.MethodRequest;
 import java.io.Serializable;
 
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-@ComponentInfo(name = "Start", category = "VRL/Control", allowRemoval=false,
-        description="Start Controlflow")
+@ComponentInfo(name = "Start", category = "VRL/Control", allowRemoval = false,
+        description = "Start Controlflow")
 @ObjectInfo(multipleViews = false, name = "Start", instances = 1,
-        controlFlowIn=false, controlFlowOut=true,
-        referenceIn=false, referenceOut=false)
+        controlFlowIn = false, controlFlowOut = true,
+        referenceIn = false, referenceOut = false)
 public class StartObject implements Serializable {
 
     private static final long serialVersionUID = 1L;
     private transient VisualInvocationObject invocation;
     public transient Thread thread;
+    private transient DefaultMethodRepresentation mRep;
 
-    @MethodInfo(name = " ", buttonText = "start", hideCloseIcon=true)
-    public void start(CanvasRequest cReq) {
+    @MethodInfo(name = " ", buttonText = "start", hideCloseIcon = true)
+    public void start(CanvasRequest cReq, MethodRequest mReq) {
+
+        mRep = mReq.getMethod();
 
         if (invocation == null) {
             invocation = new VisualInvocationObject();
@@ -84,6 +90,18 @@ public class StartObject implements Serializable {
             if (invocation.init(cReq.getCanvas())) {
                 invocation.invoke();
             }
+        } else {
+            invocationStopped(cReq.getCanvas());
+            invocation.stop();
         }
+    }
+
+    void invocationStarted() {
+        mRep.changeInvokeButtonTextIfButtonIsPresent("stop");
+    }
+
+    void invocationStopped(VisualCanvas canvas) {
+        canvas.fireWorkflowEvent(WorkflowEvent.STOP_WORKFLOW);
+        mRep.changeInvokeButtonTextIfButtonIsPresent("start");
     }
 }

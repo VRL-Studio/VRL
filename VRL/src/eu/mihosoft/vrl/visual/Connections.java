@@ -56,6 +56,7 @@ import eu.mihosoft.vrl.animation.Animation;
 import eu.mihosoft.vrl.animation.ColorTransitionAnimation;
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.List;
 
 // XML
 
@@ -216,7 +217,7 @@ public class Connections extends ArrayList<Connection>
      */
     public void removeAllWith(Connector o) {
 
-        ArrayList<Connection> list = getAllWith(o);
+        List<Connection> list = getAllWith(o);
 
         for (Connection c : list) {
             remove(c);
@@ -242,7 +243,7 @@ public class Connections extends ArrayList<Connection>
      * @return a list containing all connections that are connected to
      *         type representations inside the specified canvas window
      */
-    public ArrayList<Connection> getAllWith(CanvasWindow o) {
+    public List<Connection> getAllWith(CanvasWindow o) {
         ArrayList<Connection> connections = new ArrayList<Connection>();
 
         for (Connector c : o.getConnectors()) {
@@ -259,7 +260,7 @@ public class Connections extends ArrayList<Connection>
      * @return ArrayList containing references to all Connection objects
      * that are conneced with Connector o
      */
-    public ArrayList<Connection> getAllWith(Connector o) {
+    public List<Connection> getAllWith(Connector o) {
         ArrayList<Connection> list = new ArrayList<Connection>();
         for (int i = this.size() - 1; i >= 0; i--) {
             Connection c = this.get(i);

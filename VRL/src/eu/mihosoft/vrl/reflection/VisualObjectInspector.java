@@ -695,7 +695,8 @@ public class VisualObjectInspector extends ObjectInspector {
      * @param o the object of the method that is to be invoked
      * @param methodName name of the method that is to be invoked
      * @param types all parameter types
-     * @return the return value of the method
+     * @return the return value of the method or <code>null</code> if the 
+     * requested method cannot be found
      */
     public Object invokeFromGUI(
             Object o, int visualID, String methodName, Object... types)
@@ -730,7 +731,7 @@ public class VisualObjectInspector extends ObjectInspector {
             this.invoke(methodDescription, visualID, true);
 
         } else {
-            System.out.println(">> Error: wrong parameter types!");
+            // System.out.println(">> Error: wrong parameter types!");
             return null;
         }
         return methodDescription.getReturnValue();
@@ -755,7 +756,8 @@ public class VisualObjectInspector extends ObjectInspector {
      * @param o the object of the method that is to be invoked
      * @param methodName name of the method that is to be invoked
      * @param types all parameter types
-     * @return the return value of the method
+     * @return the return value of the method or <code>null</code> if the 
+     * requested method cannot be found
      */
     public Object invokeFromInvokeButton(
             Object o, int visualID, String methodName, Object... types) {
@@ -775,7 +777,7 @@ public class VisualObjectInspector extends ObjectInspector {
         if (allAreClassObjects && (methodDescription != null)) {
             this.invokeFromInvokeButton(methodDescription, visualID);
         } else {
-            System.out.println(">> Error: wrong parameter types!");
+            // System.out.println(">> Error: wrong parameter types!");
             return null;
         }
         return methodDescription.getReturnValue();

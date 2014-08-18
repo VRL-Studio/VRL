@@ -49,16 +49,19 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
+import eu.mihosoft.vrl.system.Constants;
+import eu.mihosoft.vrl.system.VMessage;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
- * This is an extended version of
- * <code>ArrayList</code>. Its purpose is to give each element in the list a
- * unique ID value which is independant of the position in the list. For a big
- * number of elements HashMap is probably more efficient in many cases.
+ * This is an extended version of <code>ArrayList</code>. Its purpose is to give
+ * each element in the list a unique ID value which is independant of the
+ * position in the list. For a big number of elements HashMap is probably more
+ * efficient in many cases.
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  * @param <E>
@@ -81,28 +84,54 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
         DEBUG = state;
     }
     private IDTable idTable = new IDTable();
-    private IDTable originalIdTable = new IDTable();
+    private final IDTable originalIdTable = new IDTable();
     private static boolean DEBUG;
+    private final List<Thread> threads = new ArrayList<Thread>();
+
+    private final Object lock = new Object();
 
     @Override
     public boolean add(E e) {
-        int id = getNewId();
-        e.setID(id);
 
-        if (getById(id) != null) {
-            System.err.println(
-                    "ID already exists : "
-                    + getById(id).getID() + " : " + getById(id));
-            System.exit(1);
-        }
+        synchronized (lock) {
+
+            int id = getNewId();
+            e.setID(id);
+
+            if (getById(id) != null) {
+                System.err.println(
+                        "ID already exists : "
+                        + getById(id).getID() + " : " + getById(id));
+                VMessage.criticalErrorDetected();
+            }
 
 //        System.out.println(">> IDArrayList: entry added.");
-        boolean result = super.add(e);
+            boolean result = super.add(e);
 
-        updateToolTips();
-        updateIdTable();
+            updateToolTips();
+            updateIdTable();
 
-        return result;
+            return result;
+        }
+    }
+
+    /**
+     * Method for debugging multithreading. NOTE: This method must not be
+     * accessible via the public API.
+     */
+    private void checkThatAccessIsSingleThreaded() {
+        if (!threads.contains(Thread.currentThread())) {
+            System.out.println(">> IDArrayList: adding thread "
+                    + Thread.currentThread());
+            threads.add(Thread.currentThread());
+        }
+
+        if (threads.size() > 1) {
+            System.err.println(">> IDArrayList: accessing this list from more"
+                    + " than one thread is not supported! Number of threads = " + threads.size());
+
+            VMessage.criticalErrorDetected();
+        }
     }
 
     /**
@@ -110,16 +139,19 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      */
     public void updateToolTips() {
 
-        if (isDebug()) {
-            int i = 0;
-            for (IDObject iDObject : this) {
-                if (iDObject instanceof Connector) {
-                    Connector c = (Connector) iDObject;
+        synchronized (lock) {
 
-                    c.getTransferable().setToolTipText(
-                            "Index: " + i + ", Id: " + c.getID());
+            if (isDebug()) {
+                int i = 0;
+                for (IDObject iDObject : this) {
+                    if (iDObject instanceof Connector) {
+                        Connector c = (Connector) iDObject;
+
+                        c.getTransferable().setToolTipText(
+                                "Index: " + i + ", Id: " + c.getID());
+                    }
+                    i++;
                 }
-                i++;
             }
         }
     }
@@ -127,14 +159,19 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
     @Override
     public void add(int index, E e) {
 
-        int id = getNewId();
+        checkThatAccessIsSingleThreaded();
 
-        e.setID(id);
+        synchronized (lock) {
 
-        super.add(index, e);
+            int id = getNewId();
 
-        updateToolTips();
-        updateIdTable();
+            e.setID(id);
+
+            super.add(index, e);
+
+            updateToolTips();
+            updateIdTable();
+        }
     }
 
     /**
@@ -146,21 +183,25 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      */
     public boolean addWithID(E e, int ID) {
 
-        boolean result = false;
+        synchronized (lock) {
 
-        if (getById(ID) != null) {
-            System.out.println(">> IDArrayList: element with equal id already"
-                    + " exists!");
-        } else {
-            e.setID(ID);
+            boolean result = false;
 
-            result = super.add(e);
+            if (getById(ID) != null) {
+                System.out.println(">> IDArrayList: element with equal id already"
+                        + " exists!");
+                VMessage.criticalErrorDetected();
+            } else {
+                e.setID(ID);
+
+                result = super.add(e);
+            }
+
+            updateToolTips();
+            updateIdTable();
+
+            return result;
         }
-
-        updateToolTips();
-        updateIdTable();
-
-        return result;
     }
 
     /**
@@ -171,13 +212,18 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * <code>null</code> otherwise
      */
     public E getById(int ID) {
-        E element = null;
-        for (E e : this) {
-            if (e.getID() == ID) {
-                element = e;
+
+        synchronized (lock) {
+
+            E element = null;
+            for (E e : this) {
+                if (e.getID() == ID) {
+                    element = e;
+                }
             }
+            return element;
+
         }
-        return element;
     }
 
     /**
@@ -188,14 +234,18 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * <code>null</code> otherwise
      */
     public Integer getIndexById(int ID) {
-        Integer result = null;
-        for (int i = 0; i < size(); i++) {
 
-            if (get(i).getID() == ID) {
-                result = i;
+        synchronized (lock) {
+
+            Integer result = null;
+            for (int i = 0; i < size(); i++) {
+
+                if (get(i).getID() == ID) {
+                    result = i;
+                }
             }
+            return result;
         }
-        return result;
     }
 
     /**
@@ -206,14 +256,19 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * <code>null</code> otherwise
      */
     public Integer getIdByIndex(int index) {
-        return get(index).getID();
+
+        synchronized (lock) {
+
+            return get(index).getID();
+
+        }
     }
 
     /**
      * Returns the shortest available (unused) id value (id > 0). This method
      * prevents fragmentation and ensures that all values < maxId are really
-     * used. <p> If the id table contains an entry at the current index
-     * (
+     * used. <p>
+     * If the id table contains an entry at the current index (
      * <code>index=this.size()</code>) this entry will be used as id. </p>
      *
      * @return the shortest available id value (id > 0) or an id value defined
@@ -222,49 +277,53 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      */
     public int getNewId() {
 
+        synchronized (lock) {
+
 //        System.out.println(">> *** ID-Search ***");
+            int result = 0;
 
-        int result = 0;
-
-        if (originalIdTable.size() > size()) {
-            result = originalIdTable.get(size());
+            if (originalIdTable.size() > size()) {
+                result = originalIdTable.get(size());
 //            System.out.println("ID FROM TABLE: " + result);
-        } else {
-            int maxId = getMaxId();
-            boolean foundUnusedId = true;
+            } else {
+                int maxId = getMaxId();
+                boolean foundUnusedId = true;
 
-            // we want to find the smallest unused id value
-            for (int i = 0; i <= maxId; i++) {
-                foundUnusedId = true;
-                for (IDObject o : this) {
+                // we want to find the smallest unused id value
+                for (int i = 0; i <= maxId; i++) {
+                    foundUnusedId = true;
+                    for (IDObject o : this) {
 //                System.out.println(">> i = " + i + ", id = " + o.getID());
-                    if (o.getID() == i) {
-                        foundUnusedId = false;
+                        if (o.getID() == i) {
+                            foundUnusedId = false;
+                        }
+                    }
+                    if (foundUnusedId) {
+                        result = i;
+//                 System.out.println(">> found id = " + id);
+                        break;
                     }
                 }
-                if (foundUnusedId) {
-                    result = i;
-//                 System.out.println(">> found id = " + id);
-                    break;
-                }
-            }
 
-            // if we didn't find an unused id smaller than maxId then
-            // we use id=maxId+1, which isn't in use
-            if (!foundUnusedId) {
-                result = maxId + 1;
-            }
+                // if we didn't find an unused id smaller than maxId then
+                // we use id=maxId+1, which isn't in use
+                if (!foundUnusedId) {
+                    result = maxId + 1;
+                }
 
 //            System.out.println("NEW ID: " + result);
-        }
+            }
 
 //        System.out.println(">> id = " + id);
-        return result;
+            return result;
+
+        }
     }
 
     /**
      * Returns the maximum id value that has been assigned to an IDObject entry.
-     * <p> <b>Warning:</b> it returns 0, even 0 is not in use. </p>
+     * <p>
+     * <b>Warning:</b> it returns 0, even 0 is not in use. </p>
      *
      * @return the maximum id value, valid range: [0,MAX_INT]
      */
@@ -290,26 +349,31 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * @param idTable the idTable to set
      */
     public void setIdTable(IDTable idTable) {
-        this.idTable = idTable;
 
-        // now set the id of every object entry to the value defined in the
-        // id table
-        int size = Math.min(size(), idTable.size());
+        synchronized (lock) {
 
-        for (int i = 0; i < size(); i++) {
-            if (i < size) {
-                get(i).setID(idTable.get(i));
-            } else if (i < size()) {
-                get(i).setID(getNewId());
+            this.idTable = idTable;
+
+            // now set the id of every object entry to the value defined in the
+            // id table
+            int size = Math.min(size(), idTable.size());
+
+            for (int i = 0; i < size(); i++) {
+                if (i < size) {
+                    get(i).setID(idTable.get(i));
+                } else if (i < size()) {
+                    get(i).setID(getNewId());
+                }
             }
-        }
 
-        for (Integer i : idTable) {
-            originalIdTable.add(i);
-        }
+            for (Integer i : idTable) {
+                originalIdTable.add(i);
+            }
 
-        updateToolTips();
-        updateIdTable();
+            updateToolTips();
+            updateIdTable();
+
+        }
     }
 
     /**
@@ -318,18 +382,27 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * @return the id table of this list
      */
     public IDTable getIdTable() {
-        return idTable;
+
+        synchronized (lock) {
+
+            return idTable;
+
+        }
     }
 
     @Override
     public E remove(int index) {
 
-        E result = super.remove(index);
+        synchronized (lock) {
 
-        updateToolTips();
-        updateIdTable();
+            E result = super.remove(index);
 
-        return result;
+            updateToolTips();
+            updateIdTable();
+
+            return result;
+
+        }
     }
 
     /**
@@ -339,22 +412,28 @@ public class IDArrayList<E extends IDObject> extends ArrayList<E> {
      * @return <code>true</code> (as specified by {@link Collection#remove})
      */
     public boolean removeByID(int id) {
+
         return remove(getById(id));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public boolean remove(Object o) {
-        boolean result = false;
 
-        if (o instanceof IDObject) {
+        synchronized (lock) {
 
-            result = super.remove((E) o);
+            boolean result = false;
+
+            if (o instanceof IDObject) {
+
+                result = super.remove((E) o);
+            }
+
+            updateToolTips();
+            updateIdTable();
+
+            return result;
+
         }
-
-        updateToolTips();
-        updateIdTable();
-
-        return result;
     }
 }

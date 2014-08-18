@@ -68,6 +68,7 @@ import eu.mihosoft.vrl.visual.MessageType;
 import eu.mihosoft.vrl.visual.ValueObject;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Utility methods that enable the analysis of the session control-flow.
@@ -328,7 +329,7 @@ class ControlFlowUtils {
 
         ControlFlowConnection result = null;
 
-        ArrayList<Connection> connections =
+        List<Connection> connections =
                 canvas.getControlFlowConnections().getAllWith(c);
 
         // we only allow one connection, thus we can return the first entry

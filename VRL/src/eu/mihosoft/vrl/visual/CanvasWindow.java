@@ -384,7 +384,7 @@ public class CanvasWindow extends VComponent
                 @Override
                 public void componentMoved(ComponentEvent ce) {
                     try {
-                        ArrayList<Connection> connections =
+                        java.util.List<Connection> connections =
                                 CanvasWindow.this.getMainCanvas().
                                 getDataConnections().
                                 getAllWith(CanvasWindow.this);

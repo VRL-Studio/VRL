@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.system.VClassLoader;
@@ -88,6 +87,7 @@ import eu.mihosoft.vrl.visual.VFilter;
 import eu.mihosoft.vrl.visual.VFilteredTreeModel;
 import eu.mihosoft.vrl.visual.VSimpleFilteredTreeModel;
 import eu.mihosoft.vrl.visual.VSwingUtil;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -96,13 +96,16 @@ import java.util.logging.Logger;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
- * <p> VisualCanvas is the toplevel container class. All visual elements use it
- * as drawing device. Its main purpose is to display object representations. As
- * it is a Java Bean it can easily be used from within the Swing designer that
- * comes with the Netbeans Platform. </p> <p> It also supports d&d gestures. It
- * is possible to add objects directly by dropping them over the canvas. Use the
- * transfer handler and object transferable of this package to add this
- * functionality to the d&d source. </p>
+ * <p>
+ * VisualCanvas is the toplevel container class. All visual elements use it as
+ * drawing device. Its main purpose is to display object representations. As it
+ * is a Java Bean it can easily be used from within the Swing designer that
+ * comes with the Netbeans Platform. </p>
+ * <p>
+ * It also supports d&d gestures. It is possible to add objects directly by
+ * dropping them over the canvas. Use the transfer handler and object
+ * transferable of this package to add this functionality to the d&d source.
+ * </p>
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
@@ -125,14 +128,14 @@ public final class VisualCanvas extends Canvas {
      * a list containing reference tasks that are used to resolve reference
      * requests by UIWindow objects
      */
-    private ArrayList<ReferenceTask> referenceTasks =
-            new ArrayList<ReferenceTask>();
+    private ArrayList<ReferenceTask> referenceTasks
+            = new ArrayList<ReferenceTask>();
     /**
      * a list containing call option tasks that are used to resolve call
      * requests
      */
-    private ArrayList<CallOptionEvaluationTask> callOptionTasks =
-            new ArrayList<CallOptionEvaluationTask>();
+    private ArrayList<CallOptionEvaluationTask> callOptionTasks
+            = new ArrayList<CallOptionEvaluationTask>();
     /**
      *
      */
@@ -199,14 +202,18 @@ public final class VisualCanvas extends Canvas {
      */
     private VProjectController projectController;
     /**
-     * 
+     *
      */
     private Collection<VFilter> componentFilters = new ArrayList<VFilter>();
     /**
-     * 
+     *
      */
     private ComponentController componentController;
-    
+    /**
+     *
+     */
+    private VisualObjects visualObjects;
+
     public void addComponentSearchFilter(VFilter f) {
         componentFilters.add(f);
     }
@@ -236,7 +243,8 @@ public final class VisualCanvas extends Canvas {
     protected void init() {
         typeFactory = new DefaultTypeRepresentationFactory(this);
 
-        setWindows(new VisualObjects(this));
+        visualObjects = new VisualObjects(this);
+        setWindows(visualObjects);
 
         inspector = new VisualObjectInspector(this);
 
@@ -246,9 +254,9 @@ public final class VisualCanvas extends Canvas {
         setVCanvasPopupMenu(new VCanvasPopupMenu(this));
         setComponentTreeModel(new VFilteredTreeModel(new DefaultMutableTreeNode("")));
         setComponentTree(new ComponentTree(getComponentTreeModel(), this));
-        
-        componentController =
-                new JTreeComponentController(getComponentTreeModel());
+
+        componentController
+                = new JTreeComponentController(getComponentTreeModel());
 //        getPopupMenu().setParent(treeController);
 
         // if editing is not allowed then remove code windows from canvas
@@ -258,15 +266,15 @@ public final class VisualCanvas extends Canvas {
                     @Override
                     public void capabilityChanged(
                             CapabilityManager manager, Integer bit) {
-                        if (!getCapabilityManager().isCapable(
-                                CanvasCapabilities.ALLOW_EDIT)) {
-                            for (CanvasWindow w : getWindows().
+                                if (!getCapabilityManager().isCapable(
+                                        CanvasCapabilities.ALLOW_EDIT)) {
+                                    for (CanvasWindow w : getWindows().
                                     getAllWindowsOfType(
-                                    GroovyCodeWindow.class)) {
-                                w.close();
+                                            GroovyCodeWindow.class)) {
+                                        w.close();
+                                    }
+                                }
                             }
-                        }
-                    }
                 });
 
 //        pluginController = new PluginController();
@@ -274,7 +282,6 @@ public final class VisualCanvas extends Canvas {
 //
 //        globalPluginController = new PluginController();
 //        getGlobalPluginController().setMainCanvas(this);
-
         setSessionInitializer(new VSessionInitializer());
         setObjectRepresentationFactory(new DefaultObjectRepresentationFactory(this));
 
@@ -336,12 +343,17 @@ public final class VisualCanvas extends Canvas {
     }
 
     /**
-     * <p> On Mac OS X it is necessary to compile a dummy class to ensure that
+     * <p>
+     * On Mac OS X it is necessary to compile a dummy class to ensure that
      * methods with same name but different parameters occure in the same order
-     * as if they were saved to file, e.g.: </p> <p> void test1(); and void
-     * test1(Integer a); </p> <p> Without the dummy class different order is
-     * used! </p> <p> Another possible cause are visual representations of old
-     * object instances where the order doesn't match the newest version. </p>
+     * as if they were saved to file, e.g.: </p>
+     * <p>
+     * void test1(); and void test1(Integer a); </p>
+     * <p>
+     * Without the dummy class different order is used! </p>
+     * <p>
+     * Another possible cause are visual representations of old object instances
+     * where the order doesn't match the newest version. </p>
      */
     @Deprecated
     public void initGroovyCompiler() {
@@ -357,15 +369,15 @@ public final class VisualCanvas extends Canvas {
     }
 
     /**
-     * Adds an object to the canvas and to the canvas's object inspector. <p>
+     * Adds an object to the canvas and to the canvas's object inspector.
+     * <p>
      * <b>Note:</b> Please use
      * {@link eu.mihosoft.vrl.reflection.ComponentUtil#addObject(java.lang.Class, eu.mihosoft.vrl.reflection.VisualCanvas, java.awt.Point)}
      * to add an object with source code. </p>
      *
      * @param o the object that is to be added
      * @param loc the location at which the the object will be placed, the
-     * origin's position on the x axis is
-     * <code>objectwith/2</code>
+     * origin's position on the x axis is <code>objectwith/2</code>
      * @return the graphical representation of the object
      */
     public synchronized VisualObject addObject(Object o, Point loc) {
@@ -433,7 +445,8 @@ public final class VisualCanvas extends Canvas {
     }
 
     /**
-     * Adds an object to the canvas and to the canvas's object inspector. <p>
+     * Adds an object to the canvas and to the canvas's object inspector.
+     * <p>
      * <b>Note:</b> Please use
      * {@link eu.mihosoft.vrl.reflection.ComponentUtil#addObject(java.lang.Class, eu.mihosoft.vrl.reflection.VisualCanvas, java.awt.Point)}
      * to add an object with source code. </p>
@@ -460,7 +473,6 @@ public final class VisualCanvas extends Canvas {
 
             // compute location offset
             // location.x -= object.getWidth() / 2;
-
             this.getWindows().add(object);
 
             object.setLocation(location);
@@ -469,8 +481,8 @@ public final class VisualCanvas extends Canvas {
 
             result = object;
 
-            CallOptionsEvaluator callOptionsEvaluator =
-                    new CallOptionsEvaluator(getInspector());
+            CallOptionsEvaluator callOptionsEvaluator
+                    = new CallOptionsEvaluator(getInspector());
 
             callOptionsEvaluator.evaluate(oDesc,
                     object.getObjectRepresentation().getID());
@@ -484,8 +496,7 @@ public final class VisualCanvas extends Canvas {
      *
      * @param code the groovy code that defines the class
      * @return an instance of the compiled class if the class could be compiled
-     * or
-     * <code>null</code> otherwise
+     * or <code>null</code> otherwise
      */
     public synchronized Object addObjectAsCode(String code, String language) {
         Object result = null;
@@ -601,7 +612,6 @@ public final class VisualCanvas extends Canvas {
             }
         }
 
-
 //        ArrayDeque<String> codesToCompile = new ArrayDeque<String>();
 //
 //        codesToCompile.addAll(codes);
@@ -634,7 +644,6 @@ public final class VisualCanvas extends Canvas {
 //
 //            }
 //        }
-
         return result;
     }
 
@@ -654,7 +663,6 @@ public final class VisualCanvas extends Canvas {
 
 //        System.out.println("CLS: " + clazz);
 //        System.out.println("CLSLOADER: " + clazz.getClassLoader());
-
 //        getPopupMenu().addComponent(clazz);
         getComponentController().addComponent(clazz);
         getClassLoader().addClass(clazz);
@@ -680,11 +688,9 @@ public final class VisualCanvas extends Canvas {
      *
      * @param code the groovy code that defines the class
      * @param location the location at which the the object will be placed, the
-     * origin's position on the x axis is
-     * <code>objectwidth/2</code>
+     * origin's position on the x axis is <code>objectwidth/2</code>
      * @return an instance of the compiled class if the class could be compiled
-     * or
-     * <code>null</code> otherwise
+     * or <code>null</code> otherwise
      */
     public synchronized Object addObjectAsCode(
             String code, String language, Point location) {
@@ -731,8 +737,7 @@ public final class VisualCanvas extends Canvas {
      * @param o object
      * @param visualID visual id
      * @return the window that displays the object representation of the
-     * specified object or
-     * <code>null</code> if no such window exists
+     * specified object or <code>null</code> if no such window exists
      */
     public CanvasWindow getCanvasWindow(Object o, int visualID) {
         return getInspector().getCanvasWindow(o, visualID);
@@ -742,8 +747,8 @@ public final class VisualCanvas extends Canvas {
      * Returns an object representation.
      *
      * @param o the object of the object representation that is to be returned
-     * @return the object representation or
-     * <code>null</code> if such an object representation could not be found
+     * @return the object representation or <code>null</code> if such an object
+     * representation could not be found
      */
     public DefaultObjectRepresentation getObjectRepresentationByReference(
             Object o, int visualID) {
@@ -763,30 +768,30 @@ public final class VisualCanvas extends Canvas {
      * @param o the object the method belongs to
      * @param methodName the method name
      * @param paramTypes the parameter types of the method
-     * @return the method representation or
-     * <code>null</code> if such a method representation could not be found
+     * @return the method representation or <code>null</code> if such a method
+     * representation could not be found
      */
     public DefaultMethodRepresentation getMethodRepresentation(
             Object o, int visualID,
             String methodName, Class<?>[] paramTypes) {
 
-        DefaultObjectRepresentation oRep =
-                getObjectRepresentationByReference(o, visualID);
+        DefaultObjectRepresentation oRep
+                = getObjectRepresentationByReference(o, visualID);
 
         DefaultMethodRepresentation thisMethod = null;
 
         for (DefaultMethodRepresentation mRep : oRep.getMethods()) {
 
-            boolean paramTypesAreEqual =
-                    mRep.getDescription().getParameterTypes().length
+            boolean paramTypesAreEqual
+                    = mRep.getDescription().getParameterTypes().length
                     == paramTypes.length;
 
             if (paramTypesAreEqual) {
 
                 for (int i = 0; i < paramTypes.length; i++) {
                     Class<?> class1 = paramTypes[i];
-                    Class<?> class2 =
-                            mRep.getDescription().getParameterTypes()[i];
+                    Class<?> class2
+                            = mRep.getDescription().getParameterTypes()[i];
 
                     if (!class1.equals(class2)) {
                         paramTypesAreEqual = false;
@@ -834,7 +839,7 @@ public final class VisualCanvas extends Canvas {
         callOptionTasks.clear();
         getWindowGroups().clear();
 
-        getStyleMenuController().clear(null,false);
+        getStyleMenuController().clear(null, false);
         getWindowGroupController().clear();
 
     }
@@ -1229,7 +1234,6 @@ public final class VisualCanvas extends Canvas {
     public void dispose() {
 //        System.out.println("VisualCanvas.dispose()");
 
-
         if (getSessionInitializer() != null) {
             try {
                 getSessionInitializer().dispose(this);
@@ -1243,7 +1247,7 @@ public final class VisualCanvas extends Canvas {
 
             }
         }
-        
+
         getPopupMenu().removeAll();
 
         getTypeFactory().dispose();
@@ -1430,5 +1434,41 @@ public final class VisualCanvas extends Canvas {
      */
     public ComponentController getComponentController() {
         return componentController;
+    }
+
+    /**
+     * Fires a workflow event. All objects on the canvas that implement the
+     * method <code>public void handleVRLWorkflowEvent(WorkflowEvent event)</b> will
+     * be notified.
+     *
+     * @param eventType event type
+     */
+    public void fireWorkflowEvent(String eventType) {
+        fireWorkflowEvent(new WorkflowEventImpl(eventType));
+    }
+
+    /**
+     * Fires a workflow event. All objects on the canvas that implement the
+     * method <code>public void handleVRLWorkflowEvent(WorkflowEvent event)</b> will
+     * be notified.
+     *
+     * @param event event
+     */
+    public void fireWorkflowEvent(WorkflowEvent event) {
+        for (Object o : getInspector().getObjects()) {
+
+            MethodDescription mDesc = getInspector().getMethodDescription(o,
+                    "handleVRLWorkflowEvent", WorkflowEvent.class);
+
+            if (mDesc != null) {
+                try {
+                    mDesc.setParameters(new Object[]{event});
+                    getInspector().invoke(mDesc);
+                } catch (InvocationTargetException ex) {
+                    Logger.getLogger(VisualCanvas.class.getName()).
+                            log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 }

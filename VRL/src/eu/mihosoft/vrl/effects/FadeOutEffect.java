@@ -55,9 +55,7 @@ package eu.mihosoft.vrl.effects;
 import eu.mihosoft.vrl.animation.Animation;
 import eu.mihosoft.vrl.animation.FrameListener;
 import eu.mihosoft.vrl.animation.LinearInterpolation;
-import eu.mihosoft.vrl.reflection.ControlFlowConnection;
 import eu.mihosoft.vrl.reflection.DefaultMethodRepresentation;
-import eu.mihosoft.vrl.reflection.TypeRepresentationContainer;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Component;
@@ -67,11 +65,10 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-import java.awt.image.VolatileImage;
 import java.util.ArrayList;
 import eu.mihosoft.vrl.visual.CanvasWindow;
 import eu.mihosoft.vrl.visual.Connection;
-import eu.mihosoft.vrl.visual.Connector;
+import java.util.List;
 
 /**
  * Effect for fading out components.
@@ -260,7 +257,7 @@ class FadeOutAnimation extends Animation implements FrameListener {
         // TODO put that inside of another frame listener
         if (c instanceof CanvasWindow) {
             CanvasWindow obj = (CanvasWindow) c;
-            ArrayList<Connection> connections =
+            List<Connection> connections =
                     obj.getMainCanvas().getDataConnections().getAllWith(obj);
 
             connections.addAll(
@@ -325,7 +322,7 @@ class FadeOutAnimation extends Animation implements FrameListener {
                 obj.getMainCanvas().getWindows().
                         removeObjectWithoutEffect(obj.getID());
 
-                ArrayList<Connection> connections =
+                List<Connection> connections =
                         obj.getMainCanvas().getDataConnections().getAllWith(obj);
                 for (Connection connection : connections) {
                     connection.setVisible(false);

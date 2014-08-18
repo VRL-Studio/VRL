@@ -55,6 +55,10 @@ package eu.mihosoft.vrl.lang.visual;
 import eu.mihosoft.vrl.annotation.ComponentInfo;
 import eu.mihosoft.vrl.annotation.MethodInfo;
 import eu.mihosoft.vrl.annotation.ObjectInfo;
+import eu.mihosoft.vrl.reflection.VisualCanvas;
+import eu.mihosoft.vrl.reflection.WorkflowEvent;
+import eu.mihosoft.vrl.types.CanvasRequest;
+import eu.mihosoft.vrl.types.MethodRequest;
 import java.io.Serializable;
 
 /**
@@ -73,9 +77,19 @@ public class StopObject implements Serializable {
     transient VisualInvocationObject invocationObj;
 
     @MethodInfo(name=" ", buttonText="stop", hideCloseIcon=true)
-    public void stop() {
+    public void stop(CanvasRequest cReq, MethodRequest mReq) {
         if (invocationObj != null) {
+            invocationStopped(cReq.getCanvas());
             invocationObj.stop();
         }
+    }
+
+    void invocationStarted() {
+        //
+    }
+
+    void invocationStopped(VisualCanvas canvas) {
+        canvas.fireWorkflowEvent(WorkflowEvent.STOP_WORKFLOW);
+        //
     }
 }

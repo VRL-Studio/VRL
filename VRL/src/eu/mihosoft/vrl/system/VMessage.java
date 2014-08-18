@@ -75,6 +75,8 @@ public class VMessage {
      * @param title message title
      * @param msg message
      * @param msgType message type (info,warning, error etc.)
+     * 
+     * @return message the message
      */
     public static Message msg(String title, String msg, MessageType msgType) {
         return getMsgBox().addMessage(title, msg, msgType);
@@ -85,6 +87,8 @@ public class VMessage {
      * 
      * @param title message title
      * @param msg  message
+     * 
+     * @return message the message
      */
     public static Message info(String title, String msg) {
         return msg(title, msg, MessageType.INFO);
@@ -95,6 +99,8 @@ public class VMessage {
      * 
      * @param title message title
      * @param msg  message
+     * 
+     * @return message the message
      */
     public static Message warning(String title, String msg) {
         return msg(title, msg, MessageType.WARNING);
@@ -105,6 +111,8 @@ public class VMessage {
      * 
      * @param title message title
      * @param msg  message
+     * 
+     * @return message the message
      */
     public static Message error(String title, String msg) {
         return msg(title, msg, MessageType.ERROR);
@@ -136,5 +144,22 @@ public class VMessage {
     public static MessageBox getMsgBox() {
         return VRL.getCurrentProjectController().
                 getCurrentCanvas().getMessageBox();
+    }
+    
+    /**
+     * Shows a critical error message that gives instructions on how to send a
+     * bug report including logs and the current project.
+     * 
+     * @return message the message
+     */
+    public static Message criticalErrorDetected() {
+        
+        System.err.println("Critical Error: a critical error has been detected! Please "
+                    + Constants.WRITE_VRL_BUG_REPORT_PLAIN
+                    + " and attach your complete log and the current project (if possible).");
+        
+        return VMessage.error("Critical Error", "A critical error has been detected! Please "
+                    + Constants.WRITE_VRL_BUG_REPORT
+                    + " and attach your complete log and the current project (if possible).");
     }
 }

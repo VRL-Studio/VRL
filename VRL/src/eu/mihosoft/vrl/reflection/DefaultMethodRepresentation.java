@@ -624,6 +624,24 @@ public class DefaultMethodRepresentation extends VComponent
 
         this.add(getInvokeButtonContainer(), BorderLayout.SOUTH);
     }
+    
+    /**
+     * Changes the text of the invoke button if an invoke button is present. 
+     * Does nothing otherwise.
+     * @param text new text
+     */
+    public void changeInvokeButtonTextIfButtonIsPresent(String text) {
+        if (buttonContainer.getComponents().length==0) {
+            return;
+        }
+        
+        if (!(buttonContainer.getComponents()[0] instanceof VButton)) {
+            return;
+        }
+        
+        invokeButtonText = text;
+        ((VButton)buttonContainer.getComponents()[0]).setText(text);
+    }
 
     /**
      * Creates an invoke button for this method.

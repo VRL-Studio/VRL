@@ -58,6 +58,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import eu.mihosoft.vrl.reflection.VisualObject;
+import java.util.List;
 
 /**
  * <P>
@@ -351,7 +352,7 @@ public final class Transferable extends JPanel implements
                     targetConnector.connectionRemoved(connection);
 
 
-                    ArrayList<Connection> connections;
+                    List<Connection> connections;
 
                     connections = getSourceObject().getConnections().
                             getAllWith(sourceConnector);
@@ -833,7 +834,7 @@ public final class Transferable extends JPanel implements
 
         try {
 
-            ArrayList<Connection> connections =
+            List<Connection> connections =
                     getSourceObject().getConnections().
                     getAllWith(getCurrentTargetConnector());
 

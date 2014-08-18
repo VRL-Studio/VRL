@@ -89,6 +89,8 @@ public class ShellView {
     private JEditorPane editor;
     private VRLShell shell;
 
+    // TODO review code 30.06.2014
+    @Deprecated
     private void setCompletion(JEditorPane editorPane) {
 //        DefaultSyntaxKit.initKit();
 //        

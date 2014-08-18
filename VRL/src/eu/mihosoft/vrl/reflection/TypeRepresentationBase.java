@@ -402,7 +402,7 @@ public abstract class TypeRepresentationBase extends VComponent
             if (c != null) {
 
                 // get all of the return value's connections
-                ArrayList<Connection> connections
+                java.util.List<Connection> connections
                         = getMainCanvas().getDataConnections().getAllWith(c);
 
                 // for every connection
