@@ -60,4 +60,6 @@ public interface IModifiers {
 
     List<Modifier> getModifiers();
     
+    boolean is(Modifier m);
+    
 }

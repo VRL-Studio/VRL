@@ -233,9 +233,13 @@ class ScopeImpl implements Scope {
     }
 
     Variable _createVariable(IType type, String varName) {
+        
+        if (variables.containsKey(varName)) {
+            throw new IllegalArgumentException("Variable '" + varName + "' does already exist!");
+        }
 
         if (getVariable(varName) != null) {
-            throw new IllegalArgumentException("Variable '" + varName + "' does already exist!");
+            System.err.println("Variable '" + varName + "' hides variable in enclosing block!");
         }
 
         Variable variable = new VariableImpl(this, type, varName, null, false, null);

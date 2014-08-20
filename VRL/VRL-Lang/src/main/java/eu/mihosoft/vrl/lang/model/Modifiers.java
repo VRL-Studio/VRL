@@ -77,4 +77,9 @@ public final class Modifiers implements IModifiers {
         return readOnlyModifiers;
     }
 
+    @Override
+    public boolean is(Modifier m) {
+        return getModifiers().contains(m);
+    }
+
 }

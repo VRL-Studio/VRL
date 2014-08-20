@@ -64,8 +64,6 @@ public interface Variable {
 
     public Object getValue();
 
-    public boolean isStatic();
-
     public boolean isConstant();
 
     public Scope getScope();
@@ -73,12 +71,19 @@ public interface Variable {
     public void setValue(Object value);
 
     public void setConstant(boolean b);
+    
+    public Variable setModifiers(IModifiers modifiers);
+    
+    public Optional<IModifiers> getModifiers();
+    
+    public boolean isField();
 
 //    public boolean isReturnValue();
     
     public DeclarationInvocation getDeclaration();
 
 //    public Optional<Invocation> getInvocation();
+    
 }
 
 class VariableImpl implements Variable {
@@ -88,9 +93,9 @@ class VariableImpl implements Variable {
     private final String varName;
     private Object value;
     private boolean constant;
-    private boolean staticVar;
 //    private Invocation invocation;
     private DeclarationInvocation invocation;
+    private IModifiers modifiers;
 
     VariableImpl(Scope scope, IType type, String varName, Object value, boolean constant, DeclarationInvocation invocation) {
         this.scope = scope;
@@ -101,12 +106,14 @@ class VariableImpl implements Variable {
         this.invocation = invocation;
     }
 
-    private VariableImpl(Scope scope, IType type, DeclarationInvocation invocation) {
-        this.scope = scope;
-        this.type = type;
-        this.varName = type.getFullClassName();
-        this.staticVar = true;
-    }
+//    // static var initializer
+//    private VariableImpl(Scope scope, IType type, DeclarationInvocation invocation) {
+//        this.scope = scope;
+//        this.type = type;
+//        this.varName = type.getFullClassName();
+//        
+//        
+//    }
 
     VariableImpl(Scope scope, String varName, DeclarationInvocation invocation) {
         this.scope = scope;
@@ -115,10 +122,16 @@ class VariableImpl implements Variable {
         this.varName = varName;
         this.invocation = invocation;
     }
-
-    public static VariableImpl createStaticVar(Scope scope, IType type, DeclarationInvocation invocation) {
-        return new VariableImpl(scope, type, invocation);
+    
+    @Override
+    public Variable setModifiers(IModifiers modifiers) {
+        this.modifiers = modifiers;
+        return this;
     }
+
+//    public static VariableImpl createStaticVar(Scope scope, IType type, DeclarationInvocation invocation) {
+//        return new VariableImpl(scope, type, invocation);
+//    }
 
     @Override
     public String getName() {
@@ -191,14 +204,6 @@ class VariableImpl implements Variable {
         return hash;
     }
 
-    /**
-     * @return the staticVar
-     */
-    @Override
-    public boolean isStatic() {
-        return staticVar;
-    }
-
 //    /**
 //     * @return the invocation
 //     */
@@ -222,6 +227,20 @@ class VariableImpl implements Variable {
      */
     public void setDeclaration(DeclarationInvocation invocation) {
         this.invocation = invocation;
+    }
+
+    @Override
+    public Optional<IModifiers> getModifiers() {
+//        if (modifiers == null) {
+//            modifiers = new Modifiers();
+//        }
+        
+        return Optional.ofNullable(modifiers);
+    }
+
+    @Override
+    public boolean isField() {
+        return modifiers !=null;
     }
 
 }

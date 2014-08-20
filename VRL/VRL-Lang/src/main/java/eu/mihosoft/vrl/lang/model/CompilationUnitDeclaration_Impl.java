@@ -72,6 +72,15 @@ public class CompilationUnitDeclaration_Impl extends ScopeImpl implements Compil
         
         metadata = new CompilationUnitMetaData(packageName);
         
+        
+        if (name.toLowerCase().endsWith(".java")) {
+            name = name.substring(0, name.length()-5);
+        }
+        
+        if (!name.toLowerCase().endsWith(".groovy")) {
+            name = name + ".groovy";
+        }
+        
         getNode().setTitle("file " + name);
     }
 
