@@ -104,7 +104,7 @@ public class Main extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
         
-        controller.loadTextFile(new File("ForSample.groovy"));
+        controller.loadTextFile(new File("StaticTest.groovy"));
 //        controller.loadTextFile(new File("NB-Sample/src/main/groovy/Main.groovy"));
         
         scene.getStylesheets().add("/eu/mihosoft/vrl/ui/codevisualization/default.css");

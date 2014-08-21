@@ -16,14 +16,16 @@ import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import eu.mihosoft.vrl.workflow.fx.FlowNodeWindow;
+import eu.mihosoft.vrl.workflow.fx.VCanvas;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 /**
  *
@@ -41,6 +43,14 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
        Object value = getModel().getValueObject().getValue();
 
        if (value instanceof Invocation) {
+           
+           FlowNodeWindow w = (FlowNodeWindow) getNode();
+           VCanvas canvas = (VCanvas) getContentNode().getParent();
+           
+           canvas.setMinScaleX(1);
+           canvas.setMaxScaleX(1);
+           canvas.setMinScaleY(1);
+           canvas.setMaxScaleY(1);
 
            Invocation invocation = (Invocation) value;
            
@@ -86,9 +96,11 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             } else if (a.getArgType()==ArgumentType.VARIABLE) {
                  Label label = new Label();
                  a.getVariable().ifPresent(v->label.setText(v.getName()));
+                 label.setTextFill(Color.WHITE);
                  inputs.getChildren().add(label);
             } else if (a.getArgType()==ArgumentType.INVOCATION) {
                  Label label = new Label();
+                 label.setTextFill(Color.WHITE);
                  a.getInvocation().ifPresent(i->label.setText(i.getMethodName()));
                  inputs.getChildren().add(label);
             }
