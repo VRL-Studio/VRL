@@ -47,10 +47,11 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
-import java.util.ArrayList;
+import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
+import eu.mihosoft.vrl.workflow.Connector;
+import eu.mihosoft.vrl.workflow.VNode;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -75,6 +76,9 @@ class InvocationImpl implements Invocation {
     private ICodeRange location;
     private IType returnType;
 //    private final Variable returnValue;
+    private VNode node;
+    private ObservableCodeImpl observableCode;
+    private boolean textRenderingEnabled = true;
 
     public InvocationImpl(
             Scope parent,
@@ -87,28 +91,27 @@ class InvocationImpl implements Invocation {
         this.methodName = methodName;
         this.constructor = constructor;
         this.Void = isVoid;
-        
+
         this.Static = isStatic;
         this.returnType = returnType;
 
         arguments.addAll(Arrays.asList(args));
-        
+
 //        if (isVoid) {
 //            returnValue = null;
 //        } else {
 //            returnValue = parent.createVariable(this);
 //        }
-
         Variable var = null;
-        
-        try{
+
+        try {
             var = parent.getVariable(varName);
-        } catch(IllegalArgumentException ex) {
+        } catch (IllegalArgumentException ex) {
             // will be checked later (see if below)
         }
 
         if (!isStatic && !isScope() && var == null) {
-            
+
             throw new IllegalArgumentException(
                     "Variable '"
                     + varName
@@ -117,6 +120,34 @@ class InvocationImpl implements Invocation {
             // check whether varName is a valid type
             Type type = new Type(varName);
         }
+
+        if (isScope()) {
+            // nothing (see ScopeInvocationImpl)
+        } else {
+            node = parent.getFlow().newNode();
+            node.getValueObject().setValue(this);
+
+            node.setMainInput(node.addInput(WorkflowUtil.CONTROL_FLOW));
+            node.setMainOutput(node.addOutput(WorkflowUtil.CONTROL_FLOW));
+
+            int argIndex = 0;
+            for (IArgument arg : args) {
+                System.out.println("addInput: " + arg);
+                node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().
+                        setValue(new ArgumentValue(argIndex, arg));
+                argIndex++;
+            }
+
+            if (!Objects.equals(returnType, Type.VOID)) {
+                Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
+                output.getValueObject().setValue(returnType);
+                node.setMainOutput(output);
+            }
+
+            node.setTitle(varName + "." + methodName + "()");
+            
+        }
+
     }
 
     @Override
@@ -160,7 +191,7 @@ class InvocationImpl implements Invocation {
             result += a + ", ";
         }
 
-        result += "]";
+        result += "] ]";
 
         return result;
     }
@@ -201,7 +232,6 @@ class InvocationImpl implements Invocation {
 //    public void setCode(String code) {
 //        this.code = code;
 //    }
-
     /**
      * @return the Static
      */
@@ -245,8 +275,6 @@ class InvocationImpl implements Invocation {
 //    public Optional<Variable> getReturnValue() {
 //        return Optional.ofNullable(returnValue);
 //    }
-
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -284,6 +312,7 @@ class InvocationImpl implements Invocation {
     /**
      * @return the returnType
      */
+    @Override
     public IType getReturnType() {
         return returnType;
     }
@@ -292,10 +321,65 @@ class InvocationImpl implements Invocation {
      * @param returnType the returnType to set
      */
     protected void setReturnType(IType returnType) {
+
+        List<Connector> connectorsToRemove
+                = node.getOutputs().filtered(o -> o.getType().equals(WorkflowUtil.DATA_FLOW));
+
+        node.getOutputs().removeAll(connectorsToRemove);
+
+        if (!Objects.equals(returnType, Type.VOID)) {
+            Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
+            output.getValueObject().setValue(returnType);
+            node.setMainOutput(output);
+        }
+
         this.returnType = returnType;
     }
 
-    
-   
+    @Override
+    public VNode getNode() {
+        return this.node;
+    }
+
+    private ObservableCodeImpl getObservable() {
+        if (observableCode == null) {
+            observableCode = new ObservableCodeImpl();
+        }
+
+        return observableCode;
+    }
+
+    @Override
+    public void addEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().addEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void removeEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().removeEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void fireEvent(CodeEvent evt) {
+        getObservable().fireEvent(evt);
+
+        if (!evt.isCaptured() && getParent() != null) {
+            getParent().fireEvent(evt);
+        }
+    }
+
+    /**
+     * @return the textRenderingEnabled
+     */
+    public boolean isTextRenderingEnabled() {
+        return textRenderingEnabled;
+    }
+
+    /**
+     * @param textRenderingEnabled the textRenderingEnabled to set
+     */
+    public void setTextRenderingEnabled(boolean textRenderingEnabled) {
+        this.textRenderingEnabled = textRenderingEnabled;
+    }
 
 }

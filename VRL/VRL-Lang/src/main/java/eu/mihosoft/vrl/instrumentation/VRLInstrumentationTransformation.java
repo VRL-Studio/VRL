@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.instrumentation;
 
 import java.util.ArrayList;
@@ -60,6 +59,7 @@ import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassCodeExpressionTransformer;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
+import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ClosureExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.Expression;
@@ -86,8 +86,8 @@ public class VRLInstrumentationTransformation implements ASTTransformation {
         transformation.visit(astNodes, sourceUnit);
 
         // create transformer instance
-        MethodCallExpressionTransformer transformer =
-                new MethodCallExpressionTransformer(sourceUnit);
+        MethodCallExpressionTransformer transformer
+                = new MethodCallExpressionTransformer(sourceUnit);
 
         // apply transformation for each class in the specified source unit
         for (ClassNode clsNode : sourceUnit.getAST().getClasses()) {
@@ -122,7 +122,6 @@ class MethodCallExpressionTransformer extends ClassCodeExpressionTransformer {
     public Expression transform(Expression exp) {
 
 //        System.out.println(" --> transform: " + exp);
-
         // don't transform if expression is null
         if (exp == null) {
             System.out.println(" --> NULL");
@@ -148,11 +147,22 @@ class MethodCallExpressionTransformer extends ClassCodeExpressionTransformer {
 
         // we ignore other expressions as we only want to transform/instrument
         // method calls
-        if (!(exp instanceof MethodCallExpression)) {
 
-            return exp.transformExpression(this);
+        Expression result = null;
+        if (exp instanceof MethodCallExpression) {
+            result = instrumentNonStaticMethodCall(exp);
+        } else if (exp instanceof StaticMethodCallExpression) {
+            result = instrumentStaticMethodCall(exp);
         }
 
+        if (result != null) {
+            return result;
+        }
+
+        return exp.transformExpression(this);
+    }
+
+    private Expression instrumentNonStaticMethodCall(Expression exp) {
         // we have a method call
         MethodCallExpression methodCall = (MethodCallExpression) exp;
 
@@ -162,8 +172,8 @@ class MethodCallExpressionTransformer extends ClassCodeExpressionTransformer {
         }
 
         // original method args
-        ArgumentListExpression mArgs =
-                (ArgumentListExpression) methodCall.getArguments();
+        ArgumentListExpression mArgs
+                = (ArgumentListExpression) methodCall.getArguments();
 
         // instrument argument list (possible method calls as arguments )
         mArgs = (ArgumentListExpression) mArgs.transformExpression(this);
@@ -173,7 +183,7 @@ class MethodCallExpressionTransformer extends ClassCodeExpressionTransformer {
         for (Expression mArg : mArgs.getExpressions()) {
             Expression instrumentedArg = mArg.transformExpression(this);
             instrumentedMargs.addExpression(instrumentedArg);
-            System.out.println(" -> arg: " + instrumentedArg);
+            System.out.println(" -> arg: " + instrumentedArg.getText());
         }
 
         mArgs = instrumentedMargs;
@@ -189,9 +199,6 @@ class MethodCallExpressionTransformer extends ClassCodeExpressionTransformer {
         // if both are equal, static method call detected
         boolean staticCall = typeName.equals(objName);
 
-
-
-
         // create a new argument list with object the method belongs to
         // as first parameter and the method name as second parameter
         List<Expression> finalArgExpressions = new ArrayList<>();
@@ -203,6 +210,68 @@ class MethodCallExpressionTransformer extends ClassCodeExpressionTransformer {
 
         ArgumentListExpression finalArgs = new ArgumentListExpression(finalArgExpressions);
 
+        // add original method args to argument list of the instrumentation
+        // method
+        for (Expression e : mArgs.getExpressions()) {
+
+            finalArgs.addExpression(e);
+        }
+//        try {
+//            System.out.println(" --> RET " + methodCall.getMethodTarget().getReturnType());
+//        } catch (Exception ex) {
+//            System.out.println(" --> VOID");
+//        }
+
+        // create a static method call to the instrumentation method which
+        // calls the original method via reflection
+        return new StaticMethodCallExpression(
+                new ClassNode(VRLInstrumentationUtil.class),
+                "__instrumentCode", finalArgs);
+    }
+
+    private Expression instrumentStaticMethodCall(Expression exp) {
+        // we have a method call
+        StaticMethodCallExpression methodCall = (StaticMethodCallExpression) exp;
+
+        if (methodCall.getMethod().equals("__instrumentCode")) {
+            System.out.println(" --> skipping already instrumented code");
+            return exp;
+        }
+
+        // original method args
+        ArgumentListExpression mArgs
+                = (ArgumentListExpression) methodCall.getArguments();
+
+        // instrument argument list (possible method calls as arguments )
+        mArgs = (ArgumentListExpression) mArgs.transformExpression(this);
+
+        // instrument method args (possible method calls inside)
+        ArgumentListExpression instrumentedMargs = new ArgumentListExpression();
+        for (Expression mArg : mArgs.getExpressions()) {
+
+            Expression instrumentedArg = mArg.transformExpression(this);
+
+            instrumentedMargs.addExpression(instrumentedArg);
+            System.out.println(" -> arg: " + instrumentedArg);
+        }
+
+        mArgs = instrumentedMargs;
+
+        System.out.println(">> instrumenting method "
+                + methodCall.getMethod() + " : " + methodCall.getClass());
+
+        // name of the type of the object
+//        String typeName = methodCall.getType().getName();
+        // create a new argument list with object the method belongs to
+        // as first parameter and the method name as second parameter
+        List<Expression> finalArgExpressions = new ArrayList<>();
+
+        finalArgExpressions.add(new ConstantExpression(blockDepth));
+        finalArgExpressions.add(new ConstantExpression(true));
+        finalArgExpressions.add(new ClassExpression(methodCall.getOwnerType()));
+        finalArgExpressions.add(new ConstantExpression(methodCall.getMethod()));
+
+        ArgumentListExpression finalArgs = new ArgumentListExpression(finalArgExpressions);
 
         // add original method args to argument list of the instrumentation
         // method
@@ -210,12 +279,12 @@ class MethodCallExpressionTransformer extends ClassCodeExpressionTransformer {
 
             finalArgs.addExpression(e);
         }
-        try {
-            System.out.println(" --> RET " + methodCall.getMethodTarget().getReturnType());
-        } catch (Exception ex) {
-            System.out.println(" --> VOID");
-        }
 
+//        try {
+//            System.out.println(" --> RET " + methodCall.);
+//        } catch (Exception ex) {
+//            System.out.println(" --> VOID");
+//        }
         // create a static method call to the instrumentation method which
         // calls the original method via reflection
         return new StaticMethodCallExpression(

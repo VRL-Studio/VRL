@@ -47,43 +47,73 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.WhileDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
+import javafx.collections.ListChangeListener;
 
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-class WhileDeclaration_Impl extends ScopeImpl implements WhileDeclaration{
-    private final WhileDeclarationMetaData metadata;
+class WhileDeclaration_Impl extends ScopeImpl implements WhileDeclaration {
 
-    public WhileDeclaration_Impl(String id, Scope parent, Invocation invocation) {
-        super(id, parent, ScopeType.WHILE, ScopeType.WHILE.name(), new WhileDeclarationMetaData(invocation));
-        metadata = (WhileDeclarationMetaData) getScopeArgs()[0];
+    private WhileDeclarationMetaData metadata;
+
+    public WhileDeclaration_Impl(String id, Scope parent, IArgument argument) {
+        super(id, parent, ScopeType.WHILE, ScopeType.WHILE.name(), new WhileDeclarationMetaData(argument));
+
     }
 
     @Override
-    public Invocation getCheck() {
-        return metadata.getCheck();
-    } 
+    public IArgument getCheck() {
+
+        return getMetaData().getCheck();
+    }
+    
+    private WhileDeclarationMetaData getMetaData() {
+          if (metadata == null) {
+            metadata = (WhileDeclarationMetaData) getScopeArgs()[0];
+        }
+          
+          return metadata;
+    }
+
+    @Override
+    public void defineParameters(Invocation i) {
+        i.getArguments().setAll(getCheck());
+
+        i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
+            while (c.next()) {
+                if (i.getArguments().isEmpty()) {
+                    getMetaData().setCheck(Argument.NULL);
+                } else {
+                    getMetaData().setCheck(i.getArguments().get(0));
+                }
+            }
+        });
+    }
 }
 
 class WhileDeclarationMetaData {
-    private final Invocation check;
 
-    public WhileDeclarationMetaData(Invocation check) {
+    private IArgument check;
+
+    public WhileDeclarationMetaData(IArgument check) {
         this.check = check;
     }
 
     /**
      * @return the check
      */
-    public Invocation getCheck() {
+    public IArgument getCheck() {
         return check;
     }
-    
+
+    public void setCheck(IArgument check) {
+        this.check = check;
+    }
+
 }

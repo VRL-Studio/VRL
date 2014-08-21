@@ -51,6 +51,8 @@ package eu.mihosoft.vrl.lang.model;
 
 import com.google.common.io.Files;
 import eu.mihosoft.vrl.base.IOUtil;
+import static eu.mihosoft.vrl.lang.model.Scope2Code.demoScope;
+import static eu.mihosoft.vrl.lang.model.Scope2Code.getCode;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -70,15 +72,31 @@ public class Main {
 
     public static void main(String[] args) {
         
-        IOUtil.deleteDirectory(new File("java.txt"));
-        IOUtil.deleteDirectory(new File("groovy.txt"));
+//        IOUtil.deleteDirectory(new File("java.txt"));
+//        IOUtil.deleteDirectory(new File("groovy.txt"));
+//
+////        for (int i = 0; i < 200; i += 50) {
+//            for (int j = 1; j < 50; j += 10) {
+//                compile(j, 200, j);
+//            }
+////        }
 
-//        for (int i = 0; i < 200; i += 50) {
-            for (int j = 1; j < 50; j += 10) {
-                compile(j, 200, j);
-            }
-//        }
-
+        
+//        VisualCodeBuilder vCodeBuilder = new VisualCodeBuilder_Impl();
+//        
+//        CompilationUnitDeclaration cu = vCodeBuilder.declareCompilationUnit("MyFile.groovy", "myPackage");
+        
+        
+        CompilationUnitDeclaration scope = demoScope();
+        String mName = scope.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getName();
+        
+        System.out.println("mName: " + mName);
+        
+        String demoCode = getCode(scope);
+        
+        System.out.println(demoCode);
+        
+        
     }
 
     static void compile(int i, int numClasses, int numMethods) {

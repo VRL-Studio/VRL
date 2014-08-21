@@ -47,13 +47,13 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.model.CommentType;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.workflow.VNode;
 
 /**
  *
@@ -66,13 +66,16 @@ public class CommentImpl implements Comment {
     private String comment;
     private CommentType type = CommentType.UNDEFINED;
     private Scope parent;
+    private VNode node;
+    private ObservableCodeImpl observableCode;
+    private boolean textRenderingEnabled = true;
 
     public CommentImpl(String id, ICodeRange codeRange, String comment) {
         this.id = id;
         this.codeRange = codeRange;
         this.comment = comment;
     }
-    
+
     public CommentImpl(String id, ICodeRange codeRange, String comment, CommentType type) {
         this.id = id;
         this.codeRange = codeRange;
@@ -157,6 +160,52 @@ public class CommentImpl implements Comment {
      */
     public void setParent(Scope parent) {
         this.parent = parent;
+
+        if (parent != null) {
+            // TODO: how shall we integrate comments? 06.06.2014
+//            this.node = parent.getFlow().newNode();
+//            this.node.getValueObject().setValue(this);
+//            this.node.setTitle("//");
+        }
+    }
+
+    @Override
+    public VNode getNode() {
+        return this.node;
+    }
+
+    private ObservableCodeImpl getObservable() {
+        if (observableCode == null) {
+            observableCode = new ObservableCodeImpl();
+        }
+
+        return observableCode;
+    }
+
+    @Override
+    public void addEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().addEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void removeEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().removeEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void fireEvent(CodeEvent evt) {
+        getObservable().fireEvent(evt);
+
+        if (!evt.isCaptured() && getParent() != null) {
+            getParent().fireEvent(evt);
+        }
+    }
+
+    /**
+     * @return the textRenderingEnabled
+     */
+    public boolean isTextRenderingEnabled() {
+        return textRenderingEnabled;
     }
 
 }

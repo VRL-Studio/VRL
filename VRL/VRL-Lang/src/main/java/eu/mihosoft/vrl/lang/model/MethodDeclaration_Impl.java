@@ -69,13 +69,15 @@ class MethodDeclaration_Impl extends ScopeImpl implements MethodDeclaration {
         super(id, parent, ScopeType.METHOD, methodName, new MethodDeclarationMetaData(returnType, modifiers, params));
         metadata = (MethodDeclarationMetaData) getScopeArgs()[0];
 
+        getNode().setTitle("method " + methodName + "()");
+        
         createParamVariables();
     }
 
     private void createParamVariables() {
         for (IParameter p : metadata.getParams().getParamenters()) {
 
-            _createVariable(p.getType(), p.getName());
+            createParamVariable(p.getType(), p.getName(), p.getRange());
         }
         
     }
@@ -104,6 +106,8 @@ class MethodDeclaration_Impl extends ScopeImpl implements MethodDeclaration {
     public ClassDeclaration getClassDeclaration() {
         return (ClassDeclaration) getParent();
     }
+
+
     
     
 }

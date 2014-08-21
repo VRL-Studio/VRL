@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 /**
@@ -55,8 +54,10 @@ package eu.mihosoft.vrl.lang.model;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public interface VisualCodeBuilder {
-    
+
     CompilationUnitDeclaration declareCompilationUnit(String name, String packageName);
+    
+    BinaryOperatorInvocation assign(Scope scope, String varName, IArgument arg);
 
     BinaryOperatorInvocation assignConstant(Scope scope, String varName, Object constant);
 
@@ -67,20 +68,32 @@ public interface VisualCodeBuilder {
     DeclarationInvocation declareVariable(Scope scope, IType type, String varName);
 
     ForDeclaration invokeForLoop(ControlFlowScope scope, String varName, int from, int to, int inc);
-    
+
     ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type, IModifiers modifiers, IExtends extendz, IExtends implementz);
 
     MethodDeclaration declareMethod(ClassDeclaration scope, IModifiers modifiers, IType returnType, String methodName, IParameters params);
 
-    WhileDeclaration invokeWhileLoop(ControlFlowScope scope, Invocation check);
+    WhileDeclaration invokeWhileLoop(ControlFlowScope scope, IArgument check);
+
+    BreakInvocation invokeBreak(ControlFlowScope scope);
+
+    ContinueInvocation invokeContinue(ControlFlowScope scope);
 
     Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args);
-    
+
     Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args);
 
     Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, IArgument... args);
 
+    ReturnStatementInvocation returnValue(ControlFlowScope scope, IArgument arg);
+
     BinaryOperatorInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation);
-    
+
     BinaryOperatorInvocation invokeOperator(Scope scope, IArgument leftArg, IArgument rightArg, Operator operator);
+
+    NotInvocation invokeNot(ControlFlowScope scope, IArgument arg);
+
+    IfDeclaration invokeIf(ControlFlowScope scope, IArgument check);
+
+    ElseIfDeclaration invokeElseIf(ControlFlowScope scope, IArgument check);
 }

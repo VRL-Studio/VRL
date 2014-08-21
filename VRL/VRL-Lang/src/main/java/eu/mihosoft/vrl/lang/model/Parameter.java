@@ -60,10 +60,20 @@ public class Parameter implements IParameter {
 
     private final IType type;
     private final String name;
+    private final ICodeRange range;
 
     public Parameter(IType type, String name) {
         this.type = type;
         this.name = name;
+        this.range = null;
+
+        validate();
+    }
+    
+    public Parameter(IType type, String name, ICodeRange range) {
+        this.type = type;
+        this.name = name;
+        this.range = range;
 
         validate();
     }
@@ -88,6 +98,11 @@ public class Parameter implements IParameter {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public ICodeRange getRange() {
+        return range;
     }
 
 }

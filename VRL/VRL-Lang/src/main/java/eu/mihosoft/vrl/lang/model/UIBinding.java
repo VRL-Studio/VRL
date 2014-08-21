@@ -47,10 +47,9 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.workflow.VFlow;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,5 +59,16 @@ import java.util.Map;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class UIBinding {
-    public static Map<String, List<Scope>> scopes = new HashMap<>();;
+
+    private static VFlow rootFlow;
+
+    public static Map<String, List<Scope>> scopes = new HashMap<>();
+
+    public static void setRootFlow(VFlow flow) {
+        rootFlow = flow;
+    }
+    
+    public static VFlow getRootFlow() {
+        return rootFlow;
+    }
 }

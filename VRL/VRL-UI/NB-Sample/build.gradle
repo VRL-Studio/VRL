@@ -13,6 +13,10 @@
 // your own implementation.
 
 apply plugin: 'groovy'
+apply plugin: 'java'
+
+sourceCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 if (!hasProperty('mainClass')) {
     System.out.println("TEST")

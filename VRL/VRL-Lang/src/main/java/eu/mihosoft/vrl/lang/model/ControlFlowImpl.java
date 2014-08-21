@@ -49,12 +49,15 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.ControlFlow;
-import eu.mihosoft.vrl.lang.model.IType;
-import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
+import eu.mihosoft.vrl.workflow.Connection;
+import eu.mihosoft.vrl.workflow.VFlow;
+import eu.mihosoft.vrl.workflow.VNode;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -62,12 +65,116 @@ import java.util.List;
  */
 class ControlFlowImpl implements ControlFlow {
 
-    private final List<Invocation> invocations = new ArrayList<>();
+    private final ObservableList<Invocation> invocations = FXCollections.observableArrayList();
 
     private final Scope parent;
+    private final VFlow flow;
+
+    private boolean currentlyUpdatingConnections;
+    private boolean currentlyUpdatingInvocations;
 
     public ControlFlowImpl(Scope parent) {
         this.parent = parent;
+        this.flow = parent.getFlow();
+
+        initListeners();
+    }
+
+    private void initListeners() {
+        invocations.addListener((ListChangeListener.Change<? extends Invocation> c) -> {
+//            while(c.next()) {
+//                if (c.wasAdded()) {
+//                    //
+//                }
+//                ... TODO
+//
+//            }
+
+            if (!currentlyUpdatingInvocations) {
+                updateConnections();
+            }
+
+        });
+
+        flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().addListener(new ListChangeListener<Connection>() {
+
+            @Override
+            public void onChanged(ListChangeListener.Change<? extends Connection> c) {
+                if (!currentlyUpdatingConnections) {
+                    updateInvocations();
+                }
+            }
+        });
+
+        flow.getNodes().addListener((ListChangeListener.Change<? extends VNode> c) -> {
+            if (c.next()) {
+                if (!c.getRemoved().isEmpty()) {
+                    if (!currentlyUpdatingConnections) {
+                        updateInvocations();
+                    }
+                }
+            }
+        });
+
+    }
+
+    private void updateConnections() {
+        currentlyUpdatingConnections = true;
+        flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().clear();
+        Invocation prevInvocation = null;
+        for (Invocation invocation : invocations) {
+
+            if (prevInvocation != null) {
+                flow.connect(
+                        prevInvocation.getNode(), invocation.getNode(),
+                        WorkflowUtil.CONTROL_FLOW);
+            }
+
+            prevInvocation = invocation;
+        }
+        currentlyUpdatingConnections = false;
+    }
+
+    private void updateInvocations() {
+        currentlyUpdatingInvocations = true;
+        invocations.clear();
+//        for (Connection connection : flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections()) {
+//            
+//            Invocation senderInv = (Invocation) connection.getSender().getNode().getValueObject().getValue();
+//            Invocation receiverInv = (Invocation) connection.getReceiver().getNode().getValueObject().getValue();
+//            if (!invocations.contains(senderInv)) {
+//                invocations.add(senderInv);
+//            }
+//             if (!invocations.contains(receiverInv)) {
+//                invocations.add(receiverInv);
+//            }
+//            
+//        }
+
+        List<VNode> roots = flow.getNodes().filtered(WorkflowUtil.nodeNotConnected(WorkflowUtil.CONTROL_FLOW));
+
+        List<List<VNode>> paths = new ArrayList<>();
+
+        // follow controlflow from roots to end
+        roots.forEach(
+                r -> {
+                    List<VNode> path = WorkflowUtil.getPath(r, WorkflowUtil.CONTROL_FLOW);
+                    paths.add(path);
+                }
+        );
+
+        paths.forEach(path -> path.forEach(
+                node -> {
+                    Object valueObject = node.getValueObject().getValue();
+                    if (valueObject instanceof Invocation) {
+                        getInvocations().add((Invocation) valueObject);
+                    }
+                }
+        )
+        );
+
+        currentlyUpdatingInvocations = false;
+        getParent().fireEvent(new CodeEvent(CodeEventType.CHANGE, parent));
     }
 
     @Override
@@ -207,17 +314,17 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public DeclarationInvocation declareVariable(String id, IType type, String varName) {
-        VariableImpl var = (VariableImpl)((ScopeImpl)parent)._createVariable(type, varName);
+        VariableImpl var = (VariableImpl) ((ScopeImpl) parent)._createVariable(type, varName);
 
         DeclarationInvocationImpl invocation = new DeclarationInvocationImpl(parent, var);
-        
+
         var.setDeclaration(invocation);
 
         getInvocations().add(invocation);
 
         return invocation;
     }
-    
+
 //     @Override
 //    public DeclarationInvocation declareStaticVariable(String id, IType type, String varName) {
 //        VariableImpl var = (VariableImpl)((ScopeImpl)parent)._createStaticVariable(type, varName);
@@ -230,10 +337,50 @@ class ControlFlowImpl implements ControlFlow {
 //
 //        return invocation;
 //    }
-
     @Override
     public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg, IArgument rightArg, Operator operator) {
         BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, leftArg, rightArg, operator);
+
+        getInvocations().add(invocation);
+
+        return invocation;
+    }
+
+    @Override
+    public Scope getParent() {
+        return parent;
+    }
+
+    @Override
+    public ReturnStatementInvocation returnValue(String id, IArgument arg) {
+        ReturnStatementInvocation invocation = new ReturnStatementInvocationImpl(parent, arg);
+
+        getInvocations().add(invocation);
+
+        return invocation;
+    }
+
+    @Override
+    public BreakInvocation invokeBreak(String id) {
+        BreakInvocation invocation = new BreakInvocationImpl(parent);
+
+        getInvocations().add(invocation);
+
+        return invocation;
+    }
+
+    @Override
+    public ContinueInvocation invokeContinue(String id) {
+        ContinueInvocation invocation = new ContinueInvocationImpl(parent);
+
+        getInvocations().add(invocation);
+
+        return invocation;
+    }
+
+    @Override
+    public NotInvocation invokeNot(String id, IArgument arg) {
+        NotInvocation invocation = new NotInvocationImpl(parent, arg);
 
         getInvocations().add(invocation);
 

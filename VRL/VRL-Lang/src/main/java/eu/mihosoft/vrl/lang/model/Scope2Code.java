@@ -179,7 +179,7 @@ public class Scope2Code {
 
         System.out.println("code from compiler 2:\n" + code);
 
-        scope.generateDataFlow();
+//        scope.generateDataFlow();
     }
 
     public static CompilationUnitDeclaration demoScope() {
@@ -407,10 +407,66 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         } else if (i instanceof BinaryOperatorInvocation) {
             BinaryOperatorInvocation operatorInvocation = (BinaryOperatorInvocation) i;
 
+            boolean letArgNeedsParantheses
+                    = operatorInvocation.getLeftArgument().getArgType()
+                    == ArgumentType.INVOCATION;
+            boolean rightArgNeedsParantheses
+                    = operatorInvocation.getRightArgument().getArgType()
+                    == ArgumentType.INVOCATION;
+            
+            // no parantheses around not operator
+            if (letArgNeedsParantheses) {
+                letArgNeedsParantheses = !(operatorInvocation.getLeftArgument()
+                        .getInvocation().get() instanceof NotInvocation);
+            }
+             // no parantheses around not operator
+            if (rightArgNeedsParantheses) {
+                rightArgNeedsParantheses = !(operatorInvocation.getRightArgument()
+                        .getInvocation().get() instanceof NotInvocation);
+            }
+            
+            
+            if (letArgNeedsParantheses) {
+                cb.append("(");
+            }
             renderArgument(operatorInvocation.getLeftArgument(), cb);
+            if (letArgNeedsParantheses) {
+                cb.append(")");
+            }
+            cb.append(" ");
             renderOperator(operatorInvocation.getOperator(), cb);
+            cb.append(" ");
+            if (rightArgNeedsParantheses) {
+                cb.append("(");
+            }
             renderArgument(operatorInvocation.getRightArgument(), cb);
+            if (rightArgNeedsParantheses) {
+                cb.append(")");
+            }
 
+        } else if (i instanceof ReturnStatementInvocation) {
+            ReturnStatementInvocation retInvocation = (ReturnStatementInvocation) i;
+            cb.append("return ");
+            renderArgument(retInvocation.getArgument(), cb);
+        } else if (i instanceof BreakInvocation) {
+            BreakInvocation breakInvocation = (BreakInvocation) i;
+            cb.append("break");
+        } else if (i instanceof ContinueInvocation) {
+            ContinueInvocation continueInvocation = (ContinueInvocation) i;
+            cb.append("continue");
+        } else if (i instanceof NotInvocation) {
+            NotInvocation notInvocation = (NotInvocation) i;
+            boolean argNeedsParantheses
+                    = notInvocation.getArgument().getArgType()
+                    == ArgumentType.INVOCATION;
+            cb.append("!");
+            if (argNeedsParantheses) {
+                cb.append("(");
+            }
+            renderArgument(notInvocation.getArgument(), cb);
+            if (argNeedsParantheses) {
+                cb.append(")");
+            }
         } else if (!i.isScope()) {
 
             if (!i.getVariableName().equals("this")) {
@@ -464,7 +520,9 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                         forD.getControlFlow().getInvocations(),
                         forD, cb, (CodeEntity ce) -> {
 
-                            if (ce instanceof Invocation) {
+                            if (ce instanceof Invocation
+                            && ce.isTextRenderingEnabled()) {
+
                                 render((Invocation) ce, cb);
                             }
                         });
@@ -478,7 +536,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             } else if (s instanceof WhileDeclaration) {
                 WhileDeclaration whileD = (WhileDeclaration) s;
                 cb.append("while(");
-                renderArgument(Argument.invArg(whileD.getCheck()), cb);
+                renderArgument(whileD.getCheck(), cb);
                 cb.append(") {");
 
                 if (!s.getControlFlow().getInvocations().isEmpty()) {
@@ -489,6 +547,60 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                 Utils.renderComments(Scope2Code.renderedComments,
                         whileD.getControlFlow().getInvocations(),
                         whileD, cb, (CodeEntity ce) -> {
+
+                            if (ce instanceof Invocation) {
+                                render((Invocation) ce, cb);
+                            }
+                        });
+
+                if (!s.getControlFlow().getInvocations().isEmpty()) {
+                    cb.decIndentation();
+                }
+
+                cb.append("}");
+            } else if (s instanceof IfDeclaration) {
+                IfDeclaration ifD = (IfDeclaration) s;
+
+                if (ifD instanceof ElseIfDeclaration) {
+                    cb.append("else if (");
+                } else {
+                    cb.append("if (");
+                }
+
+                renderArgument(ifD.getCheck(), cb);
+                cb.append(") {");
+
+                if (!s.getControlFlow().getInvocations().isEmpty()) {
+                    cb.newLine();
+                    cb.incIndentation();
+                }
+
+                Utils.renderComments(Scope2Code.renderedComments,
+                        ifD.getControlFlow().getInvocations(),
+                        ifD, cb, (CodeEntity ce) -> {
+
+                            if (ce instanceof Invocation) {
+                                render((Invocation) ce, cb);
+                            }
+                        });
+
+                if (!s.getControlFlow().getInvocations().isEmpty()) {
+                    cb.decIndentation();
+                }
+
+                cb.append("}");
+            } else if (s instanceof ElseDeclaration) {
+                ElseDeclaration elseD = (ElseDeclaration) s;
+                cb.append("else {");
+
+                if (!s.getControlFlow().getInvocations().isEmpty()) {
+                    cb.newLine();
+                    cb.incIndentation();
+                }
+
+                Utils.renderComments(Scope2Code.renderedComments,
+                        elseD.getControlFlow().getInvocations(),
+                        elseD, cb, (CodeEntity ce) -> {
 
                             if (ce instanceof Invocation) {
                                 render((Invocation) ce, cb);
@@ -591,7 +703,7 @@ class MethodDeclarationRenderer implements CodeRenderer<MethodDeclaration> {
                 Scope2Code.renderedComments,
                 e.getControlFlow().getInvocations(), e, cb, (CodeEntity ce) -> {
 
-                    if (ce instanceof Invocation) {
+                    if (ce instanceof Invocation && ce.isTextRenderingEnabled()) {
                         invocationRenderer.render((Invocation) ce, cb);
                     }
                 });
@@ -646,15 +758,14 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
     @Override
     public void render(ClassDeclaration cd, CodeBuilder cb) {
 
-        cb.append("@eu.mihosoft.vrl.instrumentation.VRLVisualization").
-                newLine();
-
+//        cb.append("@eu.mihosoft.vrl.instrumentation.VRLVisualization").
+//                newLine();
         createModifiers(cd, cb);
         cb.append("class ");
         cb.append(new Type(cd.getName()).getShortName());
         createExtends(cd, cb);
         createImplements(cd, cb);
-        cb.append(" {").newLine();
+        cb.append(" {").newLine().newLine();
         cb.incIndentation();
 
         createDeclaredVariables(cd, cb);
@@ -674,7 +785,8 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
     private void createDeclaredVariables(ClassDeclaration cd, CodeBuilder cb) {
         for (Variable v : cd.getVariables()) {
             if (!"this".equals(v.getName())) {
-                cb.newLine().append(v.getType().getFullClassName()).
+                createModifiers(v, cb);
+                cb.append(v.getType().getFullClassName()).
                         append(" ").append(v.getName()).append(";").newLine();
             }
         }
@@ -683,6 +795,17 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
 
     private void createModifiers(ClassDeclaration cd, CodeBuilder cb) {
         for (Modifier m : cd.getClassModifiers().getModifiers()) {
+            cb.append(Utils.modifierToName(m)).append(" ");
+        }
+    }
+
+    private void createModifiers(Variable v, CodeBuilder cb) {
+
+        if (!v.isField()) {
+            return;
+        }
+
+        for (Modifier m : v.getModifiers().get().getModifiers()) {
             cb.append(Utils.modifierToName(m)).append(" ");
         }
     }
@@ -721,7 +844,7 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
 
         boolean first = true;
 
-        for (IType type : cd.getExtends().getTypes()) {
+        for (IType type : cd.getImplements().getTypes()) {
             if (first) {
                 first = false;
             } else {

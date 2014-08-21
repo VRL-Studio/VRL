@@ -47,11 +47,12 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.ICodeRange;
-import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
+import eu.mihosoft.vrl.workflow.Connector;
+import eu.mihosoft.vrl.workflow.VNode;
+import java.util.Objects;
 
 /**
  *
@@ -60,10 +61,36 @@ import eu.mihosoft.vrl.lang.model.Scope;
 class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
 
     private final Scope scope;
+    private ObservableCodeImpl observableCode;
 
     public ScopeInvocationImpl(Scope s) {
-        super(s, "", null, "scope", Type.VOID, false, true, true, new IArgument[0]);
+        super(s, "", null, "scope", Type.VOID, false, true, true);
         this.scope = s;
+
+        VNode node = scope.getNode();
+
+        node.getValueObject().setValue(this);
+
+        node.setMainInput(node.addInput(WorkflowUtil.CONTROL_FLOW));
+        node.setMainOutput(node.addOutput(WorkflowUtil.CONTROL_FLOW));
+
+        if (s instanceof ControlFlowStatement) {
+            ControlFlowStatement controlFlowStatement = (ControlFlowStatement) s;
+            controlFlowStatement.defineParameters(this);
+        }
+
+        int argIndex = 0;
+        for (IArgument arg : getArguments()) {
+            node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().
+                    setValue(new ArgumentValue(argIndex, arg));
+            argIndex++;
+        }
+
+        if (!Objects.equals(getReturnType(), Type.VOID)) {
+            Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
+            output.getValueObject().setValue(getReturnType());
+            node.setMainOutput(output);
+        }
     }
 
     /**
@@ -84,5 +111,11 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
         return scope.getRange();
     }
 
-}
+    @Override
+    public VNode getNode() {
+        return this.scope.getNode();
+    }
 
+    // TODO 19.07.2014: think about relation between scope invocation
+    //                  and scope in terms of event handling.
+}

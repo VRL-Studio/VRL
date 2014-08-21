@@ -49,12 +49,18 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
+import eu.mihosoft.vrl.workflow.FlowFactory;
+import eu.mihosoft.vrl.workflow.VFlow;
+import eu.mihosoft.vrl.workflow.VNode;
+import eu.mihosoft.vrl.workflow.ValueObject;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 /**
@@ -74,16 +80,36 @@ class ScopeImpl implements Scope {
     private final ObservableList<Scope> scopes = FXCollections.observableArrayList();
 //    private String code;
 //    private List<Scope> readOnlyScopes;
-    private ICodeRange location;
+    private ICodeRange range;
     private final ObservableList<Comment> comments = FXCollections.observableArrayList();
     private final ScopeInvocation invocation;
+    private VFlow flow;
+    private ObservableCodeImpl observableCode;
+    private boolean textRenderingEnabled = true;
 
-    public ScopeImpl(String id, Scope parent, ScopeType type, String name, Object... scopeArgs) {
+    public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
         this.id = id;
         this.parent = parent;
 
         this.type = type;
         this.name = name;
+
+        if (flowParent == null) {
+
+            if (parent != null) {
+                flowParent = parent.getFlow();
+            } else {
+                flowParent = FlowFactory.newFlow();
+            }
+        }
+
+        flow = flowParent.newSubFlow();
+
+        flow.getModel().setTitle(name);
+        flow.setVisible(true);
+        flow.getModel().getValueObject().setValue(this);
+
+        initScopeListeners();
 
         this.scopeArgs = scopeArgs;
         this.controlFlow = new ControlFlowImpl(this);
@@ -97,15 +123,56 @@ class ScopeImpl implements Scope {
                         + " Only " + ScopeImpl.class + " based implementations are supported!");
             }
 
-            if (parent.getType() != ScopeType.CLASS && parent.getType() != ScopeType.NONE && parent.getType() != ScopeType.COMPILATION_UNIT) {
+            if (parent.getType() != ScopeType.CLASS && parent.getType()
+                    != ScopeType.NONE && parent.getType() != ScopeType.COMPILATION_UNIT) {
                 invocation = parent.getControlFlow().callScope(this);
             } else {
                 invocation = null;
             }
+
         } else {
 
             invocation = null;
+
         }
+    }
+
+    private void initScopeListeners() {
+        scopes.addListener((ListChangeListener.Change<? extends Scope> c) -> {
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    for (Scope s : c.getAddedSubList()) {
+                        if (s.getParent() != this) {
+                            throw new UnsupportedOperationException(
+                                    "Todo (21.06.2014): Flow model needs support for adding scopes!"
+                                    + "Switching scope parent currently not supported!");
+                        }
+                    }
+                }
+
+                if (c.wasRemoved()) {
+                    for (Scope s : c.getRemoved()) {
+                        flow.getNodes().remove(s.getNode());
+                    }
+                }
+            }
+            
+            fireEvent(new CodeEvent(CodeEventType.CHANGE, this));
+        });
+
+        flow.getNodes().addListener((ListChangeListener.Change<? extends VNode> c) -> {
+            while (c.next()) {
+                if (c.wasRemoved()) {
+                    c.getRemoved().stream().filter(n -> n.getValueObject().getValue() instanceof ScopeImpl).
+                            map(n -> (ScopeImpl) n.getValueObject().getValue()).
+                            forEach(s -> removeScope(s));
+                }
+            }
+        });
+    }
+
+    public ScopeImpl(String id, Scope parent, ScopeType type, String name, Object... scopeArgs) {
+        this(id, parent, type, name, null, scopeArgs);
     }
 
     @Override
@@ -153,11 +220,26 @@ class ScopeImpl implements Scope {
         DeclarationInvocation inv = getControlFlow().declareVariable(id, type, varName);
         return inv.getDeclaredVariable();
     }
+    
+    Variable createParamVariable(IType type, String varName) {
+        return createParamVariable(type, varName, null);
+    }
+    
+    Variable createParamVariable(IType type, String varName, ICodeRange range) {
+        DeclarationInvocationImpl inv = (DeclarationInvocationImpl)getControlFlow().declareVariable(id, type, varName);
+        inv.setTextRenderingEnabled(false);
+        inv.setRange(range);
+        return inv.getDeclaredVariable();
+    }
 
     Variable _createVariable(IType type, String varName) {
+        
+        if (variables.containsKey(varName)) {
+            throw new IllegalArgumentException("Variable '" + varName + "' does already exist!");
+        }
 
         if (getVariable(varName) != null) {
-            throw new IllegalArgumentException("Variable '" + varName + "' does already exist!");
+            System.err.println("Variable '" + varName + "' hides variable in enclosing block!");
         }
 
         Variable variable = new VariableImpl(this, type, varName, null, false, null);
@@ -346,24 +428,27 @@ class ScopeImpl implements Scope {
 
         System.out.println("DATAFLOW---------------------------------");
 
-        for (Invocation i : controlFlow.getInvocations()) {
-//            System.out.println("invocation: " + i);
-            for (IArgument a : i.getArguments()) {
-                System.out.println("--> arg: " + a + ", " + i);
-            }
+        getDataFlow().create(controlFlow);
 
-            if (i instanceof ScopeInvocation) {
-                ((ScopeInvocation) i).getScope().generateDataFlow();
-            }
-        }
-
-        boolean isClassOrScript = getType() == ScopeType.CLASS || getType() == ScopeType.NONE || getType() == ScopeType.COMPILATION_UNIT;
-
-        if (isClassOrScript) {
-            for (Scope s : getScopes()) {
-                s.generateDataFlow();
-            }
-        }
+//        for (Invocation i : controlFlow.getInvocations()) {
+////            System.out.println("invocation: " + i);
+//            for (IArgument a : i.getArguments()) {
+//                System.out.println("--> arg: " + a + ", " + i);
+//            }
+//
+//            if (i instanceof ScopeInvocation) {
+//                ScopeImpl invocationScope = (ScopeImpl) ((ScopeInvocation) i).getScope();
+//                invocationScope.generateDataFlow();
+//            }
+//        }
+//
+//        boolean isClassOrScript = getType() == ScopeType.CLASS || getType() == ScopeType.NONE || getType() == ScopeType.COMPILATION_UNIT;
+//
+//        if (isClassOrScript) {
+//            for (Scope s : getScopes()) {
+//                ((ScopeImpl)s).generateDataFlow();
+//            }
+//        }
     }
 
     @Override
@@ -383,7 +468,7 @@ class ScopeImpl implements Scope {
         return null;
     }
 
-    void addScope(ScopeImpl s) {
+    void addScope(Scope s) {
         scopes.add(s);
     }
 
@@ -392,7 +477,7 @@ class ScopeImpl implements Scope {
      */
     @Override
     public ICodeRange getRange() {
-        return location;
+        return range;
     }
 
     /**
@@ -400,7 +485,7 @@ class ScopeImpl implements Scope {
      */
     @Override
     public void setRange(ICodeRange location) {
-        this.location = location;
+        this.range = location;
     }
 
     @Override
@@ -417,6 +502,10 @@ class ScopeImpl implements Scope {
     public boolean removeScope(Scope s) {
         boolean result = scopes.remove(s);
 
+        if (result) {
+            flow.getNodes().remove(s.getNode());
+        }
+
         return result;
     }
 
@@ -431,6 +520,61 @@ class ScopeImpl implements Scope {
     @Override
     public Optional<ScopeInvocation> getInvocation() {
         return Optional.ofNullable(invocation);
+    }
+
+    @Override
+    public VFlow getFlow() {
+        return this.flow;
+    }
+
+    @Override
+    public VNode getNode() {
+        return this.flow.getModel();
+    }
+
+    @Override
+    public void visitScopeAndAllSubElements(Consumer<CodeEntity> consumer) {
+        consumer.accept(this);
+        getControlFlow().getInvocations().forEach(consumer);
+        getComments().forEach(consumer);
+
+        for (Scope scope : getScopes()) {
+            scope.visitScopeAndAllSubElements(consumer);
+        }
+    }
+
+    private ObservableCodeImpl getObservable() {
+        if (observableCode == null) {
+            observableCode = new ObservableCodeImpl();
+        }
+
+        return observableCode;
+    }
+
+    @Override
+    public void addEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().addEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void removeEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
+        getObservable().removeEventHandler(type, eventHandler);
+    }
+
+    @Override
+    public void fireEvent(CodeEvent evt) {
+        getObservable().fireEvent(evt);
+
+        if (!evt.isCaptured() && getParent() != null) {
+            getParent().fireEvent(evt);
+        }
+    }
+
+    /**
+     * @return the textRenderingEnabled
+     */
+    public boolean isTextRenderingEnabled() {
+        return textRenderingEnabled;
     }
 
 }

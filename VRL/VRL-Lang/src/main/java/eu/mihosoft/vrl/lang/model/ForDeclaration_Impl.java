@@ -71,7 +71,7 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
 
         metadata = (ForDeclarationMetaData) getScopeArgs()[0];
 
-        setVarName(varName);
+        setVarName(varName, null);
     }
 
     @Override
@@ -94,13 +94,25 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
         return metadata.getInc();
     }
 
-    /**
-     * @param varName the varName to set (creates var if not null or empty)
-     */
-    public final void setVarName(String varName) {
+//    /**
+//     * @param varName the varName to set (creates var if not null or empty)
+//     */
+//    public final void setVarName(String varName) {
+//        metadata.setVarName(varName);
+//        if (varName != null && !varName.isEmpty()) {
+////            Variable v = _createVariable(Type.INT, varName);
+//            createParamVariable(Type.INT, varName);
+//        }
+//    }
+
+    public final void setVarName(String varName, ICodeRange codeRange) {
         metadata.setVarName(varName);
         if (varName != null && !varName.isEmpty()) {
-            Variable v = _createVariable(Type.INT, varName);
+            DeclarationInvocationImpl inv = 
+                    (DeclarationInvocationImpl) getControlFlow().
+                            declareVariable(getId(), Type.INT, varName);
+            inv.setTextRenderingEnabled(false);
+            inv.setRange(codeRange);
         }
     }
 

@@ -47,11 +47,11 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
-import java.util.ArrayList;
 import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -64,8 +64,10 @@ class ClassDeclaration_Impl extends ScopeImpl implements ClassDeclaration {
     public ClassDeclaration_Impl(String id, Scope parent, IType type, IModifiers modifiers, IExtends extendz, IExtends implementz) {
         super(id, parent, ScopeType.CLASS, type.getFullClassName(), new ClassDeclarationMetaData(type, modifiers, extendz, implementz));
         metadata = (ClassDeclarationMetaData) getScopeArgs()[0];
-        
+
         createVariable(getClassType(), "this");
+
+        getNode().setTitle("class " + type.getShortName());
     }
 
     @Override
@@ -87,7 +89,7 @@ class ClassDeclaration_Impl extends ScopeImpl implements ClassDeclaration {
     public IExtends getImplements() {
         return metadata.getImplementz();
     }
-    
+
     @Override
     public List<MethodDeclaration> getDeclaredMethods() {
         return metadata.getDeclaredMethods();
@@ -103,16 +105,24 @@ class ClassDeclaration_Impl extends ScopeImpl implements ClassDeclaration {
 
         metadata.getDeclaredMethods().add(methodScope);
         
+        addScope(methodScope);
+
         return methodScope;
     }
-    
+
     @Override
     public boolean removeScope(Scope s) {
-        if(!super.removeScope(s)) {
-            return false;
+
+        boolean mResult = false;
+        
+        if (s instanceof MethodDeclaration) {
+            mResult =  getDeclaredMethods().remove((MethodDeclaration) s);
         }
         
-        return getDeclaredMethods().remove(s);
+        boolean sResult = super.removeScope(s);
+        
+
+        return mResult || sResult;
     }
 }
 
@@ -122,7 +132,7 @@ final class ClassDeclarationMetaData {
     private final IModifiers modifiers;
     private final IExtends extendz;
     private final IExtends implementz;
-    private final List<MethodDeclaration> declaredMethods = new ArrayList<>();
+    private final ObservableList<MethodDeclaration> declaredMethods =FXCollections.observableArrayList();
 
     public ClassDeclarationMetaData(IType type, IModifiers modifiers, IExtends extendz, IExtends implementz) {
         this.type = type;
@@ -167,5 +177,3 @@ final class ClassDeclarationMetaData {
     }
 
 }
-
-

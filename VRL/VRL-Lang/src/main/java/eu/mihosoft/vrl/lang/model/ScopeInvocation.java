@@ -50,9 +50,6 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.Invocation;
-
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>

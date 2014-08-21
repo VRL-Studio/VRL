@@ -23,22 +23,27 @@ jar {
     from project("CommentParser").sourceSets.main.output
 }
 
-sourcesJar {
-    from project("CommentParser").sourceSets.main.allSource
+if (project.getTasks().findByPath("sourcesJar")){
+    sourcesJar { 
+        from project("CommentParser").sourceSets.main.allSource
+    }
 }
 
-javadocJar {
-    from project("CommentParser").projectDir.path + '/build/docs/javadoc'
+if (project.getTasks().findByPath("sourcesJar")){
+    javadocJar {
+        from project("CommentParser").projectDir.path + '/build/docs/javadoc'
+    }
 }
 
 dependencies {
     
     compile "com.google.guava:guava:14.0"
     
-    compile ( 'eu.mihosoft.vrl.workflow:vworkflows-core:0.1-r2-SNAPSHOT' ) { changing = true }
+    compile ( 'eu.mihosoft.vrl.workflow-8.0:vworkflows-core:0.1-r2-SNAPSHOT' ) { changing = true }
     //    compile ( 'eu.mihosoft.vrl.workflow:vworkflows-fx:0.1-r2-SNAPSHOT' ) { changing = true }
     
     compile project("CommentParser")
     
     compile project(":VRL-Base")
 }
+

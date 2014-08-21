@@ -3,10 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package eu.mihosoft.vrl.ui.codevisualization;
+package eu.mihosoft.vrl.lang.workflow;
 
+import eu.mihosoft.vrl.workflow.Connection;
+import eu.mihosoft.vrl.workflow.Connections;
 import eu.mihosoft.vrl.workflow.Connector;
 import eu.mihosoft.vrl.workflow.VNode;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.function.Predicate;
 
 /**
@@ -15,6 +20,11 @@ import java.util.function.Predicate;
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class WorkflowUtil {
+    
+    public static final String CONTROL_FLOW = "control";
+    public static final String DATA_FLOW = "data";
+    public static final String EVENT_FLOW = "event";
+    
 
     private WorkflowUtil() {
         throw new AssertionError();
@@ -152,6 +162,70 @@ public class WorkflowUtil {
                     getConnections(connectionType).
                     getAllWith(c).size() == expectedNumConn;
         };
+    }
+    
+    public static boolean isRoot(VNode node, String connectionType) {
+
+        Predicate<Connector> notConnected = (Connector c) -> {
+            return c.getType().equals(connectionType)
+                    && !c.getNode().getFlow().
+                    getConnections(connectionType).
+                    getAllWith(c).isEmpty();
+        };
+
+        Predicate<VNode> rootNode = (VNode n) -> {
+            return n.getInputs().filtered(notConnected).isEmpty();
+        };
+
+        return rootNode.test(node);
+    }
+    
+    public static List<VNode> getPath(VNode sender, String connectionType) {
+
+        List<VNode> result = new ArrayList<>();
+        
+        if (sender.getMainOutput(connectionType)==null) {
+            return result;
+        }
+
+        if (!isRoot(sender, connectionType)) {
+            System.err.println("sender is no root!");
+            return result;
+        }
+
+        result.add(sender);
+
+        Connections connections = sender.getFlow().getConnections(connectionType);
+        Collection<Connection> connectionsWithSender
+                = connections.getAllWith(sender.getMainOutput(connectionType));
+
+        while (!connectionsWithSender.isEmpty()) {
+
+            VNode newSender = null;
+
+            for (Connection c : connectionsWithSender) {
+
+                if (newSender == c.getReceiver().getNode()) {
+                    System.err.println("circular flow!");
+                    return result;
+                }
+
+                newSender = c.getReceiver().getNode();
+
+                result.add(newSender);
+                break; // we only support one connection per controlflow conector
+            }
+
+            if (newSender != null) {
+                connectionsWithSender
+                        = connections.getAllWith(
+                                newSender.getMainOutput(connectionType));
+            } else {
+                connectionsWithSender.clear();
+            }
+        }
+
+        return result;
     }
 
 }
