@@ -17,7 +17,7 @@ sourceCompatibility = '1.8'
 // maven repositories for dependency resolution
 repositories {
     mavenCentral()
-
+    mavenLocal()
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots"
     }
