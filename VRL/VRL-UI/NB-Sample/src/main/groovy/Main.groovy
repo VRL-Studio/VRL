@@ -21,6 +21,8 @@ public class A {
         a=2;
         A aObj;
         aObj=new A();
+        A aObj2;
+        aObj2=aObj;
         Integer b;
         b=2+3*5+m2();
         m3(new A());
@@ -30,6 +32,7 @@ public class A {
             println(i);
         }
         // while loop
+                b < a
         while(a<b) {
             println("abc");
         }

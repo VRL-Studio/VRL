@@ -49,17 +49,6 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
@@ -72,6 +61,10 @@ public class VRLInstrumentationUtil {
     // type transformations:
     // http://groovy.329449.n5.nabble.com/is-possible-an-AST-transformation-to-convert-all-BigDecimals-to-doubles-in-GroovyLab-td5711461.html
 
+    private VRLInstrumentationUtil() {
+        throw new AssertionError("Don't instantiate me!");
+    }
+    
     /**
      * Do not call manually! This method will be used by AST transformations to
      * instrument method calls.

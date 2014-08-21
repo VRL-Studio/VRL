@@ -139,8 +139,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:op ASSIGN</string>
     <layout>
-      <x>28.355693534723343</x>
-      <y>230.39092458901538</y>
+      <x>1.5362130335505573</x>
+      <y>188.23077112903118</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -529,8 +529,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:op ASSIGN:1</string>
     <layout>
-      <x>465.817722891951</x>
-      <y>277.60589170076673</y>
+      <x>970.1180200479165</x>
+      <y>358.6831098930441</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -549,8 +549,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:op ASSIGN:0</string>
     <layout>
-      <x>363.7984804683733</x>
-      <y>396.97849154288417</y>
+      <x>300.5582502783969</x>
+      <y>494.2711533736171</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -559,8 +559,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:op ASSIGN:3</string>
     <layout>
-      <x>363.7984804683733</x>
-      <y>396.97849154288417</y>
+      <x>300.5582502783969</x>
+      <y>494.2711533736171</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -579,8 +579,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:op ASSIGN:2</string>
     <layout>
-      <x>28.355693534723343</x>
-      <y>230.39092458901538</y>
+      <x>1.5362130335505573</x>
+      <y>188.23077112903118</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -589,8 +589,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:isTrue</string>
     <layout>
-      <x>446.0949583088353</x>
-      <y>483.30761315418124</y>
+      <x>647.1664594256833</x>
+      <y>715.1884571840947</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -599,8 +599,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:op ASSIGN:4</string>
     <layout>
-      <x>465.817722891951</x>
-      <y>277.60589170076673</y>
+      <x>970.1180200479165</x>
+      <y>358.6831098930441</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -669,8 +669,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:declare c:0</string>
     <layout>
-      <x>468.80636282176954</x>
-      <y>90.89786459829648</y>
+      <x>652.0408759363165</x>
+      <y>47.116166774466684</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -739,8 +739,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:declare c</string>
     <layout>
-      <x>468.80636282176954</x>
-      <y>90.89786459829648</y>
+      <x>652.0408759363165</x>
+      <y>47.116166774466684</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -759,8 +759,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:declare b</string>
     <layout>
-      <x>363.60530712490413</x>
-      <y>213.62844390950633</y>
+      <x>301.98662129877323</x>
+      <y>325.5150050148491</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -779,8 +779,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:m:2</string>
     <layout>
-      <x>10.069350975258885</x>
-      <y>420.8736595834363</y>
+      <x>0.3400847921855965</x>
+      <y>422.4952039472818</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -809,8 +809,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:m:0</string>
     <layout>
-      <x>10.069350975258885</x>
-      <y>420.8736595834363</y>
+      <x>0.3400847921855965</x>
+      <y>422.4952039472818</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -1179,8 +1179,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:declare b:0</string>
     <layout>
-      <x>363.60530712490413</x>
-      <y>213.62844390950633</y>
+      <x>301.98662129877323</x>
+      <y>325.5150050148491</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -1449,8 +1449,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:isTrue:0</string>
     <layout>
-      <x>446.0949583088353</x>
-      <y>483.30761315418124</y>
+      <x>647.1664594256833</x>
+      <y>715.1884571840947</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -1559,8 +1559,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:op EQUALS:0</string>
     <layout>
-      <x>0.0</x>
-      <y>0.0</y>
+      <x>648.6177455382192</x>
+      <y>227.0162109383767</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -1649,8 +1649,8 @@ public class MySpecialClass {
   <entry>
     <string>Script:MyFileClass3:main:inv:op EQUALS</string>
     <layout>
-      <x>0.0</x>
-      <y>0.0</y>
+      <x>648.6177455382192</x>
+      <y>227.0162109383767</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
