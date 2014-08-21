@@ -54,15 +54,14 @@ public abstract class CustomFlowNodeSkin extends FXFlowNodeSkinBase {
         // add the view to scalable content pane
         if (view != null) {
 
-            ScalableContentPane scalableContentPane = new ScalableContentPane();
-            scalableContentPane.setPadding(new Insets(10));
+//            ScalableContentPane scalableContentPane = new ScalableContentPane();
+//            scalableContentPane.setPadding(new Insets(10));
 
             GridPane nodePane = new GridPane();
             nodePane.setAlignment(Pos.CENTER);
-            scalableContentPane.setContentPane(nodePane);
+            nodePane.getChildren().add(view);
 
-            scalableContentPane.getContentPane().getChildren().add(view);
-            getNode().setContentPane(scalableContentPane);
+            getNode().setContentPane(nodePane);
         }
     }
 }

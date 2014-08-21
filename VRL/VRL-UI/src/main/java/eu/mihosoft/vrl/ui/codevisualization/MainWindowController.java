@@ -168,7 +168,7 @@ public class MainWindowController implements Initializable {
         UIBinding.setRootFlow(flow);
 
         FXValueSkinFactory skinFactory = new FXValueSkinFactory(rootPane);
-        skinFactory.addSkinClassForValueType(Object.class, VariableFlowNodeSkin.class);
+        skinFactory.setDefaultNodeSkin(VariableFlowNodeSkin.class);
         flow.setSkinFactories(skinFactory);
 
         fileMonitor = new FileAlterationMonitor(3000);
