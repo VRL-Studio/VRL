@@ -1,18 +1,18 @@
-
-@eu.mihosoft.vrl.instrumentation.VRLVisualization
 public class MyFileClass {
     
     public int m(int v1) {
-        
         // test comment 1
-        Integer b = m(v1);
-        
+        Integer b;
+        b=m(v1);
         m(v1);
         m(v1);
         m(v1);
         for(int i = 0; i <= 3; i++) {
+            Integer k;
+            k=0;
+            MyFileClass abc;
             // test comment 2
-            println("i: ");
+            println(i);
         }
     }
 }
@@ -20,32 +20,172 @@ public class MyFileClass {
 /*<!VRL!><Type:VRL-Layout>
 <map>
   <entry>
-    <string>Script:my.testpackage.MyFileClass:m:inv:m:0</string>
-    <layout>
-      <x>191.58226494813263</x>
-      <y>348.4705197292798</y>
-      <width>400.0</width>
-      <height>100.0</height>
-      <contentVisible>true</contentVisible>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass:m:inv:m:1</string>
-    <layout>
-      <x>137.98343119024528</x>
-      <y>504.11290358483706</y>
-      <width>400.0</width>
-      <height>100.0</height>
-      <contentVisible>true</contentVisible>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass:m</string>
+    <string>Script:MyFileClass:m:inv:declare v1</string>
     <layout>
       <x>0.0</x>
       <y>0.0</y>
-      <width>400.0</width>
-      <height>300.0</height>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:inv:declare b:0</string>
+    <layout>
+      <x>0.0</x>
+      <y>179.4671958924513</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i:inv:scope:0</string>
+    <layout>
+      <x>1222.3518175729696</x>
+      <y>512.2992416906354</y>
+      <width>311.26506041612356</width>
+      <height>255.1644541967064</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i:inv:scope</string>
+    <layout>
+      <x>1222.3518175729696</x>
+      <y>512.2992416906354</y>
+      <width>311.26506041612356</width>
+      <height>255.1644541967064</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i</string>
+    <layout>
+      <x>1222.3518175729696</x>
+      <y>512.2992416906354</y>
+      <width>311.26506041612356</width>
+      <height>255.1644541967064</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i:inv:println:0</string>
+    <layout>
+      <x>845.5623652577209</x>
+      <y>206.58163738830316</y>
+      <width>231.95900154218236</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m</string>
+    <layout>
+      <x>316.1619038471332</x>
+      <y>105.23869811090047</y>
+      <width>381.06753281154874</width>
+      <height>260.8480821683026</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:inv:declare this</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>209.59202476499638</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:inv:op ASSIGN</string>
+    <layout>
+      <x>726.1242141169398</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:0</string>
+    <layout>
+      <x>316.1619038471332</x>
+      <y>105.23869811090047</y>
+      <width>381.06753281154874</width>
+      <height>260.8480821683026</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>336.66614196928606</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i:inv:declare abc:0</string>
+    <layout>
+      <x>559.1184620897365</x>
+      <y>165.82818495684825</y>
+      <width>200.0</width>
+      <height>151.71223467973036</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i:inv:declare abc</string>
+    <layout>
+      <x>559.1184620897365</x>
+      <y>165.82818495684825</y>
+      <width>200.0</width>
+      <height>151.71223467973036</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:inv:op ASSIGN:0</string>
+    <layout>
+      <x>726.1242141169398</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i:inv:declare i:0</string>
+    <layout>
+      <x>0.0</x>
+      <y>3.5842667711065177</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:inv:declare v1:0</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:inv:declare b</string>
+    <layout>
+      <x>0.0</x>
+      <y>179.4671958924513</y>
+      <width>200.0</width>
+      <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
@@ -60,62 +200,152 @@ public class MyFileClass {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MyFileClass:m:for:var=i</string>
+    <string>Script:MyFileClass:m:for:var=i:0</string>
     <layout>
-      <x>610.4532512974235</x>
-      <y>607.1369888223586</y>
-      <width>400.0</width>
-      <height>145.8194111843684</height>
+      <x>1222.3518175729696</x>
+      <y>512.2992416906354</y>
+      <width>311.26506041612356</width>
+      <height>255.1644541967064</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MyFileClass:m:inv:m</string>
+    <string>Script:MyFileClass:m:for:var=i:inv:op ASSIGN</string>
+    <layout>
+      <x>322.1622157471415</x>
+      <y>164.91846483469396</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i:inv:println</string>
+    <layout>
+      <x>845.5623652577209</x>
+      <y>206.58163738830316</y>
+      <width>231.95900154218236</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i:inv:op ASSIGN:0</string>
+    <layout>
+      <x>322.1622157471415</x>
+      <y>164.91846483469396</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:inv:m</string>
+    <layout>
+      <x>424.2862509922306</x>
+      <y>6.597551106551019</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i:inv:declare k</string>
+    <layout>
+      <x>318.99974262848013</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i:inv:declare i</string>
     <layout>
       <x>0.0</x>
-      <y>204.60341883409086</y>
-      <width>400.0</width>
-      <height>100.0</height>
+      <y>3.5842667711065177</y>
+      <width>200.0</width>
+      <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MyFileClass</string>
+    <string>Script:MyFileClass:m:inv:m:2</string>
     <layout>
-      <x>0.0</x>
+      <x>970.676698847936</x>
+      <y>511.4425282305022</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:inv:m:3</string>
+    <layout>
+      <x>424.2862509922306</x>
+      <y>6.597551106551019</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:inv:m:0</string>
+    <layout>
+      <x>721.1760507870265</x>
+      <y>291.9416364648825</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:inv:m:1</string>
+    <layout>
+      <x>726.5573523565149</x>
+      <y>498.88480428430177</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:inv:m:6</string>
+    <layout>
+      <x>970.676698847936</x>
+      <y>511.4425282305022</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MyFileClass:m:for:var=i:inv:declare k:0</string>
+    <layout>
+      <x>318.99974262848013</x>
       <y>0.0</y>
-      <width>957.4600044355767</width>
-      <height>800.0</height>
+      <width>200.0</width>
+      <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MyFileClass:m:for:var=i:inv:println</string>
+    <string>Script:MyFileClass:m:inv:m:4</string>
     <layout>
-      <x>0.0</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>100.0</height>
+      <x>721.1760507870265</x>
+      <y>291.9416364648825</y>
+      <width>200.0</width>
+      <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MyFileClass:m:for:var=i:0</string>
+    <string>Script:MyFileClass:m:inv:m:5</string>
     <layout>
-      <x>610.4532512974235</x>
-      <y>607.1369888223586</y>
-      <width>400.0</width>
-      <height>145.8194111843684</height>
-      <contentVisible>true</contentVisible>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MyFileClass:m:inv:declare b</string>
-    <layout>
-      <x>2.1530798364386317</x>
-      <y>0.0</y>
-      <width>400.0</width>
-      <height>100.0</height>
+      <x>726.5573523565149</x>
+      <y>498.88480428430177</y>
+      <width>200.0</width>
+      <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
