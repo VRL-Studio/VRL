@@ -108,5 +108,6 @@ public class Main extends Application {
 //        controller.loadTextFile(new File("NB-Sample/src/main/groovy/Main.groovy"));
         
         scene.getStylesheets().add("/eu/mihosoft/vrl/ui/codevisualization/default.css");
+//        scene.getStylesheets().add("/eu/mihosoft/vrl/ui/codevisualization/default-pre13.03.2014.css");
     }
 }

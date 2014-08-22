@@ -17,7 +17,12 @@ import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.FlowNodeWindow;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
+import java.time.Duration;
+import java.util.Objects;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -25,6 +30,9 @@ import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import org.reactfx.Change;
+import org.reactfx.EventStream;
+import org.reactfx.EventStreams;
 
 /**
  *
@@ -43,10 +51,8 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
     @Override
     protected Node createView() {
-        
+
         Object value = getModel().getValueObject().getValue();
-        
-        System.out.println("VALUE: " + value);
 
         if (value instanceof Invocation) {
 
@@ -55,12 +61,14 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             VBox inputs = new VBox();
             VBox outputs = new VBox();
             HBox hbox = new HBox(inputs, outputs);
+            hbox.setPadding(new Insets(0, 15, 0, 15));
 
-            createArgView(invocation, inputs);
+            createArgView(invocation, inputs, false);
 
             invocation.getArguments().addListener(
                     (ListChangeListener.Change<? extends IArgument> c) -> {
-                        createArgView(invocation, inputs);
+
+                        createArgView(invocation, inputs, invocation.getArguments().size() == inputs.getChildren().size());
                     });
 
             return hbox;
@@ -69,37 +77,90 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
         return null;
     }
 
-    private void createArgView(Invocation invocation, VBox inputs) {
+    private void setFieldListener(int argIndex, TextField field, Invocation invocation, IArgument a) {
+        field.textProperty().addListener((ov, oldV, newV) -> {
+            try {
+            Integer intValue = Integer.parseInt(newV);
+            
 
-        inputs.getChildren().clear();
+            invocation.getArguments().set(argIndex,
+                    Argument.constArg(Type.INT, intValue));
+            invocation.getParent().fireEvent(new CodeEvent(
+                    CodeEventType.CHANGE, invocation.getParent()));
+            }catch (NumberFormatException ex) {
+                
+            }
+        });
+//        EventStream<Change<String>> textEvents
+//                = EventStreams.changesOf(field.textProperty());
+//
+//        textEvents.reduceSuccessions((red1, red2) -> red2, Duration.ofMillis(1000)).
+//                subscribe(text -> {
+//                    try {
+//                        Integer intValue = Integer.parseInt(text.getNewValue());
+//
+//                        invocation.getArguments().set(argIndex,
+//                                Argument.constArg(Type.INT, intValue));
+//                        invocation.getParent().fireEvent(new CodeEvent(
+//                                        CodeEventType.CHANGE, invocation.getParent()));
+//
+//                    } catch (Exception ex) {
+//                        //
+//                    }
+//                });
+    }
+
+    private void createArgView(Invocation invocation, VBox inputs, boolean update) {
+
+        if (!update) {
+            inputs.getChildren().clear();
+        }
 
         int argIndex = 0;
         for (IArgument a : invocation.getArguments()) {
-            final int finalArgInex = argIndex;
             if (a.getArgType() == ArgumentType.CONSTANT || a.getArgType() == ArgumentType.NULL) {
-                TextField field = new TextField();
-                a.getConstant().ifPresent(o -> field.setText(o.toString()));
-                inputs.getChildren().add(field);
-                field.textProperty().addListener((ov, oldV, newV) -> {
-                    try {
-                        Integer intValue = Integer.parseInt(newV);
-                        invocation.getArguments().set(finalArgInex, Argument.constArg(Type.INT, intValue));
-                        invocation.getParent().fireEvent(new CodeEvent(CodeEventType.CHANGE, invocation.getParent()));
-                    } catch (Exception ex) {
-                        //
-                    }
+                TextField field;
 
+                if (update && inputs.getChildren().get(argIndex) instanceof TextField) {
+                    field = (TextField) inputs.getChildren().get(argIndex);
+
+                } else {
+                    field = new TextField();
+
+                    setFieldListener(argIndex, field, invocation, a);
+
+                    if (update) {
+                        inputs.getChildren().set(argIndex, field);
+
+                    } else {
+                        inputs.getChildren().add(field);
+                    }
+                }
+
+                a.getConstant().ifPresent(o -> {
+                    if (!field.getText().equals(o.toString())) {
+                        field.setText(o.toString());
+                    }
                 });
+
             } else if (a.getArgType() == ArgumentType.VARIABLE) {
                 Label label = new Label();
                 a.getVariable().ifPresent(v -> label.setText(v.getName()));
                 label.setTextFill(Color.WHITE);
-                inputs.getChildren().add(label);
+                if (update) {
+                    inputs.getChildren().set(argIndex, label);
+                } else {
+                    inputs.getChildren().add(label);
+                }
             } else if (a.getArgType() == ArgumentType.INVOCATION) {
                 Label label = new Label();
                 label.setTextFill(Color.WHITE);
                 a.getInvocation().ifPresent(i -> label.setText(i.getMethodName()));
-                inputs.getChildren().add(label);
+                if (update) {
+                    inputs.getChildren().set(argIndex, label);
+                } else {
+                    inputs.getChildren().add(label);
+                }
             }
 
             argIndex++;
