@@ -45,6 +45,8 @@ dependencies {
     
     compile group: 'eu.mihosoft.vrl.workflow-8.0', name: 'vworkflows-fx', version: '0.1-r2-SNAPSHOT', changing: true
     
+    compile group: 'org.reactfx', name: 'reactfx', version: '1.3'
+    
 //    compile "com.fifesoft:rsyntaxtextarea:2.5.0"
     
     compile "commons-io:commons-io:2.4"
