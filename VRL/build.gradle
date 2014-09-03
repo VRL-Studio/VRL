@@ -24,6 +24,15 @@ subprojects {
     rootProject.test.dependsOn.add(test)
 }
 
+// calls maven install task of all subprojects
+task install {
+    subprojects.each { childP -> 
+        if (!rootProject.skipMaven.contains(childP.parent.name+":"+childP.name)) {
+            dependsOn.add(childP.install);
+        }
+    }
+}
+
 
 //task mergedJavadoc(type: Javadoc, description: 'Creates Javadoc from all the projects.') {
 //    title = 'All modules'
