@@ -19,6 +19,20 @@ task sourcesJar(type: Jar) {
 // all active maven artifacts that shall be uploaded/installed
 artifacts {
     archives jar
-//    archives javadocJar
+    //    archives javadocJar
     archives sourcesJar
 }
+
+    install.repositories.mavenInstaller.pom.whenConfigured {pom -> 
+        def deps = project.configurations['compile'].dependencies.collect {dep ->[dep.group,dep.name]} 
+        pom.dependencies.removeAll {dep -> dep.artifactId.toLowerCase().contains("commentparser")} 
+//        pom.dependencies.each{it->println("IT: $it")}
+    }
+
+//if (project.getTasks().findByPath("install")){
+//    install.repositories.mavenInstaller.pom.whenConfigured {pom -> 
+//        def deps = project.configurations['compile'].dependencies.collect {dep ->[dep.group,dep.name]} 
+//        //        pom.dependencies.removeAll {dep -> dep.artifactId.contains("CommentParser")} 
+//        pom.dependencies.each{it->println("IT: $it")}
+//    }
+//}

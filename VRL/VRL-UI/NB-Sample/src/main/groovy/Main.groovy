@@ -42,7 +42,7 @@ public class A {
 }
 @eu.mihosoft.vrl.instrumentation.VRLVisualization
 public class B {
-    
+
 }
 // <editor-fold defaultstate="collapsed" desc="VRL-Data">
 /*<!VRL!><Type:VRL-Layout>

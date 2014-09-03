@@ -306,4 +306,19 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
                 + arg + ". Supported assignment args are 'CONSTANT', 'VARIABLE' and 'INVOCATION'.");
     }
 
+    @Override
+    public ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type) {
+        return declareClass(scope, type, new Modifiers(Modifier.PUBLIC), new Extends(), new Extends());
+    }
+
+    @Override
+    public MethodDeclaration declareMethod(ClassDeclaration scope, IType returnType, String methodName, IParameters params) {
+        return declareMethod(scope, new Modifiers(), returnType, methodName, params);
+    }
+
+    @Override
+    public MethodDeclaration declareMethod(ClassDeclaration scope, IType returnType, String methodName) {
+        return declareMethod(scope, new Modifiers(), returnType, methodName, new Parameters());
+    }
+
 }

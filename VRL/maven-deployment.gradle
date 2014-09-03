@@ -24,6 +24,14 @@ artifacts {
     archives sourcesJar
 }
 
+    install.repositories.mavenInstaller.pom.whenConfigured {pom -> 
+        def deps = project.configurations['compile'].dependencies.collect {dep ->[dep.group,dep.name]} 
+        pom.dependencies.removeAll {dep -> dep.artifactId.toLowerCase().contains("commentparser")} 
+//        pom.dependencies.each{it->println("IT: $it")}
+    }
+
+
+
 //
 // -------- SONATYPE UPLOAD CONFIG (TODO: cleanup) --------
 //
@@ -61,6 +69,7 @@ uploadArchives {
             repository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
               authentication(userName: sonatypeUsername, password: sonatypePassword)
             }
+ 
  
             pom.project {
                name 'VRL'

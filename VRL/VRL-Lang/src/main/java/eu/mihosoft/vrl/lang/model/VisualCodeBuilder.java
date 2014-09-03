@@ -70,9 +70,14 @@ public interface VisualCodeBuilder {
     ForDeclaration invokeForLoop(ControlFlowScope scope, String varName, int from, int to, int inc);
 
     ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type, IModifiers modifiers, IExtends extendz, IExtends implementz);
+    ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type);
 
     MethodDeclaration declareMethod(ClassDeclaration scope, IModifiers modifiers, IType returnType, String methodName, IParameters params);
 
+    MethodDeclaration declareMethod(ClassDeclaration scope, IType returnType, String methodName, IParameters params);
+    
+    MethodDeclaration declareMethod(ClassDeclaration scope, IType returnType, String methodName);
+    
     WhileDeclaration invokeWhileLoop(ControlFlowScope scope, IArgument check);
 
     BreakInvocation invokeBreak(ControlFlowScope scope);

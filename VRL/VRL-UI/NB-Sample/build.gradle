@@ -46,5 +46,5 @@ if (!hasProperty('mainClass')) {
 //}
 
 dependencies {
-    compile project(":VRL-Lang")
+    compile project(":vrl-lang")
 }

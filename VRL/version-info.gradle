@@ -15,4 +15,4 @@ install {
 group = "eu.mihosoft.vrl"
 
 // version (see http://maven.apache.org/guides/mini/guide-naming-conventions.html)
-version = '0.5-SNAPSHOT'
+version = '0.5.0-SNAPSHOT'

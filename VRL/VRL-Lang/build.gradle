@@ -20,18 +20,18 @@ mainClassName = 'eu.mihosoft.vrl.lang.model.Main'
 
 // additional code/class-files from subprojects
 jar {
-    from project("CommentParser").sourceSets.main.output
+    from project("commentparser").sourceSets.main.output
 }
 
 if (project.getTasks().findByPath("sourcesJar")){
     sourcesJar { 
-        from project("CommentParser").sourceSets.main.allSource
+        from project("commentparser").sourceSets.main.allSource
     }
 }
 
-if (project.getTasks().findByPath("sourcesJar")){
+if (project.getTasks().findByPath("javadocJar")){
     javadocJar {
-        from project("CommentParser").projectDir.path + '/build/docs/javadoc'
+        from project("commentparser").projectDir.path + '/build/docs/javadoc'
     }
 }
 
@@ -42,8 +42,9 @@ dependencies {
     compile ( 'eu.mihosoft.vrl.workflow-8.0:vworkflows-core:0.1-r2-SNAPSHOT' ) { changing = true }
     //    compile ( 'eu.mihosoft.vrl.workflow:vworkflows-fx:0.1-r2-SNAPSHOT' ) { changing = true }
     
-    compile project("CommentParser")
+    compile project("commentparser")
     
-    compile project(":VRL-Base")
+    compile project(":vrl-base")
 }
+
 
