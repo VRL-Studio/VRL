@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.lang.visual;
 
 import eu.mihosoft.vrl.annotation.ParamInfo;
@@ -67,6 +66,7 @@ import eu.mihosoft.vrl.reflection.VisualObject;
 import eu.mihosoft.vrl.system.VClassLoaderUtil;
 import eu.mihosoft.vrl.system.VParamUtil;
 import eu.mihosoft.vrl.types.ArrayBaseType;
+import eu.mihosoft.vrl.types.MultipleOutputType;
 import eu.mihosoft.vrl.visual.CanvasWindow;
 import eu.mihosoft.vrl.visual.Connection;
 import eu.mihosoft.vrl.visual.Connections;
@@ -143,16 +143,16 @@ public class SessionClassUtils {
         code.addLine("@ComponentInfo(" + classInfo.getComponentInfo() + ")").
                 addLine("@ObjectInfo(" + classInfo.getObjectInfo() + ")").
                 addLine("public class " + classInfo.getClassName()
-                + " implements Serializable {").
+                        + " implements Serializable {").
                 incIndentation().
                 addLine("private static final long serialVersionUID=1L;").
                 addLine(
-                getMethodHeaderCode(getOutputParameter(canvas),
-                classInfo.getMethodInfo(),
-                classInfo.getMethodName(),
-                getInputParameter(canvas),
-                code.getIndentString())
-                + " {").
+                        getMethodHeaderCode(getOutputParameter(canvas),
+                                classInfo.getMethodInfo(),
+                                classInfo.getMethodName(),
+                                getInputParameter(canvas),
+                                code.getIndentString())
+                        + " {").
                 incIndentation().
                 addLine("").
                 addLine(getBodyCode(canvas, code.getIndentString())).
@@ -203,8 +203,8 @@ public class SessionClassUtils {
      * @return a collection containing all input objects of the specified canvas
      */
     private static Collection<InputObject> getInputs(VisualCanvas canvas) {
-        Collection<Object> inputs =
-                canvas.getInspector().
+        Collection<Object> inputs
+                = canvas.getInspector().
                 getObjectsByClassName(InputObject.class.getName());
 
         ArrayList<InputObject> result = new ArrayList<InputObject>();
@@ -225,8 +225,8 @@ public class SessionClassUtils {
      * canvas
      */
     private static OutputObject getOutput(VisualCanvas canvas) {
-        Collection<Object> outputs =
-                canvas.getInspector().
+        Collection<Object> outputs
+                = canvas.getInspector().
                 getObjectsByClassName(OutputObject.class.getName());
 
         if (!outputs.isEmpty()) {
@@ -256,8 +256,8 @@ public class SessionClassUtils {
      * <code>null</code> if no such object exists
      */
     private static ClassInfoObject getClassInfo(VisualCanvas canvas) {
-        Collection<Object> classInfoObjects =
-                canvas.getInspector().
+        Collection<Object> classInfoObjects
+                = canvas.getInspector().
                 getObjectsByClassName(ClassInfoObject.class.getName());
 
         if (!classInfoObjects.isEmpty()) {
@@ -292,14 +292,13 @@ public class SessionClassUtils {
         for (InputObject o : getInputs(canvas)) {
 
             // multiple views false, thus we can savely use get(0)
-            DefaultObjectRepresentation oRep =
-                    canvas.getInspector().
+            DefaultObjectRepresentation oRep
+                    = canvas.getInspector().
                     getObjectRepresentationsByReference(o).get(0);
 
-
-            DefaultMethodRepresentation m =
-                    oRep.getMethodBySignature(
-                    "info", new Class<?>[]{String.class});
+            DefaultMethodRepresentation m
+                    = oRep.getMethodBySignature(
+                            "info", new Class<?>[]{String.class});
 
             if (m != null) {
                 try {
@@ -314,15 +313,15 @@ public class SessionClassUtils {
         if (outputExists(canvas)) {
             // output
             // multiple views false, thus we can savely use get(0)
-            DefaultObjectRepresentation oRep =
-                    canvas.getInspector().
+            DefaultObjectRepresentation oRep
+                    = canvas.getInspector().
                     getObjectRepresentationsByReference(
-                    getOutput(canvas)).get(0);
+                            getOutput(canvas)).get(0);
 
-            DefaultMethodRepresentation m1 =
-                    oRep.getMethodBySignature(
-                    "info",
-                    new Class<?>[]{String.class, OutputValue.class});
+            DefaultMethodRepresentation m1
+                    = oRep.getMethodBySignature(
+                            "info",
+                            new Class<?>[]{String.class, OutputValue.class});
             try {
                 m1.automaticInvocation(canvas.getInspector());
             } catch (InvocationTargetException ex) {
@@ -343,22 +342,21 @@ public class SessionClassUtils {
         if (classInfoExists(canvas)) {
             // class-info
             // multiple views false, thus we can savely use get(0)
-            DefaultObjectRepresentation oRep =
-                    canvas.getInspector().
+            DefaultObjectRepresentation oRep
+                    = canvas.getInspector().
                     getObjectRepresentationsByReference(
-                    getClassInfo(canvas)).get(0);
+                            getClassInfo(canvas)).get(0);
 
 //            DefaultMethodRepresentation m1 =
 //                    oRep.getMethodBySignature(
 //                    "info", new Class<?>[]{
 //                String.class, String.class, String.class});
-
-            DefaultMethodRepresentation m2 =
-                    oRep.getMethodBySignature(
-                    "additionalInfo",
-                    new Class<?>[]{
-                        String.class, String.class,
-                        String.class, String.class, String.class});
+            DefaultMethodRepresentation m2
+                    = oRep.getMethodBySignature(
+                            "additionalInfo",
+                            new Class<?>[]{
+                                String.class, String.class,
+                                String.class, String.class, String.class});
             try {
                 //            m1.automaticInvocation(canvas.getInspector());
                 m2.automaticInvocation(canvas.getInspector());
@@ -410,19 +408,19 @@ public class SessionClassUtils {
         Connection result = null;
 
         // multiple views false, thus we can savely use get(0)
-        DefaultObjectRepresentation oRep =
-                canvas.getInspector().
+        DefaultObjectRepresentation oRep
+                = canvas.getInspector().
                 getObjectRepresentationsByReference(input).get(0);
 
         // get the method representation
-        DefaultMethodRepresentation m =
-                oRep.getMethodBySignature(
-                "info", new Class<?>[]{String.class});
+        DefaultMethodRepresentation m
+                = oRep.getMethodBySignature(
+                        "info", new Class<?>[]{String.class});
 
         // take the return value connector and get the connections
         Connector c = m.getReturnValue().getConnector();
-        Collection<Connection> connections =
-                canvas.getDataConnections().getAllWith(c);
+        Collection<Connection> connections
+                = canvas.getDataConnections().getAllWith(c);
 
         // if connection exist return it
         if (!connections.isEmpty()) {
@@ -506,8 +504,8 @@ public class SessionClassUtils {
         }
 
         // get(0) is save because only one connection is allowed
-        Connection connection =
-                canvas.getDataConnections().
+        Connection connection
+                = canvas.getDataConnections().
                 getAllWith(getOutputReceiver(canvas)).get(0);
 
         return new Parameter(
@@ -528,8 +526,8 @@ public class SessionClassUtils {
 
         Connector c = getOutputReceiver(canvas);
 
-        Collection<Connection> connections =
-                canvas.getDataConnections().getAllWith(c);
+        Collection<Connection> connections
+                = canvas.getDataConnections().getAllWith(c);
 
         // if connection exist return the sender as result
         if (!connections.isEmpty()) {
@@ -560,15 +558,15 @@ public class SessionClassUtils {
         OutputObject o = getOutput(canvas);
 
         // multiple views false, thus we can savely use get(0)
-        DefaultObjectRepresentation oRep =
-                canvas.getInspector().
+        DefaultObjectRepresentation oRep
+                = canvas.getInspector().
                 getObjectRepresentationsByReference(o).get(0);
 
         // get the method representation
-        DefaultMethodRepresentation m =
-                oRep.getMethodBySignature(
-                "info",
-                new Class<?>[]{String.class, OutputValue.class});
+        DefaultMethodRepresentation m
+                = oRep.getMethodBySignature(
+                        "info",
+                        new Class<?>[]{String.class, OutputValue.class});
 
         // take the input value connector and get the connections
         // connector of outputvalue (see OutputObject)
@@ -611,7 +609,6 @@ public class SessionClassUtils {
             returnTypeString = output.type.getName();
         }
 
-
         builder.append(output.paramInfo).append(")\n").
                 // return type
                 append(indent).append("public ").append(returnTypeString).
@@ -646,8 +643,6 @@ public class SessionClassUtils {
             } else {
                 paramTypeString = p.type.getName();
             }
-
-
 
             builder.append("@ParamInfo(").append(p.getParamInfo()).append(") ").
                     append(paramTypeString).append(" ").
@@ -773,17 +768,52 @@ public class SessionClassUtils {
             Connections connections,
             Collection<DefaultMethodRepresentation> methods, String indent) {
 
-        StringBuilder builder =
-                new StringBuilder(indent);
+        StringBuilder builder
+                = new StringBuilder(indent);
 
         builder.append("// variable declarations\n").append(indent);
 
         for (DefaultMethodRepresentation method : methods) {
-            
-            boolean methodReturnsData = !method.getReturnValue().
-                    getType().equals(void.class)
-                    && connections.alreadyConnected(
-                    method.getReturnValue().getConnector());
+
+            boolean notVoid = !method.getReturnValue().getType().equals(void.class);
+            boolean connected = connections.alreadyConnected(method.getReturnValue().getConnector());
+
+            boolean checkForMultipleOutput = method.getReturnValue().getClass().equals(MultipleOutputType.class);
+            boolean arraySubElementsAreConnected = false;
+            ArrayList<TypeRepresentationContainer> connectedSubTypes = new ArrayList<TypeRepresentationContainer>();
+
+            if (checkForMultipleOutput) {
+//                 arraySubElementsAreConnected = connections.alreadyConnected();
+                String msg = " ### -->> MultipleOutputType detected";
+                System.out.println(msg);
+                System.err.println(msg);
+
+                MultipleOutputType mot = (MultipleOutputType) method.getReturnValue();
+
+                ArrayList typeContainers = mot.getTypeContainers();
+
+                for (int i = 0; i < typeContainers.size(); i++) {
+                    System.out.println("viewValue[ " + i + " ].class " + typeContainers.get(i).getClass());
+
+                    TypeRepresentationContainer trepContainer = (TypeRepresentationContainer) typeContainers.get(i);
+                    TypeRepresentationBase trep = trepContainer.getTypeRepresentation();
+                    System.out.println("trep.getName() = " + trep.getName());
+
+                    Class typ = trepContainer.getType();
+                    System.out.println("typ.getName() = " + typ.getName());
+
+                    boolean isConnected = connections.alreadyConnected(trep.getConnector());
+                    System.out.println("subConnector isConnected = " + isConnected);
+
+                    if (isConnected) {
+                        connectedSubTypes.add(trepContainer);
+                        arraySubElementsAreConnected = isConnected;
+                    }
+                }
+
+            }// if checkForMultipleOutput
+
+            boolean methodReturnsData = notVoid && (connected || arraySubElementsAreConnected);
 
             // we only need to declare a variable if this method
             // returns something
@@ -791,8 +821,6 @@ public class SessionClassUtils {
 
 //                if (method.getReturnValue() instanceof ArrayBaseType) {
 //                } else {
-
-
                 String returnValueType = "";
 
                 if (method.getReturnValue().getType().isArray()) {
@@ -801,15 +829,34 @@ public class SessionClassUtils {
 //                            getComponentType().getName() + "[]";
                     returnValueType = VClassLoaderUtil.arrayClass2Code(
                             method.getReturnValue().getType().getName());
+
+                    if (arraySubElementsAreConnected) {
+                        for (int i = 0; i < connectedSubTypes.size(); i++) {
+
+                            returnValueType = connectedSubTypes.get(i).getType().getName();
+                            TypeRepresentationBase trep = connectedSubTypes.get(i).getTypeRepresentation();
+                            Connector subConnector = trep.getConnector();
+//                            System.out.println("trep.getValueAsCode() = \n"+ trep.getValueAsCode());
+
+                            builder.append(returnValueType).
+                                    append(" ").
+                                    append(getVariableName(canvas, connections, subConnector)).
+//                                    append(" = null;").
+                                    append(" = " + trep.getValueAsCode() + ";").
+                                    append("\n").append(indent);
+                        }
+
+                    }
+
                 } else {
-                    returnValueType =
-                            method.getReturnValue().getType().getName();
+                    returnValueType
+                            = method.getReturnValue().getType().getName();
                 }
 
                 builder.append(returnValueType).
                         append(" ").
                         append(getVariableName(canvas, connections,
-                        method.getReturnValue().getConnector())).
+                                        method.getReturnValue().getConnector())).
                         append(" = null;").
                         append("\n").append(indent);
 //                }
@@ -834,12 +881,11 @@ public class SessionClassUtils {
     private static String getMethodInvocationCode(
             DefaultMethodRepresentation method, String indent) {
 
-        StringBuilder builder =
-                new StringBuilder(indent);
+        StringBuilder builder
+                = new StringBuilder(indent);
 
         VisualCanvas canvas = (VisualCanvas) method.getMainCanvas();
         Connections connections = canvas.getDataConnections();
-
 
         // controlflow statements
         if (ControlFlowUtils.isMethodControlFlowStatement(method)) {
@@ -850,15 +896,14 @@ public class SessionClassUtils {
                         log(Level.SEVERE, null, ex);
             }
 
-            ControlFlowStatement statement =
-                    ControlFlowUtils.getControlFlowStatement(
-                    method);
+            ControlFlowStatement statement
+                    = ControlFlowUtils.getControlFlowStatement(
+                            method);
 
             builder.append(statement.getCode()).append("\n");
 
             return builder.toString();
         }
-
 
         Object parentObject = canvas.getInspector().
                 getObject(method.getParentObject().getObjectID());
@@ -873,8 +918,8 @@ public class SessionClassUtils {
         //    v1 = o1; o1 = o2;
         if (method.isReferenceMethod()) {
 
-            boolean returnValueConnected =
-                    method.getMainCanvas().getDataConnections().
+            boolean returnValueConnected
+                    = method.getMainCanvas().getDataConnections().
                     alreadyConnected(method.getReturnValue().getConnector());
 
             boolean inputValuesConnected = method.getMainCanvas().
@@ -887,10 +932,10 @@ public class SessionClassUtils {
                         parentObject)).append(" = ");
 
                 // only one connection allowed. thus, get(0) is save
-                Connection c =
-                        connections.getAllWith(
-                        method.getParameter(0).
-                        getConnector()).get(0);
+                Connection c
+                        = connections.getAllWith(
+                                method.getParameter(0).
+                                getConnector()).get(0);
 
                 builder.append(
                         getVariableName(canvas, connections, c)).
@@ -906,10 +951,10 @@ public class SessionClassUtils {
             if (returnValueConnected) {
 
                 // only one connection allowed. thus, get(0) is save
-                Connection c =
-                        connections.getAllWith(
-                        method.getReturnValue().
-                        getConnector()).get(0);
+                Connection c
+                        = connections.getAllWith(
+                                method.getReturnValue().
+                                getConnector()).get(0);
 
                 builder.append(getVariableName(canvas, connections, c)).
                         append(" = ");
@@ -926,11 +971,10 @@ public class SessionClassUtils {
         }
 
         // we are no reference method and thus we are still in this method
-
         boolean methodReturnsData = !method.getReturnValue().
                 getType().equals(void.class)
                 && connections.alreadyConnected(
-                method.getReturnValue().getConnector());
+                        method.getReturnValue().getConnector());
 
         // we only need to declare a variable if this method
         // returns something
@@ -945,8 +989,8 @@ public class SessionClassUtils {
 
         builder.append(methodName).append("( ");
 
-        ArrayList<Connector> doNotSupportCodeGeneration =
-                new ArrayList<Connector>();
+        ArrayList<Connector> doNotSupportCodeGeneration
+                = new ArrayList<Connector>();
 
         // now we add the parameter values to the method
         boolean firstRun = true;
@@ -959,14 +1003,14 @@ public class SessionClassUtils {
                 builder.append(", ");
             }
 
-            boolean paramConnected =
-                    connections.alreadyConnected(tRep.getConnector());
+            boolean paramConnected
+                    = connections.alreadyConnected(tRep.getConnector());
 
             if (paramConnected) {
 
                 // only one connection allowed. thus, get(0) is save
-                Connection c =
-                        connections.getAllWith(tRep.getConnector()).get(0);
+                Connection c
+                        = connections.getAllWith(tRep.getConnector()).get(0);
 
                 builder.append(getVariableName(canvas, connections, c));
             } else if (tRep instanceof ArrayBaseType) {
@@ -978,12 +1022,12 @@ public class SessionClassUtils {
                         doNotSupportCodeGeneration,
                         (ArrayBaseType) tRep);
             } else {
-                
+
                 String code = null;
-                
+
                 try {
                     code = tRep.getValueAsCode();
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace(System.err);
                 }
 
@@ -991,7 +1035,7 @@ public class SessionClassUtils {
 
                     code = "null as "
                             + VClassLoaderUtil.arrayClass2Code(
-                            tRep.getType().getName());
+                                    tRep.getType().getName());
 
                     if (tRep.isWarningIfNoCodeGeneration()) {
                         doNotSupportCodeGeneration.add(tRep.getConnector());
@@ -1043,21 +1087,21 @@ public class SessionClassUtils {
                 builder.append(", ");
             }
 
-            boolean paramConnected =
-                    connections.alreadyConnected(tCont.getConnector());
+            boolean paramConnected
+                    = connections.alreadyConnected(tCont.getConnector());
 
             if (paramConnected) {
 
                 // only one connection allowed. thus, get(0) is save
-                Connection c =
-                        connections.getAllWith(
-                        tCont.getConnector()).get(0);
+                Connection c
+                        = connections.getAllWith(
+                                tCont.getConnector()).get(0);
 
                 builder.append(getVariableName(canvas, connections, c));
             } else {
 
-                String code =
-                        tCont.getTypeRepresentation().getValueAsCode();
+                String code
+                        = tCont.getTypeRepresentation().getValueAsCode();
 
                 if (code == null) {
                     code = "null as "
@@ -1072,7 +1116,7 @@ public class SessionClassUtils {
 
         builder.append("] as ").
                 append(
-                arrayType.getType().getComponentType().getName()).append("[]");
+                        arrayType.getType().getComponentType().getName()).append("[]");
     }
 
     /**
@@ -1086,19 +1130,19 @@ public class SessionClassUtils {
     private static String getBodyCode(VisualCanvas canvas, String indent) {
 
         Collection<Object> objects = canvas.getInspector().getObjects();
-        
+
         // connected objects
         ArrayList<Object> usedObjects = new ArrayList<Object>();
-        
+
         for (Object object : objects) {
-            Collection<DefaultObjectRepresentation> oReps =
-                    canvas.getInspector().
+            Collection<DefaultObjectRepresentation> oReps
+                    = canvas.getInspector().
                     getObjectRepresentationsByReference(object);
-            
+
             for (DefaultObjectRepresentation oRep : oReps) {
                 boolean isInUse = canvas.getControlFlowConnections().
                         alreadyConnected(oRep.getControlFlowInput());
-                
+
                 if (isInUse) {
                     usedObjects.add(object);
                     break;
@@ -1112,8 +1156,8 @@ public class SessionClassUtils {
                 append("\n\n");
 
         // methods for controlflow
-        Collection<DefaultMethodRepresentation> controlFlowMethods =
-                ControlFlowUtils.getInvocationList(canvas);
+        Collection<DefaultMethodRepresentation> controlFlowMethods
+                = ControlFlowUtils.getInvocationList(canvas);
 
 //        // methods for variables and initialization code
 //        Collection<DefaultMethodRepresentation> methods =
@@ -1143,7 +1187,6 @@ public class SessionClassUtils {
 //                builder.append(getMethodInvocationCode(mRep, indent + "    "));
 //            }
 //        }
-
         builder.append("\n");
 
         builder.append(indent).append("    // method calls\n");
@@ -1156,13 +1199,12 @@ public class SessionClassUtils {
         builder.append("\n");
 
         // return value
-
         Connector c = getOutputSender(canvas);
 
         if (c != null) {
             builder.append(indent).append("    ").append("return ").
                     append(getVariableName(
-                    canvas, canvas.getDataConnections(), c)).append(";\n");
+                                    canvas, canvas.getDataConnections(), c)).append(";\n");
         }
 
         return builder.toString();
@@ -1193,14 +1235,14 @@ public class SessionClassUtils {
             // (from the receiver connector)
             if (paramInfo == null || paramInfo.trim().equals("")) {
                 paramInfo = "";
-                TypeRepresentationContainer tCont =
-                        (TypeRepresentationContainer) getConnection().
+                TypeRepresentationContainer tCont
+                        = (TypeRepresentationContainer) getConnection().
                         getReceiver().getValueObject();
 
                 TypeRepresentationBase tRep = tCont.getTypeRepresentation();
 
-                ArrayList<TypeRepresentationBase> params =
-                        tCont.getTypeRepresentation().getParentMethod().
+                ArrayList<TypeRepresentationBase> params
+                        = tCont.getTypeRepresentation().getParentMethod().
                         getParameters();
 
                 int id = params.indexOf(tRep);
@@ -1221,7 +1263,7 @@ public class SessionClassUtils {
                             + VLangUtils.addEscapeCharsToCode(info.style())
                             + "\", options=\""
                             + VLangUtils.addEscapeCharsToCode(
-                            info.options()) + "\"";
+                                    info.options()) + "\"";
                 } else {
                     System.err.println("ParamInfo not found!");
                 }
