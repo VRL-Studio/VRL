@@ -782,28 +782,21 @@ public class SessionClassUtils {
             boolean arraySubElementsAreConnected = false;
             ArrayList<TypeRepresentationContainer> connectedSubTypes = new ArrayList<TypeRepresentationContainer>();
 
+            // check if one or more of the multiple ouput elements are connected
+            // and save the connected ones in a list
             if (checkForMultipleOutput) {
-//                 arraySubElementsAreConnected = connections.alreadyConnected();
-                String msg = " ### -->> MultipleOutputType detected";
-                System.out.println(msg);
-                System.err.println(msg);
 
                 MultipleOutputType mot = (MultipleOutputType) method.getReturnValue();
-
                 ArrayList typeContainers = mot.getTypeContainers();
 
+                //go over all subelements of the multioutput
                 for (int i = 0; i < typeContainers.size(); i++) {
-                    System.out.println("viewValue[ " + i + " ].class " + typeContainers.get(i).getClass());
 
                     TypeRepresentationContainer trepContainer = (TypeRepresentationContainer) typeContainers.get(i);
                     TypeRepresentationBase trep = trepContainer.getTypeRepresentation();
-                    System.out.println("trep.getName() = " + trep.getName());
 
-                    Class typ = trepContainer.getType();
-                    System.out.println("typ.getName() = " + typ.getName());
-
+                    //check the subConnection if it is used
                     boolean isConnected = connections.alreadyConnected(trep.getConnector());
-                    System.out.println("subConnector isConnected = " + isConnected);
 
                     if (isConnected) {
                         connectedSubTypes.add(trepContainer);
@@ -830,19 +823,25 @@ public class SessionClassUtils {
                     returnValueType = VClassLoaderUtil.arrayClass2Code(
                             method.getReturnValue().getType().getName());
 
+                    // if subelements of multiple outputs are connected we need
+                    // create variable for them too
                     if (arraySubElementsAreConnected) {
+                        
                         for (int i = 0; i < connectedSubTypes.size(); i++) {
 
-                            returnValueType = connectedSubTypes.get(i).getType().getName();
+                            if (connectedSubTypes.get(i).getType().isArray()) {
+                                returnValueType = VClassLoaderUtil.arrayClass2Code(connectedSubTypes.get(i).getType().getName());
+                            } else {
+                                returnValueType = connectedSubTypes.get(i).getType().getName();
+                            }
+                            
                             TypeRepresentationBase trep = connectedSubTypes.get(i).getTypeRepresentation();
                             Connector subConnector = trep.getConnector();
-//                            System.out.println("trep.getValueAsCode() = \n"+ trep.getValueAsCode());
-
+                            
                             builder.append(returnValueType).
                                     append(" ").
                                     append(getVariableName(canvas, connections, subConnector)).
-//                                    append(" = null;").
-                                    append(" = " + trep.getValueAsCode() + ";").
+                                    append(" = null;").
                                     append("\n").append(indent);
                         }
 
@@ -921,6 +920,9 @@ public class SessionClassUtils {
             boolean returnValueConnected
                     = method.getMainCanvas().getDataConnections().
                     alreadyConnected(method.getReturnValue().getConnector());
+
+            //
+//            returnValuefor multi
 
             boolean inputValuesConnected = method.getMainCanvas().
                     getDataConnections().
