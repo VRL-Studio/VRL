@@ -8,23 +8,10 @@
 <?import javafx.scene.paint.*?>
 <?import javafx.scene.web.*?>
 
-<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="763.9999000000025" prefWidth="1104.0001220703125" xmlns:fx="http://javafx.com/fxml" fx:controller="eu.mihosoft.vrl.ui.codevisualization.MainWindowController">
-  <children>
-    <SplitPane dividerPositions="0.46460974889740725" focusTraversable="true" prefHeight="763.9999000000025" prefWidth="1104.0001220703125" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
-      <items>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-          <children>
-            <TextArea fx:id="editor" onKeyReleased="#onKeyTyped" prefHeight="737.0" prefWidth="509.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-          </children>
-        </AnchorPane>
-        <AnchorPane id="view" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
-          <children>
-            <StackPane fx:id="view" prefHeight="737.0" prefWidth="588.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-          </children>
-        </AnchorPane>
-      </items>
-    </SplitPane>
-    <MenuBar prefHeight="25.0" prefWidth="1104.0001220703125" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.mihosoft.vrl.ui.codevisualization.MainWindowController">
+   <children>
+    <MenuBar prefHeight="25.0" prefWidth="1104.0001220703125">
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
@@ -41,5 +28,19 @@
         </Menu>
       </menus>
     </MenuBar>
-  </children>
-</AnchorPane>
+    <SplitPane dividerPositions="0.46460974889740725" focusTraversable="true" prefHeight="763.9999000000025" prefWidth="1104.0001220703125">
+      <items>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+          <children>
+            <TextArea fx:id="editor" onKeyReleased="#onKeyTyped" prefHeight="737.0" prefWidth="509.0" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+          </children>
+        </AnchorPane>
+        <AnchorPane id="view" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+          <children>
+            <StackPane fx:id="view" prefHeight="737.0" prefWidth="588.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+          </children>
+        </AnchorPane>
+      </items>
+    </SplitPane>
+   </children>
+</VBox>
