@@ -755,6 +755,38 @@ public class SessionClassUtils {
     }
 
     /**
+     Helper method to check in methods with a multioutput return vale if there subelements are used
+     as return values.
+    
+     @param connections data connections of the canvas
+     @param method a multiOutput method which should be check if there subelements have connections
+     @return a list with all connected subelements, list is empty if none subelement is connected
+     */
+    private static ArrayList<TypeRepresentationContainer> checkAndCollectSubelementContainersOfMultiOutputs(Connections connections, DefaultMethodRepresentation method) {
+
+        ArrayList<TypeRepresentationContainer> connectedSubTypes = new ArrayList<TypeRepresentationContainer>();
+
+        MultipleOutputType mot = (MultipleOutputType) method.getReturnValue();
+        ArrayList typeContainers = mot.getTypeContainers();
+
+        //go over all subelements of the multioutput
+        for (int i = 0; i < typeContainers.size(); i++) {
+
+            TypeRepresentationContainer trepContainer = (TypeRepresentationContainer) typeContainers.get(i);
+            TypeRepresentationBase trep = trepContainer.getTypeRepresentation();
+
+            //check the subConnection if it is used
+            boolean isConnected = connections.alreadyConnected(trep.getConnector());
+
+            if (isConnected) {
+                connectedSubTypes.add(trepContainer);
+            }
+        }
+
+        return connectedSubTypes;
+    }
+
+    /**
      * Returns the variable declaration code. All variables are initialized with
      * <code>null</code>
      *
@@ -785,24 +817,28 @@ public class SessionClassUtils {
             // check if one or more of the multiple ouput elements are connected
             // and save the connected ones in a list
             if (checkForMultipleOutput) {
+//
+//                MultipleOutputType mot = (MultipleOutputType) method.getReturnValue();
+//                ArrayList typeContainers = mot.getTypeContainers();
+//
+//                //go over all subelements of the multioutput
+//                for (int i = 0; i < typeContainers.size(); i++) {
+//
+//                    TypeRepresentationContainer trepContainer = (TypeRepresentationContainer) typeContainers.get(i);
+//                    TypeRepresentationBase trep = trepContainer.getTypeRepresentation();
+//
+//                    //check the subConnection if it is used
+//                    boolean isConnected = connections.alreadyConnected(trep.getConnector());
+//
+//                    if (isConnected) {
+//                        connectedSubTypes.add(trepContainer);
+//                        arraySubElementsAreConnected = isConnected;
+//                    }
+//                }
 
-                MultipleOutputType mot = (MultipleOutputType) method.getReturnValue();
-                ArrayList typeContainers = mot.getTypeContainers();
-
-                //go over all subelements of the multioutput
-                for (int i = 0; i < typeContainers.size(); i++) {
-
-                    TypeRepresentationContainer trepContainer = (TypeRepresentationContainer) typeContainers.get(i);
-                    TypeRepresentationBase trep = trepContainer.getTypeRepresentation();
-
-                    //check the subConnection if it is used
-                    boolean isConnected = connections.alreadyConnected(trep.getConnector());
-
-                    if (isConnected) {
-                        connectedSubTypes.add(trepContainer);
-                        arraySubElementsAreConnected = isConnected;
-                    }
-                }
+                connectedSubTypes = checkAndCollectSubelementContainersOfMultiOutputs(connections, method);
+                //if connectedSubTypes is empty no connection are used inside the multioutput
+                arraySubElementsAreConnected = !connectedSubTypes.isEmpty();
 
             }// if checkForMultipleOutput
 
@@ -826,7 +862,7 @@ public class SessionClassUtils {
                     // if subelements of multiple outputs are connected we need
                     // create variable for them too
                     if (arraySubElementsAreConnected) {
-                        
+
                         for (int i = 0; i < connectedSubTypes.size(); i++) {
 
                             if (connectedSubTypes.get(i).getType().isArray()) {
@@ -834,10 +870,10 @@ public class SessionClassUtils {
                             } else {
                                 returnValueType = connectedSubTypes.get(i).getType().getName();
                             }
-                            
+
                             TypeRepresentationBase trep = connectedSubTypes.get(i).getTypeRepresentation();
                             Connector subConnector = trep.getConnector();
-                            
+
                             builder.append(returnValueType).
                                     append(" ").
                                     append(getVariableName(canvas, connections, subConnector)).
@@ -921,9 +957,8 @@ public class SessionClassUtils {
                     = method.getMainCanvas().getDataConnections().
                     alreadyConnected(method.getReturnValue().getConnector());
 
-            //
+//            //
 //            returnValuefor multi
-
             boolean inputValuesConnected = method.getMainCanvas().
                     getDataConnections().
                     alreadyConnected(method.getParameter(0).getConnector());
@@ -972,17 +1007,44 @@ public class SessionClassUtils {
             }
         }
 
+        //
         // we are no reference method and thus we are still in this method
-        boolean methodReturnsData = !method.getReturnValue().
-                getType().equals(void.class)
-                && connections.alreadyConnected(
-                        method.getReturnValue().getConnector());
+        //
+//        boolean methodReturnsData = !method.getReturnValue().getType().equals(void.class)
+//                && connections.alreadyConnected(method.getReturnValue().getConnector());
+        boolean notVoid = !method.getReturnValue().getType().equals(void.class);
+        boolean connected = connections.alreadyConnected(method.getReturnValue().getConnector());
 
-        // we only need to declare a variable if this method
-        // returns something
+        boolean checkForMultipleOutput = method.getReturnValue().getClass().equals(MultipleOutputType.class);
+        boolean arraySubElementsAreConnected = false;
+
+        ArrayList<TypeRepresentationContainer> connectedSubTypes = new ArrayList<TypeRepresentationContainer>();
+
+        // check if one or more of the multiple ouput elements are connected
+        // and save the connected ones in a list
+        if (checkForMultipleOutput) {
+
+            connectedSubTypes = checkAndCollectSubelementContainersOfMultiOutputs(connections, method);
+            //if connectedSubTypes is empty no connection are used inside the multioutput
+            arraySubElementsAreConnected = !connectedSubTypes.isEmpty();
+
+        }// if checkForMultipleOutput
+
+        boolean methodReturnsData = notVoid && (connected || arraySubElementsAreConnected);
+
+//        
+// we only need to declare a variable if this method  returns something
         if (methodReturnsData) {
-            builder.append(getVariableName(canvas, connections,
-                    method.getReturnValue().getConnector())).append(" = ");
+
+            //the method has a multiOutput and at least one subOutput is connected
+            if (arraySubElementsAreConnected) {
+
+                builder.append("Object[] multiOut1").append(" = ");
+
+            } else {
+                builder.append(getVariableName(canvas, connections,
+                        method.getReturnValue().getConnector())).append(" = ");
+            }
         }
 
         String methodName = getInstanceName(
@@ -1050,6 +1112,21 @@ public class SessionClassUtils {
         } // end for
 
         builder.append(" );\n");
+
+        //the method has a multiOutput and at least one subOutput is connected
+        if (arraySubElementsAreConnected) {
+        //for each variable that is declared because of a subOutput connection
+            //we initialize those variables now
+            for (int i = 0; i < connectedSubTypes.size(); i++) {
+
+                Connector subConnector = connectedSubTypes.get(i).getConnector();
+
+                builder.append(indent)
+                        .append(getVariableName(canvas, connections, subConnector))
+                        .append(" = ")
+                        .append("multiOut1[").append(i).append("];\n");
+            }
+        }
 
         if (!doNotSupportCodeGeneration.isEmpty()) {
             for (Connector c : doNotSupportCodeGeneration) {
