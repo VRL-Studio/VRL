@@ -754,15 +754,8 @@ public class SessionClassUtils {
         return "v" + varIndex;
     }
 
-    private static int multiOutputVariableIndex = 0;
-
-    private static String getMultiOutputVariableName() {
-
-        return "multiOut" + multiOutputVariableIndex;
-    }
-
-    private static void multiOutputVariableIndexIncrease() {
-        multiOutputVariableIndex++;
+    private static String getMultiOutputVariableName(DefaultMethodRepresentation method) {
+        return "multiOut_Obj" + method.getDescription().getObjectID()+"m"+method.getDescription().getMethodID();
     }
 
     /**
@@ -1041,7 +1034,7 @@ public class SessionClassUtils {
             //the method has a multiOutput and at least one subOutput is connected
             if (arraySubElementsAreConnected) {
 
-                builder.append("Object[] ").append(getMultiOutputVariableName()).append(" = ");
+                builder.append("Object[] ").append(getMultiOutputVariableName(method)).append(" = ");
 
             } else {
                 builder.append(getVariableName(canvas, connections,
@@ -1129,14 +1122,11 @@ public class SessionClassUtils {
                 builder.append(indent)
                         .append(getVariableName(canvas, connections, subConnector))
                         .append(" = ")
-                        .append(getMultiOutputVariableName())
+                        .append(getMultiOutputVariableName(method))
                         .append("[").append(i).append("];\n");
             }
 
             builder.append("\n");
-            //after all variables of the above multiOutput are initialized we increase the index for the next
-            //method with a multiOutput
-            multiOutputVariableIndexIncrease();
 
         }
 
