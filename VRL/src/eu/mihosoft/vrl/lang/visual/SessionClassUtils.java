@@ -1115,15 +1115,28 @@ public class SessionClassUtils {
 
             //for each variable that is declared because of a subOutput connection
             //we initialize those variables now
-            for (int i = 0; i < connectedSubTypes.size(); i++) {
+            MultipleOutputType mot = (MultipleOutputType) method.getReturnValue();
+            ArrayList typeContainers = mot.getTypeContainers();
 
-                Connector subConnector = connectedSubTypes.get(i).getConnector();
+            //go over all subelements of the multioutput
+            for (int i = 0; i < typeContainers.size(); i++) {
 
-                builder.append(indent)
-                        .append(getVariableName(canvas, connections, subConnector))
-                        .append(" = ")
-                        .append(getMultiOutputVariableName(method))
-                        .append("[").append(i).append("];\n");
+                TypeRepresentationContainer trepContainer = (TypeRepresentationContainer) typeContainers.get(i);
+                TypeRepresentationBase trep = trepContainer.getTypeRepresentation();
+
+                //check the subConnection if it is used
+                boolean isConnected = connections.alreadyConnected(trep.getConnector());
+
+                if (isConnected) {
+                    Connector subConnector = trepContainer.getConnector();
+
+                    //at the index of the subElement of the mutiOutput
+                    builder.append(indent)
+                            .append(getVariableName(canvas, connections, subConnector))
+                            .append(" = ")
+                            .append(getMultiOutputVariableName(method))
+                            .append("[").append(i).append("];\n");
+                }
             }
 
             builder.append("\n");
