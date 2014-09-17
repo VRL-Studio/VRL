@@ -654,54 +654,95 @@ public class SessionClassUtils {
         return builder.toString();
     }
 
-    /**
-     * Returns the code that is resposible for object instanciation.
-     *
-     * @param objects objects
-     * @param indent indent to use (necessary for correct code formatting)
-     * @return the code that is resposible for object instanciation
-     */
-    private static String getObjectInstanciationCode(
-            Collection<Object> objects, String indent) {
+//    /**
+//     * Returns the code that is resposible for object instanciation.
+//     *
+//     * @param objects objects
+//     * @param indent indent to use (necessary for correct code formatting)
+//     * @return the code that is resposible for object instanciation
+//     */
+//    private static String getObjectInstanciationCode(
+//            Collection<Object> objects, String indent) {
+//
+//        StringBuilder builder = new StringBuilder("// instances\n");
+//
+//        for (Object o : objects) {
+//
+//            String className = o.getClass().getName();
+//            builder.append(indent).append("    ").
+//                    append(className).append(" ").
+//                    append(getInstanceName(objects, o)).
+//                    append(" = new ").append(className).append("();\n");
+//        }
+//
+//        return builder.toString();
+//    }
+    private static String getObjectInstanciationCodeViaControlFlowMethods(
+            VisualCanvas canvas,
+            Collection<DefaultMethodRepresentation> controlFlowMethods,
+            String indent) {
 
         StringBuilder builder = new StringBuilder("// instances\n");
+        
+        Set<String> addedObjects = new HashSet<String>();
+        String objName = null;
 
-        for (Object o : objects) {
+        for (DefaultMethodRepresentation dmr : controlFlowMethods) {
 
-            String className = o.getClass().getName();
-            builder.append(indent).append("    ").
-                    append(className).append(" ").
-                    append(getInstanceName(objects, o)).
+            objName = getObjectInstanciationCodeVariableName(dmr);
+            
+            //if we already have an instance of the object we do not want to add/create it again
+            //e.g. in case an object invokes to methods in the controllflow
+            if (addedObjects.contains(objName)) {
+                continue;
+            }
+            
+            addedObjects.add(objName);
+            
+            int objID = dmr.getDescription().getObjectID();
+            String className = canvas.getInspector().getObject(objID).getClass().getName();
+            builder.append(indent).append("    ").append(className).append(" ").
+                    append(objName).
                     append(" = new ").append(className).append("();\n");
         }
 
         return builder.toString();
     }
 
-    /**
-     * Returns a unique variable name for the specified object.
-     *
-     * @param objects all instances managed by the current inspector
-     * @param o object
-     * @return a unique variable name for the specified object
-     */
-    private static String getInstanceName(
-            Collection<Object> objects, Object o) {
+    private static String getObjectInstanciationCodeVariableName(
+            DefaultMethodRepresentation controlFlowMethod) {
 
-        VParamUtil.throwIfNull(objects, o);
+        StringBuilder builder = new StringBuilder();
 
-        int varIndex = 0;
+        int objID = controlFlowMethod.getDescription().getObjectID();
+        builder.append("obj").append(objID);
 
-        for (Object obj : objects) {
-            if (obj == o) {
-                break;
-            }
-            varIndex++;
-        }
-
-        return "obj" + varIndex;
+        return builder.toString();
     }
 
+//    /**
+//     * Returns a unique variable name for the specified object.
+//     *
+//     * @param objects all instances managed by the current inspector
+//     * @param o object
+//     * @return a unique variable name for the specified object
+//     */
+//    private static String getInstanceName(
+//            Collection<Object> objects, Object o) {
+//
+//        VParamUtil.throwIfNull(objects, o);
+//
+//        int varIndex = 0;
+//
+//        for (Object obj : objects) {
+//            if (obj == o) {
+//                break;
+//            }
+//            varIndex++;
+//        }
+//
+//        return "obj" + varIndex;
+//    }
     /**
      * Returns a unique variable name for the specified connection.
      *
@@ -755,7 +796,7 @@ public class SessionClassUtils {
     }
 
     private static String getMultiOutputVariableName(DefaultMethodRepresentation method) {
-        return "multiOut_Obj" + method.getDescription().getObjectID()+"m"+method.getDescription().getMethodID();
+        return "multiOut_Obj" + method.getDescription().getObjectID() + "m" + method.getDescription().getMethodID();
     }
 
     /**
@@ -865,7 +906,9 @@ public class SessionClassUtils {
                             builder.append(returnValueType).
                                     append(" ").
                                     append(getVariableName(canvas, connections, subConnector)).
-                                    append(" = null; // multi-out-var").
+                                    append(" = null; // multi-out-var : ").
+                                    append("obj").append(method.getDescription().getObjectID()).
+                                    append("m").append(method.getDescription().getMethodID()).
                                     append("\n").append(indent);
                         }
 
@@ -876,7 +919,9 @@ public class SessionClassUtils {
                                 append(" ").
                                 append(getVariableName(canvas, connections,
                                                 method.getReturnValue().getConnector())).
-                                append(" = null; // single-out-var (array)").
+                                append(" = null; // single-out-var (array) : ").
+                                append("obj").append(method.getDescription().getObjectID()).
+                                append("m").append(method.getDescription().getMethodID()).
                                 append("\n").append(indent);
                     }
 
@@ -887,7 +932,9 @@ public class SessionClassUtils {
                             append(" ").
                             append(getVariableName(canvas, connections,
                                             method.getReturnValue().getConnector())).
-                            append(" = null;  // single-out-var").
+                            append(" = null; // single-out-var : ").
+                            append("obj").append(method.getDescription().getObjectID()).
+                            append("m").append(method.getDescription().getMethodID()).
                             append("\n").append(indent);
                 }
 //                }
@@ -936,9 +983,6 @@ public class SessionClassUtils {
             return builder.toString();
         }
 
-        Object parentObject = canvas.getInspector().
-                getObject(method.getParentObject().getObjectID());
-
         // if we are a reference method we only add our instance name and return
         // examples:
         // 1) if method's return value is assigned to a variable:
@@ -953,16 +997,14 @@ public class SessionClassUtils {
                     = method.getMainCanvas().getDataConnections().
                     alreadyConnected(method.getReturnValue().getConnector());
 
-//            //
-//            returnValuefor multi
             boolean inputValuesConnected = method.getMainCanvas().
                     getDataConnections().
                     alreadyConnected(method.getParameter(0).getConnector());
 
             if (inputValuesConnected) {
-                builder.append(getInstanceName(
-                        canvas.getInspector().getObjects(),
-                        parentObject)).append(" = ");
+                builder.append(getObjectInstanciationCodeVariableName(method))
+                        //                        .append(getInstanceName(canvas.getInspector().getObjects(), parentObject))
+                        .append(" = ");
 
                 // only one connection allowed. thus, get(0) is save
                 Connection c
@@ -991,9 +1033,9 @@ public class SessionClassUtils {
 
                 builder.append(getVariableName(canvas, connections, c)).
                         append(" = ");
-                builder.append(getInstanceName(
-                        canvas.getInspector().getObjects(),
-                        parentObject)).append(";\n");
+                builder.append(getObjectInstanciationCodeVariableName(method))
+                        //                builder.append(getInstanceName(canvas.getInspector().getObjects(), parentObject))
+                        .append(";\n");
             }
 
             if (inputValuesConnected || returnValueConnected) {
@@ -1034,7 +1076,8 @@ public class SessionClassUtils {
             //the method has a multiOutput and at least one subOutput is connected
             if (arraySubElementsAreConnected) {
 
-                builder.append("Object[] ").append(getMultiOutputVariableName(method)).append(" = ");
+                builder.append("\n").append(indent)
+                        .append("Object[] ").append(getMultiOutputVariableName(method)).append(" = ");
 
             } else {
                 builder.append(getVariableName(canvas, connections,
@@ -1042,8 +1085,8 @@ public class SessionClassUtils {
             }
         }
 
-        String methodName = getInstanceName(
-                canvas.getInspector().getObjects(), parentObject)
+        String methodName = getObjectInstanciationCodeVariableName(method)
+                //                getInstanceName( canvas.getInspector().getObjects(), parentObject)
                 + "." + method.getDescription().getMethodName();
 
         builder.append(methodName).append("( ");
@@ -1210,64 +1253,50 @@ public class SessionClassUtils {
      */
     private static String getBodyCode(VisualCanvas canvas, String indent) {
 
-        Collection<Object> objects = canvas.getInspector().getObjects();
-
-        // connected objects
-        ArrayList<Object> usedObjects = new ArrayList<Object>();
-
-        for (Object object : objects) {
-            Collection<DefaultObjectRepresentation> oReps
-                    = canvas.getInspector().
-                    getObjectRepresentationsByReference(object);
-
-            for (DefaultObjectRepresentation oRep : oReps) {
-                boolean isInUse = canvas.getControlFlowConnections().
-                        alreadyConnected(oRep.getControlFlowInput());
-
-                if (isInUse) {
-                    usedObjects.add(object);
-                    break;
-                }
-            }
-        }
-
+//        Collection<Object> objects = canvas.getInspector().getObjects();
+//
+//        // connected objects
+//        ArrayList<Object> usedObjects = new ArrayList<Object>();
+//
+//        for (Object object : objects) {
+//            Collection<DefaultObjectRepresentation> oReps
+//                    = canvas.getInspector().
+//                    getObjectRepresentationsByReference(object);
+//
+//            for (DefaultObjectRepresentation oRep : oReps) {
+//                boolean isInUse = canvas.getControlFlowConnections().
+//                        alreadyConnected(oRep.getControlFlowInput());
+//
+//                if (isInUse) {
+//                    usedObjects.add(object);
+//                    break;
+//                }
+//            }
+//        }
+//
+//        StringBuilder builder = new StringBuilder();
+//
+//        builder.append(getObjectInstanciationCode(usedObjects, indent)).
+//                append("\n\n");
+//        
+//        // TEST CHRIS bug with objIDs START
+        Collection<DefaultMethodRepresentation> tmpcontrolFlowMethods
+                = ControlFlowUtils.getInvocationList(canvas);
         StringBuilder builder = new StringBuilder();
 
-        builder.append(getObjectInstanciationCode(usedObjects, indent)).
+        builder.append(getObjectInstanciationCodeViaControlFlowMethods(canvas, tmpcontrolFlowMethods, indent)).
                 append("\n\n");
+//        // TEST CHRIS bug with objIDs END
 
         // methods for controlflow
         Collection<DefaultMethodRepresentation> controlFlowMethods
                 = ControlFlowUtils.getInvocationList(canvas);
 
-//        // methods for variables and initialization code
-//        Collection<DefaultMethodRepresentation> methods =
-//                new ArrayList<DefaultMethodRepresentation>();
-//        for (CanvasWindow w : canvas.getWindows()) {
-//            if (w instanceof VisualObject) {
-//                VisualObject vObj = (VisualObject) w;
-//                methods.addAll(
-//                        vObj.getObjectRepresentation().getInvocationList());
-//            }
-//        }
         builder.append(getVariableDeclarationCode(canvas,
                 canvas.getDataConnections(),
                 controlFlowMethods, indent + "    ")).
                 append("\n\n");
 
-//        builder.append(indent).append("    // initializer method calls\n");
-//        
-//        
-//        for (DefaultMethodRepresentation mRep : methods) {
-//
-//            boolean referenceMethod = mRep.isReferenceMethod()
-//                    || mRep.isCustomReferenceMethod();
-//
-//            if (referenceMethod 
-//                    && ControlFlowUtils.isOutputConnected(canvas, mRep)) {
-//                builder.append(getMethodInvocationCode(mRep, indent + "    "));
-//            }
-//        }
         builder.append("\n");
 
         builder.append(indent).append("    // method calls\n");
