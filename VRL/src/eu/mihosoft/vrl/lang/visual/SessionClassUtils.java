@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.lang.visual;
 
 import eu.mihosoft.vrl.annotation.ParamInfo;
@@ -63,11 +62,9 @@ import eu.mihosoft.vrl.reflection.MethodDescription;
 import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
 import eu.mihosoft.vrl.reflection.TypeRepresentationContainer;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
-import eu.mihosoft.vrl.reflection.VisualObject;
 import eu.mihosoft.vrl.system.VClassLoaderUtil;
-import eu.mihosoft.vrl.system.VParamUtil;
 import eu.mihosoft.vrl.types.ArrayBaseType;
-import eu.mihosoft.vrl.visual.CanvasWindow;
+import eu.mihosoft.vrl.types.MultipleOutputType;
 import eu.mihosoft.vrl.visual.Connection;
 import eu.mihosoft.vrl.visual.Connections;
 import eu.mihosoft.vrl.visual.Connector;
@@ -107,6 +104,7 @@ public class SessionClassUtils {
      * Analyzes the specified canvas and converts its content to source code.
      *
      * @param canvas canvas to analyze
+     * @param info
      * @return source code
      */
     public static AbstractCode createSessionClassCode(VisualCanvas canvas,
@@ -143,16 +141,16 @@ public class SessionClassUtils {
         code.addLine("@ComponentInfo(" + classInfo.getComponentInfo() + ")").
                 addLine("@ObjectInfo(" + classInfo.getObjectInfo() + ")").
                 addLine("public class " + classInfo.getClassName()
-                + " implements Serializable {").
+                        + " implements Serializable {").
                 incIndentation().
                 addLine("private static final long serialVersionUID=1L;").
                 addLine(
-                getMethodHeaderCode(getOutputParameter(canvas),
-                classInfo.getMethodInfo(),
-                classInfo.getMethodName(),
-                getInputParameter(canvas),
-                code.getIndentString())
-                + " {").
+                        getMethodHeaderCode(getOutputParameter(canvas),
+                                classInfo.getMethodInfo(),
+                                classInfo.getMethodName(),
+                                getInputParameter(canvas),
+                                code.getIndentString())
+                        + " {").
                 incIndentation().
                 addLine("").
                 addLine(getBodyCode(canvas, code.getIndentString())).
@@ -203,8 +201,8 @@ public class SessionClassUtils {
      * @return a collection containing all input objects of the specified canvas
      */
     private static Collection<InputObject> getInputs(VisualCanvas canvas) {
-        Collection<Object> inputs =
-                canvas.getInspector().
+        Collection<Object> inputs
+                = canvas.getInspector().
                 getObjectsByClassName(InputObject.class.getName());
 
         ArrayList<InputObject> result = new ArrayList<InputObject>();
@@ -225,8 +223,8 @@ public class SessionClassUtils {
      * canvas
      */
     private static OutputObject getOutput(VisualCanvas canvas) {
-        Collection<Object> outputs =
-                canvas.getInspector().
+        Collection<Object> outputs
+                = canvas.getInspector().
                 getObjectsByClassName(OutputObject.class.getName());
 
         if (!outputs.isEmpty()) {
@@ -256,8 +254,8 @@ public class SessionClassUtils {
      * <code>null</code> if no such object exists
      */
     private static ClassInfoObject getClassInfo(VisualCanvas canvas) {
-        Collection<Object> classInfoObjects =
-                canvas.getInspector().
+        Collection<Object> classInfoObjects
+                = canvas.getInspector().
                 getObjectsByClassName(ClassInfoObject.class.getName());
 
         if (!classInfoObjects.isEmpty()) {
@@ -292,14 +290,13 @@ public class SessionClassUtils {
         for (InputObject o : getInputs(canvas)) {
 
             // multiple views false, thus we can savely use get(0)
-            DefaultObjectRepresentation oRep =
-                    canvas.getInspector().
+            DefaultObjectRepresentation oRep
+                    = canvas.getInspector().
                     getObjectRepresentationsByReference(o).get(0);
 
-
-            DefaultMethodRepresentation m =
-                    oRep.getMethodBySignature(
-                    "info", new Class<?>[]{String.class});
+            DefaultMethodRepresentation m
+                    = oRep.getMethodBySignature(
+                            "info", new Class<?>[]{String.class});
 
             if (m != null) {
                 try {
@@ -314,15 +311,15 @@ public class SessionClassUtils {
         if (outputExists(canvas)) {
             // output
             // multiple views false, thus we can savely use get(0)
-            DefaultObjectRepresentation oRep =
-                    canvas.getInspector().
+            DefaultObjectRepresentation oRep
+                    = canvas.getInspector().
                     getObjectRepresentationsByReference(
-                    getOutput(canvas)).get(0);
+                            getOutput(canvas)).get(0);
 
-            DefaultMethodRepresentation m1 =
-                    oRep.getMethodBySignature(
-                    "info",
-                    new Class<?>[]{String.class, OutputValue.class});
+            DefaultMethodRepresentation m1
+                    = oRep.getMethodBySignature(
+                            "info",
+                            new Class<?>[]{String.class, OutputValue.class});
             try {
                 m1.automaticInvocation(canvas.getInspector());
             } catch (InvocationTargetException ex) {
@@ -343,22 +340,21 @@ public class SessionClassUtils {
         if (classInfoExists(canvas)) {
             // class-info
             // multiple views false, thus we can savely use get(0)
-            DefaultObjectRepresentation oRep =
-                    canvas.getInspector().
+            DefaultObjectRepresentation oRep
+                    = canvas.getInspector().
                     getObjectRepresentationsByReference(
-                    getClassInfo(canvas)).get(0);
+                            getClassInfo(canvas)).get(0);
 
 //            DefaultMethodRepresentation m1 =
 //                    oRep.getMethodBySignature(
 //                    "info", new Class<?>[]{
 //                String.class, String.class, String.class});
-
-            DefaultMethodRepresentation m2 =
-                    oRep.getMethodBySignature(
-                    "additionalInfo",
-                    new Class<?>[]{
-                        String.class, String.class,
-                        String.class, String.class, String.class});
+            DefaultMethodRepresentation m2
+                    = oRep.getMethodBySignature(
+                            "additionalInfo",
+                            new Class<?>[]{
+                                String.class, String.class,
+                                String.class, String.class, String.class});
             try {
                 //            m1.automaticInvocation(canvas.getInspector());
                 m2.automaticInvocation(canvas.getInspector());
@@ -410,19 +406,19 @@ public class SessionClassUtils {
         Connection result = null;
 
         // multiple views false, thus we can savely use get(0)
-        DefaultObjectRepresentation oRep =
-                canvas.getInspector().
+        DefaultObjectRepresentation oRep
+                = canvas.getInspector().
                 getObjectRepresentationsByReference(input).get(0);
 
         // get the method representation
-        DefaultMethodRepresentation m =
-                oRep.getMethodBySignature(
-                "info", new Class<?>[]{String.class});
+        DefaultMethodRepresentation m
+                = oRep.getMethodBySignature(
+                        "info", new Class<?>[]{String.class});
 
         // take the return value connector and get the connections
         Connector c = m.getReturnValue().getConnector();
-        Collection<Connection> connections =
-                canvas.getDataConnections().getAllWith(c);
+        Collection<Connection> connections
+                = canvas.getDataConnections().getAllWith(c);
 
         // if connection exist return it
         if (!connections.isEmpty()) {
@@ -506,8 +502,8 @@ public class SessionClassUtils {
         }
 
         // get(0) is save because only one connection is allowed
-        Connection connection =
-                canvas.getDataConnections().
+        Connection connection
+                = canvas.getDataConnections().
                 getAllWith(getOutputReceiver(canvas)).get(0);
 
         return new Parameter(
@@ -528,8 +524,8 @@ public class SessionClassUtils {
 
         Connector c = getOutputReceiver(canvas);
 
-        Collection<Connection> connections =
-                canvas.getDataConnections().getAllWith(c);
+        Collection<Connection> connections
+                = canvas.getDataConnections().getAllWith(c);
 
         // if connection exist return the sender as result
         if (!connections.isEmpty()) {
@@ -560,15 +556,15 @@ public class SessionClassUtils {
         OutputObject o = getOutput(canvas);
 
         // multiple views false, thus we can savely use get(0)
-        DefaultObjectRepresentation oRep =
-                canvas.getInspector().
+        DefaultObjectRepresentation oRep
+                = canvas.getInspector().
                 getObjectRepresentationsByReference(o).get(0);
 
         // get the method representation
-        DefaultMethodRepresentation m =
-                oRep.getMethodBySignature(
-                "info",
-                new Class<?>[]{String.class, OutputValue.class});
+        DefaultMethodRepresentation m
+                = oRep.getMethodBySignature(
+                        "info",
+                        new Class<?>[]{String.class, OutputValue.class});
 
         // take the input value connector and get the connections
         // connector of outputvalue (see OutputObject)
@@ -611,7 +607,6 @@ public class SessionClassUtils {
             returnTypeString = output.type.getName();
         }
 
-
         builder.append(output.paramInfo).append(")\n").
                 // return type
                 append(indent).append("public ").append(returnTypeString).
@@ -647,8 +642,6 @@ public class SessionClassUtils {
                 paramTypeString = p.type.getName();
             }
 
-
-
             builder.append("@ParamInfo(").append(p.getParamInfo()).append(") ").
                     append(paramTypeString).append(" ").
                     append(p.getName());
@@ -660,51 +653,59 @@ public class SessionClassUtils {
     }
 
     /**
-     * Returns the code that is resposible for object instanciation.
-     *
-     * @param objects objects
-     * @param indent indent to use (necessary for correct code formatting)
-     * @return the code that is resposible for object instanciation
+     Returns the code that is resposible for object instanciation.
+    
+     @param canvas where the object is visualized on
+     @param controlFlowMethods are methods which are in the controlflow
+     @param indent is the indentation for the automatic generated groovy code
+     @return the code that is resposible for object instanciation
      */
-    private static String getObjectInstanciationCode(
-            Collection<Object> objects, String indent) {
+    private static String getObjectInstanciationCodeViaControlFlowMethods(
+            VisualCanvas canvas,
+            Collection<DefaultMethodRepresentation> controlFlowMethods,
+            String indent) {
 
         StringBuilder builder = new StringBuilder("// instances\n");
 
-        for (Object o : objects) {
+        Set<String> addedObjects = new HashSet<String>();
+        String objName = null;
 
-            String className = o.getClass().getName();
-            builder.append(indent).append("    ").
-                    append(className).append(" ").
-                    append(getInstanceName(objects, o)).
+        for (DefaultMethodRepresentation dmr : controlFlowMethods) {
+
+            objName = getObjectInstanciationCodeVariableName(dmr);
+
+            //if we already have an instance of the object we do not want to add/create it again
+            //e.g. in case an object invokes to methods in the controllflow
+            if (addedObjects.contains(objName)) {
+                continue;
+            }
+
+            addedObjects.add(objName);
+
+            int objID = dmr.getDescription().getObjectID();
+            String className = canvas.getInspector().getObject(objID).getClass().getName();
+            builder.append(indent).append("    ").append(className).append(" ").
+                    append(objName).
                     append(" = new ").append(className).append("();\n");
         }
 
         return builder.toString();
     }
 
-    /**
-     * Returns a unique variable name for the specified object.
-     *
-     * @param objects all instances managed by the current inspector
-     * @param o object
-     * @return a unique variable name for the specified object
+    /**Returns an unique variable name for the return value of a method.
+    
+     @param controlFlowMethod a method in the control flow
+     @return a unique variable name
      */
-    private static String getInstanceName(
-            Collection<Object> objects, Object o) {
+    private static String getObjectInstanciationCodeVariableName(
+            DefaultMethodRepresentation controlFlowMethod) {
 
-        VParamUtil.throwIfNull(objects, o);
+        StringBuilder builder = new StringBuilder();
 
-        int varIndex = 0;
+        int objID = controlFlowMethod.getDescription().getObjectID();
+        builder.append("obj").append(objID);
 
-        for (Object obj : objects) {
-            if (obj == o) {
-                break;
-            }
-            varIndex++;
-        }
-
-        return "obj" + varIndex;
+        return builder.toString();
     }
 
     /**
@@ -759,6 +760,42 @@ public class SessionClassUtils {
         return "v" + varIndex;
     }
 
+    private static String getMultiOutputVariableName(DefaultMethodRepresentation method) {
+        return "multiOut_Obj" + method.getDescription().getObjectID() + "m" + method.getDescription().getMethodID();
+    }
+
+    /**
+     Helper method to check in methods with a multioutput return vale if there subelements are used
+     as return values.
+    
+     @param connections data connections of the canvas
+     @param method a multiOutput method which should be check if there subelements have connections
+     @return a list with all connected subelements, list is empty if none subelement is connected
+     */
+    private static ArrayList<TypeRepresentationContainer> checkAndCollectSubelementContainersOfMultiOutputs(Connections connections, DefaultMethodRepresentation method) {
+
+        ArrayList<TypeRepresentationContainer> connectedSubTypes = new ArrayList<TypeRepresentationContainer>();
+
+        MultipleOutputType mot = (MultipleOutputType) method.getReturnValue();
+        ArrayList typeContainers = mot.getTypeContainers();
+
+        //go over all subelements of the multioutput
+        for (int i = 0; i < typeContainers.size(); i++) {
+
+            TypeRepresentationContainer trepContainer = (TypeRepresentationContainer) typeContainers.get(i);
+            TypeRepresentationBase trep = trepContainer.getTypeRepresentation();
+
+            //check the subConnection if it is used
+            boolean isConnected = connections.alreadyConnected(trep.getConnector());
+
+            if (isConnected) {
+                connectedSubTypes.add(trepContainer);
+            }
+        }
+
+        return connectedSubTypes;
+    }
+
     /**
      * Returns the variable declaration code. All variables are initialized with
      * <code>null</code>
@@ -773,46 +810,94 @@ public class SessionClassUtils {
             Connections connections,
             Collection<DefaultMethodRepresentation> methods, String indent) {
 
-        StringBuilder builder =
-                new StringBuilder(indent);
+        StringBuilder builder
+                = new StringBuilder(indent);
 
         builder.append("// variable declarations\n").append(indent);
 
         for (DefaultMethodRepresentation method : methods) {
-            
-            boolean methodReturnsData = !method.getReturnValue().
-                    getType().equals(void.class)
-                    && connections.alreadyConnected(
-                    method.getReturnValue().getConnector());
+
+            boolean notVoid = !method.getReturnValue().getType().equals(void.class);
+            boolean connected = connections.alreadyConnected(method.getReturnValue().getConnector());
+
+            boolean checkForMultipleOutput = method.getReturnValue().getClass().equals(MultipleOutputType.class);
+            boolean arraySubElementsAreConnected = false;
+            ArrayList<TypeRepresentationContainer> connectedSubTypes = new ArrayList<TypeRepresentationContainer>();
+
+            // check if one or more of the multiple ouput elements are connected
+            // and save the connected ones in a list
+            if (checkForMultipleOutput) {
+
+                connectedSubTypes = checkAndCollectSubelementContainersOfMultiOutputs(connections, method);
+                //if connectedSubTypes is empty no connection are used inside the multioutput
+                arraySubElementsAreConnected = !connectedSubTypes.isEmpty();
+
+            }// if checkForMultipleOutput
+
+            boolean methodReturnsData = notVoid && (connected || arraySubElementsAreConnected);
 
             // we only need to declare a variable if this method
             // returns something
             if (methodReturnsData) {
 
-//                if (method.getReturnValue() instanceof ArrayBaseType) {
-//                } else {
-
-
                 String returnValueType = "";
 
                 if (method.getReturnValue().getType().isArray()) {
-//                    returnValueType =
-//                            method.getReturnValue().getType().
-//                            getComponentType().getName() + "[]";
+
                     returnValueType = VClassLoaderUtil.arrayClass2Code(
                             method.getReturnValue().getType().getName());
-                } else {
-                    returnValueType =
-                            method.getReturnValue().getType().getName();
-                }
 
-                builder.append(returnValueType).
-                        append(" ").
-                        append(getVariableName(canvas, connections,
-                        method.getReturnValue().getConnector())).
-                        append(" = null;").
-                        append("\n").append(indent);
-//                }
+                    // if subelements of multiple outputs are connected we need
+                    // create variable for them too
+                    if (arraySubElementsAreConnected) {
+
+                        for (int i = 0; i < connectedSubTypes.size(); i++) {
+
+                            //get the right format for the variable typ
+                            if (connectedSubTypes.get(i).getType().isArray()) {
+                                returnValueType = VClassLoaderUtil.arrayClass2Code(connectedSubTypes.get(i).getType().getName());
+                            } else {
+                                returnValueType = connectedSubTypes.get(i).getType().getName();
+                            }
+
+                            TypeRepresentationBase trep = connectedSubTypes.get(i).getTypeRepresentation();
+                            Connector subConnector = trep.getConnector();
+
+                            //write the variable declaration for multiOuput variables
+                            builder.append(returnValueType).
+                                    append(" ").
+                                    append(getVariableName(canvas, connections, subConnector)).
+                                    append(" = null; // multi-out-var : ").
+                                    append("obj").append(method.getDescription().getObjectID()).
+                                    append("m").append(method.getDescription().getMethodID()).
+                                    append("\n").append(indent);
+                        }
+
+                    }//if (arraySubElementsAreConnected) end
+                    else {
+
+                        builder.append(returnValueType).
+                                append(" ").
+                                append(getVariableName(canvas, connections,
+                                                method.getReturnValue().getConnector())).
+                                append(" = null; // single-out-var (array) : ").
+                                append("obj").append(method.getDescription().getObjectID()).
+                                append("m").append(method.getDescription().getMethodID()).
+                                append("\n").append(indent);
+                    }
+
+                } else {
+                    returnValueType = method.getReturnValue().getType().getName();
+
+                    builder.append(returnValueType).
+                            append(" ").
+                            append(getVariableName(canvas, connections,
+                                            method.getReturnValue().getConnector())).
+                            append(" = null; // single-out-var : ").
+                            append("obj").append(method.getDescription().getObjectID()).
+                            append("m").append(method.getDescription().getMethodID()).
+                            append("\n").append(indent);
+                }
             }
         }
 
@@ -834,12 +919,11 @@ public class SessionClassUtils {
     private static String getMethodInvocationCode(
             DefaultMethodRepresentation method, String indent) {
 
-        StringBuilder builder =
-                new StringBuilder(indent);
+        StringBuilder builder
+                = new StringBuilder(indent);
 
         VisualCanvas canvas = (VisualCanvas) method.getMainCanvas();
         Connections connections = canvas.getDataConnections();
-
 
         // controlflow statements
         if (ControlFlowUtils.isMethodControlFlowStatement(method)) {
@@ -850,18 +934,14 @@ public class SessionClassUtils {
                         log(Level.SEVERE, null, ex);
             }
 
-            ControlFlowStatement statement =
-                    ControlFlowUtils.getControlFlowStatement(
-                    method);
+            ControlFlowStatement statement
+                    = ControlFlowUtils.getControlFlowStatement(
+                            method);
 
             builder.append(statement.getCode()).append("\n");
 
             return builder.toString();
         }
-
-
-        Object parentObject = canvas.getInspector().
-                getObject(method.getParentObject().getObjectID());
 
         // if we are a reference method we only add our instance name and return
         // examples:
@@ -873,8 +953,8 @@ public class SessionClassUtils {
         //    v1 = o1; o1 = o2;
         if (method.isReferenceMethod()) {
 
-            boolean returnValueConnected =
-                    method.getMainCanvas().getDataConnections().
+            boolean returnValueConnected
+                    = method.getMainCanvas().getDataConnections().
                     alreadyConnected(method.getReturnValue().getConnector());
 
             boolean inputValuesConnected = method.getMainCanvas().
@@ -882,15 +962,14 @@ public class SessionClassUtils {
                     alreadyConnected(method.getParameter(0).getConnector());
 
             if (inputValuesConnected) {
-                builder.append(getInstanceName(
-                        canvas.getInspector().getObjects(),
-                        parentObject)).append(" = ");
+                builder.append(getObjectInstanciationCodeVariableName(method))
+                        .append(" = ");
 
                 // only one connection allowed. thus, get(0) is save
-                Connection c =
-                        connections.getAllWith(
-                        method.getParameter(0).
-                        getConnector()).get(0);
+                Connection c
+                        = connections.getAllWith(
+                                method.getParameter(0).
+                                getConnector()).get(0);
 
                 builder.append(
                         getVariableName(canvas, connections, c)).
@@ -906,16 +985,15 @@ public class SessionClassUtils {
             if (returnValueConnected) {
 
                 // only one connection allowed. thus, get(0) is save
-                Connection c =
-                        connections.getAllWith(
-                        method.getReturnValue().
-                        getConnector()).get(0);
+                Connection c
+                        = connections.getAllWith(
+                                method.getReturnValue().
+                                getConnector()).get(0);
 
                 builder.append(getVariableName(canvas, connections, c)).
                         append(" = ");
-                builder.append(getInstanceName(
-                        canvas.getInspector().getObjects(),
-                        parentObject)).append(";\n");
+                builder.append(getObjectInstanciationCodeVariableName(method))
+                        .append(";\n");
             }
 
             if (inputValuesConnected || returnValueConnected) {
@@ -925,28 +1003,53 @@ public class SessionClassUtils {
             }
         }
 
+        //
         // we are no reference method and thus we are still in this method
+        //
+        boolean notVoid = !method.getReturnValue().getType().equals(void.class);
+        boolean connected = connections.alreadyConnected(method.getReturnValue().getConnector());
 
-        boolean methodReturnsData = !method.getReturnValue().
-                getType().equals(void.class)
-                && connections.alreadyConnected(
-                method.getReturnValue().getConnector());
+        boolean checkForMultipleOutput = method.getReturnValue().getClass().equals(MultipleOutputType.class);
+        boolean arraySubElementsAreConnected = false;
 
-        // we only need to declare a variable if this method
-        // returns something
+        ArrayList<TypeRepresentationContainer> connectedSubTypes = new ArrayList<TypeRepresentationContainer>();
+
+        // check if one or more of the multiple ouput elements are connected
+        // and save the connected ones in a list
+        if (checkForMultipleOutput) {
+
+            connectedSubTypes = checkAndCollectSubelementContainersOfMultiOutputs(connections, method);
+            //if connectedSubTypes is empty no connection are used inside the multioutput
+            arraySubElementsAreConnected = !connectedSubTypes.isEmpty();
+
+        }// if checkForMultipleOutput
+
+        boolean methodReturnsData = notVoid && (connected || arraySubElementsAreConnected);
+
+//        
+// we only need to declare a variable if this method  returns something
+// or has a multioutput where at least one suboutput returns something
         if (methodReturnsData) {
-            builder.append(getVariableName(canvas, connections,
-                    method.getReturnValue().getConnector())).append(" = ");
+
+            //the method has a multiOutput and at least one subOutput is connected
+            if (arraySubElementsAreConnected) {
+
+                builder.append("\n").append(indent)
+                        .append("Object[] ").append(getMultiOutputVariableName(method)).append(" = ");
+
+            } else {
+                builder.append(getVariableName(canvas, connections,
+                        method.getReturnValue().getConnector())).append(" = ");
+            }
         }
 
-        String methodName = getInstanceName(
-                canvas.getInspector().getObjects(), parentObject)
+        String methodName = getObjectInstanciationCodeVariableName(method)
                 + "." + method.getDescription().getMethodName();
 
         builder.append(methodName).append("( ");
 
-        ArrayList<Connector> doNotSupportCodeGeneration =
-                new ArrayList<Connector>();
+        ArrayList<Connector> doNotSupportCodeGeneration
+                = new ArrayList<Connector>();
 
         // now we add the parameter values to the method
         boolean firstRun = true;
@@ -959,14 +1062,14 @@ public class SessionClassUtils {
                 builder.append(", ");
             }
 
-            boolean paramConnected =
-                    connections.alreadyConnected(tRep.getConnector());
+            boolean paramConnected
+                    = connections.alreadyConnected(tRep.getConnector());
 
             if (paramConnected) {
 
                 // only one connection allowed. thus, get(0) is save
-                Connection c =
-                        connections.getAllWith(tRep.getConnector()).get(0);
+                Connection c
+                        = connections.getAllWith(tRep.getConnector()).get(0);
 
                 builder.append(getVariableName(canvas, connections, c));
             } else if (tRep instanceof ArrayBaseType) {
@@ -978,12 +1081,12 @@ public class SessionClassUtils {
                         doNotSupportCodeGeneration,
                         (ArrayBaseType) tRep);
             } else {
-                
+
                 String code = null;
-                
+
                 try {
                     code = tRep.getValueAsCode();
-                } catch(Exception ex) {
+                } catch (Exception ex) {
                     ex.printStackTrace(System.err);
                 }
 
@@ -991,7 +1094,7 @@ public class SessionClassUtils {
 
                     code = "null as "
                             + VClassLoaderUtil.arrayClass2Code(
-                            tRep.getType().getName());
+                                    tRep.getType().getName());
 
                     if (tRep.isWarningIfNoCodeGeneration()) {
                         doNotSupportCodeGeneration.add(tRep.getConnector());
@@ -1004,6 +1107,41 @@ public class SessionClassUtils {
         } // end for
 
         builder.append(" );\n");
+
+        //the method has a multiOutput and at least one subOutput is connected
+        if (arraySubElementsAreConnected) {
+
+            builder.append(indent).append("// multioutput variable initialization \n");
+
+            //for each variable that is declared because of a subOutput connection
+            //we initialize those variables now
+            MultipleOutputType mot = (MultipleOutputType) method.getReturnValue();
+            ArrayList typeContainers = mot.getTypeContainers();
+
+            //go over all subelements of the multioutput
+            for (int i = 0; i < typeContainers.size(); i++) {
+
+                TypeRepresentationContainer trepContainer = (TypeRepresentationContainer) typeContainers.get(i);
+                TypeRepresentationBase trep = trepContainer.getTypeRepresentation();
+
+                //check the subConnection if it is used
+                boolean isConnected = connections.alreadyConnected(trep.getConnector());
+
+                if (isConnected) {
+                    Connector subConnector = trepContainer.getConnector();
+
+                    //at the index of the subElement of the mutiOutput
+                    builder.append(indent)
+                            .append(getVariableName(canvas, connections, subConnector))
+                            .append(" = ")
+                            .append(getMultiOutputVariableName(method))
+                            .append("[").append(i).append("];\n");
+                }
+            }
+
+            builder.append("\n");
+
+        }
 
         if (!doNotSupportCodeGeneration.isEmpty()) {
             for (Connector c : doNotSupportCodeGeneration) {
@@ -1043,21 +1181,21 @@ public class SessionClassUtils {
                 builder.append(", ");
             }
 
-            boolean paramConnected =
-                    connections.alreadyConnected(tCont.getConnector());
+            boolean paramConnected
+                    = connections.alreadyConnected(tCont.getConnector());
 
             if (paramConnected) {
 
                 // only one connection allowed. thus, get(0) is save
-                Connection c =
-                        connections.getAllWith(
-                        tCont.getConnector()).get(0);
+                Connection c
+                        = connections.getAllWith(
+                                tCont.getConnector()).get(0);
 
                 builder.append(getVariableName(canvas, connections, c));
             } else {
 
-                String code =
-                        tCont.getTypeRepresentation().getValueAsCode();
+                String code
+                        = tCont.getTypeRepresentation().getValueAsCode();
 
                 if (code == null) {
                     code = "null as "
@@ -1071,8 +1209,7 @@ public class SessionClassUtils {
         } // end for
 
         builder.append("] as ").
-                append(
-                arrayType.getType().getComponentType().getName()).append("[]");
+                append(arrayType.getType().getComponentType().getName()).append("[]");
     }
 
     /**
@@ -1085,64 +1222,21 @@ public class SessionClassUtils {
      */
     private static String getBodyCode(VisualCanvas canvas, String indent) {
 
-        Collection<Object> objects = canvas.getInspector().getObjects();
-        
-        // connected objects
-        ArrayList<Object> usedObjects = new ArrayList<Object>();
-        
-        for (Object object : objects) {
-            Collection<DefaultObjectRepresentation> oReps =
-                    canvas.getInspector().
-                    getObjectRepresentationsByReference(object);
-            
-            for (DefaultObjectRepresentation oRep : oReps) {
-                boolean isInUse = canvas.getControlFlowConnections().
-                        alreadyConnected(oRep.getControlFlowInput());
-                
-                if (isInUse) {
-                    usedObjects.add(object);
-                    break;
-                }
-            }
-        }
+        // methods for controlflow
+        Collection<DefaultMethodRepresentation> controlFlowMethods
+                = ControlFlowUtils.getInvocationList(canvas);
 
         StringBuilder builder = new StringBuilder();
 
-        builder.append(getObjectInstanciationCode(usedObjects, indent)).
+        // get object instances for groovy code
+        builder.append(getObjectInstanciationCodeViaControlFlowMethods(canvas, controlFlowMethods, indent)).
                 append("\n\n");
 
-        // methods for controlflow
-        Collection<DefaultMethodRepresentation> controlFlowMethods =
-                ControlFlowUtils.getInvocationList(canvas);
-
-//        // methods for variables and initialization code
-//        Collection<DefaultMethodRepresentation> methods =
-//                new ArrayList<DefaultMethodRepresentation>();
-//        for (CanvasWindow w : canvas.getWindows()) {
-//            if (w instanceof VisualObject) {
-//                VisualObject vObj = (VisualObject) w;
-//                methods.addAll(
-//                        vObj.getObjectRepresentation().getInvocationList());
-//            }
-//        }
+        //get variable declarations for groovy code
         builder.append(getVariableDeclarationCode(canvas,
                 canvas.getDataConnections(),
                 controlFlowMethods, indent + "    ")).
                 append("\n\n");
-
-//        builder.append(indent).append("    // initializer method calls\n");
-//        
-//        
-//        for (DefaultMethodRepresentation mRep : methods) {
-//
-//            boolean referenceMethod = mRep.isReferenceMethod()
-//                    || mRep.isCustomReferenceMethod();
-//
-//            if (referenceMethod 
-//                    && ControlFlowUtils.isOutputConnected(canvas, mRep)) {
-//                builder.append(getMethodInvocationCode(mRep, indent + "    "));
-//            }
-//        }
 
         builder.append("\n");
 
@@ -1156,13 +1250,12 @@ public class SessionClassUtils {
         builder.append("\n");
 
         // return value
-
         Connector c = getOutputSender(canvas);
 
         if (c != null) {
             builder.append(indent).append("    ").append("return ").
                     append(getVariableName(
-                    canvas, canvas.getDataConnections(), c)).append(";\n");
+                                    canvas, canvas.getDataConnections(), c)).append(";\n");
         }
 
         return builder.toString();
@@ -1193,14 +1286,14 @@ public class SessionClassUtils {
             // (from the receiver connector)
             if (paramInfo == null || paramInfo.trim().equals("")) {
                 paramInfo = "";
-                TypeRepresentationContainer tCont =
-                        (TypeRepresentationContainer) getConnection().
+                TypeRepresentationContainer tCont
+                        = (TypeRepresentationContainer) getConnection().
                         getReceiver().getValueObject();
 
                 TypeRepresentationBase tRep = tCont.getTypeRepresentation();
 
-                ArrayList<TypeRepresentationBase> params =
-                        tCont.getTypeRepresentation().getParentMethod().
+                ArrayList<TypeRepresentationBase> params
+                        = tCont.getTypeRepresentation().getParentMethod().
                         getParameters();
 
                 int id = params.indexOf(tRep);
@@ -1221,7 +1314,7 @@ public class SessionClassUtils {
                             + VLangUtils.addEscapeCharsToCode(info.style())
                             + "\", options=\""
                             + VLangUtils.addEscapeCharsToCode(
-                            info.options()) + "\"";
+                                    info.options()) + "\"";
                 } else {
                     System.err.println("ParamInfo not found!");
                 }

@@ -58,7 +58,7 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-@TypeInfo(type=Float[].class, input = true, output = true, style="default")
+@TypeInfo(type=Float[].class, input = true, output = true, style="array")
 public class FloatArrayType extends ArrayBaseType {
 
     public FloatArrayType() {
