@@ -56,6 +56,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Reads a textfile line by line. This is done to ensure that each line ends
@@ -67,7 +70,9 @@ public class TextLoader implements FileLoader {
 
     @Override
     public Object loadFile(File file) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        BufferedReader reader = new BufferedReader(
+            new InputStreamReader(
+                  new FileInputStream(file), "UTF8"));
 
         String result = "";
 
