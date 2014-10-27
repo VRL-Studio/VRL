@@ -71,6 +71,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.codehaus.groovy.control.CompilationFailedException;
+import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.SourceUnit;
 
 /**
@@ -207,13 +208,17 @@ public final class GroovyCompiler implements eu.mihosoft.vrl.lang.VCompiler {
         Class<?> result = null;
 
         GroovyClassLoader gcl = null;
+        
+        CompilerConfiguration cfg = new CompilerConfiguration();
+        cfg.setSourceEncoding("UTF-8");
+        cfg.setTargetBytecode("1.6");
 
 //        String packageName = VLangUtils.packageNameFromCode(code);
 
         if (mainCanvas != null) {
-            gcl = new GroovyClassLoader(mainCanvas.getClassLoader());
+            gcl = new GroovyClassLoader(mainCanvas.getClassLoader(),cfg);
         } else {
-            gcl = new GroovyClassLoader(VRL.getInternalPluginClassLoader());
+            gcl = new GroovyClassLoader(VRL.getInternalPluginClassLoader(),cfg);
         }
 
         String codeHeader = "";

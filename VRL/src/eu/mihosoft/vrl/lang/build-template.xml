@@ -30,7 +30,9 @@
         description="compile the source " >
         
         <groovyc srcdir="${src}" destdir="${build}"
-        fork="no" failonerror="true" classpath=".:${vrl.project-classpath}">
+        fork="no" failonerror="true" classpath=".:${vrl.project-classpath}"
+        encoding="UTF-8" targetBytecode="1.6"
+        >
         </groovyc>
         
     </target>
