@@ -55,7 +55,6 @@ package eu.mihosoft.vrl.lang.groovy;
 import eu.mihosoft.vrl.lang.ClassEntry;
 import eu.mihosoft.vrl.lang.CompilerProvider;
 import eu.mihosoft.vrl.lang.Patterns;
-import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.lang.java.ClassFileObject;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 import eu.mihosoft.vrl.system.VRL;
@@ -85,7 +84,6 @@ public final class GroovyCompiler implements eu.mihosoft.vrl.lang.VCompiler {
     private VisualCanvas mainCanvas;
     private ArrayList<String> imports = new ArrayList<String>();
     private boolean catchCompileException = true;
-//    private ClassLoader loader;
 
     /**
      * Constructor.
@@ -196,7 +194,6 @@ public final class GroovyCompiler implements eu.mihosoft.vrl.lang.VCompiler {
     /**
      * Compiles Groovy code and returns the corresponding class object.
      *
-     * @param packageName package name
      * @param code code to compile
      * @param editor the editor that shall be used to display error
      * notifications
@@ -207,7 +204,7 @@ public final class GroovyCompiler implements eu.mihosoft.vrl.lang.VCompiler {
     public Class<?> compile(String code, VCodeEditor editor) {
         Class<?> result = null;
 
-        GroovyClassLoader gcl = null;
+        GroovyClassLoader gcl;
         
         CompilerConfiguration cfg = new CompilerConfiguration();
         cfg.setSourceEncoding("UTF-8");
@@ -282,7 +279,6 @@ public final class GroovyCompiler implements eu.mihosoft.vrl.lang.VCompiler {
     /**
      * Compiles Groovy code and returns the corresponding class object.
      *
-     * @param packageName package name
      * @param code code to compile
      * @return the class object or <code>null</code> if the code could not be
      * compiled
