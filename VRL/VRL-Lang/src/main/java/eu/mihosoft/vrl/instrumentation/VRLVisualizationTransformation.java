@@ -132,7 +132,7 @@ import org.codehaus.groovy.transform.stc.StaticTypesMarker;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-@GroovyASTTransformation(phase = CompilePhase.CANONICALIZATION)
+@GroovyASTTransformation(phase = CompilePhase.SEMANTIC_ANALYSIS)
 public class VRLVisualizationTransformation implements ASTTransformation {
 
     @Override
@@ -143,7 +143,12 @@ public class VRLVisualizationTransformation implements ASTTransformation {
         }
 
         TypeCheckingTransform transformation = new TypeCheckingTransform();
-        transformation.visit(astNodes, sourceUnit);
+
+        if (astNodes == null) {
+            System.err.println("ASTNodes = NULL: skipping initial type check");
+        } else {
+            transformation.visit(astNodes, sourceUnit);
+        }
 
         VisualCodeBuilder_Impl codeBuilder = new VisualCodeBuilder_Impl();
 
@@ -157,6 +162,8 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 
         // apply transformation for each class in the specified source unit
         for (ClassNode clsNode : sourceUnit.getAST().getClasses()) {
+            
+            System.err.println("CLS: " + clsNode.getName());
 
             transformation.visit(clsNode, sourceUnit);
 
@@ -792,19 +799,19 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 = codeBuilder.declareVariable(currentScope,
                         new Type(varType, true),
                         varName);
-        
+
         IModifiers fieldModifiers = convertModifiers(field.getModifiers());
-        
+
         declInv.getDeclaredVariable().setModifiers(fieldModifiers);
 
         Expression initialValueExpression = field.getInitialExpression();
 
         if (initialValueExpression != null) {
-            
+
             throwErrorMessage("Direct field initialization currently not supported. Field '"
                     + field.getName()
                     + "' cannot be initialized. Please move initialization to a constructor.", initialValueExpression);
-            
+
             return;
 //            TODO 30.07.2014 : fix this!
 //            codeBuilder.assign(currentScope, varName,

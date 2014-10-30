@@ -104,5 +104,9 @@ public class Parameter implements IParameter {
     public ICodeRange getRange() {
         return range;
     }
+    
+    public static IParameter fromParameter(java.lang.reflect.Parameter p) {
+        return new Parameter(Type.fromClass(p.getType()), p.getName());
+    }
 
 }

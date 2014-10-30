@@ -62,6 +62,7 @@ public class TypeCheckingTransform extends StaticTypesTransformation {
 
     @Override
     public void visit(ASTNode[] nodes, SourceUnit source) {
+        
         AnnotationNode annotationInformation = (AnnotationNode) nodes[0];
         Map<String, Expression> members = annotationInformation.getMembers();
         Expression extensions = members.get("extensions");

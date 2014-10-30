@@ -186,5 +186,11 @@ public final class Type implements IType {
         return new Type(o.getClass().getName());
         
     }
+    
+    public static Type fromClass(Class<?> cls) {
+
+        return new Type(cls.getName());
+        
+    }
 
 }
