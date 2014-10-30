@@ -16,7 +16,7 @@ if (!hasProperty('mainClass')) {
     mainClassName = mainClass;
 }
 
-manifest.mainAttributes("Main-Class" : ext.mainClass)
+//manifest.mainAttributes("Main-Class" : ext.mainClass)
 
 //javafx {
 //    mainClass = "eu.mihosoft.vrl.ui.codevisualization.Main"
