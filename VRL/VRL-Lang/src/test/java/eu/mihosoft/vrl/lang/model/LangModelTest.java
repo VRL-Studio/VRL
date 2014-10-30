@@ -50,6 +50,7 @@
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.base.IOUtil;
+import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import groovy.lang.GroovyClassLoader;
 import java.io.InputStream;
 import java.io.Reader;
@@ -58,6 +59,8 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.Assert;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 import org.junit.Test;
 
 /**
@@ -104,10 +107,12 @@ public class LangModelTest {
         successCompile = false;
         UIBinding.scopes.clear();
         try {
-            GroovyClassLoader gcl = new GroovyClassLoader();
+            CompilerConfiguration cfg = new CompilerConfiguration();
+            cfg.addCompilationCustomizers(new ASTTransformationCustomizer(
+                    new VRLVisualizationTransformation()));
+            GroovyClassLoader gcl = new GroovyClassLoader(LangModelTest.class.getClassLoader(), cfg);
             gcl.parseClass(newCode, "MyFileClass.groovy");
             successCompile = true;
-
         } catch (Exception ex) {
             Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -117,6 +122,9 @@ public class LangModelTest {
         // checking whether code from new model is identical to new code
         for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
             for (Scope s : scopeList) {
+                
+                System.out.println("scope: " + s);
+                
                 if (s instanceof CompilationUnitDeclaration) {
                     newNewCode = Scope2Code.getCode((CompilationUnitDeclaration) s);
                     break;
