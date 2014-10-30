@@ -84,7 +84,7 @@ public final class Extends implements IExtends {
         if (superCls == null) {
             return new Extends();
         } else {
-            return new Extends(Type.fromClass(cls));
+            return new Extends(Type.fromClass(superCls));
         }
     }
     
