@@ -10,6 +10,10 @@ public class MyFileClass {
     
     int value1;
     
+    public static void main(String[] args) {
+        System.out.println("Hello!");
+    }
+    
     /**
      * method m1.
      */
