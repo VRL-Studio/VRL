@@ -823,7 +823,7 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
 
         for (IType type : cd.getExtends().getTypes()) {
 
-            if (type.getClassNameAsCode().equals("java.lang.Object")) {
+            if (type.getClassNameAsCode().equals("Object")) {
                 continue;
             }
 
