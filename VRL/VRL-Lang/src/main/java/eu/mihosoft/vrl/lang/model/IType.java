@@ -68,4 +68,13 @@ public interface IType {
      */
     String getShortName();
     
+    /**
+     * @return 
+     */
+    boolean isArray();
+    
+    IType getComponentType();
+
+    String getClassNameAsCode();
+    
 }

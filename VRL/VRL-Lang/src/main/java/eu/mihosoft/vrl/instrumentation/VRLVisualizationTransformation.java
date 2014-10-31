@@ -1242,10 +1242,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
             String pType = p.getType().getName();
 
-            if (pType.startsWith("[L")) {
-                System.err.print("convertMethodParameters(): array param not supported! " + pType);
-                pType = pType.replace("[L", "").replace(";", "");
-            }
+//            if (pType.startsWith("[L")) {
+//                System.err.print("convertMethodParameters(): array param not supported! " + pType);
+//                pType = pType.replace("[L", "").replace(";", "");
+//            }
 
             result[i] = new Parameter(new Type(pType, true), p.getName(), setCodeRange(p));
         }

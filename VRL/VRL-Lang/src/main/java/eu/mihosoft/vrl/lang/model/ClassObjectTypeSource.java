@@ -27,10 +27,10 @@ public class ClassObjectTypeSource implements IModelSource<CompilationUnitDeclar
         // methods
         for (Method m : type.getDeclaredMethods()) {
 
-            if (m.getReturnType().getName().startsWith("[")) {
-                System.err.println("WARNING: ignoring array return type. Arrays are currently not supported!");
-                continue;
-            }
+//            if (m.getReturnType().getName().startsWith("[")) {
+//                System.err.println("WARNING: ignoring array return type. Arrays are currently not supported!");
+//                continue;
+//            }
 
             classDecl.declareMethod("NONE", Modifiers.fromMember(m),
                     Type.fromClass(m.getReturnType()), m.getName(), Parameters.fromMethod(m));
@@ -39,9 +39,9 @@ public class ClassObjectTypeSource implements IModelSource<CompilationUnitDeclar
         // fields
         for (Field field : type.getDeclaredFields()) {
 
-            if (field.getName().startsWith("[")) {
-                System.err.println("WARNING: ignoring array field. Arrays are currently not supported!");
-            }
+//            if (field.getName().startsWith("[")) {
+//                System.err.println("WARNING: ignoring array field. Arrays are currently not supported!");
+//            }
 
             classDecl.createVariable(Type.fromClass(field.getType()), field.getName());
         }

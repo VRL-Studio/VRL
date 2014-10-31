@@ -68,6 +68,8 @@ public interface ClassDeclaration extends Scope {
     
     List<MethodDeclaration> getDeclaredMethods();
 
-    MethodDeclaration declareMethod(String id, IModifiers modifiers, IType returnType, String methodName, IParameters params);
+    MethodDeclaration declareMethod(
+            String id, IModifiers modifiers,
+            IType returnType, String methodName, IParameters params);
     
 }
