@@ -176,7 +176,7 @@ public class VClassLoaderUtil {
      * <code>[LString;</code>
      * @return the dimension of the array class specified by name
      */
-    private static int arrayDimension(String clsName) {
+    public static int arrayDimension(String clsName) {
 
         int arrayDim = 0;
 
@@ -228,7 +228,7 @@ public class VClassLoaderUtil {
      * @return name of the element class of the specified class name or the
      * specified cass name if it does not denote an array class
      */
-    private static String elementClassName(String clsName) {
+    public static String elementClassName(String clsName) {
         int arrayDimension = arrayDimension(clsName);
 
         if (arrayDimension == 0) {
