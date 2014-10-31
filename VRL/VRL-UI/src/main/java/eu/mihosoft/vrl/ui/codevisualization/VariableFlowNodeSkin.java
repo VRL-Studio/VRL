@@ -80,15 +80,14 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
     private void setFieldListener(int argIndex, TextField field, Invocation invocation, IArgument a) {
         field.textProperty().addListener((ov, oldV, newV) -> {
             try {
-            Integer intValue = Integer.parseInt(newV);
-            
+                Integer intValue = Integer.parseInt(newV);
 
-            invocation.getArguments().set(argIndex,
-                    Argument.constArg(Type.INT, intValue));
-            invocation.getParent().fireEvent(new CodeEvent(
-                    CodeEventType.CHANGE, invocation.getParent()));
-            }catch (NumberFormatException ex) {
-                
+                invocation.getArguments().set(argIndex,
+                        Argument.constArg(Type.INT, intValue));
+                invocation.getParent().fireEvent(new CodeEvent(
+                        CodeEventType.CHANGE, invocation.getParent()));
+            } catch (NumberFormatException ex) {
+
             }
         });
 //        EventStream<Change<String>> textEvents
