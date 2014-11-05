@@ -4,10 +4,10 @@ public class Main {
     public static void main(String[] args) {
         Main main;
         main = (new Main());
-        main.m1(30);
+        main.m1(32);
     }
     public int m1(int p1) {
-        println("Calling m1(): " + 47);
+        println("Calling m1(): " + 48);
         m2(10);
         return m2(m2(p1));
     }

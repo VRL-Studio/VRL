@@ -13,7 +13,7 @@
 // your own implementation.
 if (!hasProperty('mainClass')) {
     ext.mainClass = 'eu.mihosoft.vrl.ui.codevisualization.Main'
-    mainClassName = mainClass;
+//    mainClassName = mainClass;
 }
 
 //manifest.mainAttributes("Main-Class" : ext.mainClass)
@@ -52,4 +52,24 @@ dependencies {
     compile "commons-io:commons-io:2.4"
 
     compile project(":vrl-lang")
+}
+
+
+jar {
+
+    // dependencies except VRL
+    from configurations.runtime.asFileTree.
+        files.collect { zipTree(it) }
+
+    // project class files compiled from source
+    from files(sourceSets.main.output.classesDir)
+    
+    manifest { attributes 'Main-Class': mainClass }
+}
+
+task run(type: JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    main = mainClass;
+    //    jvmArgs = ['-Dprism.forceGPU=true', '-Dprism.verbose=true']
+    jvmArgs = ['-Dprism.forceGPU=true']
 }

@@ -14,9 +14,9 @@ if (!hasProperty('mainClass')) {
 }
 
 apply plugin: 'groovy'
-apply plugin: 'application'
+//apply plugin: 'application'
 
-mainClassName = 'eu.mihosoft.vrl.lang.model.Main'
+//mainClassName = 'eu.mihosoft.vrl.lang.model.Main'
 
 // additional code/class-files from subprojects
 jar {

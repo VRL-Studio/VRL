@@ -52,6 +52,7 @@ package eu.mihosoft.vrl.lang.model;
 import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.Connector;
 import eu.mihosoft.vrl.workflow.VNode;
+import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import java.util.Objects;
 
 /**
@@ -71,8 +72,12 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
 
         node.getValueObject().setValue(this);
 
-        node.setMainInput(node.addInput(WorkflowUtil.CONTROL_FLOW));
-        node.setMainOutput(node.addOutput(WorkflowUtil.CONTROL_FLOW));
+        node.setMainInput(node.addInput(WorkflowUtil.CONTROL_FLOW)).
+                getVisualizationRequest().set(
+                        VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
+        node.setMainOutput(node.addOutput(WorkflowUtil.CONTROL_FLOW)).
+                getVisualizationRequest().set(
+                        VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
 
         if (s instanceof ControlFlowStatement) {
             ControlFlowStatement controlFlowStatement = (ControlFlowStatement) s;
