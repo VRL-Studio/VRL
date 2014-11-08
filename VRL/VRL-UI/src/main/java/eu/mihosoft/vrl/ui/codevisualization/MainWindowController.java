@@ -154,6 +154,8 @@ public class MainWindowController implements Initializable {
 
         canvas.setMaxScaleX(1);
         canvas.setMaxScaleY(1);
+        
+        System.out.println("view: " + view);
 
         view.getChildren().add(canvas);
 
@@ -273,7 +275,7 @@ public class MainWindowController implements Initializable {
     public void onCloseAction(ActionEvent e) {
     }
 
-    void loadTextFile(File f) {
+    public void loadTextFile(File f) {
 
         try {
             if (f == null) {
@@ -294,15 +296,16 @@ public class MainWindowController implements Initializable {
                 currentDocument = f;
             }
 
+           
             editor.setText(new String(Files.readAllBytes(
                     Paths.get(currentDocument.getAbsolutePath())), "UTF-8"));
 
-            updateView();
-
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             Logger.getLogger(MainWindowController.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
+        
+        updateView();
 
         if (observer != null) {
             fileMonitor.removeObserver(observer);
