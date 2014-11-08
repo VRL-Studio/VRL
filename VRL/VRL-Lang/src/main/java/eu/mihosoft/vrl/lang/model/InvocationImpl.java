@@ -52,6 +52,7 @@ package eu.mihosoft.vrl.lang.model;
 import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.Connector;
 import eu.mihosoft.vrl.workflow.VNode;
+import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -127,8 +128,12 @@ class InvocationImpl implements Invocation {
             node = parent.getFlow().newNode();
             node.getValueObject().setValue(this);
 
-            node.setMainInput(node.addInput(WorkflowUtil.CONTROL_FLOW));
-            node.setMainOutput(node.addOutput(WorkflowUtil.CONTROL_FLOW));
+            node.setMainInput(node.addInput(WorkflowUtil.CONTROL_FLOW)).
+                    getVisualizationRequest().set(
+                            VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
+            node.setMainOutput(node.addOutput(WorkflowUtil.CONTROL_FLOW)).
+                    getVisualizationRequest().set(
+                            VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
 
             int argIndex = 0;
             for (IArgument arg : args) {

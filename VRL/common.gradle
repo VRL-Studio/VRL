@@ -3,7 +3,6 @@
 // - shared config for all subprojects
 //
 apply plugin: 'java'
-apply plugin: 'application'
 
 //apply from: 'http://gradle-plugins.mihosoft.eu/latest/vlicenseheader.gradle'
 //repairHeaders.licenseHeaderText = new File(rootDir,'LICENSE')
@@ -17,7 +16,7 @@ sourceCompatibility = '1.8'
 // maven repositories for dependency resolution
 repositories {
     mavenCentral()
-    mavenLocal()
+//    mavenLocal()
     maven {
         url "https://oss.sonatype.org/content/repositories/snapshots"
     }

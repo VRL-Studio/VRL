@@ -52,8 +52,10 @@ package eu.mihosoft.vrl.lang.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import org.codehaus.groovy.ast.ClassNode;
 
 /**
  *
@@ -75,4 +77,59 @@ public final class Extends implements IExtends {
         
         return readOnlyTypes;
     }
+    
+    public static Extends extendsFromClass(Class<?> cls) {
+        Class superCls = cls.getSuperclass();
+        
+        if (superCls == null) {
+            return new Extends();
+        } else {
+            return new Extends(Type.fromClass(superCls));
+        }
+    }
+    
+    public static Extends implementsFromClass(Class<?> cls) {
+        Class<?>[] interfaces = cls.getInterfaces();
+
+        Type[] types = new Type[interfaces.length];
+
+        int i = 0;
+        for (Class<?> intrface : interfaces) {
+            types[i] = Type.fromClass(intrface);
+            i++;
+        }
+
+        Extends result = new Extends(types);
+
+        return result;
+    }
 }
+//
+//
+//private Extends convertExtends(ClassNode n) {
+//
+//        ClassNode superType = n.getSuperClass();
+//
+//        Type type = new Type(superType.getName(), false);
+//
+//        Extends result = new Extends(type);
+//
+//        return result;
+//    }
+//
+//    private Extends convertImplements(ClassNode n) {
+//
+//        Collection<ClassNode> interfaces = n.getAllInterfaces();
+//
+//        Type[] types = new Type[interfaces.size()];
+//
+//        int i = 0;
+//        for (ClassNode classNode : interfaces) {
+//            types[i] = new Type(classNode.getName(), false);
+//            i++;
+//        }
+//
+//        Extends result = new Extends(types);
+//
+//        return result;
+//    }

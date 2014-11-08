@@ -15,24 +15,15 @@ import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
-import eu.mihosoft.vrl.workflow.fx.FlowNodeWindow;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
-import java.time.Duration;
-import java.util.Objects;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import org.reactfx.Change;
-import org.reactfx.EventStream;
-import org.reactfx.EventStreams;
 
 /**
  *
@@ -80,15 +71,14 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
     private void setFieldListener(int argIndex, TextField field, Invocation invocation, IArgument a) {
         field.textProperty().addListener((ov, oldV, newV) -> {
             try {
-            Integer intValue = Integer.parseInt(newV);
-            
+                Integer intValue = Integer.parseInt(newV);
 
-            invocation.getArguments().set(argIndex,
-                    Argument.constArg(Type.INT, intValue));
-            invocation.getParent().fireEvent(new CodeEvent(
-                    CodeEventType.CHANGE, invocation.getParent()));
-            }catch (NumberFormatException ex) {
-                
+                invocation.getArguments().set(argIndex,
+                        Argument.constArg(Type.INT, intValue));
+                invocation.getParent().fireEvent(new CodeEvent(
+                        CodeEventType.CHANGE, invocation.getParent()));
+            } catch (NumberFormatException ex) {
+
             }
         });
 //        EventStream<Change<String>> textEvents

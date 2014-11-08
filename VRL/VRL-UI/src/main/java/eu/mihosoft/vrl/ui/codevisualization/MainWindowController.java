@@ -73,6 +73,7 @@ import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
+import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import eu.mihosoft.vrl.workflow.fx.FXValueSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScalableContentPane;
 import groovy.lang.GroovyClassLoader;
@@ -167,6 +168,8 @@ public class MainWindowController implements Initializable {
 
         flow = FlowFactory.newFlow();
         flow.setVisible(true);
+        flow.getModel().getVisualizationRequest().set(
+                VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
         UIBinding.setRootFlow(flow);
 
         FXValueSkinFactory skinFactory = new FXValueSkinFactory(rootPane);

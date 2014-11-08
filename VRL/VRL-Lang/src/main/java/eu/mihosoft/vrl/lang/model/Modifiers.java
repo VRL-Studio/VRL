@@ -50,6 +50,7 @@
 
 package eu.mihosoft.vrl.lang.model;
 
+import java.lang.reflect.Member;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -80,6 +81,64 @@ public final class Modifiers implements IModifiers {
     @Override
     public boolean is(Modifier m) {
         return getModifiers().contains(m);
+    }
+    
+    public static IModifiers fromClass(Class<?> cls) {
+            
+        int modifiers = cls.getModifiers();
+        
+        List<Modifier> modifierList = new ArrayList<>();
+
+        if (java.lang.reflect.Modifier.isPublic(modifiers)) {
+            modifierList.add(Modifier.PUBLIC);
+        }
+        if (java.lang.reflect.Modifier.isPrivate(modifiers)) {
+            modifierList.add(Modifier.PRIVATE);
+        }
+        if (java.lang.reflect.Modifier.isProtected(modifiers)) {
+            modifierList.add(Modifier.PROTECTED);
+        }
+        if (java.lang.reflect.Modifier.isAbstract(modifiers)) {
+            modifierList.add(Modifier.ABSTRACT);
+        }
+        if (java.lang.reflect.Modifier.isFinal(modifiers)) {
+            modifierList.add(Modifier.FINAL);
+        }
+        if (java.lang.reflect.Modifier.isStatic(modifiers)) {
+            modifierList.add(Modifier.STATIC);
+        }
+
+        return new Modifiers(modifierList.toArray(new Modifier[modifierList.size()]));
+    
+    }
+    
+    public static IModifiers fromMember(Member m) {
+            
+        int modifiers = m.getModifiers();
+        
+        List<Modifier> modifierList = new ArrayList<>();
+
+        if (java.lang.reflect.Modifier.isPublic(modifiers)) {
+            modifierList.add(Modifier.PUBLIC);
+        }
+        if (java.lang.reflect.Modifier.isPrivate(modifiers)) {
+            modifierList.add(Modifier.PRIVATE);
+        }
+        if (java.lang.reflect.Modifier.isProtected(modifiers)) {
+            modifierList.add(Modifier.PROTECTED);
+        }
+        if (java.lang.reflect.Modifier.isAbstract(modifiers)) {
+            modifierList.add(Modifier.ABSTRACT);
+        }
+        if (java.lang.reflect.Modifier.isFinal(modifiers)) {
+            modifierList.add(Modifier.FINAL);
+        }
+        if (java.lang.reflect.Modifier.isStatic(modifiers)) {
+            modifierList.add(Modifier.STATIC);
+        }
+
+        return new Modifiers(modifierList.toArray(new Modifier[modifierList.size()]));
+    
     }
 
 }

@@ -50,6 +50,7 @@
 
 package eu.mihosoft.vrl.lang.model;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -67,6 +68,10 @@ public final class Parameters implements IParameters {
     public Parameters(IParameter... params) {
         this.arguments.addAll(Arrays.asList(params));
     }
+    
+        public Parameters(List<IParameter> params) {
+        this.arguments.addAll(params);
+    }
 
     @Override
     public List<IParameter> getParamenters() {
@@ -75,6 +80,17 @@ public final class Parameters implements IParameters {
         }
         
         return readOnlyParams;
+    }
+    
+    public static IParameters fromMethod(Method m) {
+        
+        List<IParameter> parameters = new ArrayList<>(m.getParameterCount());
+        
+        for(java.lang.reflect.Parameter p : m.getParameters()) {
+            parameters.add(Parameter.fromParameter(p));
+        }
+        
+        return new Parameters(parameters);
     }
 
 }

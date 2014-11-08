@@ -401,8 +401,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
         } else if (i instanceof DeclarationInvocation) {
             DeclarationInvocation decl = (DeclarationInvocation) i;
-            cb.append(decl.getDeclaredVariable().getType().getFullClassName().
-                    replace("java.lang.", "")).append(" ").
+            cb.append(decl.getDeclaredVariable().getType().getClassNameAsCode()).append(" ").
                     append(decl.getDeclaredVariable().getName());
         } else if (i instanceof BinaryOperatorInvocation) {
             BinaryOperatorInvocation operatorInvocation = (BinaryOperatorInvocation) i;
@@ -688,7 +687,7 @@ class MethodDeclarationRenderer implements CodeRenderer<MethodDeclaration> {
     public void render(MethodDeclaration e, CodeBuilder cb) {
 
         createModifiers(e, cb);
-        cb.append(e.getReturnType().getFullClassName());
+        cb.append(e.getReturnType().getClassNameAsCode());
         cb.append(" ").append(e.getName()).append("(");
         renderParams(e, cb);
         cb.append(") {").newLine();
@@ -726,13 +725,17 @@ class MethodDeclarationRenderer implements CodeRenderer<MethodDeclaration> {
             } else {
                 cb.append(", ");
             }
-            if (v.getType().getPackageName().equals("java.lang")) {
-                cb.append(v.getType().getShortName()).append(" ").
+            
+            cb.append(v.getType().getClassNameAsCode()).append(" ").
                         append(v.getName());
-            } else {
-                cb.append(v.getType().getFullClassName()).append(" ").
-                        append(v.getName());
-            }
+            
+//            if (v.getType().getPackageName().equals("java.lang")) {
+//                cb.append(v.getType().getShortName()).append(" ").
+//                        append(v.getName());
+//            } else {
+//                cb.append(v.getType().getFullClassNameAsCode()).append(" ").
+//                        append(v.getName());
+//            }
         }
     }
 }
@@ -786,7 +789,7 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
         for (Variable v : cd.getVariables()) {
             if (!"this".equals(v.getName())) {
                 createModifiers(v, cb);
-                cb.append(v.getType().getFullClassName()).
+                cb.append(v.getType().getClassNameAsCode()).
                         append(" ").append(v.getName()).append(";").newLine();
             }
         }
@@ -820,7 +823,7 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
 
         for (IType type : cd.getExtends().getTypes()) {
 
-            if (type.getFullClassName().equals("java.lang.Object")) {
+            if (type.getClassNameAsCode().equals("Object")) {
                 continue;
             }
 
@@ -830,7 +833,7 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
             } else {
                 cb.append(", ");
             }
-            cb.append(type.getFullClassName());
+            cb.append(type.getClassNameAsCode());
         }
     }
 
@@ -850,7 +853,7 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
             } else {
                 cb.append(", ");
             }
-            cb.append(type.getFullClassName());
+            cb.append(type.getClassNameAsCode());
         }
     }
 }

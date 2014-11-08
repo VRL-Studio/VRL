@@ -24,6 +24,15 @@ subprojects {
     rootProject.test.dependsOn.add(test)
 }
 
+// calls maven install task of all subprojects
+task install {
+    subprojects.each { childP -> 
+        if (!rootProject.skipMaven.contains(childP.parent.name+":"+childP.name)) {
+            dependsOn.add(childP.install);
+        }
+    }
+}
+
 
 //task mergedJavadoc(type: Javadoc, description: 'Creates Javadoc from all the projects.') {
 //    title = 'All modules'
@@ -39,7 +48,7 @@ subprojects {
 //}
 
 task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper to the current directory.') {
-    gradleVersion = '1.11'
+    gradleVersion = '2.1'
 }
 
 //task install() {

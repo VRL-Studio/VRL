@@ -50,21 +50,41 @@
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.base.IOUtil;
+import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import groovy.lang.GroovyClassLoader;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collection;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import junit.framework.Assert;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class LangModelTest {
+
+    public static InputStream getResourceAsStream(String resourceName) {
+        return CommentTest.class.getResourceAsStream("/eu/mihosoft/vrl/lang/" + resourceName);
+    }
+
+    public static Reader getResourceAsStringReader(String resourceName) {
+
+        return new StringReader(getResourceAsString(resourceName));
+    }
+
+    public static String getResourceAsString(String resourceName) {
+        InputStream is = CommentTest.class.getResourceAsStream("/eu/mihosoft/vrl/lang/" + resourceName);
+        String tmpCode = IOUtil.convertStreamToString(is);
+        return tmpCode;
+    }
 
     @Test
     public void codeToModelToCodeTest() {
@@ -104,10 +124,12 @@ public class LangModelTest {
         successCompile = false;
         UIBinding.scopes.clear();
         try {
-            GroovyClassLoader gcl = new GroovyClassLoader();
+            CompilerConfiguration cfg = new CompilerConfiguration();
+            cfg.addCompilationCustomizers(new ASTTransformationCustomizer(
+                    new VRLVisualizationTransformation()));
+            GroovyClassLoader gcl = new GroovyClassLoader(LangModelTest.class.getClassLoader(), cfg);
             gcl.parseClass(newCode, "MyFileClass.groovy");
             successCompile = true;
-
         } catch (Exception ex) {
             Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -117,6 +139,9 @@ public class LangModelTest {
         // checking whether code from new model is identical to new code
         for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
             for (Scope s : scopeList) {
+
+                System.out.println("scope: " + s);
+
                 if (s instanceof CompilationUnitDeclaration) {
                     newNewCode = Scope2Code.getCode((CompilationUnitDeclaration) s);
                     break;
@@ -131,18 +156,6 @@ public class LangModelTest {
 
     }
 
-    public static InputStream getResourceAsStream(String resourceName) {
-        return CommentTest.class.getResourceAsStream("/eu/mihosoft/vrl/lang/" + resourceName);
-    }
+   
 
-    public static Reader getResourceAsStringReader(String resourceName) {
-
-        return new StringReader(getResourceAsString(resourceName));
-    }
-
-    public static String getResourceAsString(String resourceName) {
-        InputStream is = CommentTest.class.getResourceAsStream("/eu/mihosoft/vrl/lang/" + resourceName);
-        String tmpCode = IOUtil.convertStreamToString(is);
-        return tmpCode;
-    }
 }

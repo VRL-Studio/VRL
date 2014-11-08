@@ -47,9 +47,9 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
+import eu.mihosoft.vrl.base.VClassLoaderUtil;
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.Patterns;
 import eu.mihosoft.vrl.lang.VLangUtils;
@@ -60,11 +60,13 @@ import java.util.Objects;
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public final class Type implements IType {
-   
 
     private final String packageName;
     private final String shortName;
     private final boolean isReturnOrParamType;
+
+    private final IType componentType;
+
     public static final IType VOID = new Type("void");
     public static final IType INT = new Type("int");
     public static final IType LONG = new Type("long");
@@ -76,16 +78,15 @@ public final class Type implements IType {
     public static final IType STRING = new Type("java.lang.String");
     public static final IType OBJECT = new Type("java.lang.Object");
 
-    public Type(String packageName, String shortName, boolean isReturnOrParamType) {
-        this.packageName = packageName;
-        this.shortName = shortName;
-        this.isReturnOrParamType = isReturnOrParamType;
-
-        validate();
-    }
-
+//    public Type(String packageName, String shortName, boolean isReturnOrParamType) {
+//        this.packageName = packageName;
+//        this.shortName = shortName;
+//
+//        validate();
+//    }
+//
     public Type(String packageName, String shortName) {
-        this(packageName, shortName, false);
+        this(packageName + "." + shortName, false);
 
         validate();
     }
@@ -96,7 +97,21 @@ public final class Type implements IType {
 
     public Type(String fullName, boolean isReturnOrParamType) {
 
-        if (!VLangUtils.isShortName(fullName)) {
+        // check for array type
+        int arrayDimension = VClassLoaderUtil.arrayDimension(fullName);
+        if (arrayDimension > 0) {
+            componentType = new Type(VClassLoaderUtil.elementClassName(fullName), isReturnOrParamType);
+        } else {
+            componentType = this;
+        }
+
+        boolean isPackageNameSpecified = arrayDimension == 0;
+
+        if (isPackageNameSpecified) {
+            isPackageNameSpecified = !VLangUtils.isShortName(fullName);
+        }
+
+        if (isPackageNameSpecified) {
             this.packageName = VLangUtils.slashToDot(
                     VLangUtils.packageNameFromFullClassName(fullName));
             this.shortName = VLangUtils.shortNameFromFullClassName(fullName);
@@ -111,6 +126,22 @@ public final class Type implements IType {
     }
 
     private void validate() {
+
+        // we use local package and short name as in array case they represent
+        // the element type
+        String packageName = this.packageName;
+        String shortName = this.shortName;
+
+        if (isArray()) {
+            shortName = shortName.replaceFirst("^\\[+", "");
+            if (shortName.startsWith("L") && shortName.endsWith(";")) {
+                shortName = shortName.substring(1, shortName.length() - 1);
+            }
+            packageName = VLangUtils.slashToDot(
+                    VLangUtils.packageNameFromFullClassName(shortName));
+            shortName = VLangUtils.shortNameFromFullClassName(shortName);
+        }
+
         if (!VLangUtils.isPackageNameValid(VLangUtils.slashToDot(packageName))) {
             throw new IllegalArgumentException("Specified package is invalid: " + getPackageName());
         }
@@ -180,11 +211,40 @@ public final class Type implements IType {
         }
         return true;
     }
-    
+
     public static Type fromObject(Object o, boolean isReturnOrParamType) {
 
         return new Type(o.getClass().getName());
-        
+
+    }
+
+    public static Type fromClass(Class<?> cls) {
+
+        return new Type(cls.getName());
+
+    }
+
+    @Override
+    public boolean isArray() {
+        return shortName.startsWith("[");
+    }
+
+    @Override
+    public IType getComponentType() {
+        return componentType;
+    }
+
+    @Override
+    public String getClassNameAsCode() {
+        if (isArray()) {
+            return VClassLoaderUtil.arrayClass2Code(shortName).replace("java.lang.", "");
+        } else {
+            if (getPackageName().equals("java.lang")) {
+                return getShortName();
+            } else {
+                return getFullClassName();
+            }
+        }
     }
 
 }
