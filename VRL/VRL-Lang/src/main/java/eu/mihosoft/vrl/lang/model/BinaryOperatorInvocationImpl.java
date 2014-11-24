@@ -34,11 +34,16 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
 //                    && rightArg.getArgType() == ArgumentType.VARIABLE) {
 
                 // TODO: check that leftArg and rightArg == const or var
-
-                retType = Type.BOOLEAN;
+            retType = Type.BOOLEAN;
 //            }
         } else if (basicArithmeticOperator(operator)) {
             retType = Type.OBJECT;
+        } else if (arrayElementOperator(operator)) {
+            if (leftArg.getArgType() != ArgumentType.VARIABLE) {
+                throw new IllegalArgumentException("Left Argument must be a variable!");
+            } else {
+                retType = leftArg.getVariable().get().getType();
+            }
         }
 
         setReturnType(retType);
@@ -75,6 +80,10 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
                 || operator == Operator.MINUS
                 || operator == Operator.TIMES
                 || operator == Operator.DIV;
+    }
+
+    public boolean arrayElementOperator(Operator operator) {
+        return operator == Operator.ACCESS_ARRAY_ELEMENT;
     }
 
     private void validateInputs(Operator operator, IArgument leftArg, IArgument rightArg) {
@@ -134,6 +143,11 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
                 || Objects.equals(leftArg.getType(), Type.SHORT)
                 || Objects.equals(leftArg.getType(), Type.FLOAT)
                 || Objects.equals(leftArg.getType(), Type.DOUBLE);
+    }
+
+    @Override
+    public boolean isArrayAccessOperator() {
+        return arrayElementOperator(operator);
     }
 
 }

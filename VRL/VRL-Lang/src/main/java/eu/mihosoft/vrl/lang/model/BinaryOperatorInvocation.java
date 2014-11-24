@@ -14,4 +14,6 @@ public interface BinaryOperatorInvocation extends Invocation{
     IArgument getLeftArgument();  
     IArgument getRightArgument();
     Operator getOperator();
+    
+    boolean isArrayAccessOperator();
 }

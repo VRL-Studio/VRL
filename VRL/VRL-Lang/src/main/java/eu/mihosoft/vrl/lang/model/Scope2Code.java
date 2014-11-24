@@ -378,6 +378,9 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             case OR:
                 cb.append("||");
                 break;
+            case ACCESS_ARRAY_ELEMENT:
+                cb.append("[");
+                break;
             default:
                 cb.append("/*operator type not implemented*/");
         }
@@ -412,19 +415,18 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             boolean rightArgNeedsParantheses
                     = operatorInvocation.getRightArgument().getArgType()
                     == ArgumentType.INVOCATION;
-            
+
             // no parantheses around not operator
             if (letArgNeedsParantheses) {
                 letArgNeedsParantheses = !(operatorInvocation.getLeftArgument()
                         .getInvocation().get() instanceof NotInvocation);
             }
-             // no parantheses around not operator
+            // no parantheses around not operator
             if (rightArgNeedsParantheses) {
                 rightArgNeedsParantheses = !(operatorInvocation.getRightArgument()
                         .getInvocation().get() instanceof NotInvocation);
             }
-            
-            
+
             if (letArgNeedsParantheses) {
                 cb.append("(");
             }
@@ -432,15 +434,23 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             if (letArgNeedsParantheses) {
                 cb.append(")");
             }
-            cb.append(" ");
+            if (!operatorInvocation.isArrayAccessOperator()) {
+                cb.append(" ");
+            }
             renderOperator(operatorInvocation.getOperator(), cb);
-            cb.append(" ");
+            if (!operatorInvocation.isArrayAccessOperator()) {
+                cb.append(" ");
+            }
             if (rightArgNeedsParantheses) {
                 cb.append("(");
             }
             renderArgument(operatorInvocation.getRightArgument(), cb);
             if (rightArgNeedsParantheses) {
                 cb.append(")");
+            }
+
+            if (operatorInvocation.isArrayAccessOperator()) {
+                cb.append("]");
             }
 
         } else if (i instanceof ReturnStatementInvocation) {
@@ -725,10 +735,10 @@ class MethodDeclarationRenderer implements CodeRenderer<MethodDeclaration> {
             } else {
                 cb.append(", ");
             }
-            
+
             cb.append(v.getType().getClassNameAsCode()).append(" ").
-                        append(v.getName());
-            
+                    append(v.getName());
+
 //            if (v.getType().getPackageName().equals("java.lang")) {
 //                cb.append(v.getType().getShortName()).append(" ").
 //                        append(v.getName());

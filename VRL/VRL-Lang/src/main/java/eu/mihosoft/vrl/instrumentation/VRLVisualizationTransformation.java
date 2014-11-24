@@ -1156,10 +1156,17 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 return Operator.OR;
             case org.codehaus.groovy.syntax.Types.LOGICAL_AND:
                 return Operator.AND;
+             case org.codehaus.groovy.syntax.Types.LEFT_SQUARE_BRACKET:
+                return Operator.ACCESS_ARRAY_ELEMENT;
 
             default:
+                
+                String leftStr = be.getLeftExpression().getText();
+                String opStr   = be.getOperation().getText();
+                String rightStr = be.getRightExpression().getText();
+                
                 throw new UnsupportedOperationException(
-                        "Operation " + be.getOperation().getText() + " not supported!");
+                        "Operation " + opStr + " not supported! Left: " + leftStr + ", right: " + rightStr);
 
         }
     }
