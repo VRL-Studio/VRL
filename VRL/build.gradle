@@ -10,7 +10,7 @@ subprojects {
     
     // Disable the test report for the individual test task
     test {
-        reports.html.enabled = true
+        reports.html.enabled = false
     }
 }
 
