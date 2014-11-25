@@ -90,8 +90,19 @@ public class LangModelTest {
     public void codeToModelToCodeTest() {
 
         createLangModelCompileAndCompareTest("ModelCode01.groovy");
+
+    }
+
+    @Test
+    public void arrayElementTest() {
+
         createLangModelCompileAndCompareTest("ArrayElementCode01.groovy");
         createLangModelCompileAndCompareTest("ArrayElementCode02.groovy");
+    }
+
+    @Test
+    public void IfTest() {
+
         createLangModelCompileAndCompareTest("IfCode01.groovy");
         createLangModelCompileAndCompareTest("IfCode02.groovy");
 
