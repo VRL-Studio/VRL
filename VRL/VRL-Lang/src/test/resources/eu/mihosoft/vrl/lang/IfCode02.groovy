@@ -11,7 +11,7 @@ public class MyFileClass {
     public static void main(String[] args) {
         
         if (1<2) {
-            println("1<2"); dfghjklö
+            println("1<2");
         }
     }
 }
