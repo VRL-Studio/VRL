@@ -14,15 +14,16 @@ script:
 
 after_script:
 #    - "wput -u build/reports/tests/vrl ftp://$FTP_USER:$FTP_PWD@vrl.mihosoft.eu/vrl.mihosoft/test-reports"
-    - "ncftpput -R -v -u $FTP_USER -p $FTP_PWD mihosoft.eu /vrl.mihosoft/test-reports/latest build/reports/tests/vrl*"
+    - "ncftpput -R -v -u $FTP_USER -p $FTP_PWD mihosoft.eu /vrl.mihosoft/test-reports/latest build/reports/tests/*"
 
 ##after_success:
 #    - TERM=dumb ant javadoc
 #    - "wput -u dist/javadoc/ ftp://$FTP_USER:$FTP_PWD@vrl.mihosoft.eu/api-doc/latest"
 #    - "ncftpput -R -v -u $FTP_USER -p $FTP_PWD mihosoft.eu /vrl.mihosoft/api-doc/latest/ dist/javadoc/*"
 
-after_failure:
-    - "ncftpput -R -v -u $FTP_USER -p $FTP_PWD mihosoft.eu /vrl.mihosoft/test-reports/latest build/reports/tests/vrl*"
+
+#after_failure:
+#    - "ncftpput -R -v -u $FTP_USER -p $FTP_PWD mihosoft.eu /vrl.mihosoft/test-reports/latest build/reports/tests/*"
 
 env:
   global:
