@@ -1,7 +1,7 @@
 VRL (Visual Reflection Library)
 ===============================
 
-[![Build Status](https://travis-ci.org/miho/VRL.png?branch=master)](https://travis-ci.org/miho/VRL)
+[![Build Status](https://travis-ci.org/VRL-Studio/VRL.png?branch=master)](https://travis-ci.org/miho/VRL)
 
 Webpage: http://vrl-studio.mihosoft.eu
 
@@ -30,7 +30,7 @@ To see what is possible with VRL check out [VRL-Studio](http://vrl-studio.mihoso
 
 ###For 0.5 (Playground)
 
-- Test Reports: http://vrl.mihosoft.eu/test-reports/latest/vrl/
+- Test Reports: http://vrl.mihosoft.eu/test-reports/latest/
 
 # Maven Artifacts
 
