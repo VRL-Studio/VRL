@@ -89,7 +89,19 @@ public class LangModelTest {
     @Test
     public void codeToModelToCodeTest() {
 
-        String code = getResourceAsString("ModelCode01.groovy");
+        createLangModelCompileAndCompareTest("ModelCode01.groovy");
+        createLangModelCompileAndCompareTest("ArrayElementCode01.groovy");
+        createLangModelCompileAndCompareTest("ArrayElementCode02.groovy");
+        createLangModelCompileAndCompareTest("IfCode01.groovy");
+        createLangModelCompileAndCompareTest("IfCode02.groovy");
+
+    }
+
+    private void createLangModelCompileAndCompareTest(String fileName) {
+
+        UIBinding.scopes.clear();
+
+        String code = getResourceAsString(fileName);
 
         // checking whether sample code compiles and generate model
         boolean successCompile = false;
@@ -102,9 +114,9 @@ public class LangModelTest {
             Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        Assert.assertTrue("Sample code must compile", successCompile);
-        Assert.assertTrue("UIBindings.scopes must be initialized", UIBinding.scopes != null);
-        Assert.assertTrue("UIBindings must contain exactly one scope, got " + UIBinding.scopes.size(), UIBinding.scopes.size() == 1);
+        Assert.assertTrue(fileName + ": " + "Sample code must compile", successCompile);
+        Assert.assertTrue(fileName + ": " + "UIBindings.scopes must be initialized", UIBinding.scopes != null);
+        Assert.assertTrue(fileName + ": " + "UIBindings must contain exactly one scope, got " + UIBinding.scopes.size(), UIBinding.scopes.size() == 1);
 
         // generating new code from model
         String newCode = "";
@@ -133,7 +145,7 @@ public class LangModelTest {
         } catch (Exception ex) {
             Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Assert.assertTrue("Sample code generated from model must compile", successCompile);
+        Assert.assertTrue(fileName + ": " + "Sample code generated from model must compile", successCompile);
 
         String newNewCode = "";
         // checking whether code from new model is identical to new code
@@ -152,10 +164,7 @@ public class LangModelTest {
         System.out.println("---- new code ----");
         System.out.println(newNewCode);
 
-        Assert.assertTrue("Code strings must be identical", newCode.equals(newNewCode));
-
+        Assert.assertTrue(fileName + ": " + "Code strings must be identical", newCode.equals(newNewCode));
     }
-
-   
 
 }
