@@ -2,7 +2,6 @@
 // 
 //
 
-apply plugin: 'java'
 apply plugin: 'jacoco'
 apply plugin: 'com.github.kt3k.coveralls'
 
@@ -10,7 +9,7 @@ repositories {
     mavenCentral()
 }
 
-allprojects {
+subprojects {
     apply plugin: 'jacoco'
 }
 
@@ -20,7 +19,21 @@ task codeCoverageReport(type: JacocoReport) {
 
     // Gather execution data from all subprojects
     // (change this if you e.g. want to calculate unit test/integration test coverage separately)
-    executionData fileTree(project.rootDir.absolutePath).include("**/${buildDir}/jacoco/*.exec")
+//    subprojects {
+//        executionData fileTree(project.rootDir.absolutePath).include("${buildDir}/jacoco/*.exec")
+//    }
+
+//    classDirectories =  files(subprojects.sourceSets.main.output)
+
+//    executionData = files("/Users/miho/EigeneApps/VRL/VRL/VRL-Lang/build/jacoco/test.exec")
+    
+//    executionData fileTree(project.rootDir.absolutePath).include("${buildDir}/jacoco/*.exec")
+
+//     sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+//    classDirectories =  files(subprojects.sourceSets.main.output)
+//    executionData = files(subprojects.jacoco.executionData)
+
+    executionData fileTree(project.rootDir.absolutePath).include("**/jacoco/*.exec")
 
     // Add all relevant sourcesets from the subprojects 
     subprojects.each {
@@ -39,6 +52,15 @@ task codeCoverageReport(type: JacocoReport) {
         // we don't need csv
         csv.enabled false
     }
+    
+    // exclude unused code from coverage:
+//    classDirectories = fileTree(
+//            dir: "${buildDir}/intermediates/classes/debug",
+//            excludes: ['com/myapp/R*.class',
+//                       '**/*$InjectAdapter.class',
+//                       '**/*$ModuleAdapter.class',
+//                       '**/*$ViewInjector*.class'
+//            ])
 }
 
 coveralls {
