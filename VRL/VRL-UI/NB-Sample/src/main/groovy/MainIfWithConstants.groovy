@@ -1,0 +1,272 @@
+public class MainIfWithConstants {
+
+    
+    public static void main(String[] args) {
+        if (1 < 2) {
+            println("1< 2 == true");
+        }
+        Integer a;
+        a = 1;
+        if (a < 3) {
+            
+            println(a)
+            
+        }
+    }
+}
+// <editor-fold defaultstate="collapsed" desc="VRL-Data">
+/*<!VRL!><Type:VRL-Layout>
+<map>
+  <entry>
+    <string>Script:MainIfWithConstants:main:inv:declare args:0</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>217.9264145023715</width>
+      <height>74.9803438567054</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:inv:declare args</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>217.9264145023715</width>
+      <height>74.9803438567054</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:IF:inv:println:0</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>227.77642002302605</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:inv:op ASSIGN</string>
+    <layout>
+      <x>470.41217108971495</x>
+      <y>349.0657812372</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:inv:declare a</string>
+    <layout>
+      <x>151.54812242441395</x>
+      <y>324.40478739589594</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main</string>
+    <layout>
+      <x>5.416978216048279</x>
+      <y>177.20576049802733</y>
+      <width>521.480211774176</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:inv:declare this</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:IF:inv:scope</string>
+    <layout>
+      <x>830.2419505993954</x>
+      <y>74.97409385064394</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:IF:inv:println</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>227.77642002302605</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:inv:declare a:0</string>
+    <layout>
+      <x>151.54812242441395</x>
+      <y>324.40478739589594</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:IF:inv:scope:0</string>
+    <layout>
+      <x>1069.2955638390224</x>
+      <y>417.2792827563363</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:inv:op LESS</string>
+    <layout>
+      <x>416.8269244574798</x>
+      <y>32.35998397315097</y>
+      <width>195.16703736569798</width>
+      <height>136.62993587643032</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:IF:inv:scope:1</string>
+    <layout>
+      <x>830.2419505993954</x>
+      <y>74.97409385064394</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:IF:inv:scope:2</string>
+    <layout>
+      <x>1069.2955638390224</x>
+      <y>417.2792827563363</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>972.0912616117014</width>
+      <height>716.8521814743146</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:inv:op LESS:0</string>
+    <layout>
+      <x>805.2787665374933</x>
+      <y>422.9613305107363</y>
+      <width>195.16703736569798</width>
+      <height>136.62993587643032</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:inv:op LESS:1</string>
+    <layout>
+      <x>416.8269244574798</x>
+      <y>32.35998397315097</y>
+      <width>195.16703736569798</width>
+      <height>136.62993587643032</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:inv:op LESS:2</string>
+    <layout>
+      <x>805.2787665374933</x>
+      <y>422.9613305107363</y>
+      <width>195.16703736569798</width>
+      <height>136.62993587643032</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:IF:1</string>
+    <layout>
+      <x>830.2419505993954</x>
+      <y>74.97409385064394</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:IF:0</string>
+    <layout>
+      <x>1069.2955638390224</x>
+      <y>417.2792827563363</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:IF</string>
+    <layout>
+      <x>830.2419505993954</x>
+      <y>74.97409385064394</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>1161.6331266961165</width>
+      <height>975.5425253606791</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:IF:2</string>
+    <layout>
+      <x>1069.2955638390224</x>
+      <y>417.2792827563363</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:inv:op ASSIGN:0</string>
+    <layout>
+      <x>470.41217108971495</x>
+      <y>349.0657812372</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:MainIfWithConstants:main:0</string>
+    <layout>
+      <x>5.416978216048279</x>
+      <y>177.20576049802733</y>
+      <width>521.480211774176</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+</map>
+*/
+// </editor-fold>

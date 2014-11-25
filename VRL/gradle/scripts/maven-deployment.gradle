@@ -1,4 +1,4 @@
-apply from: "../jdkdetect.gradle"
+apply from: rootProject.file('gradle/scripts/jdkdetect.gradle')
 
 // sonatype dependencies
 apply plugin: 'maven'

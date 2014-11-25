@@ -35,8 +35,8 @@ dependencies {
 
 // maven config
 if (!rootProject.skipMaven.contains(project.parent.name+":"+project.name)) {
-    apply from: rootProject.file('version-info.gradle')
-    apply from: rootProject.file('maven-deployment-local.gradle')
-//    apply from: rootProject.file('maven-deployment.gradle')
+    apply from: rootProject.file('gradle/scripts/version-info.gradle')
+    apply from: rootProject.file('gradle/scripts/maven-deployment-local.gradle')
+//    apply from: rootProject.file('gradle/scripts/maven-deployment.gradle')
 }
 

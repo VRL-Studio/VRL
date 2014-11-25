@@ -1,6 +1,6 @@
 // **** MAVEN Version Information ****
 //
-apply from: rootProject.file('jdkdetect.gradle')
+apply from: rootProject.file('gradle/scripts/jdkdetect.gradle')
 apply plugin: 'maven'
 
 // - artifactId is defined as projectName.toLowercase()
