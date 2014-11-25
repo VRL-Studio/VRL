@@ -5,24 +5,24 @@ apply plugin: 'base' // To add "clean" task to the root project.
 // define projects that shall not be deployed via maven
 project.ext.set("skipMaven",["VRL-Lang:CommentParser","VRL-UI:NB-Sample"])
 
-subprojects {
-    apply from: rootProject.file('common.gradle')
-    
-    // Disable the test report for the individual test task
-    test {
-        reports.html.enabled = false
-    }
-}
+//subprojects {
+//    apply from: rootProject.file('common.gradle')
+//    
+//    // Disable the test report for the individual test task
+//    test {
+//        reports.html.enabled = false
+//    }
+//}
 
-task test(type: TestReport) {
-    destinationDir = file("$buildDir/reports/tests/vrl")
-    // Include the results from the `test` task in all subprojects
-    reportOn subprojects*.test
-}
+//task test(type: TestReport) {
+//    destinationDir = file("$buildDir/reports/tests/vrl")
+//    // Include the results from the `test` task in all subprojects
+//    reportOn subprojects*.test
+//}
 
-subprojects {
-    rootProject.test.dependsOn.add(test)
-}
+//subprojects {
+//    rootProject.test.dependsOn.add(test)
+//}
 
 // calls maven install task of all subprojects
 task install {
@@ -55,3 +55,56 @@ task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper
 //    dependsOn subprojects.install
 //}
 
+
+//
+// Add support for a global test report
+// source https://github.com/kercheval/GradleCMPlugin/wiki/Create-Test-Report-in-Root-Project-with-Gradle
+//
+task testReport(type: TestReport) {
+    setDescription('Generates a test report from all subproject test tasks')
+    setGroup(JavaBasePlugin.DOCUMENTATION_GROUP)
+
+    //
+    // Keep track of total failure count for later test and output
+    //
+    def testFailures = 0
+
+    //
+    // Place the output in the root build reports directory by default
+    //
+    destinationDir = file("$buildDir/reports/allTests")
+
+    //
+    // Include the results from the `test` task in all subprojects.
+    // The TestReport task does not handle things well if a subproject 
+    // does not have the binary output, so this task assumes all subprojects 
+    // include the gradle java plugin!
+    //
+    reportOn subprojects*.test
+
+    //
+    // Every subproject should ignore test failures, but here we add a 
+    // test suite failure filter to ensure we keep track of the fact that
+    // failures have occurred (for the build failure check below)
+    //
+    subprojects {
+        test {
+            ignoreFailures true
+            afterSuite { td, tr ->
+                if (td.getParent() == null) {
+                    testFailures += tr.getFailedTestCount()
+                }
+            }
+        }
+    }
+
+    //
+    // The last thing to do in this task is to check for failures.  
+    // The build as a whole should fail if any tests failed.
+    //
+    doLast {
+        if (testFailures > 0) {
+           throw new Exception("There were ${testFailures} test failures")
+        }
+    }
+}
