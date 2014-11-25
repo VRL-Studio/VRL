@@ -5,14 +5,14 @@ apply plugin: 'base' // To add "clean" task to the root project.
 // define projects that shall not be deployed via maven
 project.ext.set("skipMaven",["VRL-Lang:CommentParser","VRL-UI:NB-Sample"])
 
-//subprojects {
-//    apply from: rootProject.file('common.gradle')
+subprojects {
+    apply from: rootProject.file('common.gradle')
 //    
 //    // Disable the test report for the individual test task
 //    test {
 //        reports.html.enabled = false
 //    }
-//}
+}
 
 //task test(type: TestReport) {
 //    destinationDir = file("$buildDir/reports/tests/vrl")
