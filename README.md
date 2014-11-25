@@ -1,7 +1,7 @@
 VRL (Visual Reflection Library)
 ===============================
 
-[![Build Status](https://travis-ci.org/VRL-Studio/VRL.png?branch=master)](https://travis-ci.org/miho/VRL)
+[![Build Status](https://travis-ci.org/VRL-Studio/VRL.png?branch=master)](https://travis-ci.org/miho/VRL) [![Coverage Status](https://coveralls.io/repos/VRL-Studio/VRL/badge.png)](https://coveralls.io/r/VRL-Studio/VRL)
 
 Webpage: http://vrl-studio.mihosoft.eu
 
