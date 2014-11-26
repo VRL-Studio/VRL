@@ -30,8 +30,17 @@ public class IOTests {
         createCopyDirTest(1, 1);
         createCopyDirTest(1, 1);
     }
-    
-   
+
+    @Test
+    public void zipUnzipDirTest() throws IOException {
+        createZipUnzipTest(30, 3);
+        createZipUnzipTest(134, 7);
+        createZipUnzipTest(250, 1);
+        createZipUnzipTest(0, 1);
+        createZipUnzipTest(1, 1);
+        createZipUnzipTest(1, 1);
+    }
+
     private void createZipUnzipTest(int numEntries, int maxDepth) throws IOException {
         File baseDir = Files.createTempDirectory("VRL-IOTests-").toFile();
 
@@ -41,13 +50,28 @@ public class IOTests {
         List<String> srcEntries = createDirWithContent(numEntries, maxDepth, srcDir);
 
         File dstDir = new File(baseDir, "dst");
+        File archive = new File(baseDir, "dst.zip");
 
-        IOUtil.copyDirectory(srcDir, dstDir);
+        boolean throwsIllegalaRgumentException = false;
+        try {
+            IOUtil.zipContentOfFolder(srcDir, archive);
+        } catch (IllegalArgumentException ex) {
+            throwsIllegalaRgumentException = true;
+        }
 
-        List<String> dstEntries = IOUtil.listFiles(dstDir,"").stream().
-                map(fe -> fe.getAbsolutePath()).collect(Collectors.toList());
+        if (numEntries == 0 || maxDepth == 0) {
+            assertTrue("Expecting OUtil.zipContentOfFolder() to throw an "
+                    + "IllegalArgumentException since the source folder"
+                    + " is empty", throwsIllegalaRgumentException);
+        } else {
 
-        compareEntries(srcEntries, dstEntries, srcDir, dstDir);
+            IOUtil.unzip(archive, dstDir);
+
+            List<String> dstEntries = IOUtil.listFiles(dstDir, "").stream().
+                    map(fe -> fe.getAbsolutePath()).collect(Collectors.toList());
+
+            compareEntries(srcEntries, dstEntries, srcDir, dstDir);
+        }
     }
 
     private void createCopyDirTest(int numEntries, int maxDepth) throws IOException {
@@ -62,7 +86,7 @@ public class IOTests {
 
         IOUtil.copyDirectory(srcDir, dstDir);
 
-        List<String> dstEntries = IOUtil.listFiles(dstDir,"").stream().
+        List<String> dstEntries = IOUtil.listFiles(dstDir, "").stream().
                 map(fe -> fe.getAbsolutePath()).collect(Collectors.toList());
 
         compareEntries(srcEntries, dstEntries, srcDir, dstDir);
@@ -71,18 +95,19 @@ public class IOTests {
     private void compareEntries(List<String> srcEntries, List<String> dstEntries, File srcDir, File dstDir) {
         assertTrue("Expected equal number of entries in src and dst folder,"
                 + " got: #src-entries=" + srcEntries.size()
-                + ", #dst-entries=" + dstEntries.size(),
+                + ", #dst-entries=" + dstEntries.size() + " in " + dstDir.getAbsolutePath(),
                 dstEntries.size() == srcEntries.size());
 
-        for(int i = 0; i < srcEntries.size();i++) {
+        for (int i = 0; i < srcEntries.size(); i++) {
             String src = srcEntries.get(i);
             String dst = dstEntries.get(i);
-            
+
             String normalizedSrc = src.replace(srcDir.getAbsolutePath(),
                     dstDir.getAbsolutePath());
-            
-            assertTrue("Expected dst-entries to contain " + normalizedSrc, dstEntries.contains(normalizedSrc));
-            
+
+            assertTrue("Expected dst-entries to contain "
+                    + normalizedSrc, dstEntries.contains(normalizedSrc));
+
         }
 
     }
@@ -92,26 +117,26 @@ public class IOTests {
         for (int i = 0; i < numEntries; i++) {
             File f;
             File d;
-            
+
             int depth = i % maxDepth;
-            
+
             String dPath = null;
-            
+
             for (int j = 0; j < depth; j++) {
                 dPath = "/d" + i + "_" + j;
             }
-            
+
             if (dPath == null) {
                 d = srcDir;
             } else {
                 d = new File(srcDir, "d" + i);
                 d.mkdirs();
             }
-            
+
             f = new File(d, "f" + i);
-            
+
             srcEntries.add(f.getAbsolutePath());
-            
+
             IOUtil.saveStreamToFile(
                     new ByteArrayInputStream(
                             ("string:" + i).getBytes("UTF-8")), f);

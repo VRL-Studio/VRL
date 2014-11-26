@@ -1325,12 +1325,20 @@ public class IOUtil {
      * @param destZipFile the destination zip file
      *
      * @throws IOException
+     * @throws IllegalArgumentException if source folder is empty (empty zip files are not supported)
      */
     static public void zipContentOfFolder(File srcFolder, File destZipFile) throws IOException {
 
         VParamUtil.throwIfNotValid(
                 VParamUtil.VALIDATOR_EXISTING_FOLDER,
                 null, srcFolder);
+        
+        File[] childrenOfSrc = srcFolder.listFiles();
+        
+        if (childrenOfSrc.length == 0) {
+            throw new IllegalArgumentException(
+                    "Source folder must contain at least one entry!");
+        }
 
         URI base = srcFolder.toURI();
         Deque<File> queue = new LinkedList<File>();
@@ -1343,6 +1351,7 @@ public class IOUtil {
             res = zout;
             while (!queue.isEmpty()) {
                 srcFolder = queue.pop();
+                
                 for (File kid : srcFolder.listFiles()) {
 
                     String name = base.relativize(kid.toURI()).getPath();
