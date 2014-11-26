@@ -24,6 +24,11 @@ public class IOTests {
     @Test
     public void copyDirTest() throws IOException {
         createCopyDirTest(30, 3);
+        createCopyDirTest(134, 7);
+        createCopyDirTest(250, 1);
+        createCopyDirTest(0, 1);
+        createCopyDirTest(1, 1);
+        createCopyDirTest(1, 1);
     }
 
     private void createCopyDirTest(int numEntries, int maxDepth) throws IOException {
@@ -63,8 +68,6 @@ public class IOTests {
         }
 
         File dstDir = new File(baseDir, "dst");
-        
-        System.out.println("dirDst: " + dstDir);
 
         IOUtil.copyDirectory(srcDir, dstDir);
 
