@@ -107,6 +107,13 @@ public class LangModelTest {
         createLangModelCompileAndCompareTest("IfCode02.groovy");
 
     }
+    
+        @Test
+    public void ForLoopTest() {
+
+        createLangModelCompileAndCompareTest("ForLoopCode01.groovy");
+
+    }
 
     private void createLangModelCompileAndCompareTest(String fileName) {
 

@@ -499,13 +499,13 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         if (!stateMachine.getBoolean("for-loop:compareExpression")) {
             throwErrorMessage("for-loop: must contain binary"
-                    + " expressions of the form 'a <= b' with a, b being"
+                    + " expressions of the form 'a <= b'/'a >= b' with a, b being"
                     + " constant integers!", s);
         }
 
         if (!stateMachine.getBoolean("for-loop:incExpression")) {
             throwErrorMessage("for-loop: must contain binary"
-                    + " expressions of the form 'i+=a' with i being"
+                    + " expressions of the form 'i+=a'/'i-=a' with i being"
                     + " an integer variable and a being a constant integer!", s);
         }
 
@@ -925,7 +925,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
                 if (!(s.getLeftExpression() instanceof VariableExpression)) {
                     throwErrorMessage("In for-loop: only binary"
-                            + " expressions of the form 'a <= b' with a, b being"
+                            + " expressions of the form 'a <= b'/'a >= b' with a, b being"
                             + " constant integers are supported!", s);
                 }
 
@@ -957,10 +957,14 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
                 forD.setTo((int) ce.getValue());
 
-                stateMachine.setBoolean("for-loop:compareExpression", true);
-            } else if (stateMachine.getBoolean("for-loop:declaration")
-                    && stateMachine.getBoolean("for-loop:compareExpression")
+                stateMachine.setBoolean(        "for-loop:compareExpression", true);
+            }
+        } else if (stateMachine.getBoolean( "for-loop") 
+                    && stateMachine.getBoolean( "for-loop:declaration")
+                    && stateMachine.getBoolean( "for-loop:compareExpression")
                     && !stateMachine.getBoolean("for-loop:incExpression")) {
+            
+            ForDeclaration_Impl forD = (ForDeclaration_Impl) currentScope;
 
                 if (!"+=".equals(s.getOperation().getText())
                         && !"-=".equals(s.getOperation().getText())) {
@@ -1014,7 +1018,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 stateMachine.setBoolean("for-loop:incExpression", true);
 
                 //
-            }
+            
         } else {
 
             if (!returnVariables.containsKey(s)) {
