@@ -17,22 +17,6 @@ subprojects {
 // http://csiebler.github.io/blog/2014/02/09/multi-project-code-coverage-using-gradle-and-jacoco/
 task codeCoverageReport(type: JacocoReport) {
 
-    // Gather execution data from all subprojects
-    // (change this if you e.g. want to calculate unit test/integration test coverage separately)
-//    subprojects {
-//        executionData fileTree(project.rootDir.absolutePath).include("${buildDir}/jacoco/*.exec")
-//    }
-
-//    classDirectories =  files(subprojects.sourceSets.main.output)
-
-//    executionData = files("/Users/miho/EigeneApps/VRL/VRL/VRL-Lang/build/jacoco/test.exec")
-    
-//    executionData fileTree(project.rootDir.absolutePath).include("${buildDir}/jacoco/*.exec")
-
-//     sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
-//    classDirectories =  files(subprojects.sourceSets.main.output)
-//    executionData = files(subprojects.jacoco.executionData)
-
     executionData fileTree(project.rootDir.absolutePath).include("**/jacoco/*.exec")
 
     // Add all relevant sourcesets from the subprojects 
@@ -45,7 +29,7 @@ task codeCoverageReport(type: JacocoReport) {
         xml.enabled true
         xml.destination = "${buildDir}/reports/jacoco/xml/report.xml"
         
-        // html for ulpading to webserver
+        // html for uploading to webserver
         html.enabled true
         html.destination "${buildDir}/reports/jacoco/html"
         
