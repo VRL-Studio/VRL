@@ -107,12 +107,34 @@ public class LangModelTest {
         createLangModelCompileAndCompareTest("IfCode02.groovy");
 
     }
-    
-        @Test
+
+    @Test
     public void ForLoopTest() {
 
         createLangModelCompileAndCompareTest("ForLoopCode01.groovy");
+        
+        createLangModelCompileMustFailTest("ForLoopFalseCode01.groovy");
 
+    }
+
+    private void createLangModelCompileMustFailTest(String fileName) {
+
+        UIBinding.scopes.clear();
+
+        String code = getResourceAsString(fileName);
+
+        // checking whether sample code compiles and generate model
+        boolean successCompile = false;
+        try {
+            GroovyClassLoader gcl = new GroovyClassLoader();
+            gcl.parseClass(code);
+            successCompile = true;
+
+        } catch (Exception ex) {
+            Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        Assert.assertFalse(fileName + ": " + "Sample code must not compile", successCompile);
     }
 
     private void createLangModelCompileAndCompareTest(String fileName) {
