@@ -30,42 +30,15 @@ public class IOTests {
         createCopyDirTest(1, 1);
         createCopyDirTest(1, 1);
     }
-
-    private void createCopyDirTest(int numEntries, int maxDepth) throws IOException {
+    
+   
+    private void createZipUnzipTest(int numEntries, int maxDepth) throws IOException {
         File baseDir = Files.createTempDirectory("VRL-IOTests-").toFile();
 
         File srcDir = new File(baseDir, "src");
         srcDir.mkdirs();
 
-        List<String> srcEntries = new ArrayList<>();
-
-        for (int i = 0; i < numEntries; i++) {
-            File f;
-            File d;
-
-            int depth = i % maxDepth;
-
-            String dPath = null;
-
-            for (int j = 0; j < depth; j++) {
-                dPath = "/d" + i + "_" + j;
-            }
-
-            if (dPath == null) {
-                d = srcDir;
-            } else {
-                d = new File(srcDir, "d" + i);
-                d.mkdirs();
-            }
-
-            f = new File(d, "f" + i);
-
-            srcEntries.add(f.getAbsolutePath());
-
-            IOUtil.saveStreamToFile(
-                    new ByteArrayInputStream(
-                            ("string:" + i).getBytes("UTF-8")), f);
-        }
+        List<String> srcEntries = createDirWithContent(numEntries, maxDepth, srcDir);
 
         File dstDir = new File(baseDir, "dst");
 
@@ -74,6 +47,28 @@ public class IOTests {
         List<String> dstEntries = IOUtil.listFiles(dstDir,"").stream().
                 map(fe -> fe.getAbsolutePath()).collect(Collectors.toList());
 
+        compareEntries(srcEntries, dstEntries, srcDir, dstDir);
+    }
+
+    private void createCopyDirTest(int numEntries, int maxDepth) throws IOException {
+        File baseDir = Files.createTempDirectory("VRL-IOTests-").toFile();
+
+        File srcDir = new File(baseDir, "src");
+        srcDir.mkdirs();
+
+        List<String> srcEntries = createDirWithContent(numEntries, maxDepth, srcDir);
+
+        File dstDir = new File(baseDir, "dst");
+
+        IOUtil.copyDirectory(srcDir, dstDir);
+
+        List<String> dstEntries = IOUtil.listFiles(dstDir,"").stream().
+                map(fe -> fe.getAbsolutePath()).collect(Collectors.toList());
+
+        compareEntries(srcEntries, dstEntries, srcDir, dstDir);
+    }
+
+    private void compareEntries(List<String> srcEntries, List<String> dstEntries, File srcDir, File dstDir) {
         assertTrue("Expected equal number of entries in src and dst folder,"
                 + " got: #src-entries=" + srcEntries.size()
                 + ", #dst-entries=" + dstEntries.size(),
@@ -86,7 +81,41 @@ public class IOTests {
             String normalizedSrc = src.replace(srcDir.getAbsolutePath(),
                     dstDir.getAbsolutePath());
             
-            assertEquals("Expected src and dst to be equal", normalizedSrc, dst);
+            assertTrue("Expected dst-entries to contain " + normalizedSrc, dstEntries.contains(normalizedSrc));
+            
         }
+
+    }
+
+    private List<String> createDirWithContent(int numEntries, int maxDepth, File srcDir) throws IOException {
+        List<String> srcEntries = new ArrayList<>();
+        for (int i = 0; i < numEntries; i++) {
+            File f;
+            File d;
+            
+            int depth = i % maxDepth;
+            
+            String dPath = null;
+            
+            for (int j = 0; j < depth; j++) {
+                dPath = "/d" + i + "_" + j;
+            }
+            
+            if (dPath == null) {
+                d = srcDir;
+            } else {
+                d = new File(srcDir, "d" + i);
+                d.mkdirs();
+            }
+            
+            f = new File(d, "f" + i);
+            
+            srcEntries.add(f.getAbsolutePath());
+            
+            IOUtil.saveStreamToFile(
+                    new ByteArrayInputStream(
+                            ("string:" + i).getBytes("UTF-8")), f);
+        }
+        return srcEntries;
     }
 }
