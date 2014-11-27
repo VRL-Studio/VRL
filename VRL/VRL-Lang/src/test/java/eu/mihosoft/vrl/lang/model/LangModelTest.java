@@ -125,6 +125,8 @@ public class LangModelTest {
 
         createLangModelCompileMustFailTest("WhileLoopIllegalCode01.groovy");
         createLangModelCompileMustFailTest("WhileLoopIllegalCode02.groovy");
+        createLangModelCompileMustFailTest("WhileLoopIllegalCode03.groovy");
+        createLangModelCompileMustFailTest("WhileLoopIllegalCode04.groovy");
 
     }
 

@@ -64,7 +64,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
                 || operator == Operator.DEC_ONE;
     }
 
-    private boolean booleanOperator(Operator operator) {
+    public static boolean booleanOperator(Operator operator) {
         return operator == Operator.EQUALS
                 || operator == Operator.NOT_EQUALS
                 || operator == Operator.LESS_EQUALS
