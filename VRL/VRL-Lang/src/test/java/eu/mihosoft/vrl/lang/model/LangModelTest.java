@@ -112,8 +112,19 @@ public class LangModelTest {
     public void ForLoopTest() {
 
         createLangModelCompileAndCompareTest("ForLoopCode01.groovy");
-        
-        createLangModelCompileMustFailTest("ForLoopFalseCode01.groovy");
+
+        createLangModelCompileMustFailTest("ForLoopIllegalCode01.groovy");
+        createLangModelCompileMustFailTest("ForLoopIllegalCode02.groovy");
+
+    }
+
+    @Test
+    public void WhileLoopTest() {
+
+        createLangModelCompileAndCompareTest("WhileLoopCode01.groovy");
+
+        createLangModelCompileMustFailTest("WhileLoopIllegalCode01.groovy");
+        createLangModelCompileMustFailTest("WhileLoopIllegalCode02.groovy");
 
     }
 
