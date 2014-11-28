@@ -50,7 +50,6 @@
 package eu.mihosoft.vrl.instrumentation;
 
 import com.google.common.base.Objects;
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Operators;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
 import eu.mihosoft.vrl.lang.model.ForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.Variable;
