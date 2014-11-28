@@ -17,11 +17,15 @@ subprojects {
 // http://csiebler.github.io/blog/2014/02/09/multi-project-code-coverage-using-gradle-and-jacoco/
 task codeCoverageReport(type: JacocoReport) {
 
-    executionData fileTree(project.rootDir.absolutePath).include("**/jacoco/*.exec")
+    executionData fileTree(project.rootDir.absolutePath)
+    .include("**/jacoco/*.exec")
 
     // Add all relevant sourcesets from the subprojects 
     subprojects.each {
-        sourceSets it.sourceSets.main
+        
+        if (it.name!="vrl-ui") {
+            sourceSets it.sourceSets.main
+        }
     }
 
     reports {
