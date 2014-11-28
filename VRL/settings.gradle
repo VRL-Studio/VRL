@@ -18,11 +18,9 @@ include "VRL-Base", "VRL-Lang", "VRL-Lang:CommentParser", "VRL-UI", "VRL-Reflect
 
 
 rootProject.children.each { project ->
-    //    String fileBaseName = project.name.replaceAll("\\p{Upper}") { "-${it.toLowerCase()}" }
     project.name = project.name.toLowerCase();
     
     project.children.each { childP ->
-        //    String fileBaseName = project.name.replaceAll("\\p{Upper}") { "-${it.toLowerCase()}" }
         childP.name = childP.name.toLowerCase();
     }
 }
