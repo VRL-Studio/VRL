@@ -103,6 +103,8 @@ public class AbstractMethodRepresentation {
      * parameter groups
      */
     private AbstractParameterGroups parameterGroup;
+    
+    private Integer visualMethodID;
 
     /**
      * Constructor.
@@ -157,6 +159,7 @@ public class AbstractMethodRepresentation {
 
         setVisibility(mRep.isVisible());
         setMethodId(mRep.getID());
+        setVisualMethodID(mRep.getVisualMethodID());
         setMethodName(mRep.getDescription().getMethodName());
         setMinimized(mRep.isMinimized());
 
@@ -218,6 +221,8 @@ public class AbstractMethodRepresentation {
 //        for (TypeRepresentationBase t : m.getParameters()) {
 //            System.out.println(">> Param: " + t.getValueName());
 //        }
+        
+        m.setVisualMethodID(getVisualMethodID());
 
         getParameterGroup().assignProperties(m.getParameterGroup());
 
@@ -410,5 +415,19 @@ public class AbstractMethodRepresentation {
     public void setParameterGroup(AbstractParameterGroups parameterGroup) {
 
         this.parameterGroup = parameterGroup;
+    }
+
+    /**
+     * @return the visualMethodID
+     */
+    public Integer getVisualMethodID() {
+        return visualMethodID;
+    }
+
+    /**
+     * @param visualMethodID the visualMethodID to set
+     */
+    public void setVisualMethodID(Integer visualMethodID) {
+        this.visualMethodID = visualMethodID;
     }
 }

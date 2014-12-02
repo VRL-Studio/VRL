@@ -122,10 +122,10 @@ public class AbstractDataConnection {
 
         senderMethod = new MethodIdentifier(
                 mRepSender.getDescription(),
-                mRepSender.getParentObject().getID());
+                mRepSender.getParentObject().getID(), mRepSender.getVisualMethodID());
         receiverMethod = new MethodIdentifier(
                 mRepReceiver.getDescription(),
-                mRepReceiver.getParentObject().getID());
+                mRepReceiver.getParentObject().getID(), mRepReceiver.getVisualMethodID());
 
         paramSender = sender.getID();
         paramReceiver = receiver.getID();

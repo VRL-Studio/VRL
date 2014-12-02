@@ -414,8 +414,8 @@ public final class MethodDescription {
         this.returnValueName = returnValueName;
     }
 
-    public MethodIdentifier toMethodIdentifier(int visualID) {
-        return new MethodIdentifier(this, visualID);
+    public MethodIdentifier toMethodIdentifier(int visualID, int visualMethodID) {
+        return new MethodIdentifier(this, visualID,visualMethodID);
     }
 
     @Override

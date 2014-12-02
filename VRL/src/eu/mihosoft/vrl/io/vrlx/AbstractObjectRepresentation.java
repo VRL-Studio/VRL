@@ -208,8 +208,8 @@ public class AbstractObjectRepresentation
 
             if (m.getVisibility()
                     && (getMethodOrder() == null || getMethodOrder().
-                    contains(new MethodIdentifier(method, visualID)))) {
-                mRep = o.addMethodToView(method);
+                    contains(new MethodIdentifier(method, visualID, m.getVisualMethodID())))) {
+                mRep = o.addMethodToView(method, m.getVisualMethodID());
             }
 //            else {
 //                o.removeMethodFromView(method);

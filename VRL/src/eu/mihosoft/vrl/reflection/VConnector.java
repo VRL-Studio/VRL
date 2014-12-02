@@ -113,6 +113,9 @@ public class VConnector extends Connector {
      * is an input connector. </p>
      */
     public void receiveData(boolean autoInvoke, CallTrace methodDependencies) {
+        
+        System.out.println(" --> receive: " + ((TypeRepresentationContainer)getValueObject()).getMethod().getVisualMethodID() );
+        System.out.println(" --> receive: " + getId() + ", isInput: " + isInput() + ", " + getType());
 
         fireAction(new ActionEvent(this, 0, RECEIVE_ACTION));
 
@@ -123,7 +126,7 @@ public class VConnector extends Connector {
 
             for (Connection connection : allConnections.getAllWith(this)) {
 
-//                System.out.println("CONN: " + connection);
+                System.out.println("CONN: " + connection);
 
                 TypeRepresentationContainer senderValueObject =
                         (TypeRepresentationContainer) connection.getSender().getValueObject();

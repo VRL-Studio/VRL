@@ -164,6 +164,8 @@ public class DefaultMethodRepresentation extends VComponent
     private Long threadId = 0L;
     private boolean paramsAreValid;
     
+    private int visualMethodId;
+    
     public static final String KEY_RETURN_VALUE_CONNECTOR = "return:0";
     public static final String KEY_INPUT_CONNECTOR_PREFIX = "input:";
 
@@ -604,8 +606,8 @@ public class DefaultMethodRepresentation extends VComponent
             
 //            getConnectors().add((VConnector) paramTypeContainer.getConnector());
 
-            addConnectorByKey(KEY_INPUT_CONNECTOR_PREFIX + i, (VConnector) connector);
-            connector.setId(KEY_INPUT_CONNECTOR_PREFIX + i);
+            addConnectorByKey(KEY_INPUT_CONNECTOR_PREFIX + i, (VConnector) paramTypeContainer.getConnector());
+            ((VConnector) paramTypeContainer.getConnector()).setId(KEY_INPUT_CONNECTOR_PREFIX + i);
 
             parameterTypeRep.updateLayout();
 
@@ -914,9 +916,11 @@ public class DefaultMethodRepresentation extends VComponent
      * @param methodDependencies the method dependencies
      */
     private void receiveParamData(CallTrace methodDependencies) {
+        System.out.println("RECEIVE:");
         try {
             // set ParamValues
             for (VConnector c : this.connectorsMap.values()) {
+                System.out.println("->rec: " + c.getId());
                 c.receiveData(true, methodDependencies);
             }
         } catch (Exception ex) {
@@ -1637,6 +1641,18 @@ public class DefaultMethodRepresentation extends VComponent
      */
     public Set<String> getConnectorKeys() {
         return connectorsMap.keySet();
+    }
+
+    public Integer getVisualMethodID() {
+        return visualMethodId;
+    }
+
+
+    /**
+     * @param visualMethodId the visualMethodId to set
+     */
+    public void setVisualMethodID(int visualMethodId) {
+        this.visualMethodId = visualMethodId;
     }
 
     /**

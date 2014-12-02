@@ -266,7 +266,7 @@ public class VisualObjectInspector extends ObjectInspector {
 //            if (method.getDescription().getMethodID() == desc.getMethodID()) {
 //                result = method;
 //            }
-            if (new MethodIdentifier(method.getDescription(), desc.getVisualID()).equals(desc)) {
+            if (new MethodIdentifier(method.getDescription(), desc.getVisualID(), desc.getVisualMethodID()).equals(desc)) {
                 result = method;
             }
         }

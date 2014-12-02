@@ -58,6 +58,8 @@ import eu.mihosoft.vrl.effects.EffectPanel;
 import eu.mihosoft.vrl.effects.FadeInEffect;
 import eu.mihosoft.vrl.effects.FadeOutEffect;
 import eu.mihosoft.vrl.lang.VLangUtils;
+import eu.mihosoft.vrl.lang.visual.StartObject;
+import eu.mihosoft.vrl.lang.visual.StopObject;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.lang.reflect.InvocationTargetException;
@@ -80,23 +82,16 @@ import eu.mihosoft.vrl.visual.VComboBox;
 import eu.mihosoft.vrl.visual.VLayout;
 import eu.mihosoft.vrl.visual.VSwingUtil;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JList;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
 
 /**
  * An object representation is a Swing based visualization of a Java object.
@@ -107,8 +102,8 @@ public class DefaultObjectRepresentation extends JPanel
         implements CanvasChild, IDObject {
 
     private static final long serialVersionUID = 6754769138031705583L;
-    private IDArrayList<DefaultMethodRepresentation> methods =
-            new IDArrayList<DefaultMethodRepresentation>();
+    private IDArrayList<DefaultMethodRepresentation> methods
+            = new IDArrayList<DefaultMethodRepresentation>();
     private IDArrayList<IDTable> connectorIDTables;
     private ObjectDescription description;
     private VisualObjectInspector inspector;
@@ -127,6 +122,8 @@ public class DefaultObjectRepresentation extends JPanel
     private JComponent inputPanel = new TransparentPanel();
     private JComponent outputPanel = new TransparentPanel();
     private DefaultMethodRepresentation referenceMethod = null;
+
+    private Map<MethodIdentifier, Integer> visualMethodIds = new HashMap<MethodIdentifier, Integer>();
 
     /**
      * Constructor.
@@ -189,20 +186,15 @@ public class DefaultObjectRepresentation extends JPanel
         this.setInspector(inspector);
         this.setTypeFactory(typeFactory);
 
-
         this.setMainCanvas(mainCanvas);
-
 
         VBoxLayout layout = new VBoxLayout(this, VBoxLayout.Y_AXIS);
 
         this.setLayout(layout);
 
-
         methodLayout = new OrderedBoxLayout(methodView, VBoxLayout.Y_AXIS);
 
         methodView.setLayout(new VLayout(methodLayout));
-
-
 
         selectionView = new EffectPanel(mainCanvas);
         selectionView.getEffectManager().
@@ -235,7 +227,6 @@ public class DefaultObjectRepresentation extends JPanel
 
         add(outputPanel);
 
-
         createSelectionView();
         setDescription(oDesc);
         initRepresentation();
@@ -247,23 +238,22 @@ public class DefaultObjectRepresentation extends JPanel
 //        referenceOutput = new VConnector((VisualCanvas) mainCanvas);
 //        referenceOutput.setValueObject(new OutputObject(referenceInput, this));
 //        referenceOutput.setType(ConnectorType.OUTPUT);
-
 //        // set preferred size is necessary, because minimum size is ignored by
 //        // the layout manager
 //        this.setMinimumSize(new Dimension(Short.MIN_VALUE, 40));
 //        this.setPreferredSize(new Dimension(Short.MIN_VALUE, 40));
-
 //        setMinimumSize(null);
 //        setMaximumSize(null);
 //        setPreferredSize(null);
-
         this.setOpaque(false);
     }
 
     private void updateSelectionViewVisibility() {
 
         // if no items are left selectionView is no longer needed
-        if (methodList.getItemCount() == 0) {
+        if (methodList.getItemCount() == 0
+                || getInspector().getObject(getObjectID()) instanceof StartObject
+                || getInspector().getObject(getObjectID()) instanceof StopObject) {
             hideSelectionView();
         }
     }
@@ -273,15 +263,14 @@ public class DefaultObjectRepresentation extends JPanel
      *
      * @param mDesc the method representation to add
      */
-    public DefaultMethodRepresentation addMethodToView(final MethodDescription mDesc) {
+    public DefaultMethodRepresentation addMethodToView(final MethodDescription mDesc, int visualMethodId) {
 
         // create visualization
-
-        if (isAddedToView(mDesc)) {
+        if (isAddedToView(mDesc, visualMethodId)) {
 
             updateSelectionViewVisibility();
 
-            return getMethodByMethodDescription(mDesc);
+            return getMethodByMethodDescription(mDesc, visualMethodId);
         }
 
 //        boolean isReferenceMethod = m.getMethodInfo() != null
@@ -308,12 +297,12 @@ public class DefaultObjectRepresentation extends JPanel
 //                    referenceOutput = mRep.getReturnValue().getConnector();
 //                }
 //            }
-
-        DefaultMethodRepresentation mRep =
-                new DefaultMethodRepresentation(this);
+        DefaultMethodRepresentation mRep
+                = new DefaultMethodRepresentation(this);
         mRep.initRepresentation(
                 mDesc, getConnectorIDTables().getById(
-                mDesc.getMethodID()));
+                        mDesc.getMethodID()));
+        mRep.setVisualMethodID(visualMethodId);
 
         getMethods().add(mRep);
 
@@ -326,8 +315,8 @@ public class DefaultObjectRepresentation extends JPanel
             // check whether constructor method added to view
             for (Component c : methodView.getComponents()) {
                 if (c instanceof DefaultMethodRepresentation) {
-                    DefaultMethodRepresentation m =
-                            (DefaultMethodRepresentation) c;
+                    DefaultMethodRepresentation m
+                            = (DefaultMethodRepresentation) c;
 
                     if (m.isInitializer()) {
                         updateSelectionViewVisibility();
@@ -342,8 +331,7 @@ public class DefaultObjectRepresentation extends JPanel
         // TODO start appearing with fade in
         // currently this is done inside of FadeIn effect
         //                method.setVisible(true);
-        methodList.removeItem(mDesc);
-
+//        methodList.removeItem(mDesc);
         methodView.add(mRep);
 
         // prevents drawing bugs (setVisible(true) is called later)
@@ -357,20 +345,18 @@ public class DefaultObjectRepresentation extends JPanel
                 && !mRep.getEffectManager().isDisabled()) {
             mRep.getEffectManager().
                     startAppearanceEffect(mRep, mRep.getStyle().
-                    getBaseValues().getDouble(
-                    CanvasWindow.FADE_IN_DURATION_KEY));
+                            getBaseValues().getDouble(
+                                    CanvasWindow.FADE_IN_DURATION_KEY));
         } else {
             mRep.getEffectManager().
                     startAppearanceEffect(mRep, 0.0);
             mRep.setVisible(true);
         }
 
-
         updateSelectionViewVisibility();
 
         // this is done to prevent layout bugs regarding object minimization
         // via double click on title bar
-
         if (getParentWindow() != null) {
 
             setMinimumSize(null);
@@ -421,12 +407,12 @@ public class DefaultObjectRepresentation extends JPanel
             if (!mainCanvas.isDisableEffects()) {
                 method.getEffectManager().
                         startDisappearanceEffect(method, method.getStyle().
-                        getBaseValues().getDouble(
-                        CanvasWindow.FADE_OUT_DURATION_KEY), frameListener);
+                                getBaseValues().getDouble(
+                                        CanvasWindow.FADE_OUT_DURATION_KEY), frameListener);
             } else {
                 method.getEffectManager().
                         startDisappearanceEffect(method, 0.0,
-                        frameListener);
+                                frameListener);
                 method.setVisible(false);
                 getMethodView().remove(method);
             }
@@ -434,7 +420,6 @@ public class DefaultObjectRepresentation extends JPanel
             // TODO start dissapearing after fade out
             // currently this is done inside of FadeOut effect
 //                method.setVisible(false);
-
             // we ignore reference methods
             if (method.getDescription().getMethodType()
                     != MethodType.REFERENCE
@@ -443,6 +428,7 @@ public class DefaultObjectRepresentation extends JPanel
                 methodList.addItem(method.getDescription(),
                         method.getDescription().getSignature());
                 getMethods().remove(method);
+
                 if (!selectionView.isVisible()) {
                     showSelectionView();
                 }
@@ -489,8 +475,10 @@ public class DefaultObjectRepresentation extends JPanel
             public void actionPerformed(ActionEvent e) {
                 // get the selected list item make it visible and remove
                 // it from the list
-                MethodDescription selected =
-                        (MethodDescription) methodList.getSelectedItem();
+                MethodDescription selected
+                        = (MethodDescription) methodList.getSelectedItem();
+
+                int visualMethodID = computeNextVisualMethodID(selected);
 
                 if (selected != null) {
 //                    boolean removeMethodAnimationRunning =
@@ -503,12 +491,25 @@ public class DefaultObjectRepresentation extends JPanel
                     // but will be made invisible when the remove method effect
                     // stops.
 //                    if (!removeMethodAnimationRunning) {
-                    addMethodToView(selected);
+                    addMethodToView(selected, visualMethodID);
 //                    }
                 }
             }
-        });
 
+        });
+    }
+
+    public int computeNextVisualMethodID(MethodDescription selected) {
+        int visualMethodID = 0;
+        // (0,0) since we are only interested in the method signature
+        // and not in the visualization
+        MethodIdentifier mId = selected.toMethodIdentifier(0, 0);
+        if (visualMethodIds.containsKey(mId)) {
+            visualMethodID = visualMethodIds.get(mId) + 1;
+        } else {
+            visualMethodIds.put(mId, 0);
+        }
+        return visualMethodID;
     }
 
     /**
@@ -528,8 +529,6 @@ public class DefaultObjectRepresentation extends JPanel
 //            public void mouseExited(MouseEvent e) {
 //            }
 //        });
-
-
         setMinimumSize(null);
         setMaximumSize(null);
         setPreferredSize(null);
@@ -554,14 +553,12 @@ public class DefaultObjectRepresentation extends JPanel
 //        if (initializers.size() == 1) {
 //            addMethodToView(initializers.get(0));
 //        }
-
-
         for (MethodDescription m : getDescription().getMethods()) {
 
             MethodInfo mInfo = m.getMethodInfo();
 
-            boolean isReferenceMethod =
-                    m.getMethodType() == MethodType.REFERENCE
+            boolean isReferenceMethod
+                    = m.getMethodType() == MethodType.REFERENCE
                     || m.getMethodType() == MethodType.CUSTOM_REFERENCE;
 
             if (!isReferenceMethod) {
@@ -572,25 +569,35 @@ public class DefaultObjectRepresentation extends JPanel
                 if (mInfo != null) {
 
                     // TODO duplicated check (see DefaultMethodRepresentation.initRepresentation())
-                    boolean hideMethod =
-                            mInfo.hide() && !mInfo.hideCloseIcon();
+                    boolean hideMethod
+                            = mInfo.hide() && !mInfo.hideCloseIcon();
 
                     if (!hideMethod) {
-                        addMethodToView(m);
+                        int visualMethodID = computeNextVisualMethodID(m);
+                        addMethodToView(m, visualMethodID);
                     }
                 } else if (!isReferenceMethod) {
                     // if this method does not have a method info and
                     // only this method and a reference method are available
                     // then show this method as default
                     if (getDescription().getMethods().size() == 2) {
-                        addMethodToView(m);
+                        int visualMethodID = computeNextVisualMethodID(m);
+                        addMethodToView(m, visualMethodID);
                     }
                 }
             }
         }
+        
+        boolean isStartOrStopObject = 
+                getInspector().getObject(getObjectID()) instanceof StartObject
+                || getInspector().getObject(getObjectID()) instanceof StopObject;
 
         if (methodList.getItemCount() > 0) {
             showSelectionView();
+        }
+        
+        if (isStartOrStopObject) {
+            hideSelectionView();
         }
 
 //        if (noMethodsAddedToView) {
@@ -599,13 +606,11 @@ public class DefaultObjectRepresentation extends JPanel
 ////            this.setMinimumSize(new Dimension(Short.MIN_VALUE, 40));
 ////            this.setPreferredSize(new Dimension(Short.MAX_VALUE, 40));
 //        }
-
-
         selectionView.getEffectManager().setDisabled(false);
     }
 
-    public boolean isAddedToView(MethodDescription mDesc) {
-        return getMethodByMethodDescription(mDesc) != null;
+    public boolean isAddedToView(MethodDescription mDesc, int visualMethodID) {
+        return getMethodByMethodDescription(mDesc, visualMethodID) != null;
     }
 
     /**
@@ -617,9 +622,9 @@ public class DefaultObjectRepresentation extends JPanel
                 && !selectionView.getEffectManager().isDisabled()) {
             selectionView.getEffectManager().
                     startAppearanceEffect(selectionView, getParentWindow().
-                    getStyle().
-                    getBaseValues().getDouble(
-                    CanvasWindow.FADE_IN_DURATION_KEY));
+                            getStyle().
+                            getBaseValues().getDouble(
+                                    CanvasWindow.FADE_IN_DURATION_KEY));
         } else {
             selectionView.getEffectManager().
                     startAppearanceEffect(selectionView, 0.0);
@@ -635,13 +640,18 @@ public class DefaultObjectRepresentation extends JPanel
                 && !selectionView.getEffectManager().isDisabled()) {
             selectionView.getEffectManager().
                     startDisappearanceEffect(selectionView, getParentWindow().
-                    getStyle().
-                    getBaseValues().getDouble(
-                    CanvasWindow.FADE_OUT_DURATION_KEY));
+                            getStyle().
+                            getBaseValues().getDouble(
+                                    CanvasWindow.FADE_OUT_DURATION_KEY));
         } else {
             selectionView.getEffectManager().
                     startDisappearanceEffect(selectionView, 0.0);
-            if (methodList.getItemCount() == 0) {
+            
+             boolean isStartOrStopObject = 
+                getInspector().getObject(getObjectID()) instanceof StartObject
+                || getInspector().getObject(getObjectID()) instanceof StopObject;
+            
+            if (methodList.getItemCount() == 0 || isStartOrStopObject) {
                 selectionView.setVisible(false);
             }
         }
@@ -662,8 +672,9 @@ public class DefaultObjectRepresentation extends JPanel
 
                     // we ignore visual id here (0) because we want to 
                     // reassign description
-                    if (mDesc.toMethodIdentifier(0).
-                            equals(mRep.getDescription().toMethodIdentifier(0))) {
+                    if (mDesc.toMethodIdentifier(0, mRep.getVisualMethodID()).
+                            equals(mRep.getDescription().
+                                    toMethodIdentifier(0, mRep.getVisualMethodID()))) {
                         mRep.setDescription(mDesc);
                         break;
                     }
@@ -672,14 +683,13 @@ public class DefaultObjectRepresentation extends JPanel
 
             // Everything below is just for updating method desc instances
             // in methodList
-
             // copy items in methodList to array
-            MethodDescription[] methodListEntries =
-                    new MethodDescription[methodList.getItemCount()];
+            MethodDescription[] methodListEntries
+                    = new MethodDescription[methodList.getItemCount()];
 
             for (int i = 0; i < methodListEntries.length; i++) {
-                methodListEntries[i] =
-                        (MethodDescription) methodList.getItemAt(i);
+                methodListEntries[i]
+                        = (MethodDescription) methodList.getItemAt(i);
             }
 
             // delete old method desc objects
@@ -693,10 +703,10 @@ public class DefaultObjectRepresentation extends JPanel
 
                 for (MethodDescription mDescNew : description.getMethods()) {
 
-                    // we ignore visual id here (0) because we want to 
-                    // reassign description
-                    if (mDescNew.toMethodIdentifier(0).
-                            equals(mDescOld.toMethodIdentifier(0))) {
+                    // we ignore visual id's here (0,0) because we want to 
+                    // reassign description and only care about the signature
+                    if (mDescNew.toMethodIdentifier(0, 0).
+                            equals(mDescOld.toMethodIdentifier(0, 0))) {
 
                         // add method
                         methodList.addItem(mDescNew);
@@ -737,8 +747,8 @@ public class DefaultObjectRepresentation extends JPanel
 
             if (isReferenceMethod) {
 
-                DefaultMethodRepresentation mRep =
-                        new DefaultMethodRepresentation(this);
+                DefaultMethodRepresentation mRep
+                        = new DefaultMethodRepresentation(this);
                 mRep.initRepresentation(
                         m, getConnectorIDTables().getById(m.getMethodID()));
 
@@ -841,13 +851,18 @@ public class DefaultObjectRepresentation extends JPanel
      * otherwise
      */
     public DefaultMethodRepresentation getMethodByMethodDescription(
-            MethodDescription mDesc) {
+            MethodDescription mDesc, int visualMethodID) {
         DefaultMethodRepresentation result = null;
 
         for (DefaultMethodRepresentation m : getMethods()) {
-            boolean equalName =
-                    mDesc.getMethodName().equals(m.getDescription().
-                    getMethodName());
+
+            if (m.getVisualMethodID() != visualMethodID) {
+                continue;
+            }
+
+            boolean equalName
+                    = mDesc.getMethodName().equals(m.getDescription().
+                            getMethodName());
 
             boolean equalPamareters = true;
 
@@ -878,6 +893,54 @@ public class DefaultObjectRepresentation extends JPanel
     }
 
     /**
+     * Returns method representation by signature (name and parameter types) and
+     * not by id.
+     *
+     * @param mDesc the method description
+     * @return returns method representation by signature (name and parameter
+     * types) if method representation exists; returns <code>null</code>
+     * otherwise
+     */
+    public List<DefaultMethodRepresentation> getMethodsByMethodDescription(
+            MethodDescription mDesc) {
+        List<DefaultMethodRepresentation> result
+                = new ArrayList<DefaultMethodRepresentation>();
+
+        for (DefaultMethodRepresentation m : getMethods()) {
+
+            boolean equalName
+                    = mDesc.getMethodName().equals(m.getDescription().
+                            getMethodName());
+
+            boolean equalPamareters = true;
+
+            int paramLength1 = mDesc.getParameterTypes().length;
+            int paramLength2 = m.getDescription().getParameterTypes().length;
+
+            if (paramLength1 != paramLength2) {
+                equalPamareters = false;
+            }
+
+            for (int i = 0; i < mDesc.getParameterTypes().length && equalPamareters; i++) {
+
+                if (mDesc.getParameterTypes()[i]
+                        != m.getDescription().getParameterTypes()[i]) {
+                    equalPamareters = false;
+                    break;
+                }
+            }
+
+            boolean equalSignature = equalName && equalPamareters;
+
+            if (equalSignature) {
+                result.add(m);
+            }
+        }
+
+        return result;
+    }
+
+    /**
      * Returns method representation by signature (name and parameter types).
      *
      * @param name the method name
@@ -890,12 +953,10 @@ public class DefaultObjectRepresentation extends JPanel
             String name, List<String> parameterTypeNames) {
         DefaultMethodRepresentation result = null;
 
-
-
         for (DefaultMethodRepresentation m : getMethods()) {
-            boolean equalName =
-                    name.equals(m.getDescription().
-                    getMethodName());
+            boolean equalName
+                    = name.equals(m.getDescription().
+                            getMethodName());
 
             boolean equalPamareters = true;
 
@@ -940,8 +1001,8 @@ public class DefaultObjectRepresentation extends JPanel
 
         for (MethodDescription m : getDescription().getMethods()) {
 //            System.out.println(">> Method: " + m.getName());
-            boolean equalName =
-                    name.equals(m.getMethodName());
+            boolean equalName
+                    = name.equals(m.getMethodName());
 
             boolean equalPamareters = true;
 
@@ -1000,9 +1061,9 @@ public class DefaultObjectRepresentation extends JPanel
 
         for (DefaultMethodRepresentation m : getMethods()) {
 //            System.out.println(">> Method: " + m.getName());
-            boolean equalName =
-                    name.equals(m.getDescription().
-                    getMethodName());
+            boolean equalName
+                    = name.equals(m.getDescription().
+                            getMethodName());
 
             boolean equalPamareters = true;
 
@@ -1176,19 +1237,19 @@ public class DefaultObjectRepresentation extends JPanel
 
                 if (comp.isVisible()) {
 
-                    DefaultMethodRepresentation mRep =
-                            (DefaultMethodRepresentation) comp;
+                    DefaultMethodRepresentation mRep
+                            = (DefaultMethodRepresentation) comp;
 
                     result.add(
                             new MethodIdentifier(mRep.
-                            getDescription(),
-                            visualID));
+                                    getDescription(),
+                                    visualID, mRep.getVisualMethodID()));
 
                     for (DefaultMethodRepresentation m : mRep.getProperties()) {
                         result.add(
                                 new MethodIdentifier(m.
-                                getDescription(),
-                                visualID));
+                                        getDescription(),
+                                        visualID, m.getVisualMethodID()));
                     }
                 }
 //            }
@@ -1220,8 +1281,8 @@ public class DefaultObjectRepresentation extends JPanel
      * @return
      */
     public ArrayList<DefaultMethodRepresentation> getInvocationList() {
-        ArrayList<DefaultMethodRepresentation> result =
-                new ArrayList<DefaultMethodRepresentation>();
+        ArrayList<DefaultMethodRepresentation> result
+                = new ArrayList<DefaultMethodRepresentation>();
 
         // add reference method if in use and not already added
         Connections connections = getMainCanvas().getDataConnections();
@@ -1239,8 +1300,8 @@ public class DefaultObjectRepresentation extends JPanel
 
                 if (comp.isVisible()) {
 
-                    DefaultMethodRepresentation mRep =
-                            (DefaultMethodRepresentation) comp;
+                    DefaultMethodRepresentation mRep
+                            = (DefaultMethodRepresentation) comp;
 
                     result.add(mRep);
 

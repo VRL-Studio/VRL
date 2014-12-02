@@ -49,13 +49,13 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import java.util.Arrays;
 
 /**
  * Identifies a method.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class MethodIdentifier {
@@ -65,6 +65,7 @@ public class MethodIdentifier {
     private String methodName;
     private String[] parameterTypeNames;
     private Integer visualID;
+    private Integer visualMethodID;
 
     /**
      * Constructor.
@@ -75,6 +76,7 @@ public class MethodIdentifier {
 
     /**
      * Constructor.
+     *
      * @param mDesc the method representation that defines the method.
      */
     public MethodIdentifier(
@@ -96,14 +98,16 @@ public class MethodIdentifier {
         setParameterTypeNames(tmp);
 
         setVisualID(mRep.getParentObject().getID());
+        setVisualMethodID(mRep.getVisualMethodID());
     }
 
     /**
      * Constructor.
+     *
      * @param mDesc the method description that defines the method.
      */
     public MethodIdentifier(
-            MethodDescription mDesc, int visualID) {
+            MethodDescription mDesc, int visualID, int visualMethodID) {
         setObjectID(mDesc.getObjectID());
         setMethodID(mDesc.getMethodID());
         setMethodName(mDesc.getMethodName());
@@ -118,10 +122,12 @@ public class MethodIdentifier {
         setParameterTypeNames(tmp);
 
         setVisualID(visualID);
+        setVisualMethodID(visualMethodID);
     }
 
     /**
      * Returns the object id.
+     *
      * @return the objectID
      */
     public Integer getObjectID() {
@@ -130,6 +136,7 @@ public class MethodIdentifier {
 
     /**
      * Defines the object id.
+     *
      * @param objectID the id to set
      */
     public final void setObjectID(Integer objectID) {
@@ -138,6 +145,7 @@ public class MethodIdentifier {
 
     /**
      * Returns the method id.
+     *
      * @return the method id
      */
     public Integer getMethodID() {
@@ -146,6 +154,7 @@ public class MethodIdentifier {
 
     /**
      * Defines the method id.
+     *
      * @param methodID the method id to set
      */
     public final void setMethodID(Integer methodID) {
@@ -154,6 +163,7 @@ public class MethodIdentifier {
 
     /**
      * Returns the method name.
+     *
      * @return the method name
      */
     public String getMethodName() {
@@ -162,6 +172,7 @@ public class MethodIdentifier {
 
     /**
      * Defines the method name.
+     *
      * @param methodName the method name to set
      */
     public final void setMethodName(String methodName) {
@@ -170,6 +181,7 @@ public class MethodIdentifier {
 
     /**
      * Returns the parameter types
+     *
      * @return the parameter types
      */
     public String[] getParameterTypeNames() {
@@ -178,6 +190,7 @@ public class MethodIdentifier {
 
     /**
      * Defines the parameter types.
+     *
      * @param parameterTypes the parameter types to set
      */
     public final void setParameterTypeNames(String[] parameterTypeNames) {
@@ -213,10 +226,11 @@ public class MethodIdentifier {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 97 * hash + (this.methodName != null ? this.methodName.hashCode() : 0);
-        hash = 97 * hash + Arrays.deepHashCode(this.parameterTypeNames);
-        hash = 97 * hash + (this.visualID != null ? this.visualID.hashCode() : 0);
+        int hash = 7;
+        hash = 23 * hash + (this.methodName != null ? this.methodName.hashCode() : 0);
+        hash = 23 * hash + Arrays.deepHashCode(this.parameterTypeNames);
+        hash = 23 * hash + (this.visualID != null ? this.visualID.hashCode() : 0);
+        hash = 23 * hash + (this.visualMethodID != null ? this.visualMethodID.hashCode() : 0);
         return hash;
     }
 
@@ -232,9 +246,24 @@ public class MethodIdentifier {
                     + "parameterTypeNames == null!");
         }
 
-        String methodString = "v-id:" + getVisualID() + ";"
+        String methodString = "v-id:" + getVisualID()
+                + ";v-method-id:" + getVisualMethodID() + ";"
                 + getMethodName() + ";" + paramTypeString + ";";
 
         return methodString;
+    }
+
+    /**
+     * @return the visualMethodID
+     */
+    public Integer getVisualMethodID() {
+        return visualMethodID;
+    }
+
+    /**
+     * @param visualMethodID the visualMethodID to set
+     */
+    public void setVisualMethodID(Integer visualMethodID) {
+        this.visualMethodID = visualMethodID;
     }
 }
