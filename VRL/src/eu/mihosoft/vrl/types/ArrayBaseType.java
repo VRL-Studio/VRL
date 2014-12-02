@@ -522,58 +522,58 @@ public class ArrayBaseType extends TypeRepresentationBase {
                             type, mRep, ConnectorType.OUTPUT, getMainCanvas());
                 }
 
-                if (getConnector() != null) {
-
-                    // each element input connector will be added relative to
-                    // the connector index of this type representation
-                    //
-                    // output connectors will be added to the end of the list
-                    // because they are always added after all inputs have been
-                    // added
-                    int currentelementIndex = i + containerSize;
-                    int parentIndex = getParentMethod().getConnectors().
-                            getIndexById(getConnector().getID());
-
-                    // ask other parents with index in [1,parentIndex-1]
-                    // how many element connectors they provide if they are
-                    // an instance of ArrayBaseType
-                    int connectorOffset = currentelementIndex;
-
-                    for (int j = 1; j < parentIndex; j++) {
-//                        System.out.println("TREP: " + j);
-
-                        TypeRepresentationContainer tContJ =
-                                (TypeRepresentationContainer) getParentMethod().
-                                getConnectors().get(j).getValueObject();
-
-                        TypeRepresentationBase tRep = tContJ.getTypeRepresentation();
-
-                        if (tRep instanceof ArrayBaseType) {
-                            ArrayBaseType arrayBaseType = (ArrayBaseType) tRep;
-                            connectorOffset += arrayBaseType.getArraySize();
-                        }
-                    }
-
-                    int baseIndex =
-                            getParentMethod().getDescription().
-                            getParameterTypes().length;
-
-                    int connectorIndex = baseIndex + connectorOffset + 1;
-
-//                    System.out.println("INDEX: " + connectorIndex);
-
-                    // if we are not loading from file and we are an input
-                    // we need to specify the index at wich the connector will
-                    // be added to
-                    if (!((VisualCanvas) getMainCanvas()).isLoadingSession()
-                            && isInput()) {
-                        mRep.getConnectors().add(connectorIndex, (VConnector) tCont.getTypeRepresentation().getConnector());
-                    } else {
-                        // if we load from file or we are an output we use the
-                        // id values as defined by the id table
-                        mRep.getConnectors().add((VConnector) tCont.getTypeRepresentation().getConnector());
-                    }
-                }
+//                if (getConnector() != null) {
+//
+//                    // each element input connector will be added relative to
+//                    // the connector index of this type representation
+//                    //
+//                    // output connectors will be added to the end of the list
+//                    // because they are always added after all inputs have been
+//                    // added
+//                    int currentelementIndex = i + containerSize;
+//                    int parentIndex = getParentMethod().getConnectors().
+//                            getIndexById(getConnector().getID());
+//
+//                    // ask other parents with index in [1,parentIndex-1]
+//                    // how many element connectors they provide if they are
+//                    // an instance of ArrayBaseType
+//                    int connectorOffset = currentelementIndex;
+//
+//                    for (int j = 1; j < parentIndex; j++) {
+////                        System.out.println("TREP: " + j);
+//
+//                        TypeRepresentationContainer tContJ =
+//                                (TypeRepresentationContainer) getParentMethod().
+//                                getConnectors().get(j).getValueObject();
+//
+//                        TypeRepresentationBase tRep = tContJ.getTypeRepresentation();
+//
+//                        if (tRep instanceof ArrayBaseType) {
+//                            ArrayBaseType arrayBaseType = (ArrayBaseType) tRep;
+//                            connectorOffset += arrayBaseType.getArraySize();
+//                        }
+//                    }
+//
+//                    int baseIndex =
+//                            getParentMethod().getDescription().
+//                            getParameterTypes().length;
+//
+//                    int connectorIndex = baseIndex + connectorOffset + 1;
+//
+////                    System.out.println("INDEX: " + connectorIndex);
+//
+//                    // if we are not loading from file and we are an input
+//                    // we need to specify the index at wich the connector will
+//                    // be added to
+//                    if (!((VisualCanvas) getMainCanvas()).isLoadingSession()
+//                            && isInput()) {
+//                        mRep.getConnectors().add(connectorIndex, (VConnector) tCont.getTypeRepresentation().getConnector());
+//                    } else {
+//                        // if we load from file or we are an output we use the
+//                        // id values as defined by the id table
+//                        mRep.getConnectors().add((VConnector) tCont.getTypeRepresentation().getConnector());
+//                    }
+//                }
 
                 getTypeContainers().add(tCont);
 

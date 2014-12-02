@@ -289,8 +289,8 @@ public class AbstractDataConnection {
             return;
         }
 
-        Connector sender;
-        Connector receiver;
+        Connector sender = null;
+        Connector receiver = null;
 
         if (getParamSenderKey() == null || getParamReceiverKey() == null) {
 
@@ -301,8 +301,8 @@ public class AbstractDataConnection {
             int senderID = this.getParamSender();
             int receiverID = this.getParamReceiver();
 
-            sender = senderMethodRep.getConnector(senderID);
-            receiver = receiverMethodRep.getConnector(receiverID);
+//            sender = senderMethodRep.getConnector(senderID);
+//            receiver = receiverMethodRep.getConnector(receiverID);
 
         } else {
             System.out.println(">> new id's: " + getParamSenderKey() + " -> " + getParamReceiverKey());

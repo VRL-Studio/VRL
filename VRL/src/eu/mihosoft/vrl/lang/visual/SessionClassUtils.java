@@ -568,7 +568,7 @@ public class SessionClassUtils {
 
         // take the input value connector and get the connections
         // connector of outputvalue (see OutputObject)
-        return m.getConnector(2);
+        return m.getConnectorByKey(DefaultMethodRepresentation.KEY_INPUT_CONNECTOR_PREFIX+1);
     }
 
     /**

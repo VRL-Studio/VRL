@@ -96,6 +96,7 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -125,7 +126,7 @@ public class DefaultMethodRepresentation extends VComponent
     private IDArrayList<TypeRepresentationContainer> parameterTypeRepresentations =
             new IDArrayList<TypeRepresentationContainer>();
     private TypeRepresentationBase returnTypeRepresentation;
-    private IDArrayList<VConnector> connectors = new IDArrayList<VConnector>();
+//    private IDArrayList<VConnector> connectors = new IDArrayList<VConnector>();
     private Map<String, VConnector> connectorsMap = new HashMap<String, VConnector>();
     private TypeRepresentationFactory typeFactory;
     private MethodDescription description;
@@ -162,6 +163,9 @@ public class DefaultMethodRepresentation extends VComponent
     private RepresentationGroup parameterGroup;
     private Long threadId = 0L;
     private boolean paramsAreValid;
+    
+    public static final String KEY_RETURN_VALUE_CONNECTOR = "return:0";
+    public static final String KEY_INPUT_CONNECTOR_PREFIX = "input:";
 
     /**
      * Constructor.
@@ -465,9 +469,9 @@ public class DefaultMethodRepresentation extends VComponent
 
         setDescription(description);
 
-        if (idTable != null) {
-            connectors.setIdTable(idTable);
-        }
+//        if (idTable != null) {
+//            connectors.setIdTable(idTable);
+//        }
 
         // if annotations are used to define custom method title then
         // use it; set it to method name retrieved from the Reflection API
@@ -535,8 +539,8 @@ public class DefaultMethodRepresentation extends VComponent
 
         Connector connector = returnTypeContainer.getConnector();
         if (connector != null) {
-            getConnectors().add((VConnector) connector);
-            addConnectorByKey("return:0", (VConnector) connector);
+//            getConnectors().add((VConnector) connector);
+            addConnectorByKey(KEY_RETURN_VALUE_CONNECTOR, (VConnector) connector);
         }
 
         returnTypeRepresentation.addedToMethodRepresentation();
@@ -594,9 +598,12 @@ public class DefaultMethodRepresentation extends VComponent
 //                inputPanel.add(add(Box.createVerticalGlue()));
 //            }
 
-            getConnectors().add((VConnector) paramTypeContainer.getConnector());
+            
+            
+            
+//            getConnectors().add((VConnector) paramTypeContainer.getConnector());
 
-            addConnectorByKey("input:" + i, (VConnector) connector);
+            addConnectorByKey(KEY_INPUT_CONNECTOR_PREFIX + i, (VConnector) connector);
 
             parameterTypeRep.updateLayout();
 
@@ -907,7 +914,7 @@ public class DefaultMethodRepresentation extends VComponent
     private void receiveParamData(CallTrace methodDependencies) {
         try {
             // set ParamValues
-            for (VConnector c : this.getConnectors()) {
+            for (VConnector c : this.connectorsMap.values()) {
                 c.receiveData(true, methodDependencies);
             }
         } catch (Exception ex) {
@@ -931,9 +938,10 @@ public class DefaultMethodRepresentation extends VComponent
         Connector c = null;
 
         try {
-            if (!connectors.isEmpty()) {
+            if (!connectorsMap.values().isEmpty()) {
                 // return value connector
-                c = getConnector(0);
+//                c = getConnector(0);
+                c = getConnectorByKey(KEY_RETURN_VALUE_CONNECTOR);
             }
 
             // we are done if this method has no return value connector
@@ -1304,23 +1312,23 @@ public class DefaultMethodRepresentation extends VComponent
         this.parentObject = parentObject;
     }
 
-    /**
-     * Returns connector with index i.
-     *
-     * @param i index of the connector that is to be returned
-     * @return the connector with index i
-     */
-    public Connector getConnector(int i) {
-        return getConnectors().getById(i);
-    }
+//    /**
+//     * Returns connector with index i.
+//     *
+//     * @param i index of the connector that is to be returned
+//     * @return the connector with index i
+//     */
+//    public Connector getConnector(int i) {
+//        return getConnectors().getById(i);
+//    }
 
     /**
      * Returns all connectors of the method.
      *
      * @return all connectors of the method
      */
-    public IDArrayList<VConnector> getConnectors() {
-        return connectors;
+    public Collection<VConnector> getConnectors() {
+        return Collections.unmodifiableCollection(connectorsMap.values());
     }
 
     /**
@@ -1331,7 +1339,7 @@ public class DefaultMethodRepresentation extends VComponent
     public ArrayList<Connection> getConnections() {
         ArrayList<Connection> connections = new ArrayList<Connection>();
         try {
-            for (Connector connector : this.getConnectors()) {
+            for (Connector connector : connectorsMap.values()) {
                 connections.addAll(this.getParentObject().
                         getMainCanvas().getDataConnections().getAllWith(connector));
             }
@@ -1424,7 +1432,7 @@ public class DefaultMethodRepresentation extends VComponent
      */
     public Connector getOutputConnector() {
         Connector c = null;
-        for (Connector i : this.getConnectors()) {
+        for (Connector i : connectorsMap.values()) {
             if (i.isOutput()) {
                 c = i;
                 break;
@@ -1441,7 +1449,7 @@ public class DefaultMethodRepresentation extends VComponent
     public ArrayList<Connector> getInputConnectors() {
         ArrayList<Connector> inputs = new ArrayList<Connector>();
 
-        for (Connector c : getConnectors()) {
+        for (Connector c : connectorsMap.values()) {
             if (c.isInput()) {
                 inputs.add(c);
             }
