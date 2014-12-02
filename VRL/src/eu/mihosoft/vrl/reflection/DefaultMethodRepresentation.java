@@ -541,6 +541,7 @@ public class DefaultMethodRepresentation extends VComponent
         if (connector != null) {
 //            getConnectors().add((VConnector) connector);
             addConnectorByKey(KEY_RETURN_VALUE_CONNECTOR, (VConnector) connector);
+            connector.setId(KEY_RETURN_VALUE_CONNECTOR);
         }
 
         returnTypeRepresentation.addedToMethodRepresentation();
@@ -604,6 +605,7 @@ public class DefaultMethodRepresentation extends VComponent
 //            getConnectors().add((VConnector) paramTypeContainer.getConnector());
 
             addConnectorByKey(KEY_INPUT_CONNECTOR_PREFIX + i, (VConnector) connector);
+            connector.setId(KEY_INPUT_CONNECTOR_PREFIX + i);
 
             parameterTypeRep.updateLayout();
 
