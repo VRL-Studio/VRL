@@ -266,6 +266,25 @@ public class VisualObjectInspector extends ObjectInspector {
 //            if (method.getDescription().getMethodID() == desc.getMethodID()) {
 //                result = method;
 //            }
+            
+            boolean visualMethodIDFix = false;
+            if (method.getVisualMethodID() == null) {
+                method.setVisualMethodID(0);
+                visualMethodIDFix = true;
+            }
+            
+            if (desc.getVisualMethodID() == null) {
+                visualMethodIDFix = true;
+                desc.setVisualMethodID(0);
+            }
+            
+            if (visualMethodIDFix) {
+                 System.out.println(">> Warning: deprecated file format "
+                        + "(before 03.12.2014): "
+                        + "--> cannot restore connections "
+                        + "(trying to fix visualMethodId)" );
+            }
+            
             if (new MethodIdentifier(method.getDescription(), desc.getVisualID(), desc.getVisualMethodID()).equals(desc)) {
                 result = method;
             }

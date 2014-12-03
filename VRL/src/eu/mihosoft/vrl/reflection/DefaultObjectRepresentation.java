@@ -954,34 +954,40 @@ public class DefaultObjectRepresentation extends JPanel
         DefaultMethodRepresentation result = null;
 
         for (DefaultMethodRepresentation m : getMethods()) {
+            
+            System.out.println(" --> searching: " + m.getName());
             boolean equalName
                     = name.equals(m.getDescription().
                             getMethodName());
 
-            boolean equalPamareters = true;
+            boolean equalParameters = true;
 
             if (m.getDescription().getParameterTypes().length
                     != parameterTypeNames.size()) {
-                equalPamareters = false;
+                equalParameters = false;
             } else {
 
                 for (int i = 0; i < parameterTypeNames.size(); i++) {
                     if (!parameterTypeNames.get(i).equals(
                             m.getDescription().
                             getParameterTypes()[i].getName())) {
-//                        System.out.println(" >> equal false!");
-                        equalPamareters = false;
+//                        System.out.println(" >> equal false! " 
+//                        + parameterTypeNames.get(i) + " != " 
+//                        +m.getDescription().getParameterTypes()[i].getName());
+                        equalParameters = false;
                         break;
                     }
                 }
             }
 
-            boolean equalSignature = equalName && equalPamareters;
+            boolean equalSignature = equalName && equalParameters;
 
             if (equalSignature) {
                 result = m;
             }
         }
+        
+        System.out.println("RESULT: " + name + ": " + result);
 
         return result;
     }
@@ -1199,6 +1205,7 @@ public class DefaultObjectRepresentation extends JPanel
         ArrayList<Component> methodOrder = new ArrayList<Component>();
 
         for (MethodIdentifier id : order) {
+            
             DefaultMethodRepresentation mRep = getMethodByIdentifier(id);
             if (mRep == null) {
                 System.err.println(">> Error: setMethodOrder(): Method "

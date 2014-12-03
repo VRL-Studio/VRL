@@ -252,6 +252,11 @@ public class MethodIdentifier {
 
         return methodString;
     }
+    
+    @Override
+    public String toString() {
+        return getSignature();
+    }
 
     /**
      * @return the visualMethodID

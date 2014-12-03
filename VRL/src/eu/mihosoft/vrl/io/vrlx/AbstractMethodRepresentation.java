@@ -216,11 +216,11 @@ public class AbstractMethodRepresentation {
      */
     public void assignProperties(DefaultMethodRepresentation m) {
 
-//        System.out.println("****METHOD: " + m.getName());
-//
-//        for (TypeRepresentationBase t : m.getParameters()) {
-//            System.out.println(">> Param: " + t.getValueName());
-//        }
+        System.out.println("****METHOD: " + m.getName());
+
+        for (TypeRepresentationBase t : m.getParameters()) {
+            System.out.println(" --> Param: " + t.getValueName());
+        }
         
         m.setVisualMethodID(getVisualMethodID());
 
@@ -296,6 +296,8 @@ public class AbstractMethodRepresentation {
         if (getMinimized()) {
             m.minimize();
         }
+        
+        System.out.println(" --> DONE");
     }
 
     /**

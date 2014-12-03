@@ -160,8 +160,35 @@ public class AbstractObjectRepresentation
      */
     public synchronized void assignProperties(VisualCanvas canvas,
             final DefaultObjectRepresentation o) {
+        
+        System.out.println("-----------------------------------------------");
 
         for (AbstractMethodRepresentation m : this) {
+            
+            System.out.println(" -- checking + " + m.getMethodName());
+            
+            // since 03.12.2014 we introduced the visual method id
+            // to allow multiple method visualizations
+            if (m.getVisualMethodID() == null) {
+                
+                String msg = ">> Warning in method '"+ m.getMethodName() +"()' deprecated file format "
+                        + "(before 03.12.2014): "
+                        + "--> cannot restore connections "
+                        + "(trying to fix visualMethodId)";
+                
+                System.err.println(msg);
+                m.setVisualMethodID(0);
+                
+                canvas.getMessageBox().addMessage(
+                            "Cannot assign method properties:",
+                            msg, o, MessageType.WARNING);
+                
+                for(MethodIdentifier mID : getMethodOrder()) {
+                    if (mID.getVisualMethodID() == null) {
+                        mID.setVisualMethodID(0);
+                    }
+                }
+            }
 
             // get the correct method representation - not by id but by
             // signature
@@ -208,7 +235,9 @@ public class AbstractObjectRepresentation
 
             if (m.getVisibility()
                     && (getMethodOrder() == null || getMethodOrder().
-                    contains(new MethodIdentifier(method, visualID, m.getVisualMethodID())))) {
+                    contains(new MethodIdentifier(
+                            method, visualID, m.getVisualMethodID())))) {
+                System.out.println("ADD2VIEW: " + m.getMethodName());
                 mRep = o.addMethodToView(method, m.getVisualMethodID());
             }
 //            else {
@@ -228,18 +257,30 @@ public class AbstractObjectRepresentation
         // check that all methods in order do exist:
         for (int i = 0; i < getMethodOrder().size(); i++) {
             MethodIdentifier mID = getMethodOrder().get(i);
+            
+            System.out.println(" -> searchin mOrder for " + mID);
+            
             if (o.getMethodByIdentifier(mID) == null) {
                 if (i > 0) {
                     missingMethods += ", ";
                 }
-                missingMethods += mID.getMethodName() + "()";
+                missingMethods += mID.getMethodName()+ "()";
                 indicesToDelete.add(i);
+                
+                System.out.println("  -> not found " + mID);
+                
+                System.out.println("  -> available:");
+                for(DefaultMethodRepresentation mIdx : o.getMethods()) {
+                    System.out.println("   --> " + mIdx.getName());
+                }
+            } else {
+                System.out.println("  -> found " + mID);
             }
         }
 
         // delete misssing methods
         for (Integer i : indicesToDelete) {
-            getMethodOrder().remove(i);
+            getMethodOrder().remove((int)i);
         }
 
         o.setMethodOrder(getMethodOrder());
