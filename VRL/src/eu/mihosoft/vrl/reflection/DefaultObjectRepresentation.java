@@ -954,8 +954,7 @@ public class DefaultObjectRepresentation extends JPanel
         DefaultMethodRepresentation result = null;
 
         for (DefaultMethodRepresentation m : getMethods()) {
-            
-            System.out.println(" --> searching: " + m.getName());
+
             boolean equalName
                     = name.equals(m.getDescription().
                             getMethodName());
@@ -986,8 +985,6 @@ public class DefaultObjectRepresentation extends JPanel
                 result = m;
             }
         }
-        
-        System.out.println("RESULT: " + name + ": " + result);
 
         return result;
     }

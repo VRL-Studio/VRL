@@ -160,12 +160,8 @@ public class AbstractObjectRepresentation
      */
     public synchronized void assignProperties(VisualCanvas canvas,
             final DefaultObjectRepresentation o) {
-        
-        System.out.println("-----------------------------------------------");
 
         for (AbstractMethodRepresentation m : this) {
-            
-            System.out.println(" -- checking + " + m.getMethodName());
             
             // since 03.12.2014 we introduced the visual method id
             // to allow multiple method visualizations
@@ -237,12 +233,9 @@ public class AbstractObjectRepresentation
                     && (getMethodOrder() == null || getMethodOrder().
                     contains(new MethodIdentifier(
                             method, visualID, m.getVisualMethodID())))) {
-                System.out.println("ADD2VIEW: " + m.getMethodName());
                 mRep = o.addMethodToView(method, m.getVisualMethodID());
             }
-//            else {
-//                o.removeMethodFromView(method);
-//            }
+
 
             if (mRep != null) {
                 m.assignProperties(mRep);
@@ -258,23 +251,12 @@ public class AbstractObjectRepresentation
         for (int i = 0; i < getMethodOrder().size(); i++) {
             MethodIdentifier mID = getMethodOrder().get(i);
             
-            System.out.println(" -> searchin mOrder for " + mID);
-            
             if (o.getMethodByIdentifier(mID) == null) {
                 if (i > 0) {
                     missingMethods += ", ";
                 }
                 missingMethods += mID.getMethodName()+ "()";
                 indicesToDelete.add(i);
-                
-                System.out.println("  -> not found " + mID);
-                
-                System.out.println("  -> available:");
-                for(DefaultMethodRepresentation mIdx : o.getMethods()) {
-                    System.out.println("   --> " + mIdx.getName());
-                }
-            } else {
-                System.out.println("  -> found " + mID);
             }
         }
 
