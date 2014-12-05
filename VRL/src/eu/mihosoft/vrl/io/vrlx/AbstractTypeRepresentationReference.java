@@ -100,28 +100,30 @@ public class AbstractTypeRepresentationReference {
      *         <code>null</code> if no such type representation exists
      */
     public TypeRepresentationBase getReference(VisualCanvas mainCanvas) {
+        
+        throw new UnsupportedOperationException("Feature temorarily deactivated.");
 
-        TypeRepresentationBase result = null;
-
-        try {
-            DefaultMethodRepresentation m =
-                    mainCanvas.getInspector().
-                    getObjectRepresentations(getObjectReprenentationID()).getById(getVisualID()).
-                    getMethods().getById(getMethodID());
-
-            if (getIsReturnValue()) {
-                result = m.getReturnValue();
-            } else {
-                result = m.getParameter(getParameterID());
-            }
-        } catch (Exception ex) {
-            System.out.println(">> WARNING: abstract reference cannot be resolved!");
-            System.out.println(">>> ------------------------");
-            System.out.println(toString());
-            System.out.println(">>> ------------------------");
-        }
-
-        return result;
+//        TypeRepresentationBase result = null;
+//
+//        try {
+//            DefaultMethodRepresentation m =
+//                    mainCanvas.getInspector().
+//                    getObjectRepresentations(getObjectReprenentationID()).getById(getVisualID()).
+//                    getMethods().getById(getMethodID());
+//
+//            if (getIsReturnValue()) {
+//                result = m.getReturnValue();
+//            } else {
+//                result = m.getParameter(getParameterID());
+//            }
+//        } catch (Exception ex) {
+//            System.out.println(">> WARNING: abstract reference cannot be resolved!");
+//            System.out.println(">>> ------------------------");
+//            System.out.println(toString());
+//            System.out.println(">>> ------------------------");
+//        }
+//
+//        return result;
     }
 
     /**

@@ -161,26 +161,30 @@ public class AbstractObjectRepresentation
     public synchronized void assignProperties(VisualCanvas canvas,
             final DefaultObjectRepresentation o) {
 
+        System.out.println("ASSIGN-PROPERTIES:");
+
         for (AbstractMethodRepresentation m : this) {
-            
+
+            System.out.println("METHOD: " + m.getMethodName() + ": " + m.getVisualMethodID() + ", id: " + m.getMethodId());
+
             // since 03.12.2014 we introduced the visual method id
             // to allow multiple method visualizations
             if (m.getVisualMethodID() == null) {
-                
-                String msg = ">> Warning in method '"+ m.getMethodName() 
-                        +"()' deprecated file format "
+
+                String msg = ">> Warning in method '" + m.getMethodName()
+                        + "()' deprecated file format "
                         + "(before 03.12.2014): "
                         + "--> cannot restore connections "
                         + "(trying to fix visualMethodId)";
-                
+
                 System.err.println(msg);
                 m.setVisualMethodID(0);
-                
+
                 canvas.getMessageBox().addMessage(
-                            "Cannot assign method properties:",
-                            msg, o, MessageType.WARNING);
-                
-                for(MethodIdentifier mID : getMethodOrder()) {
+                        "Cannot assign method properties:",
+                        msg, o, MessageType.WARNING);
+
+                for (MethodIdentifier mID : getMethodOrder()) {
                     if (mID.getVisualMethodID() == null) {
                         mID.setVisualMethodID(0);
                     }
@@ -226,17 +230,15 @@ public class AbstractObjectRepresentation
             }
 
             // the id might be different so we change it to the correct value
-            method.setMethodID(m.getMethodId());
-
+//            method.setMethodID(m.getMethodId());
             DefaultMethodRepresentation mRep = null;
 
             if (m.getVisibility()
                     && (getMethodOrder() == null || getMethodOrder().
                     contains(new MethodIdentifier(
-                            method, visualID, m.getVisualMethodID())))) {
+                                    method, visualID, m.getVisualMethodID())))) {
                 mRep = o.addMethodToView(method, m.getVisualMethodID());
             }
-
 
             if (mRep != null) {
                 m.assignProperties(mRep);
@@ -251,22 +253,24 @@ public class AbstractObjectRepresentation
         // check that all methods in order do exist:
         for (int i = 0; i < getMethodOrder().size(); i++) {
             MethodIdentifier mID = getMethodOrder().get(i);
-            
+
             if (o.getMethodByIdentifier(mID) == null) {
                 if (i > 0) {
                     missingMethods += ", ";
                 }
-                missingMethods += mID.getMethodName()+ "()";
+                missingMethods += mID.getMethodName() + "()";
                 indicesToDelete.add(i);
             }
         }
 
         // delete misssing methods
         for (Integer i : indicesToDelete) {
-            getMethodOrder().remove((int)i);
+            getMethodOrder().remove((int) i);
         }
 
-        o.setMethodOrder(getMethodOrder());
+        if (!indicesToDelete.isEmpty()) {
+            o.setMethodOrder(getMethodOrder());
+        }
 
         // since 16.07.2014 we changed the method signature of Start and Stop
         // however, this does not affect the workflow and will therefore be

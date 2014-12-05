@@ -103,7 +103,7 @@ public class DefaultObjectRepresentation extends JPanel
         implements CanvasChild, IDObject {
 
     private static final long serialVersionUID = 6754769138031705583L;
-    private IDArrayList<DefaultMethodRepresentation> methods
+    private List<DefaultMethodRepresentation> methods
             = new IDArrayList<DefaultMethodRepresentation>();
     private IDArrayList<IDTable> connectorIDTables;
     private ObjectDescription description;
@@ -858,7 +858,7 @@ public class DefaultObjectRepresentation extends JPanel
      *
      * @return all methods of the visualized object
      */
-    public IDArrayList<DefaultMethodRepresentation> getMethods() {
+    public List<DefaultMethodRepresentation> getMethods() {
         return methods;
     }
 

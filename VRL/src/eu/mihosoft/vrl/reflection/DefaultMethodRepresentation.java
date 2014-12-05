@@ -1389,26 +1389,26 @@ public class DefaultMethodRepresentation extends VComponent
         return returnTypeRepresentation;
     }
 
-    /**
-     * Returns the method id (from description).
-     *
-     * @return the method id (from description)
-     */
-    @Override
-    public int getID() {
-        return ID;
-    }
-
-    /**
-     * Defines the method id (also defines the id of the description).
-     *
-     * @param ID the id to define
-     */
-    @Override
-    public void setID(int ID) {
-        this.ID = ID;
-        description.setMethodID(ID);
-    }
+//    /**
+//     * Returns the method id (from description).
+//     *
+//     * @return the method id (from description)
+//     */
+//    @Override
+//    public int getID() {
+//        return ID;
+//    }
+//
+//    /**
+//     * Defines the method id (also defines the id of the description).
+//     *
+//     * @param ID the id to define
+//     */
+//    @Override
+//    public void setID(int ID) {
+//        this.ID = ID;
+//        description.setMethodID(ID);
+//    }
 
     /**
      * Indicates whether this method representation is interactive, i.e., if it
