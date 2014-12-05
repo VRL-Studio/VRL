@@ -274,6 +274,13 @@ public class DefaultObjectRepresentation extends JPanel
 //
 //            return getMethodByMethodDescription(mDesc, visualMethodId);
 //        }
+        if (isNotallowedOnView(mDesc)) {
+
+            updateSelectionViewVisibility();
+
+            return getMethodByMethodDescription(mDesc, visualMethodId);
+        }
+
 //        boolean isReferenceMethod = m.getMethodInfo() != null
 //                    && (m.getMethodType() == MethodType.REFERENCE
 //                    || m.getMethodType() == MethodType.CUSTOM_REFERENCE);
@@ -610,8 +617,18 @@ public class DefaultObjectRepresentation extends JPanel
         selectionView.getEffectManager().setDisabled(false);
     }
 
-    public boolean isAddedToView(MethodDescription mDesc, int visualMethodID) {
-        return getMethodByMethodDescription(mDesc, visualMethodID) != null;
+    public boolean isNotallowedOnView(MethodDescription mDesc) {
+
+        
+        boolean isStartObject = ((VisualCanvas)getMainCanvas()).getInspector().
+                getObject(this.getObjectID()).getClass() == StartObject.class;
+        boolean isStopObject = ((VisualCanvas)getMainCanvas()).getInspector().
+                getObject(this.getObjectID()).getClass() == StopObject.class;
+
+        boolean methodFound =  !getMethodsByMethodDescription(mDesc).isEmpty();
+        
+        // start and stop methods are only allowed once
+        return methodFound && (isStartObject || isStopObject);
     }
 
     /**
