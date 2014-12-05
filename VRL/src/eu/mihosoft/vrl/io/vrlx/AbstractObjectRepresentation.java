@@ -167,7 +167,8 @@ public class AbstractObjectRepresentation
             // to allow multiple method visualizations
             if (m.getVisualMethodID() == null) {
                 
-                String msg = ">> Warning in method '"+ m.getMethodName() +"()' deprecated file format "
+                String msg = ">> Warning in method '"+ m.getMethodName() 
+                        +"()' deprecated file format "
                         + "(before 03.12.2014): "
                         + "--> cannot restore connections "
                         + "(trying to fix visualMethodId)";

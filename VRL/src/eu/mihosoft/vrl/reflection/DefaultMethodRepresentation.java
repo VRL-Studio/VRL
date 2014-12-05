@@ -1654,6 +1654,7 @@ public class DefaultMethodRepresentation extends VComponent
     public void setVisualMethodID(int visualMethodId) {
         this.visualMethodId = visualMethodId;
     }
+   
 
     /**
      * This object's mouse listener.

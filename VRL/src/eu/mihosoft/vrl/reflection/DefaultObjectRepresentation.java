@@ -123,7 +123,8 @@ public class DefaultObjectRepresentation extends JPanel
     private JComponent outputPanel = new TransparentPanel();
     private DefaultMethodRepresentation referenceMethod = null;
 
-    private Map<MethodIdentifier, Integer> visualMethodIds = new HashMap<MethodIdentifier, Integer>();
+    private Map<MethodIdentifier, Integer> visualMethodIds
+            = new HashMap<MethodIdentifier, Integer>();
 
     /**
      * Constructor.
@@ -263,16 +264,16 @@ public class DefaultObjectRepresentation extends JPanel
      *
      * @param mDesc the method representation to add
      */
-    public DefaultMethodRepresentation addMethodToView(final MethodDescription mDesc, int visualMethodId) {
+    public DefaultMethodRepresentation addMethodToView(
+            final MethodDescription mDesc, int visualMethodId) {
 
         // create visualization
-        if (isAddedToView(mDesc, visualMethodId)) {
-
-            updateSelectionViewVisibility();
-
-            return getMethodByMethodDescription(mDesc, visualMethodId);
-        }
-
+//        if (isAddedToView(mDesc, visualMethodId)) {
+//
+//            updateSelectionViewVisibility();
+//
+//            return getMethodByMethodDescription(mDesc, visualMethodId);
+//        }
 //        boolean isReferenceMethod = m.getMethodInfo() != null
 //                    && (m.getMethodType() == MethodType.REFERENCE
 //                    || m.getMethodType() == MethodType.CUSTOM_REFERENCE);
@@ -478,7 +479,7 @@ public class DefaultObjectRepresentation extends JPanel
                 MethodDescription selected
                         = (MethodDescription) methodList.getSelectedItem();
 
-                int visualMethodID = computeNextVisualMethodID(selected);
+                int visualMethodID = 0;
 
                 if (selected != null) {
 //                    boolean removeMethodAnimationRunning =
@@ -506,9 +507,9 @@ public class DefaultObjectRepresentation extends JPanel
         MethodIdentifier mId = selected.toMethodIdentifier(0, 0);
         if (visualMethodIds.containsKey(mId)) {
             visualMethodID = visualMethodIds.get(mId) + 1;
-        } else {
-            visualMethodIds.put(mId, 0);
         }
+        visualMethodIds.put(mId, visualMethodID);
+
         return visualMethodID;
     }
 
@@ -587,15 +588,15 @@ public class DefaultObjectRepresentation extends JPanel
                 }
             }
         }
-        
-        boolean isStartOrStopObject = 
-                getInspector().getObject(getObjectID()) instanceof StartObject
+
+        boolean isStartOrStopObject
+                = getInspector().getObject(getObjectID()) instanceof StartObject
                 || getInspector().getObject(getObjectID()) instanceof StopObject;
 
         if (methodList.getItemCount() > 0) {
             showSelectionView();
         }
-        
+
         if (isStartOrStopObject) {
             hideSelectionView();
         }
@@ -646,11 +647,11 @@ public class DefaultObjectRepresentation extends JPanel
         } else {
             selectionView.getEffectManager().
                     startDisappearanceEffect(selectionView, 0.0);
-            
-             boolean isStartOrStopObject = 
-                getInspector().getObject(getObjectID()) instanceof StartObject
-                || getInspector().getObject(getObjectID()) instanceof StopObject;
-            
+
+            boolean isStartOrStopObject
+                    = getInspector().getObject(getObjectID()) instanceof StartObject
+                    || getInspector().getObject(getObjectID()) instanceof StopObject;
+
             if (methodList.getItemCount() == 0 || isStartOrStopObject) {
                 selectionView.setVisible(false);
             }
@@ -1202,7 +1203,7 @@ public class DefaultObjectRepresentation extends JPanel
         ArrayList<Component> methodOrder = new ArrayList<Component>();
 
         for (MethodIdentifier id : order) {
-            
+
             DefaultMethodRepresentation mRep = getMethodByIdentifier(id);
             if (mRep == null) {
                 System.err.println(">> Error: setMethodOrder(): Method "
@@ -1234,15 +1235,23 @@ public class DefaultObjectRepresentation extends JPanel
             result.add(new MethodIdentifier(getReferenceMethod()));
         }
 
+        visualMethodIds.clear();
+
         // methods are an order if they have been added to the methodView
         // container
         for (Component comp : getMethodLayout().getOrder()) {
+
             if (comp instanceof DefaultMethodRepresentation) {
 
                 if (comp.isVisible()) {
 
                     DefaultMethodRepresentation mRep
                             = (DefaultMethodRepresentation) comp;
+
+                    int visualMethodID = computeNextVisualMethodID(
+                            mRep.getDescription());
+
+                    mRep.setVisualMethodID(visualMethodID);
 
                     result.add(
                             new MethodIdentifier(mRep.
