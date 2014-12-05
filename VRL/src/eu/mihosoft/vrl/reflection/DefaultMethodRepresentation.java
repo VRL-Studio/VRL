@@ -1283,15 +1283,19 @@ public class DefaultMethodRepresentation extends VComponent
         this.parentObject = parentObject;
     }
 
-//    /**
-//     * Returns connector with index i.
-//     *
-//     * @param i index of the connector that is to be returned
-//     * @return the connector with index i
-//     */
-//    public Connector getConnector(int i) {
-//        return getConnectors().getById(i);
-//    }
+    /**
+     * Returns connector with index i.
+     *
+     * @param i index of the connector that is to be returned
+     * @return the connector with index i
+     */
+    public Connector getConnector(int i) {
+        if (i == 0) {
+            return getConnectorByKey(KEY_RETURN_VALUE_CONNECTOR);
+        } else {
+            return getConnectorByKey(KEY_INPUT_CONNECTOR_PREFIX+(i-1));
+        }
+    }
     /**
      * Returns all connectors of the method.
      *

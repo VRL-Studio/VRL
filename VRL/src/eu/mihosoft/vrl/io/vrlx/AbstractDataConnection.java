@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io.vrlx;
 
 import eu.mihosoft.vrl.reflection.MethodIdentifier;
@@ -63,6 +62,8 @@ import eu.mihosoft.vrl.visual.Connections;
 import eu.mihosoft.vrl.visual.Connector;
 import eu.mihosoft.vrl.visual.Message;
 import eu.mihosoft.vrl.visual.MessageType;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Defines a connection between two type representations. Abstract connections
@@ -105,7 +106,9 @@ public class AbstractDataConnection {
     }
 
     /**
-     * Constructor. <p> Creates an abstract connection from a connection object.
+     * Constructor.
+     * <p>
+     * Creates an abstract connection from a connection object.
      * </p>
      *
      * @param connection the connection
@@ -114,11 +117,11 @@ public class AbstractDataConnection {
         Connector sender = connection.getSender();
         Connector receiver = connection.getReceiver();
 
-        DefaultMethodRepresentation mRepSender =
-                ((TypeRepresentationContainer) sender.getValueObject()).getMethod();
+        DefaultMethodRepresentation mRepSender
+                = ((TypeRepresentationContainer) sender.getValueObject()).getMethod();
 
-        DefaultMethodRepresentation mRepReceiver =
-                ((TypeRepresentationContainer) receiver.getValueObject()).getMethod();
+        DefaultMethodRepresentation mRepReceiver
+                = ((TypeRepresentationContainer) receiver.getValueObject()).getMethod();
 
         senderMethod = new MethodIdentifier(
                 mRepSender.getDescription(),
@@ -224,20 +227,19 @@ public class AbstractDataConnection {
      * @param mainCanvas the canvas the connection is to be added to
      */
     public void addToCanvas(VisualCanvas mainCanvas, Connections connections) {
-        DefaultMethodRepresentation senderMethodRep =
-                mainCanvas.getInspector().getMethodRepresentation(senderMethod);
+        DefaultMethodRepresentation senderMethodRep
+                = mainCanvas.getInspector().getMethodRepresentation(senderMethod);
 
-        DefaultMethodRepresentation receiverMethodRep =
-                mainCanvas.getInspector().getMethodRepresentation(receiverMethod);
-
+        DefaultMethodRepresentation receiverMethodRep
+                = mainCanvas.getInspector().getMethodRepresentation(receiverMethod);
 
         if (senderMethodRep == null || receiverMethodRep == null) {
 
-            DefaultObjectRepresentation senderObject =
-                    mainCanvas.getInspector().
+            DefaultObjectRepresentation senderObject
+                    = mainCanvas.getInspector().
                     getObjectRepresentation(senderMethod);
-            DefaultObjectRepresentation receiverObject =
-                    mainCanvas.getInspector().
+            DefaultObjectRepresentation receiverObject
+                    = mainCanvas.getInspector().
                     getObjectRepresentation(receiverMethod);
 
             String senderName = mainCanvas.getInspector().
@@ -301,8 +303,13 @@ public class AbstractDataConnection {
             int senderID = this.getParamSender();
             int receiverID = this.getParamReceiver();
 
-//            sender = senderMethodRep.getConnector(senderID);
-//            receiver = receiverMethodRep.getConnector(receiverID);
+            try {
+                sender = senderMethodRep.getConnector(senderID);
+                receiver = receiverMethodRep.getConnector(receiverID);
+            } catch (Exception ex) {
+                Logger.getLogger(AbstractDataConnection.class.getName()).
+                            log(Level.SEVERE, null, ex);
+            }
 
         } else {
             System.out.println(">> new id's: " + getParamSenderKey() + " -> " + getParamReceiverKey());
@@ -318,12 +325,12 @@ public class AbstractDataConnection {
             connections.add(sender, receiver);
             Connection c = connections.get(sender, receiver);
 
-            double senderTransparency =
-                    senderMethodRep.getParentObject().
+            double senderTransparency
+                    = senderMethodRep.getParentObject().
                     getParentWindow().getTransparency();
 
-            double receiverTransparency =
-                    receiverMethodRep.getParentObject().
+            double receiverTransparency
+                    = receiverMethodRep.getParentObject().
                     getParentWindow().getTransparency();
 
             c.setTransparency(
