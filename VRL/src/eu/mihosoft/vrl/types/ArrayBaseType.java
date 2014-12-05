@@ -107,18 +107,18 @@ import javax.swing.border.EmptyBorder;
 @TypeInfo(type = Object[].class, style = "array")
 public class ArrayBaseType extends TypeRepresentationBase {
 
-    private ArrayList<TypeRepresentationContainer> typeContainers =
-            new ArrayList<TypeRepresentationContainer>();
+    private ArrayList<TypeRepresentationContainer> typeContainers
+            = new ArrayList<TypeRepresentationContainer>();
     private int minArraySize = 0;
     private TransparentPanel valuePanel = new TransparentPanel();
     private Box buttonBox;
     private ParamInfo elementInputInfo;
     private MethodInfo elementOutputInfo;
     protected static final String ARRAY_SIZE_KEY = "array-size";
-    protected static final String ELEMENT_TYPE_VALUE_OPTIONS_KEY =
-            "element-type-value-options";
-    protected static final String ELEMENT_TYPE_CUSTOM_DATA_KEY =
-            "element-type-custom-data";
+    protected static final String ELEMENT_TYPE_VALUE_OPTIONS_KEY
+            = "element-type-value-options";
+    protected static final String ELEMENT_TYPE_CUSTOM_DATA_KEY
+            = "element-type-custom-data";
     private boolean hideButtonBox = false;
     private AnimatedLayout layout;
     private boolean useRealElementType = false;
@@ -129,7 +129,6 @@ public class ArrayBaseType extends TypeRepresentationBase {
     public ArrayBaseType() {
 
 //        setBorder(VGraphicsUtil.createDebugBorder());
-
         setValueName("Array");
 
         VBoxLayout layoutM = new VBoxLayout(this, VBoxLayout.PAGE_AXIS);
@@ -154,7 +153,6 @@ public class ArrayBaseType extends TypeRepresentationBase {
         });
 
 //        setLayout(layout);
-
         nameLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
         nameLabel.setMaximumSize(
@@ -165,7 +163,6 @@ public class ArrayBaseType extends TypeRepresentationBase {
         nameLabel.setHorizontalAlignment(JLabel.LEFT);
 
 //        nameLabel.setBorder(VSwingUtil.createDebugBorder());
-
         nameLabel.setBorder(new EmptyBorder(0, 3, 0, 0));
 
         add(nameLabel);
@@ -185,7 +182,6 @@ public class ArrayBaseType extends TypeRepresentationBase {
         valuePanel.setLayout(new VBoxLayout(valuePanel, VBoxLayout.PAGE_AXIS));
 
 //        valuePanel.setBorder(VSwingUtil.createDebugBorder());
-
         valuePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         add(valuePanel);
@@ -209,9 +205,9 @@ public class ArrayBaseType extends TypeRepresentationBase {
                 setArraySize(getArraySize() + 1);
 //                System.out.println("SIZE:" + arraySize);
 //                Object[] array = new Object[arraySize];
-                Object array =
-                        Array.newInstance(
-                        getType().getComponentType(), getArraySize());
+                Object array
+                        = Array.newInstance(
+                                getType().getComponentType(), getArraySize());
                 updateView(getParentMethod(), array, false);
                 revalidate();
                 setDataOutdated();
@@ -248,9 +244,9 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
                 if (getArraySize() > minArraySize) {
                     setArraySize(getArraySize() - 1);
-                    Object array =
-                            Array.newInstance(
-                            getType().getComponentType(), getArraySize());
+                    Object array
+                            = Array.newInstance(
+                                    getType().getComponentType(), getArraySize());
                     updateView(getParentMethod(), array, false);
 
                     layout.excludeFromAnimation(buttonBox);
@@ -260,8 +256,6 @@ public class ArrayBaseType extends TypeRepresentationBase {
                 }
             }
         });
-
-
 
         removeItemButton.setPreferredSize(btnSize);
         removeItemButton.setMinimumSize(btnSize);
@@ -288,10 +282,10 @@ public class ArrayBaseType extends TypeRepresentationBase {
                 put(ARRAY_SIZE_KEY, minArraySize);
         getCustomDataWithoutDataRefresh().
                 put(ELEMENT_TYPE_VALUE_OPTIONS_KEY,
-                new ArrayList<String>());
+                        new ArrayList<String>());
         getCustomDataWithoutDataRefresh().
                 put(ELEMENT_TYPE_CUSTOM_DATA_KEY,
-                new ArrayList<CustomParamData>());
+                        new ArrayList<CustomParamData>());
 
         addCapabilityListener(new CapabilityChangedListener() {
             @Override
@@ -346,15 +340,15 @@ public class ArrayBaseType extends TypeRepresentationBase {
             g2.setColor(style.getBaseValues().getColor(
                     CanvasWindow.BORDER_COLOR_KEY));
 
-            AlphaComposite ac1 =
-                    AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                    style.getBaseValues().getFloat(
-                    CanvasWindow.TRANSPARENCY_KEY));
+            AlphaComposite ac1
+                    = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                            style.getBaseValues().getFloat(
+                                    CanvasWindow.TRANSPARENCY_KEY));
             g2.setComposite(ac1);
         }
 
-        BasicStroke stroke =
-                new BasicStroke(1.f);
+        BasicStroke stroke
+                = new BasicStroke(1.f);
 
         g2.setStroke(stroke);
 
@@ -372,9 +366,9 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
     @Override
     public void addedToMethodRepresentation() {
-        Object array =
-                Array.newInstance(
-                getType().getComponentType(), getArraySize());
+        Object array
+                = Array.newInstance(
+                        getType().getComponentType(), getArraySize());
 
         if (getParentMethod() != null) {
             updateView(getParentMethod(), array, false);
@@ -388,12 +382,19 @@ public class ArrayBaseType extends TypeRepresentationBase {
         //}
     }
 
+    private String getElementConnectorId(int elemIndex) {
+        // new map based connector handling
+        String baseKey = getConnector().getId();
+        String key = baseKey + ":" + elemIndex;
+        
+        return key;
+    }
+
     private void updateConnectorIds() {
         for (int i = 0; i < getArraySize(); i++) {
-            // new map based connector handling
-            String baseKey = getConnector().getId();
-            String key = baseKey + ":" + i;
-            typeContainers.get(i).getTypeRepresentation().getConnector().setId(key);
+
+            typeContainers.get(i).getTypeRepresentation().
+                    getConnector().setId(getElementConnectorId(i));
         }
     }
 
@@ -417,8 +418,8 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
             if (diff > 0) {
 
-                TypeRepresentationFactory typeFactory =
-                        ((VisualCanvas) getMainCanvas()).getTypeFactory();
+                TypeRepresentationFactory typeFactory
+                        = ((VisualCanvas) getMainCanvas()).getTypeFactory();
 
                 TypeRepresentationBase type = null;
 
@@ -434,7 +435,7 @@ public class ArrayBaseType extends TypeRepresentationBase {
                         if (Array.get(array, i) == null) {
                             continue;
                         }
-                        
+
                         type = typeFactory.getInputInstance(
                                 Array.get(array, i).getClass(), elementInputInfo);
 
@@ -470,7 +471,7 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
                         if (elemObj != null
                                 && elemType.isAssignableFrom(
-                                elemObj.getClass())) {
+                                        elemObj.getClass())) {
                             throw new IllegalArgumentException(
                                     "Invalid element type: type of element[" + i + "]: "
                                     + elemObj.getClass() + ", requested type: "
@@ -488,7 +489,6 @@ public class ArrayBaseType extends TypeRepresentationBase {
                 type.setMainCanvas(mRep.getParentObject().getMainCanvas());
                 type.setParentMethod(mRep);
 
-
                 type.setCurrentRepresentationType(
                         getCurrentRepresentationType());
 
@@ -496,11 +496,9 @@ public class ArrayBaseType extends TypeRepresentationBase {
 //                    System.out.println("Index: " + i + containerSize);
 //                    type.setValue(Array.get(array, i + containerSize));
 //                }
-
 //                System.out.println("++++++SIZE: "
 //                        + (getElementTypeValueOptions().size())
 //                        + " , INDEX: " + i + containerSize);
-
                 if (getElementTypeValueOptions().size() <= i + containerSize) {
                     getElementTypeValueOptions().add(type.getValueOptions());
                     getElementTypeCustomData().add(type.getCustomData());
@@ -522,8 +520,19 @@ public class ArrayBaseType extends TypeRepresentationBase {
                             type, mRep, ConnectorType.OUTPUT, getMainCanvas());
                 }
 
-//                if (getConnector() != null) {
-//
+                if (getConnector() != null) {
+                    
+                    int currentelementIndex = i + containerSize;
+                    
+                    String elementConnectorId = getElementConnectorId(currentelementIndex);
+                    
+                    System.out.println("elem: " + currentelementIndex + ": " + elementConnectorId);
+                    
+                    tCont.getTypeRepresentation().getConnector().setId(elementConnectorId);
+                    tCont.getTypeRepresentation().getConnector().setToolTipText(elementConnectorId);
+                    mRep.addConnectorByKey(elementConnectorId, 
+                            (VConnector) tCont.getTypeRepresentation().getConnector());
+
 //                    // each element input connector will be added relative to
 //                    // the connector index of this type representation
 //                    //
@@ -542,8 +551,8 @@ public class ArrayBaseType extends TypeRepresentationBase {
 //                    for (int j = 1; j < parentIndex; j++) {
 ////                        System.out.println("TREP: " + j);
 //
-//                        TypeRepresentationContainer tContJ =
-//                                (TypeRepresentationContainer) getParentMethod().
+//                        TypeRepresentationContainer tContJ
+//                                = (TypeRepresentationContainer) getParentMethod().
 //                                getConnectors().get(j).getValueObject();
 //
 //                        TypeRepresentationBase tRep = tContJ.getTypeRepresentation();
@@ -554,14 +563,13 @@ public class ArrayBaseType extends TypeRepresentationBase {
 //                        }
 //                    }
 //
-//                    int baseIndex =
-//                            getParentMethod().getDescription().
+//                    int baseIndex
+//                            = getParentMethod().getDescription().
 //                            getParameterTypes().length;
 //
 //                    int connectorIndex = baseIndex + connectorOffset + 1;
 //
 ////                    System.out.println("INDEX: " + connectorIndex);
-//
 //                    // if we are not loading from file and we are an input
 //                    // we need to specify the index at wich the connector will
 //                    // be added to
@@ -573,7 +581,7 @@ public class ArrayBaseType extends TypeRepresentationBase {
 //                        // id values as defined by the id table
 //                        mRep.getConnectors().add((VConnector) tCont.getTypeRepresentation().getConnector());
 //                    }
-//                }
+                }
 
                 getTypeContainers().add(tCont);
 
@@ -585,8 +593,8 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
             } else if (diff < 0) {
 
-                TypeRepresentationContainer tC =
-                        getTypeContainers().get(getTypeContainers().size() - 1);
+                TypeRepresentationContainer tC
+                        = getTypeContainers().get(getTypeContainers().size() - 1);
 
                 getMainCanvas().getDataConnections().removeAllWith(
                         tC.getTypeRepresentation().getConnector());
@@ -594,11 +602,13 @@ public class ArrayBaseType extends TypeRepresentationBase {
                 getTypeContainers().remove(tC);
                 valuePanel.remove(tC);
 
-                mRep.getConnectors().remove(
-                        tC.getTypeRepresentation().getConnector());
+//                mRep.getConnectors().remove(
+//                        tC.getTypeRepresentation().getConnector());
                 
+                mRep.removeConnectorByKey(tC.getTypeRepresentation().getConnector().getId());
+
                 tC.getTypeRepresentation().dispose();
-                
+
                 if (getElementTypeValueOptions().size() > getTypeContainers().size()) {
                     getElementTypeValueOptions().remove(
                             getElementTypeValueOptions().size() - 1);
@@ -710,12 +720,12 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
             for (TypeRepresentationContainer tC : getTypeContainers()) {
                 Connector c = tC.getTypeRepresentation().getConnector();
-                List<Connection> receivers =
-                        getMainCanvas().getDataConnections().getAllWith(c);
+                List<Connection> receivers
+                        = getMainCanvas().getDataConnections().getAllWith(c);
 
                 for (Connection conn : receivers) {
-                    TypeRepresentationContainer receiverTCont =
-                            (TypeRepresentationContainer) conn.getReceiver().getValueObject();
+                    TypeRepresentationContainer receiverTCont
+                            = (TypeRepresentationContainer) conn.getReceiver().getValueObject();
                     TypeRepresentationBase tRep = receiverTCont.getTypeRepresentation();
 
                     if (tRep.getParentMethod() != getParentMethod()) {
@@ -739,9 +749,10 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
         if (o.getClass().equals(getType())) {
             updateView(getParentMethod(), o, true);
+        } // if: elemViewValues are set at the end of updateView; else: do it here
+        else {
+            setElementViewValues(o);
         }
-        // if: elemViewValues are set at the end of updateView; else: do it here
-        else setElementViewValues(o);
     }
 
     @Override
@@ -778,8 +789,8 @@ public class ArrayBaseType extends TypeRepresentationBase {
     @Override
     public Object getViewValue() {
 
-        Object result =
-                Array.newInstance(getType().getComponentType(), getArraySize());
+        Object result
+                = Array.newInstance(getType().getComponentType(), getArraySize());
 
         if (!isNoValidation()) {
 
@@ -848,8 +859,8 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
     @Override
     public void evaluateCustomParamData() {
-        Object array =
-                Array.newInstance(getType().getComponentType(), getArraySize());
+        Object array
+                = Array.newInstance(getType().getComponentType(), getArraySize());
         updateView(getParentMethod(), array, true);
 
         for (TypeRepresentationContainer tC : getTypeContainers()) {
@@ -900,14 +911,13 @@ public class ArrayBaseType extends TypeRepresentationBase {
     @Override
     public CustomParamData getCustomData() {
         for (int i = 0; i < getTypeContainers().size(); i++) {
-            TypeRepresentationBase tRep =
-                    getTypeContainers().get(i).getTypeRepresentation();
+            TypeRepresentationBase tRep
+                    = getTypeContainers().get(i).getTypeRepresentation();
 
             String valueOptions = tRep.getValueOptions();
             CustomParamData customData = tRep.getCustomData();
 
 //            System.out.println("**GET*****INDEX: " + i + " : " + valueOptions);
-
             getElementTypeValueOptions().set(i, valueOptions);
             getElementTypeCustomData().set(i, customData);
         }
@@ -919,24 +929,22 @@ public class ArrayBaseType extends TypeRepresentationBase {
     public void setCustomData(CustomParamData customData) {
         super.setCustomData(customData);
 
-
         if (getMainCanvas() != null) {
-            Object array =
-                    Array.newInstance(
-                    getType().getComponentType(), getArraySize());
+            Object array
+                    = Array.newInstance(
+                            getType().getComponentType(), getArraySize());
 
             updateView(getParentMethod(), array, false);
         }
 
         for (int i = 0; i < getTypeContainers().size(); i++) {
-            TypeRepresentationBase tRep =
-                    getTypeContainers().get(i).getTypeRepresentation();
+            TypeRepresentationBase tRep
+                    = getTypeContainers().get(i).getTypeRepresentation();
 
             String elementValueOptions = getElementTypeValueOptions().get(i);
             CustomParamData elementCustomData = getElementTypeCustomData().get(i);
 
 //            System.out.println("**SET*****INDEX: " + i + " : " + elementCustomData);
-
             tRep.setValueOptions(elementValueOptions);
             tRep.setCustomData(elementCustomData);
         }
@@ -945,8 +953,8 @@ public class ArrayBaseType extends TypeRepresentationBase {
     @Override
     public void evaluateValueOptions() {
         for (int i = 0; i < getTypeContainers().size(); i++) {
-            TypeRepresentationBase tRep =
-                    getTypeContainers().get(i).getTypeRepresentation();
+            TypeRepresentationBase tRep
+                    = getTypeContainers().get(i).getTypeRepresentation();
             tRep.evaluateValueOptions();
 
 //            System.out.println("**EVAL*****INDEX: " + i + " : " + tRep.getValueOptions());
@@ -959,7 +967,6 @@ public class ArrayBaseType extends TypeRepresentationBase {
     public void evaluationRequest(Script script) {
 
         // parse elementOptions
-
         final String newName;
         final String newStyle;
         final String newOptions;
@@ -1032,7 +1039,6 @@ public class ArrayBaseType extends TypeRepresentationBase {
                 newName, newStyle, newOptions, newNullIsValid, newTypeName);
 
         //----------------
-
         super.evaluationRequest(script);
 
         if (getValueOptions().contains("minArraySize")) {
@@ -1043,7 +1049,6 @@ public class ArrayBaseType extends TypeRepresentationBase {
             minArraySize = (Integer) property;
 
 //                System.out.println("MIN-SIZE: " + minArraySize);
-
             if (getArraySize() < minArraySize) {
                 setArraySize(minArraySize);
             }
@@ -1188,8 +1193,9 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
     @Override
     public void dispose() {
-        for (TypeRepresentationContainer tc: typeContainers)
+        for (TypeRepresentationContainer tc : typeContainers) {
             tc.getTypeRepresentation().dispose();
+        }
         layout.removeAllFrameListeners();
     }
 
@@ -1223,7 +1229,7 @@ public class ArrayBaseType extends TypeRepresentationBase {
 
         builder.append("] as ").
                 append(
-                VClassLoaderUtil.arrayClass2Code(getType().getName()));
+                        VClassLoaderUtil.arrayClass2Code(getType().getName()));
 
         return builder.toString();
     }
@@ -1395,10 +1401,6 @@ public class ArrayBaseType extends TypeRepresentationBase {
                 return "";
             }
         };
-
-
-
-
 
         return result;
     }
