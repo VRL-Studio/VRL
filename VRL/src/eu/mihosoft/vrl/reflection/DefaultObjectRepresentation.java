@@ -276,13 +276,6 @@ public class DefaultObjectRepresentation extends JPanel
     public DefaultMethodRepresentation addMethodToView(
             final MethodDescription mDesc, int visualMethodId) {
 
-        // create visualization
-//        if (isAddedToView(mDesc, visualMethodId)) {
-//
-//            updateSelectionViewVisibility();
-//
-//            return getMethodByMethodDescription(mDesc, visualMethodId);
-//        }
         if (isNotallowedOnView(mDesc)) {
 
             updateSelectionViewVisibility();
@@ -290,30 +283,6 @@ public class DefaultObjectRepresentation extends JPanel
             return getMethodByMethodDescription(mDesc, visualMethodId);
         }
 
-//        boolean isReferenceMethod = m.getMethodInfo() != null
-//                    && (m.getMethodType() == MethodType.REFERENCE
-//                    || m.getMethodType() == MethodType.CUSTOM_REFERENCE);
-//
-//            // if no gui creation is requested, do not add this method to the
-//            // object representation (it is accessible via object inspector and
-//            // object description though)
-//            if (m.getMethodInfo() == null
-//                    || m.getMethodInfo().noGUI() == false) {
-//
-//                DefaultMethodRepresentation mRep =
-//                        new DefaultMethodRepresentation(this);
-//                mRep.initRepresentation(
-//                        m, getConnectorIDTables().getById(m.getMethodID()));
-//
-//                getMethods().add(mRep);
-//
-//                if (mRep.isReferenceMethod() || mRep.isCustomReferenceMethod()) {
-//                    getMethods().add(mRep);
-//                    referenceMethod = mRep;
-//                    referenceInput = mRep.getParameter(0).getConnector();
-//                    referenceOutput = mRep.getReturnValue().getConnector();
-//                }
-//            }
         DefaultMethodRepresentation mRep
                 = new DefaultMethodRepresentation(this);
         mRep.initRepresentation(

@@ -123,8 +123,8 @@ public class DefaultMethodRepresentation extends VComponent
     transient private BufferedImage buffer;
     private Style style;
 //    private RoundTitledBorder titleBorder;
-    private IDArrayList<TypeRepresentationContainer> parameterTypeRepresentations =
-            new IDArrayList<TypeRepresentationContainer>();
+    private IDArrayList<TypeRepresentationContainer> parameterTypeRepresentations
+            = new IDArrayList<TypeRepresentationContainer>();
     private TypeRepresentationBase returnTypeRepresentation;
 //    private IDArrayList<VConnector> connectors = new IDArrayList<VConnector>();
     private Map<String, VConnector> connectorsMap = new HashMap<String, VConnector>();
@@ -154,18 +154,18 @@ public class DefaultMethodRepresentation extends VComponent
     private boolean minimized;
     private JComponent buttonContainer;
     private boolean initializer;
-    public static final String METHOD_TITLE_UPPER_COLOR_KEY =
-            "MethodRepresentation:Title:Color[upper]";
-    public static final String METHOD_TITLE_LOWER_COLOR_KEY =
-            "MethodRepresentation:Title:Color[lower]";
-    public static final String METHOD_TITLE_TRANSPARENCY_KEY =
-            "MethodRepresentation:Title:Transparency";
+    public static final String METHOD_TITLE_UPPER_COLOR_KEY
+            = "MethodRepresentation:Title:Color[upper]";
+    public static final String METHOD_TITLE_LOWER_COLOR_KEY
+            = "MethodRepresentation:Title:Color[lower]";
+    public static final String METHOD_TITLE_TRANSPARENCY_KEY
+            = "MethodRepresentation:Title:Transparency";
     private RepresentationGroup parameterGroup;
     private Long threadId = 0L;
     private boolean paramsAreValid;
-    
+
     private int visualMethodId;
-    
+
     public static final String KEY_RETURN_VALUE_CONNECTOR = "return:0";
     public static final String KEY_INPUT_CONNECTOR_PREFIX = "input:";
 
@@ -193,21 +193,16 @@ public class DefaultMethodRepresentation extends VComponent
 
 //        titleBorder = new RoundTitledBorder(parentObject.getMainCanvas(),
 //                "Method()");
-
 //        ColLayout inputLayout = new ColLayout();
 //        inputLayout.setMargins(0, 0, 0, 0);
 //        inputLayout.setEqualWidth(false);
-
         setParameterGroup(new RepresentationGroup());
-
 
         VBoxLayout inputLayout = new VBoxLayout(inputPanel, VBoxLayout.Y_AXIS);
 
         inputPanel.setLayout(inputLayout);
 
         inputPanel.add(parameterGroup);
-
-
 
         outputPanel = new JPanel() {
             @Override
@@ -216,24 +211,20 @@ public class DefaultMethodRepresentation extends VComponent
             }
         };
 
-
         VBoxLayout outputLayout = new VBoxLayout(outputPanel, VBoxLayout.Y_AXIS);
 
         outputPanel.setLayout(outputLayout);
 
 //        outputLabel.setBackground(Color.RED);
 //        outputLabel.setBorder(BorderFactory.createEtchedBorder());
-
         titlePanel.add(Box.createGlue());
         titlePanel.add(titleBar);
         titlePanel.add(Box.createGlue());
-
 
 //        this.setLayout(new BorderLayout(0, 0));
 //        this.add(titlePanel, BorderLayout.NORTH);
 //        this.add(inputPanel, BorderLayout.WEST);
 //        this.add(outputPanel, BorderLayout.EAST);
-
         setLayout(new VBoxLayout(this, VBoxLayout.Y_AXIS));
 
         add(titlePanel);
@@ -247,18 +238,14 @@ public class DefaultMethodRepresentation extends VComponent
 
 //        titleBorder.setMargins(5, 7, 7, 7);
 //        this.setBorder(titleBorder);
-
         this.setBorder(new EmptyBorder(2, 7, 2, 7));
 
         addMouseListener(new VisualObjectMouseAdapter());
 
 //        setBackground(Color.RED);
 //        setBorder(BorderFactory.createEtchedBorder());
-
 //        this.setPreferredSize(new Dimension(10,20));
 //        this.getParentObject().doLayout();
-
-
         selectionEffect = new SelectionEffect(this);
         selectionEffect.setColor(new Color(0.f, 0.f, 1.f, 0.3f));
 
@@ -282,18 +269,18 @@ public class DefaultMethodRepresentation extends VComponent
     }
 
     public void startWaitEffect() {
-        ColorizeEffect effect =
-                (ColorizeEffect) getEffectManager().getEffectByName(
-                getInvokeWaitEffectName());
+        ColorizeEffect effect
+                = (ColorizeEffect) getEffectManager().getEffectByName(
+                        getInvokeWaitEffectName());
         effect.setUncolorize(false);
 
         getEffectManager().startEffect(getInvokeWaitEffectName(), 1);
     }
 
     public void stopWaitEffect() {
-        ColorizeEffect effect =
-                (ColorizeEffect) getEffectManager().getEffectByName(
-                getInvokeWaitEffectName());
+        ColorizeEffect effect
+                = (ColorizeEffect) getEffectManager().getEffectByName(
+                        getInvokeWaitEffectName());
         effect.setUncolorize(true);
 
         getEffectManager().startEffect(getInvokeWaitEffectName(), 1);
@@ -375,10 +362,10 @@ public class DefaultMethodRepresentation extends VComponent
 
             Composite original = g2.getComposite();
 
-            AlphaComposite ac1 =
-                    AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                    style.getBaseValues().getFloat(
-                    CanvasWindow.TRANSPARENCY_KEY));
+            AlphaComposite ac1
+                    = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                            style.getBaseValues().getFloat(
+                                    CanvasWindow.TRANSPARENCY_KEY));
             g2.setComposite(ac1);
 
             Shape shape;
@@ -391,9 +378,9 @@ public class DefaultMethodRepresentation extends VComponent
 
             Stroke oldStroke = g2.getStroke();
 
-            BasicStroke stroke =
-                    new BasicStroke(style.getBaseValues().getFloat(
-                    CanvasWindow.BORDER_THICKNESS_KEY));
+            BasicStroke stroke
+                    = new BasicStroke(style.getBaseValues().getFloat(
+                                    CanvasWindow.BORDER_THICKNESS_KEY));
 
             g2.setStroke(stroke);
             g2.setColor(style.getBaseValues().getColor(
@@ -474,7 +461,6 @@ public class DefaultMethodRepresentation extends VComponent
 //        if (idTable != null) {
 //            connectors.setIdTable(idTable);
 //        }
-
         // if annotations are used to define custom method title then
         // use it; set it to method name retrieved from the Reflection API
         // otherwise
@@ -492,8 +478,8 @@ public class DefaultMethodRepresentation extends VComponent
             this.titleBar.getTitle().setText(
                     this.getDescription().getMethodName() + "()");
 
-            name =
-                    this.getDescription().getMethodName() + "()";
+            name
+                    = this.getDescription().getMethodName() + "()";
         }
         this.setInteractive(description.isInteractive());
 
@@ -506,8 +492,8 @@ public class DefaultMethodRepresentation extends VComponent
         if (description.getMethodInfo() != null) {
 
             // TODO duplicated check (see DefaultObjectRepresentation.initSelectionView())
-            boolean hideMethod =
-                    methodInfo.hide() && !methodInfo.hideCloseIcon();
+            boolean hideMethod
+                    = methodInfo.hide() && !methodInfo.hideCloseIcon();
 
             setHidden(hideMethod);
             invokeButtonText = methodInfo.buttonText();
@@ -522,16 +508,16 @@ public class DefaultMethodRepresentation extends VComponent
             returnTypeRepresentation.setCurrentRepresentationType(
                     RepresentationType.OUTPUT);
         } else {
-            returnTypeRepresentation =
-                    typeFactory.getOutputInstance(returnType, methodInfo, outputInfo);
+            returnTypeRepresentation
+                    = typeFactory.getOutputInstance(returnType, methodInfo, outputInfo);
         }
 
         returnTypeRepresentation.setParentMethod(this);
 
-        TypeRepresentationContainer returnTypeContainer =
-                new TypeRepresentationContainer(
-                returnTypeRepresentation, this,
-                ConnectorType.OUTPUT, parentObject.getMainCanvas());
+        TypeRepresentationContainer returnTypeContainer
+                = new TypeRepresentationContainer(
+                        returnTypeRepresentation, this,
+                        ConnectorType.OUTPUT, parentObject.getMainCanvas());
 
         returnTypeContainer.setAlignmentX(RIGHT_ALIGNMENT);
 
@@ -551,8 +537,8 @@ public class DefaultMethodRepresentation extends VComponent
 
         // init parameter types
         for (int i = 0; i < this.getDescription().getParameterTypes().length; i++) {
-            Class<?> parameterType =
-                    this.getDescription().getParameterTypes()[i];
+            Class<?> parameterType
+                    = this.getDescription().getParameterTypes()[i];
 
             ParamInfo paramInfo = this.getDescription().getParamInfos()[i];
             ParamGroupInfo paramGroupInfo = this.getDescription().getParamGroupInfos()[i];
@@ -566,17 +552,16 @@ public class DefaultMethodRepresentation extends VComponent
                         RepresentationType.INPUT);
                 parameterTypeRep.setNullValidInput(true);
             } else {
-                parameterTypeRep =
-                        typeFactory.getInputInstance(parameterType, paramInfo);
+                parameterTypeRep
+                        = typeFactory.getInputInstance(parameterType, paramInfo);
             }
 
             parameterTypeRep.setParentMethod(this);
 
-
-            TypeRepresentationContainer paramTypeContainer =
-                    new TypeRepresentationContainer(
-                    parameterTypeRep, this,
-                    ConnectorType.INPUT, parentObject.getMainCanvas());
+            TypeRepresentationContainer paramTypeContainer
+                    = new TypeRepresentationContainer(
+                            parameterTypeRep, this,
+                            ConnectorType.INPUT, parentObject.getMainCanvas());
 
             parameterTypeRepresentations.add(paramTypeContainer);
 
@@ -585,27 +570,20 @@ public class DefaultMethodRepresentation extends VComponent
 //            inputPanel.add(add(Box.createVerticalGlue()));
 //            inputPanel.add(paramTypeContainer);
 //            inputPanel.add(add(Box.createVerticalGlue()));
-
-            RepresentationGroup pGroup =
-                    parameterGroup.addComponentToGroup(
-                    TypeUtil.getParamGroupName(paramGroupInfo), i,
-                    paramTypeContainer);
+            RepresentationGroup pGroup
+                    = parameterGroup.addComponentToGroup(
+                            TypeUtil.getParamGroupName(paramGroupInfo), i,
+                            paramTypeContainer);
 
             parameterGroup.updateMinimzedState();
 
 //            pGroup.add(paramTypeContainer);
-
 //            if (inputPanel != pGroup.getParent()) {
 //                inputPanel.add(add(Box.createVerticalGlue()));
 //                inputPanel.add(pGroup);
 //                inputPanel.add(add(Box.createVerticalGlue()));
 //            }
-
-            
-            
-            
 //            getConnectors().add((VConnector) paramTypeContainer.getConnector());
-
             addConnectorByKey(KEY_INPUT_CONNECTOR_PREFIX + i, (VConnector) paramTypeContainer.getConnector());
             ((VConnector) paramTypeContainer.getConnector()).setId(KEY_INPUT_CONNECTOR_PREFIX + i);
 
@@ -635,23 +613,24 @@ public class DefaultMethodRepresentation extends VComponent
 
         this.add(getInvokeButtonContainer(), BorderLayout.SOUTH);
     }
-    
+
     /**
-     * Changes the text of the invoke button if an invoke button is present. 
+     * Changes the text of the invoke button if an invoke button is present.
      * Does nothing otherwise.
+     *
      * @param text new text
      */
     public void changeInvokeButtonTextIfButtonIsPresent(String text) {
-        if (buttonContainer.getComponents().length==0) {
+        if (buttonContainer.getComponents().length == 0) {
             return;
         }
-        
+
         if (!(buttonContainer.getComponents()[0] instanceof VButton)) {
             return;
         }
-        
+
         invokeButtonText = text;
-        ((VButton)buttonContainer.getComponents()[0]).setText(text);
+        ((VButton) buttonContainer.getComponents()[0]).setText(text);
     }
 
     /**
@@ -686,7 +665,6 @@ public class DefaultMethodRepresentation extends VComponent
                 repaint();
             }
         });
-
 
         // prevent drawing bugs
         button.addMouseListener(new MouseListener() {
@@ -761,10 +739,9 @@ public class DefaultMethodRepresentation extends VComponent
                         try {
                             invoke();
                         } catch (Exception ex) {
-                            
+
                             // error output is now handled by objectinspector
                             // TODO cleanup
-                            
 //                            MessageBox mBox =
 //                                    getParentObject().getMainCanvas().
 //                                    getMessageBox();
@@ -924,8 +901,8 @@ public class DefaultMethodRepresentation extends VComponent
                 c.receiveData(true, methodDependencies);
             }
         } catch (Exception ex) {
-            MessageBox mBox =
-                    getParentObject().getMainCanvas().getMessageBox();
+            MessageBox mBox
+                    = getParentObject().getMainCanvas().getMessageBox();
 //	    String message = "unknown error!";
 //	    if (ex.getMessage() != null) {
 //		message = ex.toString();
@@ -962,8 +939,8 @@ public class DefaultMethodRepresentation extends VComponent
                 c.sendData();
             }
         } catch (Exception ex) {
-            MessageBox mBox =
-                    getParentObject().getMainCanvas().getMessageBox();
+            MessageBox mBox
+                    = getParentObject().getMainCanvas().getMessageBox();
             String message = ex.toString();
             if (ex.getCause() != null) {
                 message += ex.getCause().toString();
@@ -988,7 +965,6 @@ public class DefaultMethodRepresentation extends VComponent
 
 //        System.out.println("Call-Stack-SIZE (before): "
 //                + callTrace.getCallStack().size());
-
         // CIRCULAR METHOD CALL
         // if a method is in trace but does not have input connectors it
         // cannot produce circular calls and is thus ignored
@@ -1014,7 +990,6 @@ public class DefaultMethodRepresentation extends VComponent
         // we add this call to the trace
         callTrace.addCall(this);
 
-
         // invokation slowdown and wait effect
         VisualCanvas canvas = (VisualCanvas) getParentObject().getMainCanvas();
 
@@ -1032,10 +1007,8 @@ public class DefaultMethodRepresentation extends VComponent
                     log(Level.SEVERE, null, ex);
         }
 
-
 //        System.out.println(">> M-DEP-SIZE: "
 //                + methodDependencies.getCallStack().size());
-
         // reset return value
         getDescription().setReturnValue(null);
 
@@ -1046,16 +1019,14 @@ public class DefaultMethodRepresentation extends VComponent
 
 //        boolean methodHasInputs =
 //                getDescription().getParameterTypes().length > 0;
-
         paramsAreValid = true;
 
         Exception invocationException = null;
 
-
         // get parameter values from type representations
         for (int i = 0; i < getDescription().getParameterTypes().length; i++) {
-            TypeRepresentationBase representation =
-                    parameterTypeRepresentations.get(i).getTypeRepresentation();
+            TypeRepresentationBase representation
+                    = parameterTypeRepresentations.get(i).getTypeRepresentation();
 
             params.add(representation.getValue());
 
@@ -1074,8 +1045,6 @@ public class DefaultMethodRepresentation extends VComponent
 
         getDescription().setParameters(params.toArray());
 
-
-
         if (paramsAreValid) {
             // we want to catch all exceptions because the rest of the
             // method has to be executed, no matter what exceptions are thrown,
@@ -1086,8 +1055,8 @@ public class DefaultMethodRepresentation extends VComponent
                 inspector.invoke(getDescription(), getParentObject().getID());
 
             } catch (Exception ex) {
-                MessageBox mBox =
-                        getParentObject().getMainCanvas().getMessageBox();
+                MessageBox mBox
+                        = getParentObject().getMainCanvas().getMessageBox();
                 String message = "see stack trace for details!";
                 if (ex.getMessage() != null) {
                     message = ex.toString();
@@ -1102,8 +1071,8 @@ public class DefaultMethodRepresentation extends VComponent
         try {
             returnTypeRepresentation.setValue(getDescription().getReturnValue());
         } catch (Exception ex) {
-            MessageBox mBox =
-                    getParentObject().getMainCanvas().getMessageBox();
+            MessageBox mBox
+                    = getParentObject().getMainCanvas().getMessageBox();
 //	    String message = "unknown error!";
 //	    if (ex.getMessage() != null) {
 //		message = ex.toString();
@@ -1122,9 +1091,7 @@ public class DefaultMethodRepresentation extends VComponent
             returnTypeRepresentation.setReturnTypeUpToDate();
         }
 
-
         sendReturnValueData();
-
 
         // if we are the call parent then clear the trace because we may get
         // input data for other parameters
@@ -1138,8 +1105,8 @@ public class DefaultMethodRepresentation extends VComponent
 //                    + callTrace.getCallStack().size());
             try {
                 for (Object o : callTrace.getCallStack()) {
-                    DefaultMethodRepresentation m =
-                            (DefaultMethodRepresentation) o;
+                    DefaultMethodRepresentation m
+                            = (DefaultMethodRepresentation) o;
                     System.out.println(">> "
                             + m.getDescription().getMethodName());
                 }
@@ -1157,7 +1124,6 @@ public class DefaultMethodRepresentation extends VComponent
         }
 
 //        System.out.println(">> CalledByUser: " + calledByUser);
-
         if (invocationException != null) {
             throw new InvocationTargetException(
                     invocationException, "Cannot invoke method!");
@@ -1194,8 +1160,8 @@ public class DefaultMethodRepresentation extends VComponent
 
         // get parameter values from type representations
         for (int i = 0; i < getDescription().getParameterTypes().length; i++) {
-            TypeRepresentationBase representation =
-                    parameterTypeRepresentations.get(i).getTypeRepresentation();
+            TypeRepresentationBase representation
+                    = parameterTypeRepresentations.get(i).getTypeRepresentation();
 
             params.add(representation.getValue());
 
@@ -1267,7 +1233,6 @@ public class DefaultMethodRepresentation extends VComponent
         VisualObjectInspector inspector = getParentObject().getInspector();
 
 //	Object result = null;
-
         return invoke(inspector, methodDependencies);
     }
 
@@ -1327,7 +1292,6 @@ public class DefaultMethodRepresentation extends VComponent
 //    public Connector getConnector(int i) {
 //        return getConnectors().getById(i);
 //    }
-
     /**
      * Returns all connectors of the method.
      *
@@ -1372,8 +1336,8 @@ public class DefaultMethodRepresentation extends VComponent
      * @return all parameter of the method
      */
     public ArrayList<TypeRepresentationBase> getParameters() {
-        ArrayList<TypeRepresentationBase> parameterRepresentations =
-                new ArrayList<TypeRepresentationBase>();
+        ArrayList<TypeRepresentationBase> parameterRepresentations
+                = new ArrayList<TypeRepresentationBase>();
         for (TypeRepresentationContainer t : parameterTypeRepresentations) {
             parameterRepresentations.add(t.getTypeRepresentation());
         }
@@ -1409,7 +1373,6 @@ public class DefaultMethodRepresentation extends VComponent
 //        this.ID = ID;
 //        description.setMethodID(ID);
 //    }
-
     /**
      * Indicates whether this method representation is interactive, i.e., if it
      * has an invoke button.
@@ -1647,14 +1610,12 @@ public class DefaultMethodRepresentation extends VComponent
         return visualMethodId;
     }
 
-
     /**
      * @param visualMethodId the visualMethodId to set
      */
     public void setVisualMethodID(int visualMethodId) {
         this.visualMethodId = visualMethodId;
     }
-   
 
     /**
      * This object's mouse listener.
@@ -1778,7 +1739,6 @@ class MethodTitleBar extends JPanel {
 
     MethodTitleBar(final DefaultMethodRepresentation method) {
 
-
         this.method = method;
 
         VBoxLayout layout = new VBoxLayout(this, VBoxLayout.LINE_AXIS);
@@ -1789,10 +1749,10 @@ class MethodTitleBar extends JPanel {
         title.setHorizontalAlignment(SwingConstants.CENTER);
         title.setForeground(method.getParentObject().
                 getMainCanvas().getStyle().getBaseValues().getColor(
-                Canvas.TEXT_COLOR_KEY));
+                        Canvas.TEXT_COLOR_KEY));
 
-        closeIcon =
-                new CloseIcon(method.getParentObject().getMainCanvas());
+        closeIcon
+                = new CloseIcon(method.getParentObject().getMainCanvas());
         closeIcon.setActionListener(new CanvasActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -1817,7 +1777,7 @@ class MethodTitleBar extends JPanel {
 
                     method.getEffectManager().
                             startDisappearanceEffect(
-                            method, 0.5);
+                                    method, 0.5);
 
                     method.getParentObject().removeMethodFromView(
                             method);
@@ -1863,7 +1823,6 @@ class MethodTitleBar extends JPanel {
         addMouseListener(control);
         addMouseMotionListener(control);
 
-
         menu = new JPopupMenu("Method");
 
         initPopupMenu(menu);
@@ -1891,6 +1850,34 @@ class MethodTitleBar extends JPanel {
         });
 
         popupMenu.add(pasteItem);
+
+        JMenuItem duplicateItem = new JMenuItem("Duplicate");
+        duplicateItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                DefaultObjectRepresentation oRep = method.getParentObject();
+
+                // visualMethodID = 0 because it will be automatically
+                // computed after ordered layout or getMethodOrder() call
+                DefaultMethodRepresentation duplicate
+                        = oRep.addMethodToView(
+                                method.getDescription(), 0);
+
+                OrderedBoxLayout boxLayout = oRep.getMethodLayout();
+                int duplicatePos = boxLayout.getOrder().indexOf(method);
+
+                oRep.getMethodLayout().moveTo(duplicate, duplicatePos);
+
+                String duplicateArgs = ClipboardUtil.
+                        paramDataToXml(method.getParameters());
+                ClipboardUtil.xmlToParamData(
+                        duplicateArgs, duplicate.getParameters());
+
+            }
+        });
+
+        popupMenu.add(duplicateItem);
     }
 
     JLabel getTitle() {
@@ -1929,10 +1916,10 @@ class MethodTitleBar extends JPanel {
 
             g2.fill(getShape());
 
-            AlphaComposite ac1 =
-                    AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                    style.getBaseValues().getFloat(
-                    DefaultMethodRepresentation.METHOD_TITLE_TRANSPARENCY_KEY));
+            AlphaComposite ac1
+                    = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                            style.getBaseValues().getFloat(
+                                    DefaultMethodRepresentation.METHOD_TITLE_TRANSPARENCY_KEY));
             g2.setComposite(ac1);
 
             Color upperColor = style.getBaseValues().getColor(
@@ -1945,7 +1932,6 @@ class MethodTitleBar extends JPanel {
 //                    upperColor = style.getObjectUpperActiveTitleColor();
 //                    lowerColor = style.getObjectLowerActiveTitleColor();
 //                }
-
             GradientPaint paint = new GradientPaint(0, 0,
                     upperColor,
                     0, this.getHeight(),
@@ -1958,13 +1944,11 @@ class MethodTitleBar extends JPanel {
 
             // aqua like button test
 //                Shape originalClip = g2.getClip();
-
             g2.setComposite(original);
 
             g2.dispose();
 
 //                float value = 1.0f / 9;
-
 //                float[] BLUR = {
 //                    value, value, value,
 //                    value, value, value,
@@ -1976,14 +1960,11 @@ class MethodTitleBar extends JPanel {
 //                    0.1f, 0.3f, 0.1f,
 //                    0.1f, 0.1f, 0.1f
 //                };
-
 //                ConvolveOp vBlurOp = new ConvolveOp(new Kernel(3, 3, BLUR));
 //                buffer = vBlurOp.filter(buffer, null);
-
             g2 = buffer.createGraphics();
 
             //***button-end***
-
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                     RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -2072,7 +2053,7 @@ class MethodMouseControl implements MouseListener, MouseMotionListener {
                         ((JMenuItem) mE).setEnabled(
                                 ClipboardUtil.
                                 isClipboardContentCompatible(
-                                method.getParameters()));
+                                        method.getParameters()));
                     }
                 }
             }
