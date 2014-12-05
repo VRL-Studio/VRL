@@ -82,6 +82,7 @@ import eu.mihosoft.vrl.visual.VComboBox;
 import eu.mihosoft.vrl.visual.VLayout;
 import eu.mihosoft.vrl.visual.VSwingUtil;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -193,7 +194,15 @@ public class DefaultObjectRepresentation extends JPanel
 
         this.setLayout(layout);
 
-        methodLayout = new OrderedBoxLayout(methodView, VBoxLayout.Y_AXIS);
+        methodLayout = new OrderedBoxLayout(methodView, VBoxLayout.Y_AXIS) {
+
+            @Override
+            public void layoutContainer(Container target) {
+                super.layoutContainer(target);
+                getMethodOrder(); // updates visual method id
+            }
+        };
+        
 
         methodView.setLayout(new VLayout(methodLayout));
 
@@ -608,12 +617,6 @@ public class DefaultObjectRepresentation extends JPanel
             hideSelectionView();
         }
 
-//        if (noMethodsAddedToView) {
-//            // set preferred size is necessary, because minimum size is ignored
-//            // by the layout manager
-////            this.setMinimumSize(new Dimension(Short.MIN_VALUE, 40));
-////            this.setPreferredSize(new Dimension(Short.MAX_VALUE, 40));
-//        }
         selectionView.getEffectManager().setDisabled(false);
     }
 
