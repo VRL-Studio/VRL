@@ -202,7 +202,6 @@ public class DefaultObjectRepresentation extends JPanel
                 getMethodOrder(); // updates visual method id
             }
         };
-        
 
         methodView.setLayout(new VLayout(methodLayout));
 
@@ -272,18 +271,23 @@ public class DefaultObjectRepresentation extends JPanel
      * Adds a given method representation to the main view.
      *
      * @param mDesc the method representation to add
+     * @param visualMethodId the visual method id
+     * @return the method representation that visualizes the specified method
      */
     public DefaultMethodRepresentation addMethodToView(
             final MethodDescription mDesc, int visualMethodId) {
 
-        if (isNotallowedOnView(mDesc)) {
+        DefaultMethodRepresentation mRep
+                = getMethodByMethodDescription(mDesc, visualMethodId);
+
+        if (isNotallowedOnView(mDesc) || mRep != null) {
 
             updateSelectionViewVisibility();
 
-            return getMethodByMethodDescription(mDesc, visualMethodId);
+            return mRep;
         }
 
-        DefaultMethodRepresentation mRep
+        mRep
                 = new DefaultMethodRepresentation(this);
         mRep.initRepresentation(
                 mDesc, getConnectorIDTables().getById(
@@ -464,7 +468,7 @@ public class DefaultObjectRepresentation extends JPanel
                 MethodDescription selected
                         = (MethodDescription) methodList.getSelectedItem();
 
-                int visualMethodID = 0;
+                int visualMethodID = -1;
 
                 if (selected != null) {
 //                    boolean removeMethodAnimationRunning =
@@ -591,14 +595,13 @@ public class DefaultObjectRepresentation extends JPanel
 
     public boolean isNotallowedOnView(MethodDescription mDesc) {
 
-        
-        boolean isStartObject = ((VisualCanvas)getMainCanvas()).getInspector().
+        boolean isStartObject = ((VisualCanvas) getMainCanvas()).getInspector().
                 getObject(this.getObjectID()).getClass() == StartObject.class;
-        boolean isStopObject = ((VisualCanvas)getMainCanvas()).getInspector().
+        boolean isStopObject = ((VisualCanvas) getMainCanvas()).getInspector().
                 getObject(this.getObjectID()).getClass() == StopObject.class;
 
-        boolean methodFound =  !getMethodsByMethodDescription(mDesc).isEmpty();
-        
+        boolean methodFound = !getMethodsByMethodDescription(mDesc).isEmpty();
+
         // start and stop methods are only allowed once
         return methodFound && (isStartObject || isStopObject);
     }
@@ -836,6 +839,8 @@ public class DefaultObjectRepresentation extends JPanel
      * not by id.
      *
      * @param mDesc the method description
+     * @param visualMethodID the visual method id of the requested method
+     * representation
      * @return returns method representation by signature (name and parameter
      * types) if method representation exists; returns <code>null</code>
      * otherwise
@@ -847,6 +852,7 @@ public class DefaultObjectRepresentation extends JPanel
         for (DefaultMethodRepresentation m : getMethods()) {
 
             if (m.getVisualMethodID() != visualMethodID) {
+                System.out.println("mismatch: " + m.getVisualMethodID() + " == " + visualMethodID);
                 continue;
             }
 
@@ -868,6 +874,7 @@ public class DefaultObjectRepresentation extends JPanel
                 if (mDesc.getParameterTypes()[i]
                         != m.getDescription().getParameterTypes()[i]) {
                     equalPamareters = false;
+                    System.out.println("mismatch: " + m.getName() + " == " + mDesc.getMethodName());
                     break;
                 }
             }
