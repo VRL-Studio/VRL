@@ -1355,26 +1355,24 @@ public class VRL {
 //            so we know that we already have installed this plugin. 
 //            see issue on github refer to VRL-Tutorial-Plugin dublicate installation
 //            therefore we skip all the normal stuff
-//            if the reason for this behavior is know fix the code
+//            if the reason for this behavior is known then fix the code
                 System.out.println("--> plugin = \""
                         + plugin.getIdentifier().toString()
-                        + "\" already installed skipping second try.");
+                        + "\" already installed. Skipping installation.");
             } else {
 
                 String errorMsg = " --> Error: cannot add plugin \""
                         + plugin.getIdentifier().toString()
                         + "\" because, according to its name, it is a duplicate of"
-                        + " the already exiting plugin \""
+                        + " the already existing plugin \""
                         + registeredPlugin.getIdentifier()
                         + "\". <br>"
-                        + "Plesase see <br>\""
+                        + "Please see <br>\""
                         + VJarUtil.getClassLocation(plugin.getClass()).getAbsolutePath()
-                        //                    + "\" and <br> \""
-                        //                    + VJarUtil.getClassLocation(registeredPlugin.getClass()).getAbsolutePath()
+                        + "\" and <br> \""
+                        + VJarUtil.getClassLocation(registeredPlugin.getClass()).getAbsolutePath()
                         + "\".";
 
-                // TODO enable this again, this was just done to prevent ugly errors
-                // when running from netbeans
                 if (registrationError != null) {
                     registrationError += "<br>" + errorMsg;
                 } else {
