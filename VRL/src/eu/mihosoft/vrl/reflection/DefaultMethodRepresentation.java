@@ -98,6 +98,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -1868,15 +1869,19 @@ class MethodTitleBar extends JPanel {
                         = oRep.addMethodToView(
                                 method.getDescription(), 0);
 
+                // find insert position and move duplicated method
+                // to that location
                 OrderedBoxLayout boxLayout = oRep.getMethodLayout();
                 int duplicatePos = boxLayout.getOrder().indexOf(method);
-
                 oRep.getMethodLayout().moveTo(duplicate, duplicatePos);
-
+                
+                // copy and paste parameter data via xml
                 String duplicateArgs = ClipboardUtil.
                         paramDataToXml(method.getParameters());
                 ClipboardUtil.xmlToParamData(
                         duplicateArgs, duplicate.getParameters());
+                
+              
 
             }
         });
