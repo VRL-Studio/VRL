@@ -9,7 +9,7 @@ Join the [Developer Group](https://groups.google.com/forum/#!forum/vrl-developer
 
 # Dependencies
 
-- Java >= 1.6 (JDK, not JRE)
+- Java >= 1.6 (JDK)
 - NetBeans >= 7.4
 
 # How To Build
