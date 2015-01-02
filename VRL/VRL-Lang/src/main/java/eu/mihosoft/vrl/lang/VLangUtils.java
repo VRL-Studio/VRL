@@ -50,9 +50,6 @@
 
 package eu.mihosoft.vrl.lang;
 
-import eu.mihosoft.g4j.lang.FilterChars;
-import eu.mihosoft.g4j.lang.FilterComments;
-import eu.mihosoft.g4j.lang.FilterStrings;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -14,15 +14,13 @@ rootProject.name = 'VRL'
 // - subproject locations/paths is defined by their position in the hierarchy
 //  -- gradle allows to change that. but for this project it is not allowed to
 //     chage the default configuration
-include "VRL-Base", "VRL-Lang", "VRL-Lang:CommentParser", "VRL-UI", "VRL-UI:NB-Sample", "VRL-Reflection", "VRL-IDE", "VRL-3D"
+include "VRL-Base", "VRL-Lang", "VRL-Lang:CommentParser", "VRL-UI", "VRL-Reflection", "VRL-IDE"//, "VRL-3D"//,  "VRL-UI:NB-Sample"
 
 
 rootProject.children.each { project ->
-    //    String fileBaseName = project.name.replaceAll("\\p{Upper}") { "-${it.toLowerCase()}" }
     project.name = project.name.toLowerCase();
     
     project.children.each { childP ->
-        //    String fileBaseName = project.name.replaceAll("\\p{Upper}") { "-${it.toLowerCase()}" }
         childP.name = childP.name.toLowerCase();
     }
 }

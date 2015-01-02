@@ -119,121 +119,6 @@ public class Scope2Code {
         return new InvocationCodeRenderer().render(invocation);
     }
 
-    public static void main(String[] args) {
-        CompilationUnitDeclaration scope = demoScope();
-
-        CompilationUnitRenderer renderer
-                = new CompilationUnitRenderer(
-                        new ClassDeclarationRenderer(
-                                new MethodDeclarationRenderer(
-                                        new InvocationCodeRenderer())));
-
-        System.out.println(renderer.render(scope));
-
-        UIBinding.scopes.clear();
-
-        String theCode = renderer.render(scope);
-
-        try {
-            Files.write(theCode,
-                    new File("theCode.groovy"), Charset.forName("UTF-8"));
-        } catch (IOException ex) {
-            Logger.getLogger(Scope2Code.class.getName()).
-                    log(Level.SEVERE, null, ex);
-        }
-
-        System.out.println("processing code: ");
-
-        GroovyClassLoader gcl = new GroovyClassLoader();
-        gcl.parseClass(theCode);
-
-        if (UIBinding.scopes == null) {
-            System.err.println("NO SCOPES");
-            return;
-        }
-
-        String code = "";
-
-        for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
-            for (Scope s : scopeList) {
-                if (s instanceof CompilationUnitDeclaration) {
-                    code = renderer.render((CompilationUnitDeclaration) s);
-                }
-            }
-        }
-
-        System.out.println("code from compiler 1:\n" + code);
-
-        UIBinding.scopes.clear();
-
-        gcl = new GroovyClassLoader();
-        gcl.parseClass(code);
-
-        for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
-            for (Scope s : scopeList) {
-                if (s instanceof CompilationUnitDeclaration) {
-                    code = renderer.render((CompilationUnitDeclaration) s);
-                }
-            }
-        }
-
-        System.out.println("code from compiler 2:\n" + code);
-
-//        scope.generateDataFlow();
-    }
-
-    public static CompilationUnitDeclaration demoScope() {
-        VisualCodeBuilder builder = new VisualCodeBuilder_Impl();
-
-        CompilationUnitDeclaration myFile = builder.declareCompilationUnit(
-                "MyFile.java", "my.testpackage");
-        ClassDeclaration myFileClass = builder.declareClass(myFile,
-                new Type("my.testpackage.MyFileClass"),
-                new Modifiers(Modifier.PUBLIC), new Extends(), new Extends());
-
-        builder.declareVariable(myFileClass, new Type("int"), "value1");
-
-        MethodDeclaration m1 = builder.declareMethod(myFileClass,
-                new Modifiers(Modifier.PUBLIC), new Type("int"), "m1",
-                new Parameters(new Parameter(new Type("int"), "v1")));
-
-        builder.invokeMethod(m1, "this", m1, Argument.varArg(m1.getVariable("v1")));
-        builder.invokeMethod(m1, "this", m1, Argument.varArg(m1.getVariable("v1")));
-
-        MethodDeclaration m2 = builder.declareMethod(myFileClass,
-                new Modifiers(Modifier.PUBLIC), new Type("int"), "m2",
-                new Parameters(new Parameter(new Type("int"), "v1"),
-                        new Parameter(
-                                new Type("my.testpackage.MyFileClass"), "v2")));
-
-        builder.invokeMethod(
-                m2, "this", m2, Argument.varArg(m2.getVariable("v1")),
-                Argument.varArg(m2.getVariable("v2")));
-
-        builder.invokeMethod(
-                m2, "this", m2,
-                Argument.invArg(builder.invokeMethod(
-                                m2, "this", m1,
-                                Argument.varArg(m2.getVariable("v1")))),
-                Argument.varArg(m2.getVariable("v2")));
-
-        ForDeclaration forD1 = builder.invokeForLoop(m2, "i", 1, 3, 1);
-        ForDeclaration forD2 = builder.invokeForLoop(forD1, "j", 10, 9, -1);
-
-        builder.invokeMethod(forD2, "this", m1, Argument.varArg(forD2.getVariable("j")));
-
-//        Variable var = forD2.createVariable(new Type("java.lang.String"));
-//        forD2.assignConstant(var.getName(), "Hello!\"");
-        builder.invokeStaticMethod(
-                forD2, new Type("System"), "out.println",
-                Type.VOID, true, Argument.constArg(Type.STRING, "Hello"));
-
-//        builder.callMethod(forD2, "this", m2.getName(), true,
-//                "retM2", forD2.getVariable("v1"), m2.getVariable("v2"));
-//        builder.callMethod(forD2, "this", m1.getName(), true, "retM1b", m1.getVariable("v1"));
-        return myFile;
-    }
-
 }
 
 final class Utils {
@@ -378,6 +263,9 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             case OR:
                 cb.append("||");
                 break;
+            case ACCESS_ARRAY_ELEMENT:
+                cb.append("[");
+                break;
             default:
                 cb.append("/*operator type not implemented*/");
         }
@@ -412,19 +300,18 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             boolean rightArgNeedsParantheses
                     = operatorInvocation.getRightArgument().getArgType()
                     == ArgumentType.INVOCATION;
-            
+
             // no parantheses around not operator
             if (letArgNeedsParantheses) {
                 letArgNeedsParantheses = !(operatorInvocation.getLeftArgument()
                         .getInvocation().get() instanceof NotInvocation);
             }
-             // no parantheses around not operator
+            // no parantheses around not operator
             if (rightArgNeedsParantheses) {
                 rightArgNeedsParantheses = !(operatorInvocation.getRightArgument()
                         .getInvocation().get() instanceof NotInvocation);
             }
-            
-            
+
             if (letArgNeedsParantheses) {
                 cb.append("(");
             }
@@ -432,15 +319,23 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             if (letArgNeedsParantheses) {
                 cb.append(")");
             }
-            cb.append(" ");
+            if (!operatorInvocation.isArrayAccessOperator()) {
+                cb.append(" ");
+            }
             renderOperator(operatorInvocation.getOperator(), cb);
-            cb.append(" ");
+            if (!operatorInvocation.isArrayAccessOperator()) {
+                cb.append(" ");
+            }
             if (rightArgNeedsParantheses) {
                 cb.append("(");
             }
             renderArgument(operatorInvocation.getRightArgument(), cb);
             if (rightArgNeedsParantheses) {
                 cb.append(")");
+            }
+
+            if (operatorInvocation.isArrayAccessOperator()) {
+                cb.append("]");
             }
 
         } else if (i instanceof ReturnStatementInvocation) {
@@ -725,10 +620,10 @@ class MethodDeclarationRenderer implements CodeRenderer<MethodDeclaration> {
             } else {
                 cb.append(", ");
             }
-            
+
             cb.append(v.getType().getClassNameAsCode()).append(" ").
-                        append(v.getName());
-            
+                    append(v.getName());
+
 //            if (v.getType().getPackageName().equals("java.lang")) {
 //                cb.append(v.getType().getShortName()).append(" ").
 //                        append(v.getName());

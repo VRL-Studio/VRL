@@ -1,0 +1,67 @@
+// **** Coverage Report Config ****
+// 
+//
+
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+
+repositories {
+    mavenCentral()
+}
+
+subprojects {
+    apply plugin: 'jacoco'
+}
+
+// multiproject coverage report
+// http://csiebler.github.io/blog/2014/02/09/multi-project-code-coverage-using-gradle-and-jacoco/
+task codeCoverageReport(type: JacocoReport) {
+
+    executionData fileTree(project.rootDir.absolutePath)
+    .include("**/jacoco/*.exec")
+
+    // Add all relevant sourcesets from the subprojects 
+    subprojects.each {
+        
+        if (it.name!="vrl-ui") {
+            sourceSets it.sourceSets.main
+        }
+    }
+
+    reports {
+        // xml reports are used for coveralls
+        xml.enabled true
+        xml.destination = "${buildDir}/reports/jacoco/xml/report.xml"
+        
+        // html for uploading to webserver
+        html.enabled true
+        html.destination "${buildDir}/reports/jacoco/html"
+        
+        // we don't need csv
+        csv.enabled false
+    }
+    
+    // exclude unused code from coverage:
+//    classDirectories = fileTree(
+//            dir: "${buildDir}/intermediates/classes/debug",
+//            excludes: ['com/myapp/R*.class',
+//                       '**/*$InjectAdapter.class',
+//                       '**/*$ModuleAdapter.class',
+//                       '**/*$ViewInjector*.class'
+//            ])
+}
+
+coveralls {
+    
+    // specify jacoco xml report location
+    jacocoReportPath = "${buildDir}/reports/jacoco/xml/report.xml"
+    
+    // add sources from the subprojects
+    sourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs).files.absolutePath
+}
+
+// always run the tests before generating the report
+codeCoverageReport.dependsOn {
+    subprojects*.test
+}
+

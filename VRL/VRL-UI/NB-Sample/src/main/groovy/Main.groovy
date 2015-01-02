@@ -5,6 +5,8 @@ public class Main {
         Main main;
         main = (new Main());
         main.m1(32);
+        
+        println(args)
     }
     public int m1(int p1) {
         println("Calling m1(): " + 48);

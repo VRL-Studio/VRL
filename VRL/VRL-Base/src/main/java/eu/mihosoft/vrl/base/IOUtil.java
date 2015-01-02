@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.base;
 
 import java.io.*;
@@ -72,9 +71,10 @@ import java.util.zip.ZipOutputStream;
  * provides functionality for converting data loaded from file to base64 strings
  * and vice versa.
  *
- * <p><b>Note:</b> if running on MS Windows IOUtil adds a shutdown hook that
- * tries to ultimately delete temporary files before the JVM shuts down. To
- * disable this, call {@link #disableShutdownHook(boolean) }.</p>
+ * <p>
+ * <b>Note:</b> if running on MS Windows IOUtil adds a shutdown hook that tries
+ * to ultimately delete temporary files before the JVM shuts down. To disable
+ * this, call {@link #disableShutdownHook(boolean) }.</p>
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
@@ -82,8 +82,8 @@ public class IOUtil {
 
     private static boolean IO_DEBUG = false;
     private static boolean DISABLE_SHUTDOWN_HOOK = false;
-    private static final Collection<String> filesToDeleteOnExit =
-            new ArrayList<String>();
+    private static final Collection<String> filesToDeleteOnExit
+            = new ArrayList<String>();
 
     static {
 
@@ -140,7 +140,8 @@ public class IOUtil {
      * Windows 7 SP 1). Thus, this method does only have an effect if running on
      * MS Windows.
      *
-     * <p><b>Note:</b> do not change the default behavior if you don't encounter
+     * <p>
+     * <b>Note:</b> do not change the default behavior if you don't encounter
      * problems with file locking and the shutdown hook.</p>
      *
      * @param b defines whether to disable shutdown hook
@@ -186,8 +187,7 @@ public class IOUtil {
 
     /**
      * Converts a stream to a string. This method can be used to easily read
-     * text files via
-     * <code>Class.getResourceAsStream(...)</code>
+     * text files via <code>Class.getResourceAsStream(...)</code>
      *
      * @see
      * http://weblogs.java.net/blog/pat/archive/2004/10/stupid_scanner_1.html
@@ -558,8 +558,10 @@ public class IOUtil {
 
     /**
      * Copies a directory. If the target location does not exist it will be
-     * created. <p><b>Note:</b> existing target and contained files and
-     * directories will be overwritten.</p>
+     * created.
+     * <p>
+     * <b>Note:</b> existing target and contained files and directories will be
+     * overwritten.</p>
      *
      * @param sourceLocation the source location
      * @param targetLocation the target location
@@ -578,7 +580,6 @@ public class IOUtil {
 
 //        VParamUtil.throwIfNotValid(
 //                VParamUtil.VALIDATOR_EXISTING_FOLDER, null, sourceLocation);
-
         if (!sourceLocation.exists()) {
             throw new FileNotFoundException(sourceLocation.getPath());
         }
@@ -649,20 +650,25 @@ public class IOUtil {
     }
 
     private static ArrayList<File> _listFiles(
-            File dir, String pattern, ArrayList<File> files) {
-        VParamUtil.throwIfNull(dir, pattern);
+            File fileOrDir, String pattern, ArrayList<File> files) {
+        VParamUtil.throwIfNull(fileOrDir, pattern);
 
-        VParamUtil.throwIfNotValid(
-                VParamUtil.VALIDATOR_EXISTING_FOLDER, null, dir);
-
-        if (dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                _listFiles(new File(dir, children[i]), pattern, files);
-            }
+        if (!fileOrDir.isDirectory()) {
+            files.add(fileOrDir);
         } else {
-            if (dir.getName().matches(pattern)) {
-                files.add(dir);
+
+            VParamUtil.throwIfNotValid(
+                    VParamUtil.VALIDATOR_EXISTING_FOLDER, null, fileOrDir);
+
+            if (fileOrDir.isDirectory()) {
+                String[] children = fileOrDir.list();
+                for (int i = 0; i < children.length; i++) {
+                    _listFiles(new File(fileOrDir, children[i]), pattern, files);
+                }
+            } else {
+                if (fileOrDir.getName().matches(pattern)) {
+                    files.add(fileOrDir);
+                }
             }
         }
 
@@ -685,11 +691,11 @@ public class IOUtil {
         VParamUtil.throwIfNotValid(
                 VParamUtil.VALIDATOR_EXISTING_FILE, null, sourceLocation);
 
-        FileChannel sourceChannel =
-                new FileInputStream(sourceLocation).getChannel();
+        FileChannel sourceChannel
+                = new FileInputStream(sourceLocation).getChannel();
         try {
-            FileChannel targetChannel =
-                    new FileOutputStream(targetLocation).getChannel();
+            FileChannel targetChannel
+                    = new FileOutputStream(targetLocation).getChannel();
             try {
                 targetChannel.transferFrom(sourceChannel, 0,
                         sourceChannel.size());
@@ -1151,8 +1157,10 @@ public class IOUtil {
 
     /**
      * Recursively returns files that end with at least one of the specified
-     * endings. <p><b>Note</b>Folders are not considered. Thus, the resulting
-     * collection only contains files.</p>
+     * endings.
+     * <p>
+     * <b>Note</b>Folders are not considered. Thus, the resulting collection
+     * only contains files.</p>
      *
      * @param location folder to search
      * @param endings endings
@@ -1217,9 +1225,7 @@ public class IOUtil {
 
         for (File f : srcFolder.listFiles()) {
 
-
             boolean fMatches = false;
-
 
             // TODO probably not sufficient to check for contains
             for (String e : endings) {
@@ -1319,12 +1325,20 @@ public class IOUtil {
      * @param destZipFile the destination zip file
      *
      * @throws IOException
+     * @throws IllegalArgumentException if source folder is empty (empty zip files are not supported)
      */
     static public void zipContentOfFolder(File srcFolder, File destZipFile) throws IOException {
 
         VParamUtil.throwIfNotValid(
                 VParamUtil.VALIDATOR_EXISTING_FOLDER,
                 null, srcFolder);
+        
+        File[] childrenOfSrc = srcFolder.listFiles();
+        
+        if (childrenOfSrc.length == 0) {
+            throw new IllegalArgumentException(
+                    "Source folder must contain at least one entry!");
+        }
 
         URI base = srcFolder.toURI();
         Deque<File> queue = new LinkedList<File>();
@@ -1337,6 +1351,7 @@ public class IOUtil {
             res = zout;
             while (!queue.isEmpty()) {
                 srcFolder = queue.pop();
+                
                 for (File kid : srcFolder.listFiles()) {
 
                     String name = base.relativize(kid.toURI()).getPath();
@@ -1369,9 +1384,7 @@ public class IOUtil {
     public static void zipFolder(File srcFolder, File destZipFile) throws IOException {
 
         // based on ideas from http://stackoverflow.com/questions/1399126/java-util-zip-recreating-directory-structure
-
         // now added nio channel copy methods
-
         VParamUtil.throwIfNotValid(
                 VParamUtil.VALIDATOR_EXISTING_FOLDER,
                 null, srcFolder);
@@ -1426,9 +1439,7 @@ public class IOUtil {
     public static void unzip(File archive, File destDir) throws IOException {
 
         // based on ideas from http://stackoverflow.com/questions/1399126/java-util-zip-recreating-directory-structure
-
         // now added nio channel copy methods
-
         VParamUtil.throwIfNotValid(
                 VParamUtil.VALIDATOR_EXISTING_FILE,
                 null, archive);

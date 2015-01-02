@@ -74,6 +74,7 @@ import eu.mihosoft.vrl.lang.model.CodeLocation;
 import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.CodeReader;
 import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
@@ -162,7 +163,7 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 
         // apply transformation for each class in the specified source unit
         for (ClassNode clsNode : sourceUnit.getAST().getClasses()) {
-            
+
             System.err.println("CLS: " + clsNode.getName());
 
             transformation.visit(clsNode, sourceUnit);
@@ -494,18 +495,19 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         if (!stateMachine.getBoolean("for-loop:declaration")) {
             throwErrorMessage(
-                    "For loop must contain a variable declaration such as 'int i=0'!", s.getVariable());
+                    "For loop must contain a variable declaration "
+                    + "such as 'int i=0'!", s.getVariable());
         }
 
         if (!stateMachine.getBoolean("for-loop:compareExpression")) {
             throwErrorMessage("for-loop: must contain binary"
-                    + " expressions of the form 'a <= b' with a, b being"
+                    + " expressions of the form 'a <= b'/'a >= b' with a, b being"
                     + " constant integers!", s);
         }
 
         if (!stateMachine.getBoolean("for-loop:incExpression")) {
             throwErrorMessage("for-loop: must contain binary"
-                    + " expressions of the form 'i+=a' with i being"
+                    + " expressions of the form 'i+=a'/'i-=a' with i being"
                     + " an integer variable and a being a constant integer!", s);
         }
 
@@ -522,20 +524,51 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         stateMachine.push("while-loop", true);
 
-        System.out.println(" --> WHILE-LOOP: " + s.getBooleanExpression());
-        //currentScope = codeBuilder.createScope(currentScope, ScopeType.WHILE, "while", new Object[0]);
+        BooleanExpression expression = s.getBooleanExpression();
 
-        if (s.getBooleanExpression().getExpression() == null) {
+        if (expression == null || expression.getExpression() == null) {
+            throwErrorMessage("while-loop: must contain boolean"
+                    + " expression! No expression is not supported", s);
+
+            return;
+        }
+
+        if (expression.getExpression() instanceof ConstantExpression) {
+            ConstantExpression constExpression
+                    = (ConstantExpression) expression.getExpression();
+
+            if (constExpression.isNullExpression()) {
+                throwErrorMessage("while-loop: must contain boolean"
+                        + " expression! Null expression is not supported.", s);
+            } else {
+
+                IType expressionType
+                        = Type.fromObject(constExpression.getValue(), true);
+
+                if (!Type.BOOLEAN.equals(expressionType)
+                        && !new Type("java.lang.Boolean").equals(expressionType)) {
+                    throwErrorMessage("while-loop: must contain boolean"
+                            + " expression! '" + expressionType
+                            + "' is not supported.", s);
+                }
+            }
+        } else if (expression.getExpression() instanceof BinaryExpression) {
+            Operator operator = convertOperator(
+                    (BinaryExpression) expression.getExpression());
+
+            if (!BinaryOperatorInvocationImpl.booleanOperator(operator)) {
+                throwErrorMessage("while-loop: must contain boolean"
+                        + " expression! Only boolean binary operations are "
+                        + "supported.", s);
+            }
+        } else {
             throwErrorMessage("while-loop: must contain boolean"
                     + " expression!", s);
         }
 
-//        if (!(s.getBooleanExpression().getExpression() instanceof BinaryExpression)) {
-//            throw new IllegalStateException("while-loop: must contain boolean"
-//                    + " expression!");
-//        }
         if (!(currentScope instanceof ControlFlowScope)) {
-            throwErrorMessage("While-Loop can only be invoked inside ControlFlowScopes!", s);
+            throwErrorMessage("While-Loop can only be invoked "
+                    + "inside ControlFlowScopes!", s);
         }
 
         currentScope = codeBuilder.invokeWhileLoop((ControlFlowScope) currentScope,
@@ -925,7 +958,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
                 if (!(s.getLeftExpression() instanceof VariableExpression)) {
                     throwErrorMessage("In for-loop: only binary"
-                            + " expressions of the form 'a <= b' with a, b being"
+                            + " expressions of the form 'a <= b'/'a >= b' with a, b being"
                             + " constant integers are supported!", s);
                 }
 
@@ -958,51 +991,55 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 forD.setTo((int) ce.getValue());
 
                 stateMachine.setBoolean("for-loop:compareExpression", true);
-            } else if (stateMachine.getBoolean("for-loop:declaration")
-                    && stateMachine.getBoolean("for-loop:compareExpression")
-                    && !stateMachine.getBoolean("for-loop:incExpression")) {
+            }
+        } else if (stateMachine.getBoolean("for-loop")
+                && stateMachine.getBoolean("for-loop:declaration")
+                && stateMachine.getBoolean("for-loop:compareExpression")
+                && !stateMachine.getBoolean("for-loop:incExpression")) {
 
-                if (!"+=".equals(s.getOperation().getText())
-                        && !"-=".equals(s.getOperation().getText())) {
-                    throw new IllegalStateException("In for-loop: inc/dec '"
-                            + s.getOperation().getText()
-                            + "' not spupported! Must be '+=' or '-=' or '++' or '--'!");
-                }
+            ForDeclaration_Impl forD = (ForDeclaration_Impl) currentScope;
 
-                if (!(s.getRightExpression() instanceof ConstantExpression)) {
-                    throwErrorMessage("In for-loop: variable '" + forD.getVarName()
-                            + "' must be initialized with an integer constant!", s);
-                }
+            if (!"+=".equals(s.getOperation().getText())
+                    && !"-=".equals(s.getOperation().getText())) {
+                throw new IllegalStateException("In for-loop: inc/dec '"
+                        + s.getOperation().getText()
+                        + "' not spupported! Must be '+=' or '-=' or '++' or '--'!");
+            }
 
-                ConstantExpression ce = (ConstantExpression) s.getRightExpression();
+            if (!(s.getRightExpression() instanceof ConstantExpression)) {
+                throwErrorMessage("In for-loop: variable '" + forD.getVarName()
+                        + "' must be initialized with an integer constant!", s);
+            }
 
-                if (!(ce.getValue() instanceof Integer)) {
-                    throwErrorMessage(
-                            "In for-loop: inc/dec must be an integer constant!", s);
-                }
+            ConstantExpression ce = (ConstantExpression) s.getRightExpression();
 
-                if ("+=".equals(s.getOperation().getText())) {
-                    forD.setInc((int) ce.getValue());
-                } else if ("-=".equals(s.getOperation().getText())) {
-                    forD.setInc(-(int) ce.getValue());
-                }
+            if (!(ce.getValue() instanceof Integer)) {
+                throwErrorMessage(
+                        "In for-loop: inc/dec must be an integer constant!", s);
+            }
 
-                if (forD.getInc() > 0 && ">=".
-                        equals(stateMachine.getString("for-loop:compareOperation"))) {
-                    throwErrorMessage("In for-loop: infinite loops"
-                            + " are not supported! Change '>=' to '<=' to prevent that.", s
-                    );
-                }
+            if ("+=".equals(s.getOperation().getText())) {
+                forD.setInc((int) ce.getValue());
+            } else if ("-=".equals(s.getOperation().getText())) {
+                forD.setInc(-(int) ce.getValue());
+            }
 
-                if (forD.getInc() < 0 && "<=".
-                        equals(stateMachine.getString("for-loop:compareOperation"))) {
+            if (forD.getInc() > 0 && ">=".
+                    equals(stateMachine.getString("for-loop:compareOperation"))) {
+                throwErrorMessage("In for-loop: infinite loops"
+                        + " are not supported! Change '>=' to '<=' to prevent that.", s
+                );
+            }
+
+            if (forD.getInc() < 0 && "<=".
+                    equals(stateMachine.getString("for-loop:compareOperation"))) {
 //                    throw new IllegalStateException("In for-loop: infinite loops"
 //                            + " are not supported! Change '<=' to '>=' to prevent that."
 //                    );
-                    throwErrorMessage("In for-loop: infinite loops"
-                            + " are not supported! Change '<=' to '>=' to prevent that.", s
-                    );
-                }
+                throwErrorMessage("In for-loop: infinite loops"
+                        + " are not supported! Change '<=' to '>=' to prevent that.", s
+                );
+            }
 
 //                System.out.println("s: " + s.getOperation().getText() + ", " + forD.getInc());
 //                System.exit(0);
@@ -1011,10 +1048,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                            + " are not supported! Change '<=' to '>=' to prevent that."
 //                    );
 //                }
-                stateMachine.setBoolean("for-loop:incExpression", true);
+            stateMachine.setBoolean("for-loop:incExpression", true);
 
-                //
-            }
+            //
         } else {
 
             if (!returnVariables.containsKey(s)) {
@@ -1156,10 +1192,17 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 return Operator.OR;
             case org.codehaus.groovy.syntax.Types.LOGICAL_AND:
                 return Operator.AND;
+            case org.codehaus.groovy.syntax.Types.LEFT_SQUARE_BRACKET:
+                return Operator.ACCESS_ARRAY_ELEMENT;
 
             default:
+
+                String leftStr = be.getLeftExpression().getText();
+                String opStr = be.getOperation().getText();
+                String rightStr = be.getRightExpression().getText();
+
                 throw new UnsupportedOperationException(
-                        "Operation " + be.getOperation().getText() + " not supported!");
+                        "Operation " + opStr + " not supported! Left: " + leftStr + ", right: " + rightStr);
 
         }
     }
@@ -1234,6 +1277,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         return result;
     }
 
+    private IType convertType(ClassNode type) {
+        return new Type(type.getName());
+    }
+
     private Parameters convertMethodParameters(org.codehaus.groovy.ast.Parameter... params) {
         Parameter[] result = new Parameter[params.length];
 
@@ -1246,7 +1293,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                System.err.print("convertMethodParameters(): array param not supported! " + pType);
 //                pType = pType.replace("[L", "").replace(";", "");
 //            }
-
             result[i] = new Parameter(new Type(pType, true), p.getName(), setCodeRange(p));
         }
 

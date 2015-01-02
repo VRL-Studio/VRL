@@ -41,6 +41,11 @@ public enum Operator {
     GREATER,
     GREATER_EQUALS,
     OR,
-    AND
+    AND,
+    
+    /**
+     * Arrays
+     */
+    ACCESS_ARRAY_ELEMENT
     
 }

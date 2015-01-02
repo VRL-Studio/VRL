@@ -1,27 +1,10 @@
-//import org.gradle.api.artifacts.*
-
 apply plugin: 'base' // To add "clean" task to the root project.
 
 // define projects that shall not be deployed via maven
 project.ext.set("skipMaven",["VRL-Lang:CommentParser","VRL-UI:NB-Sample"])
 
 subprojects {
-    apply from: rootProject.file('common.gradle')
-    
-    // Disable the test report for the individual test task
-    test {
-        reports.html.enabled = true
-    }
-}
-
-task test(type: TestReport) {
-    destinationDir = file("$buildDir/reports/tests/vrl")
-    // Include the results from the `test` task in all subprojects
-    reportOn subprojects*.test
-}
-
-subprojects {
-    rootProject.test.dependsOn.add(test)
+    apply from: rootProject.file('gradle/scripts/common.gradle')
 }
 
 // calls maven install task of all subprojects
@@ -33,6 +16,32 @@ task install {
     }
 }
 
+task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper to the current directory.') {
+    gradleVersion = '2.1'
+}
+
+// test reports
+apply from: rootProject.file('gradle/scripts/testing.gradle')
+
+
+// coverage support (jacoco/coveralls)
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
+    }
+}
+
+apply from: rootProject.file('gradle/scripts/coverage.gradle')
+
+// -- unused --
+
+//task install() {
+//    dependsOn subprojects.install
+//}
 
 //task mergedJavadoc(type: Javadoc, description: 'Creates Javadoc from all the projects.') {
 //    title = 'All modules'
@@ -47,11 +56,4 @@ task install {
 //    }
 //}
 
-task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper to the current directory.') {
-    gradleVersion = '2.1'
-}
-
-//task install() {
-//    dependsOn subprojects.install
-//}
 

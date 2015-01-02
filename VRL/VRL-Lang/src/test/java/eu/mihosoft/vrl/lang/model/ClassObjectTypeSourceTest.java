@@ -16,7 +16,7 @@ import org.junit.Test;
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ClassObjectTypeSourceTest {
-     @Test
+    // @Test
     public void classObjectTypeSourceTest() {
 
         String className = "TestCls01";
