@@ -158,7 +158,7 @@ class ControlFlowImpl implements ControlFlow {
         // follow controlflow from roots to end
         roots.forEach(
                 r -> {
-                    List<VNode> path = WorkflowUtil.getPath(r, WorkflowUtil.CONTROL_FLOW);
+                    List<VNode> path = WorkflowUtil.getPathInLayerFromRoot(r, WorkflowUtil.CONTROL_FLOW);
                     paths.add(path);
                 }
         );
