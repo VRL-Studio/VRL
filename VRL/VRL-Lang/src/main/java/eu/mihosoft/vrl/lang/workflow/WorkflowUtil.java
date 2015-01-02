@@ -6,12 +6,16 @@
 package eu.mihosoft.vrl.lang.workflow;
 
 import eu.mihosoft.vrl.workflow.Connection;
+import eu.mihosoft.vrl.workflow.ConnectionResult;
 import eu.mihosoft.vrl.workflow.Connections;
 import eu.mihosoft.vrl.workflow.Connector;
+import eu.mihosoft.vrl.workflow.VFlow;
+import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
@@ -180,7 +184,7 @@ public class WorkflowUtil {
         return rootNode.test(node);
     }
     
-    public static List<VNode> getPath(VNode sender, String connectionType) {
+    public static List<VNode> getPathInLayerFromRoot(VNode sender, String connectionType) {
 
         List<VNode> result = new ArrayList<>();
         
@@ -226,6 +230,59 @@ public class WorkflowUtil {
         }
 
         return result;
+    }
+    
+    
+    public static List<ConnectionResult> connect(Connector s, Connector r) {
+        List<ConnectionResult> result = new ArrayList<>();
+        if (s.getNode().getFlow() == r.getNode().getFlow()) {
+            result.add(s.getNode().getFlow().connect(s, r));
+        } else {
+            
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Returns the ancestors of the specified node.
+     * @param n node
+     * @return the ancestors of the specified node
+     */
+    public static List<VFlowModel> getAncestors(VNode n) {
+        List<VFlowModel> result = new ArrayList<>();
+        
+        VFlowModel parent = n.getFlow();
+        
+        while(parent!=null) {
+            result.add(parent);
+            parent = parent.getFlow();
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Returns the first common ancestor of the specified nodes if such a parent node
+     * exists.
+     * @param n1 first node
+     * @param n2 second node
+     * @return the common ancestor of the specified nodes if such a parent node
+     * exists
+     */
+    public static Optional<VFlowModel> getCommonAncestor(VNode n1, VNode n2) {
+        List<VFlowModel> ancestorsOfN1 = getAncestors(n1);
+        List<VFlowModel> ancestorsOfN2 = getAncestors(n2);
+        
+        for(VFlowModel a1 : ancestorsOfN1) {
+            for(VFlowModel a2 : ancestorsOfN2) {
+                if (a1.equals(a2)) {
+                    return Optional.of(a1);
+                }
+            }
+        }
+        
+        return Optional.empty();
     }
 
 }
