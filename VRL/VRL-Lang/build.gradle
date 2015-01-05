@@ -1,6 +1,6 @@
 // Note: "common.gradle" in the root project contains additional initialization
-//   for this project. This initialization is applied in the "build.gradle"
-//   of the root project.
+//       for this project. This initialization is applied in the "build.gradle"
+//       of the root project.
 
 if (!hasProperty('mainClass')) {
     ext.mainClass = 'eu.mihosoft.vrl.lang.model.Main'
@@ -30,7 +30,6 @@ dependencies {
     compile "com.google.guava:guava:14.0"
     
     compile ( 'eu.mihosoft.vrl.workflow-8.0:vworkflows-core:0.1-r2-SNAPSHOT' ) { changing = true }
-    //    compile ( 'eu.mihosoft.vrl.workflow:vworkflows-fx:0.1-r2-SNAPSHOT' ) { changing = true }
     
     compile project("commentparser")
     
