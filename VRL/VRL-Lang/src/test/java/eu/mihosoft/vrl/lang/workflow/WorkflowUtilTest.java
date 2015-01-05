@@ -9,7 +9,14 @@ import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
+import eu.mihosoft.vrl.workflow.io.WorkflowIO;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -65,46 +72,50 @@ public class WorkflowUtilTest {
 
     @Test
     public void getCommonAncestorsTest() {
-        createCommonAncestorTestCase(
-                10, 10,
-                2, 4,
-                7, 6
-        );
+        createCommonAncestorTestCase(3, 3, "ROOT:0", "ROOT:1", "ROOT");
+        createCommonAncestorTestCase(3, 3, "ROOT:2", "ROOT:1", "ROOT");
+        createCommonAncestorTestCase(3, 3, "ROOT:2:0", "ROOT:2:1", "ROOT:2");
+        createCommonAncestorTestCase(3, 3, "ROOT:1:0", "ROOT:1:2", "ROOT:1");
+        
+        createCommonAncestorTestCase(5, 3, "ROOT:0:0:0", "ROOT:0:2", "ROOT:0");
+        createCommonAncestorTestCase(5, 3, "ROOT:0:1", "ROOT:1:2:1", "ROOT");
     }
 
-    public void createCommonAncestorTestCase(int depth, int width, int n1Depth, int n1Width, int n2Depth, int n2Width, String commonAncestorId) {
-
-        if (n1Depth < 0 || n1Depth > depth) {
-            throw new IllegalArgumentException("Illegal destDepth specified: "
-                    + n1Depth + ". Must be between 1 and " + depth + ".");
-        }
-
-        if (n1Width < 0 || n1Width >= width) {
-            throw new IllegalArgumentException("Illegal destDepth specified: "
-                    + n1Width + ". Must be between 0 and " + (width - 1) + ".");
-        }
+    public void createCommonAncestorTestCase(int depth, int width, String n1Id, String n2Id, String commonAncestorId) {
 
         VFlow flow = FlowFactory.newFlow();
-        VNode n1 = null;
-        VNode n2 = null;
+
+        List<VFlow> flows = new ArrayList<>();
+        flows.add(flow);
+
         for (int d = 0; d < depth; d++) {
+            List<VFlow> newFlows = new ArrayList<>();
             for (int w = 0; w < width; w++) {
 
-                VNode n = flow.newNode();
-
-                if (d == n1Depth - 1 && w == n1Width) {
-                    n1 = n;
-                } else if (d == n2Depth - 1 && w == n2Width) {
-                    n2 = n;
+                for (VFlow f : flows) {
+                    VFlow nF = f.newSubFlow();
+                    newFlows.add(nF);
                 }
             }
-
-            flow = flow.newSubFlow();
+            
+            flows = newFlows;
         }
+        
+        try {
+            WorkflowIO.saveToXML(Paths.get("testflow.xml"),flow.getModel());
+        } catch (IOException ex) {
+            Logger.getLogger(WorkflowUtilTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        VNode n1 = flow.getNodeLookup().getById(n1Id);
+        VNode n2 = flow.getNodeLookup().getById(n2Id);
+        
+        Assert.assertNotNull(n1);
+        Assert.assertNotNull(n2);
 
         Optional<VFlowModel> ancestorResult = WorkflowUtil.getCommonAncestor(n1, n2);
 
-        if (commonAncestorId != null) {
+        if (commonAncestorId == null) {
             Assert.assertTrue("Ancestor must not exist.", !ancestorResult.isPresent());
         } else {
             Assert.assertTrue("Ancestor must exist.", ancestorResult.isPresent());
