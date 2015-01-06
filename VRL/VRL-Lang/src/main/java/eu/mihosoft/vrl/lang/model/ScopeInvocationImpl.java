@@ -49,10 +49,10 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.Connector;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.VisualizationRequest;
+import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import java.util.Objects;
 
 /**
