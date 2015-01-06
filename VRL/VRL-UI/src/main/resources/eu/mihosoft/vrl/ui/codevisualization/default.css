@@ -51,9 +51,19 @@
     -fx-stroke-width: 3px; 
 }
 
-.vnode-connection {
+.vnode-connection-data {
     -fx-stroke: rgba(120,140,255,0.2);
     -fx-stroke-width: 5px;
+}
+
+.vnode-connection-control {
+    -fx-stroke: rgba(255, 255, 10, 0.55);
+    -fx-stroke-width: 20px; 
+    -fx-stroke-line-cap: round;
+
+/*    -fx-effect: dropshadow(one-pass-box,
+        rgba(0, 0, 0, 0.9),
+        7, 0.0, 0, 0);*/
 }
 
 .vnode-new-connection {
