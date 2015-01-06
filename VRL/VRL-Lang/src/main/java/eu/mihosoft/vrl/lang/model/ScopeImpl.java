@@ -50,9 +50,11 @@
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.workflow.FlowFactory;
+import eu.mihosoft.vrl.workflow.ThruConnector;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.ValueObject;
+import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -138,6 +140,7 @@ class ScopeImpl implements Scope {
     }
 
     private void initScopeListeners() {
+
         scopes.addListener((ListChangeListener.Change<? extends Scope> c) -> {
             while (c.next()) {
                 if (c.wasAdded()) {
@@ -156,7 +159,7 @@ class ScopeImpl implements Scope {
                     }
                 }
             }
-            
+
             fireEvent(new CodeEvent(CodeEventType.CHANGE, this));
         });
 
@@ -220,20 +223,20 @@ class ScopeImpl implements Scope {
         DeclarationInvocation inv = getControlFlow().declareVariable(id, type, varName);
         return inv.getDeclaredVariable();
     }
-    
+
     Variable createParamVariable(IType type, String varName) {
         return createParamVariable(type, varName, null);
     }
-    
+
     Variable createParamVariable(IType type, String varName, ICodeRange range) {
-        DeclarationInvocationImpl inv = (DeclarationInvocationImpl)getControlFlow().declareVariable(id, type, varName);
+        DeclarationInvocationImpl inv = (DeclarationInvocationImpl) getControlFlow().declareVariable(id, type, varName);
         inv.setTextRenderingEnabled(false);
         inv.setRange(range);
         return inv.getDeclaredVariable();
     }
 
     Variable _createVariable(IType type, String varName) {
-        
+
         if (variables.containsKey(varName)) {
             throw new IllegalArgumentException("Variable '" + varName + "' does already exist!");
         }
@@ -244,8 +247,13 @@ class ScopeImpl implements Scope {
 
         Variable variable = new VariableImpl(this, type, varName, null, false, null);
         variables.put(varName, variable);
+
+
         return variable;
     }
+
+    
+
 
 //    @Override
 //    public Variable createVariable(IType type) {

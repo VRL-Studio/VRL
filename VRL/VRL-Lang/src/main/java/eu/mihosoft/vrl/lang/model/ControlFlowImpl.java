@@ -49,10 +49,10 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.Connection;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
+import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import java.util.ArrayList;
 import java.util.List;
 import javafx.collections.FXCollections;

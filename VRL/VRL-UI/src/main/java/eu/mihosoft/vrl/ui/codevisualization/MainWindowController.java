@@ -49,7 +49,6 @@
  */
 package eu.mihosoft.vrl.ui.codevisualization;
 
-import eu.mihosoft.vrl.lang.workflow.WorkflowUtil;
 import com.thoughtworks.xstream.XStream;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
@@ -74,6 +73,7 @@ import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.VisualizationRequest;
+import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.fx.FXValueSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScalableContentPane;
 import groovy.lang.GroovyClassLoader;
