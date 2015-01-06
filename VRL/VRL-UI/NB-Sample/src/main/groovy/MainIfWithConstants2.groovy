@@ -1,10 +1,7 @@
 public class MainIfWithConstants {
 
     
-    public static void main(String[] args) {
-        if (1 < 2) {
-            println(" 1< 2 == true");
-        }
+    public static void main() {
         Integer a;
         a = 1;
         if (a < 3) {
