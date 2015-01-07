@@ -191,31 +191,36 @@ class DataFlowImpl implements DataFlow {
                 Connector sConn = dR.getSender().getNode().
                         getMainOutput(WorkflowUtil.DATA_FLOW);
                 Connector rConn = dR.getReceiver().getNode().
-                        getInputs().filtered(i -> i.getType().equals(WorkflowUtil.DATA_FLOW)).get(dR.getReceiverArgIndex());
+                        getInputs().filtered(i -> i.getType().
+                                equals(WorkflowUtil.DATA_FLOW)).
+                        get(dR.getReceiverArgIndex());
 
-                if (dR.getSender().getParent() != dR.getReceiver().getParent()) {
-                    if (dR.getSender() instanceof DeclarationInvocation) {
-                        Optional<Connector> sOpt
-                                = createPathToVarDeclAndReturnSender(
-                                        dR.getReceiver().getParent(),
-                                        rConn,
-                                        ((DeclarationInvocation) dR.getSender()));
+                if (dR.getSender().getParent() != dR.getReceiver().getParent()
+                        && dR.getSender() instanceof DeclarationInvocation) {
+                    Optional<Connector> sOpt
+                            = createPathToVarDeclAndReturnSender(
+                                    dR.getReceiver().getParent(),
+                                    rConn,
+                                    ((DeclarationInvocation) dR.getSender())
+                            );
 
-                        if (sOpt.isPresent()) {
-                            sConn = sOpt.get();
-                        } else {
-                            System.err.println(
-                                    "ERROR: Cannot find route to variable declaration! "
-                                    + ((DeclarationInvocation) dR.getSender()).
-                                    getDeclaredVariable());
-                        }
+                    if (sOpt.isPresent()) {
+                        sConn = sOpt.get();
+                    } else {
+                        System.err.println(
+                                "ERROR: Cannot find route to variable declaration! "
+                                + ((DeclarationInvocation) dR.getSender()).
+                                getDeclaredVariable());
                     }
-                }
+                } else {
 
-                ConnectionResult compatible = controlFlow.getParent().getFlow().connect(sConn, rConn);
+                    ConnectionResult compatible = controlFlow.getParent().
+                            getFlow().connect(sConn, rConn);
 
-                if (!compatible.getStatus().isCompatible()) {
-                    System.err.println("Connection not compatible! " + compatible.getStatus().getMessage());
+                    if (!compatible.getStatus().isCompatible()) {
+                        System.err.println("Connection not compatible! "
+                                + compatible.getStatus().getMessage());
+                    }
                 }
             }
 
@@ -269,15 +274,28 @@ class DataFlowImpl implements DataFlow {
     private Optional<Connector> createPathToVarDeclAndReturnSender(
             Scope scope, Connector r, DeclarationInvocation vDecl) {
 
-        if (scope.getVariables().contains(vDecl.getDeclaredVariable())) {
-            return Optional.of(vDecl.getNode().getMainOutput(WorkflowUtil.DATA_FLOW));
+        Optional<ThruConnector> tCC = scope.getFlow().getThruInputs().stream().
+                filter(c -> c.getInnerNode().getValueObject().
+                        getValue() instanceof DeclarationInvocation).
+                filter(c -> Objects.equal(vDecl.getDeclaredVariable(),
+                                ((DeclarationInvocation) c.getInnerNode().getValueObject().
+                                getValue()).getDeclaredVariable())).findFirst();
+
+        if (tCC.isPresent()) {
+            if (tCC.get().getInnerConnector().getNode().getFlow() == r.getNode().getFlow()) {
+                scope.getFlow().connect(tCC.get().getInnerConnector(), r);
+            }
         }
 
         List<Scope> ancestors = getScopeAndAncestorsToVarDeclOrNearestThruConnector(scope, vDecl);
 
-        Connector prevScopeConnector = null;
+        ThruConnector prevScopeConnector = null;
+
+        System.out.println("scope: " + scope);
 
         for (Scope sc : ancestors) {
+
+            System.out.println("sc: " + sc.getName());
 
             ThruConnector tcReceiver = null;
             Connector sender;
@@ -285,36 +303,45 @@ class DataFlowImpl implements DataFlow {
             if (sc.getVariables().contains(vDecl.getDeclaredVariable())) {
                 sender = vDecl.getNode().getMainOutput(WorkflowUtil.DATA_FLOW);
             } else {
+                System.out.println("tI: ---- " + sc.getName()
+                        + " : " + sc.getFlow().getModel().getValueObject().getValue());
 
                 Optional<ThruConnector> tC = sc.getFlow().getThruInputs().stream().
-                        filter(c -> Objects.equal(vDecl, c.getInnerNode().
-                                        getValueObject().getValue())).findFirst();
+                        filter(c -> c.getInnerNode().getValueObject().
+                                getValue() instanceof DeclarationInvocation).
+                        filter(c -> Objects.equal(vDecl.getDeclaredVariable(),
+                                        ((DeclarationInvocation) c.getInnerNode().getValueObject().
+                                        getValue()).getDeclaredVariable())).findFirst();
+
+                ThruConnector tCInput;
 
                 if (tC.isPresent()) {
-                    return Optional.of(tC.get().getInnerConnector());
+                    tCInput = tC.get();
+                } else {
+                    tCInput
+                            = sc.getFlow().addThruInput(WorkflowUtil.DATA_FLOW);
+                    tCInput.getInnerNode().setTitle(
+                            "ref " + vDecl.getDeclaredVariable().getName());
+                    tCInput.getInnerNode().getValueObject().setValue(vDecl);
                 }
 
-                ThruConnector tCInput
-                        = sc.getFlow().addThruInput(WorkflowUtil.DATA_FLOW);
-
-                tCInput.getInnerNode().setTitle("ref " + vDecl.getDeclaredVariable().getName());
-
-                tCInput.getInnerNode().getValueObject().setValue(vDecl);
-
                 sender = tCInput.getInnerConnector();
-                
+
                 tcReceiver = tCInput;
             }
 
             if (prevScopeConnector != null) {
-                sc.getFlow().connect(
-                        sender, prevScopeConnector);
+                sc.getFlow().connect(sender, prevScopeConnector);
             }
 
             prevScopeConnector = tcReceiver;
         }
 
-        return Optional.empty();
+        if (prevScopeConnector != null) {
+            return Optional.of(prevScopeConnector.getInnerConnector());
+        } else {
+            return Optional.empty();
+        }
     }
 
     private void updateDataFlowFromVisualChange(ControlFlow controlFlow,
