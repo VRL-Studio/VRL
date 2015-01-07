@@ -363,7 +363,8 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             }
         } else if (!i.isScope()) {
 
-            if (!i.getVariableName().equals("this")) {
+            if (!i.getVariableName().equals("this")
+                    &&!ScopeUtils.callingObjectIsEnclosingClass(i)) {
                 cb.
                         append(i.getVariableName()).
                         append(".");
