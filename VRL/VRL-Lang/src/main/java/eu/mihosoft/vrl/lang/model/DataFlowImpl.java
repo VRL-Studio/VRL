@@ -62,6 +62,7 @@ import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 import javafx.collections.ListChangeListener;
 
 /**
@@ -182,8 +183,14 @@ class DataFlowImpl implements DataFlow {
             Connections connections = controlFlow.getParent().getFlow().
                     getConnections(WorkflowUtil.DATA_FLOW);
 
-//            connections.getConnections().clear();
             for (Connection c : new ArrayList<>(connections.getConnections())) {
+
+                // for now we filter thru connector
+                if (c.getSender() instanceof ThruConnector
+                        || c.getReceiver() instanceof ThruConnector) {
+                    continue;
+                }
+
                 controlFlow.getParent().getFlow().getConnections(WorkflowUtil.DATA_FLOW).remove(c);
             }
 
@@ -195,25 +202,16 @@ class DataFlowImpl implements DataFlow {
                                 equals(WorkflowUtil.DATA_FLOW)).
                         get(dR.getReceiverArgIndex());
 
-                if (dR.getSender().getParent() != dR.getReceiver().getParent()
-                        && dR.getSender() instanceof DeclarationInvocation) {
-                    Optional<Connector> sOpt
-                            = createPathToVarDeclAndReturnSender(
-                                    dR.getReceiver().getParent(),
-                                    rConn,
-                                    ((DeclarationInvocation) dR.getSender())
-                            );
-
-                    if (sOpt.isPresent()) {
-                        sConn = sOpt.get();
-                    } else {
+                if (dR.getSender() instanceof DeclarationInvocation) {
+                    if (!createRefToVarDecl(
+                            dR.getReceiver().getParent(),
+                            (DeclarationInvocation) dR.getSender(), rConn)) {
                         System.err.println(
                                 "ERROR: Cannot find route to variable declaration! "
                                 + ((DeclarationInvocation) dR.getSender()).
                                 getDeclaredVariable());
                     }
                 } else {
-
                     ConnectionResult compatible = controlFlow.getParent().
                             getFlow().connect(sConn, rConn);
 
@@ -222,6 +220,7 @@ class DataFlowImpl implements DataFlow {
                                 + compatible.getStatus().getMessage());
                     }
                 }
+
             }
 
             currentlyUpdatingFromModel = false;
@@ -241,104 +240,92 @@ class DataFlowImpl implements DataFlow {
         return result;
     }
 
-    private List<Scope> getScopeAndAncestorsToVarDeclOrNearestThruConnector(
-            Scope scope, DeclarationInvocation vDecl) {
+    private List<Scope> getScopeAndAncestors(Scope scope) {
         List<Scope> result = new ArrayList<>();
-
         result.add(scope);
-
         Scope parent = scope.getParent();
 
         while (parent != null) {
             result.add(parent);
-
-            boolean thruConnectorIsPresent = parent.getFlow().getThruInputs().
-                    stream().
-                    filter(c -> Objects.equal(vDecl, c.getInnerNode().
-                                    getValueObject().getValue())).
-                    findFirst().isPresent();
-
-            boolean containsVarDecl = parent.getVariables().
-                    contains(vDecl.getDeclaredVariable());
-
-            if (containsVarDecl || thruConnectorIsPresent) {
-                break;
-            }
-
             parent = parent.getParent();
         }
 
         return result;
     }
 
-    private Optional<Connector> createPathToVarDeclAndReturnSender(
-            Scope scope, Connector r, DeclarationInvocation vDecl) {
+    private boolean createRefToVarDecl(
+            Scope scope, DeclarationInvocation vDecl, Connector receiver) {
 
-        Optional<ThruConnector> tCC = scope.getFlow().getThruInputs().stream().
-                filter(c -> c.getInnerNode().getValueObject().
-                        getValue() instanceof DeclarationInvocation).
-                filter(c -> Objects.equal(vDecl.getDeclaredVariable(),
-                                ((DeclarationInvocation) c.getInnerNode().getValueObject().
-                                getValue()).getDeclaredVariable())).findFirst();
+        boolean currentlyUpdatingFromUiPrev = currentlyUpdatingFromUI;
 
-        if (tCC.isPresent()) {
-            if (tCC.get().getInnerConnector().getNode().getFlow() == r.getNode().getFlow()) {
-                scope.getFlow().connect(tCC.get().getInnerConnector(), r);
+        currentlyUpdatingFromUI = true;
+
+        Connector prevInput = receiver;
+
+        for (Scope sc : getScopeAndAncestors(scope)) {
+
+            Optional<Connector> ref = getVarDeclOrRef(sc, vDecl);
+
+            if (ref.isPresent()) {
+
+                System.out.println("ref: " + ref.get().getNode().
+                        getValueObject().getValue()
+                        + " -> prevIn: " + prevInput.getNode().
+                        getValueObject().getValue());
+
+                sc.getFlow().connect(ref.get(), prevInput);
+                
+                return true;
+
             }
+
+            ThruConnector tI
+                    = sc.getFlow().addThruInput(WorkflowUtil.DATA_FLOW);
+            tI.getInnerNode().setTitle(
+                    "ref " + vDecl.getDeclaredVariable().getName());
+            tI.getInnerNode().getValueObject().setValue(vDecl);
+
+            sc.getFlow().connect(tI.getInnerConnector(), prevInput);
+
+            System.out.println("ti-inner: " + tI.getInnerNode().
+                    getValueObject().getValue() + " -> prevIn: "
+                    + prevInput.getNode().getValueObject().getValue());
+
+            prevInput = tI;
         }
 
-        List<Scope> ancestors = getScopeAndAncestorsToVarDeclOrNearestThruConnector(scope, vDecl);
+        currentlyUpdatingFromUI = currentlyUpdatingFromUiPrev;
 
-        ThruConnector prevScopeConnector = null;
+        return false;
+    }
 
-        System.out.println("scope: " + scope);
+    private Optional<Connector> getVarDeclOrRef(Scope scope,
+            DeclarationInvocation vDecl) {
 
-        for (Scope sc : ancestors) {
-
-            System.out.println("sc: " + sc.getName());
-
-            ThruConnector tcReceiver = null;
-            Connector sender;
-
-            if (sc.getVariables().contains(vDecl.getDeclaredVariable())) {
-                sender = vDecl.getNode().getMainOutput(WorkflowUtil.DATA_FLOW);
-            } else {
-                System.out.println("tI: ---- " + sc.getName()
-                        + " : " + sc.getFlow().getModel().getValueObject().getValue());
-
-                Optional<ThruConnector> tC = sc.getFlow().getThruInputs().stream().
-                        filter(c -> c.getInnerNode().getValueObject().
-                                getValue() instanceof DeclarationInvocation).
-                        filter(c -> Objects.equal(vDecl.getDeclaredVariable(),
-                                        ((DeclarationInvocation) c.getInnerNode().getValueObject().
-                                        getValue()).getDeclaredVariable())).findFirst();
-
-                ThruConnector tCInput;
-
-                if (tC.isPresent()) {
-                    tCInput = tC.get();
-                } else {
-                    tCInput
-                            = sc.getFlow().addThruInput(WorkflowUtil.DATA_FLOW);
-                    tCInput.getInnerNode().setTitle(
-                            "ref " + vDecl.getDeclaredVariable().getName());
-                    tCInput.getInnerNode().getValueObject().setValue(vDecl);
-                }
-
-                sender = tCInput.getInnerConnector();
-
-                tcReceiver = tCInput;
-            }
-
-            if (prevScopeConnector != null) {
-                sc.getFlow().connect(sender, prevScopeConnector);
-            }
-
-            prevScopeConnector = tcReceiver;
+        if (scope.getVariables().contains(vDecl.getDeclaredVariable())) {
+            System.out.println("ref: isDecl");
+            return Optional.of(vDecl.getNode().
+                    getMainOutput(WorkflowUtil.DATA_FLOW));
         }
 
-        if (prevScopeConnector != null) {
-            return Optional.of(prevScopeConnector.getInnerConnector());
+        Predicate<ThruConnector> thruConnectorHasRefToDecl
+                = c -> c.getInnerNode().getValueObject().
+                getValue() instanceof DeclarationInvocation;
+
+        Predicate<ThruConnector> thruConnectorReferencesVar
+                = c -> Objects.equal(vDecl.getDeclaredVariable(),
+                        ((DeclarationInvocation) c.getInnerNode().
+                        getValueObject().
+                        getValue()).getDeclaredVariable());
+
+        final Optional<ThruConnector> result
+                = scope.getFlow().getThruInputs().stream().
+                filter(thruConnectorHasRefToDecl).
+                filter(thruConnectorReferencesVar).findFirst();
+
+        if (result.isPresent()) {
+            System.out.println("ref: isThru");
+            return Optional.of(result.get().getInnerConnector());
         } else {
             return Optional.empty();
         }
@@ -413,7 +400,14 @@ class DataFlowImpl implements DataFlow {
             }
 
             if (change.wasRemoved()) {
+
                 for (Connection conn : change.getRemoved()) {
+
+                    // for now we filter thru connector
+                    if (conn.getSender() instanceof ThruConnector
+                            || conn.getReceiver() instanceof ThruConnector) {
+                        continue;
+                    }
 
                     System.out.println("removed: " + conn);
 
