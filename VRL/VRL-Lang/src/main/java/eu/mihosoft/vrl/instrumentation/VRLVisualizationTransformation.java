@@ -116,6 +116,7 @@ import org.codehaus.groovy.ast.expr.NotExpression;
 import org.codehaus.groovy.ast.expr.PostfixExpression;
 import org.codehaus.groovy.ast.expr.PrefixExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
+import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.BreakStatement;
 import org.codehaus.groovy.ast.stmt.ContinueStatement;
@@ -561,9 +562,28 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                         + " expression! Only boolean binary operations are "
                         + "supported.", s);
             }
+        } else if (expression.getExpression() instanceof MethodCallExpression) {
+
+            MethodCallExpression mExp
+                    = (MethodCallExpression) expression.getExpression();
+
+            if (!convertMethodReturnType(mExp).equals(Type.BOOLEAN)) {
+                throwErrorMessage("while-loop: must contain boolean"
+                        + " expression! Only boolean method calls are "
+                        + "supported.", s);
+            }
+        } else if (expression.getExpression() instanceof StaticMethodCallExpression) {
+            StaticMethodCallExpression mExp
+                    = (StaticMethodCallExpression) expression.getExpression();
+
+            if (!convertMethodReturnType(mExp).equals(Type.BOOLEAN)) {
+                throwErrorMessage("while-loop: must contain boolean"
+                        + " expression! Only boolean method calls are "
+                        + "supported.", s);
+            }
         } else {
             throwErrorMessage("while-loop: must contain boolean"
-                    + " expression!", s);
+                    + " expression!" + expression.getExpression(), s);
         }
 
         if (!(currentScope instanceof ControlFlowScope)) {
@@ -711,6 +731,57 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     }
 
     @Override
+    public void visitStaticMethodCallExpression(StaticMethodCallExpression s) {
+
+        if (returnVariables.containsKey(s)) {
+            return;
+        }
+
+        System.out.println(" --> METHOD: " + s.getMethodAsString());
+
+        super.visitStaticMethodCallExpression(s);
+
+        ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
+        IArgument[] arguments = convertArguments(args);
+
+        String objectName = null;
+
+        boolean isIdCall = false;
+
+        String returnValueName = "void";
+
+        IType returnType = convertMethodReturnType(s);
+
+        if (!(currentScope instanceof ControlFlowScope)) {
+            throwErrorMessage("Method can only be invoked inside ControlFlowScopes!", s);
+        }
+
+        System.out.println("RET-TYPE: " + returnType);
+
+        Invocation invocation = codeBuilder.invokeStaticMethod(
+                (ControlFlowScope) currentScope,
+                convertStaticMethodOwnerType(s),
+                s.getMethod(),
+                returnType,
+                returnType.equals(Type.VOID),
+                arguments);
+
+        if (stateMachine.getBoolean("variable-declaration")) {
+
+            stateMachine.addToList("variable-declaration:assignment-invocations", invocation);
+
+            System.out.println("DECL-add-inv: " + invocation);
+
+        }
+
+        setCodeRange(invocation, s);
+        addCommentsToScope(currentScope, comments);
+
+        returnVariables.put(s, invocation);
+
+    }
+
+    @Override
     public void visitMethodCallExpression(MethodCallExpression s) {
 
         if (returnVariables.containsKey(s)) {
@@ -749,24 +820,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         String returnValueName = "void";
 
-        boolean isVoid = true;
-
-        MethodNode mTarget = (MethodNode) s.getNodeMetaData(StaticTypesMarker.DIRECT_METHOD_CALL_TARGET);
-
-        if (mTarget != null && mTarget.getReturnType() != null) {
-            isVoid = mTarget.getReturnType().getName().toLowerCase().equals("void");
-            //System.out.println("TYPECHECKED!!!");
-        } else {
-            System.out.println("NO TYPECHECKING!!!");
-        }
-
-        IType returnType;
-
-        if (!isVoid) {
-            returnType = new Type(mTarget.getReturnType().getName());
-        } else {
-            returnType = Type.VOID;
-        }
+        IType returnType = convertMethodReturnType(s);
 
         if (!(currentScope instanceof ControlFlowScope)) {
             throwErrorMessage("Method can only be invoked inside ControlFlowScopes!", s);
@@ -781,7 +835,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                         (ControlFlowScope) currentScope, objectName,
                         s.getMethod().getText(),
                         returnType,
-                        isVoid,
+                        returnType.equals(Type.VOID),
                         arguments);
 
                 if (stateMachine.getBoolean("variable-declaration")) {
@@ -802,7 +856,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                        returnValueName, arguments).setCode(getCode(s));
                 Invocation invocation = codeBuilder.invokeStaticMethod(
                         (ControlFlowScope) currentScope, new Type("System.out"),
-                        s.getMethod().getText(), Type.VOID, isVoid,
+                        s.getMethod().getText(), Type.VOID, returnType.equals(Type.VOID),
                         arguments);
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);
@@ -812,6 +866,46 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             }
         }
 
+    }
+
+    private IType convertMethodReturnType(MethodCallExpression s) {
+        boolean isVoid = true;
+        MethodNode mTarget = (MethodNode) s.getNodeMetaData(StaticTypesMarker.DIRECT_METHOD_CALL_TARGET);
+        if (mTarget != null && mTarget.getReturnType() != null) {
+            isVoid = mTarget.getReturnType().getName().toLowerCase().equals("void");
+            //System.out.println("TYPECHECKED!!!");
+        } else {
+            System.out.println("NO TYPECHECKING!!!");
+        }
+        IType returnType;
+        if (!isVoid) {
+            returnType = new Type(mTarget.getReturnType().getName());
+        } else {
+            returnType = Type.VOID;
+        }
+        return returnType;
+    }
+
+    private IType convertMethodReturnType(StaticMethodCallExpression s) {
+        boolean isVoid = true;
+        MethodNode mTarget = (MethodNode) s.getNodeMetaData(StaticTypesMarker.DIRECT_METHOD_CALL_TARGET);
+        if (mTarget != null && mTarget.getReturnType() != null) {
+            isVoid = mTarget.getReturnType().getName().toLowerCase().equals("void");
+            //System.out.println("TYPECHECKED!!!");
+        } else {
+            System.out.println("NO TYPECHECKING!!!");
+        }
+        IType returnType;
+        if (!isVoid) {
+            returnType = new Type(mTarget.getReturnType().getName());
+        } else {
+            returnType = Type.VOID;
+        }
+        return returnType;
+    }
+
+    private IType convertStaticMethodOwnerType(StaticMethodCallExpression s) {
+        return convertType(s.getOwnerType());
     }
 
     @Override
@@ -1249,6 +1343,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             System.out.println("TYPE: " + e);
             visitMethodCallExpression((MethodCallExpression) e);
             result = Argument.invArg(returnVariables.get((MethodCallExpression) e));
+        } else if (e instanceof StaticMethodCallExpression) {
+            System.out.println("TYPE: " + e);
+            visitStaticMethodCallExpression((StaticMethodCallExpression) e);
+            result = Argument.invArg(returnVariables.get((StaticMethodCallExpression) e));
         } else if (e instanceof ConstructorCallExpression) {
             System.out.println("TYPE: " + e);
             System.out.println("CONSTRUCTOR: " + returnVariables.get((ConstructorCallExpression) e));
