@@ -50,6 +50,7 @@
 package eu.mihosoft.vrl.ui.codevisualization;
 
 import com.thoughtworks.xstream.XStream;
+import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.UIBinding;
@@ -65,8 +66,6 @@ import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.WhileDeclaration;
 import eu.mihosoft.vrl.workflow.Connection;
 import eu.mihosoft.vrl.workflow.Connections;
-//import eu.mihosoft.vrl.worflow.layout.Layout;
-//import eu.mihosoft.vrl.worflow.layout.LayoutFactory;
 import eu.mihosoft.vrl.workflow.Connector;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.VFlow;
@@ -114,6 +113,8 @@ import javafx.stage.WindowEvent;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 
 /**
  * FXML Controller class
@@ -155,7 +156,7 @@ public class MainWindowController implements Initializable {
 
         canvas.setMaxScaleX(1);
         canvas.setMaxScaleY(1);
-        
+
         System.out.println("view: " + view);
 
         view.getChildren().add(canvas);
@@ -299,7 +300,6 @@ public class MainWindowController implements Initializable {
                 currentDocument = f;
             }
 
-           
             editor.setText(new String(Files.readAllBytes(
                     Paths.get(currentDocument.getAbsolutePath())), "UTF-8"));
 
@@ -307,7 +307,7 @@ public class MainWindowController implements Initializable {
             Logger.getLogger(MainWindowController.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
-        
+
         updateView();
 
         if (observer != null) {
@@ -357,10 +357,14 @@ public class MainWindowController implements Initializable {
         UIBinding.scopes.clear();
         UIBinding.getRootFlow().clear();
 
-        GroovyClassLoader gcl = new GroovyClassLoader();
-        gcl.parseClass(
-                "@eu.mihosoft.vrl.instrumentation.VRLVisualization\n"
-                + editor.getText(), "Script");
+        CompilerConfiguration ccfg = new CompilerConfiguration();
+
+        ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
+                new VRLVisualizationTransformation()));
+
+        GroovyClassLoader gcl = new GroovyClassLoader(new GroovyClassLoader(), ccfg);
+
+        gcl.parseClass(editor.getText(), "Script");
 
         loadUIData();
 
