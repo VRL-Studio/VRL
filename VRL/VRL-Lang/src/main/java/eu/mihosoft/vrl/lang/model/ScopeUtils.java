@@ -8,6 +8,7 @@ package eu.mihosoft.vrl.lang.model;
 import java.util.Optional;
 
 /**
+ * Utility methods for analyzing scope hierarchies.
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
@@ -23,7 +24,8 @@ public class ScopeUtils {
      * @param cE code entity to analyze
      * @return the first enclosing class of the specified code entity
      */
-    public static Optional<ClassDeclaration> getEnclosingClassDeclaration(CodeEntity cE) {
+    public static Optional<ClassDeclaration> getEnclosingClassDeclaration(
+            CodeEntity cE) {
         Scope parent = cE.getParent();
 
         while (parent != null) {
