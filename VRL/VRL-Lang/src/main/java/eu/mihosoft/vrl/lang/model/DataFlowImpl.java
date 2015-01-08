@@ -53,17 +53,20 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import eu.mihosoft.vrl.workflow.Connection;
+import eu.mihosoft.vrl.workflow.ConnectionEvent;
 import eu.mihosoft.vrl.workflow.ConnectionResult;
 import eu.mihosoft.vrl.workflow.Connections;
 import eu.mihosoft.vrl.workflow.Connector;
 import eu.mihosoft.vrl.workflow.ThruConnector;
 import eu.mihosoft.vrl.workflow.VNode;
+import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 import javafx.collections.ListChangeListener;
+import javafx.event.EventHandler;
 
 /**
  *
@@ -83,8 +86,6 @@ class DataFlowImpl implements DataFlow {
 
         relations.add(relation);
         relationsForSender.put(sender, relation);
-
-        System.out.println("sender: " + relationsForSender.get(sender).size());
 
         relationsForReceiver.put(receiver, relation);
     }
@@ -113,26 +114,10 @@ class DataFlowImpl implements DataFlow {
 
         initListeners(controlFlow);
 
-        String rand = "rand: " + (int) (Math.random() * 100) + " :: ";
-
-        System.out.println(rand + ">> creating dataflow: ");
-
-//        Map<Integer, Invocation> senders = new HashMap<>();
-//        for (Invocation i : controlFlow.getInvocations()) {
-//            System.out.println(" --> i:" + i.getMethodName());
-//            if (!i.isVoid()) {
-//                System.out.println("  |--> potential sender with var " + i.getReturnValue().get().getName());
-//                senders.put(i.getReturnValue().get().getName(), i);
-//            }
-//        }
         for (Invocation receiver : controlFlow.getInvocations()) {
-            System.out.println(rand + " -> receiver: " + receiver);
             int argIndex = 0;
             for (IArgument a : receiver.getArguments()) {
 
-//                Variable v = a.getVariable().get();
-//                Invocation sender = senders.get(v.getName());
-                System.out.println(rand + ">> searching sender for " + receiver.getMethodName() + " " + a);
                 Invocation sender = null;
 
                 if (a.getArgType() == ArgumentType.INVOCATION) {
@@ -142,11 +127,7 @@ class DataFlowImpl implements DataFlow {
                 }
 
                 if (sender != null) {
-                    System.out.println(rand
-                            + " --> sender found " + sender.getMethodName());
                     createDataRelation(sender, receiver, a, argIndex);
-                } else {
-                    System.out.println(rand + " -> argType " + a.getArgType() + " not supported!");
                 }
                 argIndex++;
             } // end for arg
@@ -155,25 +136,11 @@ class DataFlowImpl implements DataFlow {
         // create visual dataflow
         updateVisualDataFlowFromModel(controlFlow);
 
-//        // create subflows
-//        for (Invocation i : controlFlow.getInvocations()) {
-//            if (i instanceof ScopeInvocation) {
-//                Scope subScope = ((ScopeInvocation) i).getScope();
-//                subScope.getDataFlow().create(subScope.getControlFlow());
-//            }
-//        }
         // create subflows
         for (Scope scope : controlFlow.getParent().getScopes()) {
             scope.getDataFlow().create(scope.getControlFlow());
         }
 
-//                boolean isClassOrScript = getType() == ScopeType.CLASS || getType() == ScopeType.NONE || getType() == ScopeType.COMPILATION_UNIT;
-//
-//        if (isClassOrScript) {
-//            for (Scope s : getScopes()) {
-//                ((ScopeImpl)s).generateDataFlow();
-//            }
-//        }
     }
 
     private void updateVisualDataFlowFromModel(ControlFlow controlFlow) {
@@ -273,8 +240,15 @@ class DataFlowImpl implements DataFlow {
                         + " -> prevIn: " + prevInput.getNode().
                         getValueObject().getValue());
 
-                sc.getFlow().connect(ref.get(), prevInput);
-                
+                ConnectionResult connRes
+                        = sc.getFlow().connect(ref.get(), prevInput);
+
+                if (prevInput != receiver
+                        && connRes.getStatus().isCompatible()) {
+                    connRes.getConnection().getVisualizationRequest().
+                            set(VisualizationRequest.KEY_DISABLE_EDITING, true);
+                }
+
                 return true;
 
             }
@@ -285,7 +259,50 @@ class DataFlowImpl implements DataFlow {
                     "ref " + vDecl.getDeclaredVariable().getName());
             tI.getInnerNode().getValueObject().setValue(vDecl);
 
-            sc.getFlow().connect(tI.getInnerConnector(), prevInput);
+            tI.getInnerConnector().addConnectionEventListener(
+                    new EventHandler<eu.mihosoft.vrl.workflow.ConnectionEvent>() {
+
+                        @Override
+                        public void handle(eu.mihosoft.vrl.workflow.ConnectionEvent event) {
+
+                            boolean hasConnectionsToThruInputs = tI.getInnerNode().getFlow().
+                            getConnections(tI.getInnerConnector().getType()).
+                            getAllWith(tI.getInnerConnector()).stream().
+                            filter(conn -> conn.getReceiver() instanceof ThruConnector).
+                            findAny().isPresent();
+
+                            tI.getInnerNode().getVisualizationRequest().
+                            set(VisualizationRequest.KEY_NODE_NOT_REMOVABLE,
+                                    hasConnectionsToThruInputs);
+                        }
+                    });
+
+            ConnectionResult connRes = sc.getFlow().
+                    connect(tI.getInnerConnector(), prevInput);
+
+            if (connRes.getStatus().isCompatible()) {
+                if (prevInput != receiver
+                        && connRes.getStatus().isCompatible()) {
+                    connRes.getConnection().getVisualizationRequest().
+                            set(VisualizationRequest.KEY_DISABLE_EDITING, true);
+                }
+
+                tI.getInnerNode().getFlow().getNodes().addListener(
+                        new ListChangeListener<VNode>() {
+
+                            @Override
+                            public void onChanged(
+                                    ListChangeListener.Change<? extends VNode> c) {
+                                        tI.getInnerNode().getFlow().getNodes().
+                                        removeListener(this);
+                                        while (c.next()) {
+                                            if (c.getRemoved().contains(tI.getInnerNode())) {
+                                                tI.getNode().getConnectors().remove(tI);
+                                            }
+                                        }
+                                    }
+                        });
+            }
 
             System.out.println("ti-inner: " + tI.getInnerNode().
                     getValueObject().getValue() + " -> prevIn: "
@@ -365,14 +382,9 @@ class DataFlowImpl implements DataFlow {
                         System.err.println("NORE THAN ONE DATAFLOW CONN!!! for invocation " + senderInv);
                     }
 
-//                                Connector output = variableConnectors.get(
-//                                        getVariableId(senderN, senderInv.getReturnValue().get().getName()));
-//                                Connector input = variableConnectors.get(
-//                                        getVariableId(receiverN, senderInv.getReturnValue().get().getName()));
                     // TODO if (senderInv equals variableinvocation) only invocations supported 18.02.2014
                     try {
 
-//                        int argIndex = connectorsToArgIndex.get(conn.getReceiver().getId());
                         int argIndex = connectorsToArgIndex(conn.getReceiver(), receiverInv);
 
                         IArgument arg = Argument.NULL;
@@ -381,6 +393,13 @@ class DataFlowImpl implements DataFlow {
                             arg = Argument.varArg(((DeclarationInvocation) senderInv).getDeclaredVariable());
                         } else if (senderInv instanceof Invocation) {
                             arg = Argument.invArg(senderInv);
+                            
+                            controlFlow.getInvocations().remove(senderInv);
+                            
+                            int targetArgInvIndex = controlFlow.getInvocations().indexOf(receiverInv);
+                            
+                            controlFlow.getInvocations().add(targetArgInvIndex, senderInv);
+                            
                         } else {
                             System.err.println("NOT Supported as argument: " + senderInv);
                         }
@@ -388,10 +407,7 @@ class DataFlowImpl implements DataFlow {
                         receiverInv.getArguments().set(
                                 argIndex,
                                 arg);
-//
-//                                    System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
 
-//                        senderInv.getParent().generateDataFlow();
                         ((ScopeImpl) senderInv.getParent()).generateDataFlow();
                     } catch (Exception ex) {
                         ex.printStackTrace(System.err);
@@ -409,15 +425,11 @@ class DataFlowImpl implements DataFlow {
                         continue;
                     }
 
-                    System.out.println("removed: " + conn);
-
                     VNode senderN = conn.getSender().getNode();
                     VNode receiverN = conn.getReceiver().getNode();
 
-//                    Invocation senderInv = nodeInvocations.get(senderN.getId());
-//                    Invocation receiverInv = nodeInvocations.get(receiverN.getId());
-                    Invocation senderInv = (Invocation) senderN.getValueObject().getValue();//nodeInvocations.get(senderN.getId());
-                    Invocation receiverInv = (Invocation) receiverN.getValueObject().getValue();//nodeInvocations.get(receiverN.getId());
+                    Invocation senderInv = (Invocation) senderN.getValueObject().getValue();
+                    Invocation receiverInv = (Invocation) receiverN.getValueObject().getValue();
 
                     try {
 
@@ -430,20 +442,16 @@ class DataFlowImpl implements DataFlow {
                         }
 
                         for (DataRelation dR : delList) {
-                            System.out.println("remove: " + dR);
                             getRelations().remove(dR);
                         }
 
-//                        int argIndex = connectorsToArgIndex.get(conn.getReceiver().getId());
                         int argIndex = connectorsToArgIndex(conn.getReceiver(), receiverInv);
 
                         receiverInv.getArguments().set(
                                 argIndex,
                                 Argument.NULL);
 
-                        System.out.println("argIndex: " + argIndex + "argument: " + senderInv + ", recInv: " + receiverInv);
-//                        senderInv.getParent().generateDataFlow();
-//                        ((ScopeImpl) senderInv.getParent()).generateDataFlow();
+
                     } catch (Exception ex) {
                         ex.printStackTrace(System.err);
                     }
@@ -466,41 +474,18 @@ class DataFlowImpl implements DataFlow {
             return;
         }
         controlFlow.getParent().getFlow().
-                getConnections(WorkflowUtil.DATA_FLOW).getConnections().addListener(
+                getConnections(WorkflowUtil.DATA_FLOW).getConnections().
+                addListener(
                         (ListChangeListener.Change<? extends Connection> c) -> {
-//                            currentlyUpdatingBecauseOfUIEvent = true;
-//                            create(controlFlow);
-//                            currentlyUpdatingBecauseOfUIEvent = false;
 
                             updateDataFlowFromVisualChange(controlFlow, c);
 
-                            controlFlow.getParent().fireEvent(new CodeEvent(CodeEventType.CHANGE, controlFlow.getParent()));
+                            controlFlow.getParent().fireEvent(
+                                    new CodeEvent(CodeEventType.CHANGE,
+                                            controlFlow.getParent()));
 
                         });
         listenersInitialized = true;
     }
 
-//    public void generateDataFlow() {
-//
-//        System.out.println("DATAFLOW---------------------------------");
-//
-//        for (Invocation i : controlFlow.getInvocations()) {
-////            System.out.println("invocation: " + i);
-//            for (Variable v : i.getArguments()) {
-//                System.out.println("--> varname: " + v.getName() + ", " + i);
-//            }
-//
-//            if (i instanceof ScopeInvocation) {
-//                ((ScopeInvocation) i).getScope().generateDataFlow();
-//            }
-//        }
-//
-//        boolean isClassOrScript = getArgType() == ScopeType.CLASS || getArgType() == ScopeType.NONE;
-//
-//        if (isClassOrScript) {
-//            for (Scope s : getScopes()) {
-//                s.generateDataFlow();
-//            }
-//        }
-//    }
 }
