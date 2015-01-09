@@ -30,6 +30,7 @@ dependencies {
     compile "com.google.guava:guava:14.0"
     
     compile ( 'eu.mihosoft.vrl.workflow-8.0:vworkflows-core:0.1-r2-SNAPSHOT' ) { changing = true }
+    compile group: 'eu.mihosoft.vrl.workflow-8.0', name: 'vworkflows-core', version:'0.1-r2-SNAPSHOT', classifier: 'sources'
     
     compile project("commentparser")
     
