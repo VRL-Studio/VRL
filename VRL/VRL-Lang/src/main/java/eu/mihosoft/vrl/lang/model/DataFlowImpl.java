@@ -65,6 +65,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 
@@ -95,12 +96,12 @@ class DataFlowImpl implements DataFlow {
         return relations;
     }
 
-    @Override
+//    @Override
     public List<DataRelation> getRelationsForSender(Invocation invocation) {
         return relationsForSender.get(invocation);
     }
 
-    @Override
+//    @Override
     public List<DataRelation> getRelationsForReceiver(Invocation invocation) {
         return relationsForReceiver.get(invocation);
     }
@@ -356,6 +357,8 @@ class DataFlowImpl implements DataFlow {
         }
 
         currentlyUpdatingFromUI = true;
+        
+        List<Connection> connectionsToRemove = new ArrayList<>();
 
         while (change.next()) {
             if (change.wasAdded()) {
@@ -373,13 +376,17 @@ class DataFlowImpl implements DataFlow {
                     Invocation senderInv = (Invocation) senderN.getValueObject().getValue();//nodeInvocations.get(senderN.getId());
                     Invocation receiverInv = (Invocation) receiverN.getValueObject().getValue();//nodeInvocations.get(receiverN.getId());
 
-                    int numConnections
+                    List<Connector> senderConnectiorsWithMoreThanOneConnection
                             = senderN.getOutputs().filtered(
-                                    WorkflowUtil.moreThanConnections(1, "data")).size();
+                                    WorkflowUtil.moreThanConnections(
+                                            1, WorkflowUtil.DATA_FLOW));
+
+                    int numConnections
+                            = senderConnectiorsWithMoreThanOneConnection.size();
 
                     if (numConnections > 0 && !(senderInv instanceof DeclarationInvocation)) {
                         // TODO introduce var declaration to prevent multiple method calls for each dataflow connection 19.02.2014
-                        System.err.println("NORE THAN ONE DATAFLOW CONN!!! for invocation " + senderInv);
+                        // -> 09.01.2014 we duplicate invocations rather than introducing vars (may change in future versions)
                     }
 
                     // TODO if (senderInv equals variableinvocation) only invocations supported 18.02.2014
@@ -393,13 +400,21 @@ class DataFlowImpl implements DataFlow {
                             arg = Argument.varArg(((DeclarationInvocation) senderInv).getDeclaredVariable());
                         } else if (senderInv instanceof Invocation) {
                             arg = Argument.invArg(senderInv);
-                            
-                            controlFlow.getInvocations().remove(senderInv);
-                            
-                            int targetArgInvIndex = controlFlow.getInvocations().indexOf(receiverInv);
-                            
-                            controlFlow.getInvocations().add(targetArgInvIndex, senderInv);
-                            
+
+                            // change invocation position in controlflow if
+                            // no other dependencies are present
+                            if (numConnections == 0) {
+                                controlFlow.getInvocations().remove(senderInv);
+
+                                int targetArgInvIndex = controlFlow.
+                                        getInvocations().indexOf(receiverInv);
+
+                                controlFlow.getInvocations().add(
+                                        targetArgInvIndex, senderInv);
+                            } else {
+//                                continue;
+                            }
+
                         } else {
                             System.err.println("NOT Supported as argument: " + senderInv);
                         }
@@ -450,7 +465,6 @@ class DataFlowImpl implements DataFlow {
                         receiverInv.getArguments().set(
                                 argIndex,
                                 Argument.NULL);
-
 
                     } catch (Exception ex) {
                         ex.printStackTrace(System.err);

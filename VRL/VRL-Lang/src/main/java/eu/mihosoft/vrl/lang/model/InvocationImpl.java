@@ -137,7 +137,6 @@ class InvocationImpl implements Invocation {
 
             int argIndex = 0;
             for (IArgument arg : args) {
-                System.out.println("addInput: " + arg);
                 node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().
                         setValue(new ArgumentValue(argIndex, arg));
                 argIndex++;

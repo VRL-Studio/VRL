@@ -60,9 +60,9 @@ public interface DataFlow {
 
     public List<DataRelation> getRelations();
 
-    public List<DataRelation> getRelationsForSender(Invocation invocation);
-
-    public List<DataRelation> getRelationsForReceiver(Invocation invocation);
+//    public List<DataRelation> getRelationsForSender(Invocation invocation);
+//
+//    public List<DataRelation> getRelationsForReceiver(Invocation invocation);
 
 //    public void addSender(String retValName, Invocation result);
     public void create(ControlFlow controlflow);
