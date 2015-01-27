@@ -11,8 +11,8 @@ import javafx.scene.Node;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
-import jfxtras.labs.scene.control.window.CloseIcon;
-import jfxtras.labs.scene.control.window.Window;
+import jfxtras.scene.control.window.CloseIcon;
+import jfxtras.scene.control.window.Window;
 
 /**
  *

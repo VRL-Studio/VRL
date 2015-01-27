@@ -11,7 +11,6 @@ import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
-import jfxtras.labs.scene.control.gauge.Gauge;
 
 /**
  * Custom flownode skin. In addition to the basic node visualization from

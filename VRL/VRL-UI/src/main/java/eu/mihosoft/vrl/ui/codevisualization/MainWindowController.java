@@ -103,6 +103,7 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
@@ -154,15 +155,21 @@ public class MainWindowController implements Initializable {
         ScalableContentPane canvas = new ScalableContentPane();
         canvas.setStyle("-fx-background-color: rgb(0,0, 0)");
 
+        canvas.setMinScaleX(0.2);
+        canvas.setMinScaleY(0.2);
         canvas.setMaxScaleX(1);
         canvas.setMaxScaleY(1);
 
         System.out.println("view: " + view);
+        
+        ScrollPane scrollPane = new ScrollPane(canvas);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
 
-        view.getChildren().add(canvas);
+        view.getChildren().add(scrollPane);
 
         Pane root = new Pane();
-        canvas.setContentPane(root);
+        canvas.setContent(root);
         root.setStyle("-fx-background-color: linear-gradient(to bottom, rgb(10,32,60), rgb(42,52,120));");
 
         rootPane = root;
