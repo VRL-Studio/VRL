@@ -128,12 +128,22 @@ class InvocationImpl implements Invocation {
             node = parent.getFlow().newNode();
             node.getValueObject().setValue(this);
 
-            node.setMainInput(node.addInput(WorkflowUtil.CONTROL_FLOW)).
+            Connector controlflowInput = node.setMainInput(
+                    node.addInput(WorkflowUtil.CONTROL_FLOW));
+
+            controlflowInput.getVisualizationRequest().set(
+                            VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
+            
+            controlflowInput.setMaxNumberOfConnections(1);
+
+            Connector controlflowOutput = node.setMainOutput(
+                    node.addOutput(WorkflowUtil.CONTROL_FLOW));
+            
+            controlflowOutput.
                     getVisualizationRequest().set(
                             VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
-            node.setMainOutput(node.addOutput(WorkflowUtil.CONTROL_FLOW)).
-                    getVisualizationRequest().set(
-                            VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
+            
+            controlflowOutput.setMaxNumberOfConnections(1);
 
             int argIndex = 0;
             for (IArgument arg : args) {
@@ -149,7 +159,7 @@ class InvocationImpl implements Invocation {
             }
 
             node.setTitle(varName + "." + methodName + "()");
-            
+
         }
 
     }
