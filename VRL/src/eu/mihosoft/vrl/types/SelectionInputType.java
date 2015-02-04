@@ -71,9 +71,9 @@ import javax.swing.JComboBox;
 @TypeInfo(type = Selection.class, input = true, output = false, style = "default")
 public class SelectionInputType extends TypeRepresentationBase {
 
-    private JComboBox selectionView = new JComboBox();
+    private final JComboBox selectionView = new JComboBox();
     private Selection selectionModel;
-    public static String SELECTION_CHANGED_ACTION =
+    public static final String SELECTION_CHANGED_ACTION =
             "selection-input-type:selection-changed";
 
     /**
