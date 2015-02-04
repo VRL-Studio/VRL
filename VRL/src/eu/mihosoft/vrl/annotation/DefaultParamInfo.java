@@ -50,8 +50,10 @@
  * Computing and Visualization in Science, 2011, in press.
  */
 
-package eu.mihosoft.vrl.reflection;
+package eu.mihosoft.vrl.annotation;
 
+import eu.mihosoft.vrl.reflection.*;
+import eu.mihosoft.vrl.annotation.ParamInfo;
 import eu.mihosoft.vrl.annotation.ParamInfo;
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -60,7 +62,7 @@ import java.lang.annotation.Annotation;
  * Default param info.
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-final class DefaultParamInfo implements ParamInfo, Serializable {
+final public class DefaultParamInfo implements ParamInfo, Serializable {
 
     private static final long serialVersionUID = 1L;
 

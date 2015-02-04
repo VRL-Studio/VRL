@@ -51,6 +51,7 @@
  */
 package eu.mihosoft.vrl.reflection;
 
+import eu.mihosoft.vrl.annotation.DefaultParamInfo;
 import eu.mihosoft.vrl.annotation.MethodInfo;
 import eu.mihosoft.vrl.annotation.OutputInfo;
 import eu.mihosoft.vrl.annotation.ParamInfo;
