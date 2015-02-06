@@ -75,6 +75,9 @@ import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.fx.FXValueSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScalableContentPane;
+import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
+import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
+import eu.mihosoft.vrl.workflow.fx.VCanvas;
 import groovy.lang.GroovyClassLoader;
 import java.io.File;
 import java.io.FileWriter;
@@ -103,9 +106,12 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooserBuilder;
@@ -150,29 +156,29 @@ public class MainWindowController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        System.out.println("Init");
-
-        ScalableContentPane canvas = new ScalableContentPane();
+        VCanvas canvas = new VCanvas();
         canvas.setStyle("-fx-background-color: rgb(0,0, 0)");
 
         canvas.setMinScaleX(0.2);
         canvas.setMinScaleY(0.2);
         canvas.setMaxScaleX(1);
         canvas.setMaxScaleY(1);
-
-        System.out.println("view: " + view);
         
+        canvas.setScaleBehavior(ScaleBehavior.IF_NECESSARY);
+        canvas.setTranslateBehavior(TranslateBehavior.IF_NECESSARY);
+
+        addResetViewMenu(canvas);
+
         ScrollPane scrollPane = new ScrollPane(canvas);
         scrollPane.setFitToWidth(true);
         scrollPane.setFitToHeight(true);
 
         view.getChildren().add(scrollPane);
 
-        Pane root = new Pane();
-        canvas.setContent(root);
-        root.setStyle("-fx-background-color: linear-gradient(to bottom, rgb(10,32,60), rgb(42,52,120));");
+        rootPane = canvas.getContent();
 
-        rootPane = root;
+        rootPane.setStyle("-fx-background-color: linear-gradient(to bottom, rgb(10,32,60), rgb(42,52,120));");
+
 
         flow = FlowFactory.newFlow();
         flow.setVisible(true);
@@ -721,6 +727,21 @@ public class MainWindowController implements Initializable {
             } catch (Exception ex) {
                 Logger.getLogger(MainWindowController.class.getName()).
                         log(Level.SEVERE, null, ex);
+            }
+        });
+    }
+
+    static void addResetViewMenu(VCanvas canvas) {
+        final ContextMenu cm = new ContextMenu();
+        MenuItem resetViewItem = new MenuItem("Reset View");
+        resetViewItem.setOnAction((ActionEvent e) -> {
+            canvas.resetScale();
+            canvas.resetTranslation();
+        });
+        cm.getItems().add(resetViewItem);
+        canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, (MouseEvent e) -> {
+            if (e.getButton() == javafx.scene.input.MouseButton.SECONDARY) {
+                cm.show(canvas, e.getScreenX(), e.getScreenY());
             }
         });
     }

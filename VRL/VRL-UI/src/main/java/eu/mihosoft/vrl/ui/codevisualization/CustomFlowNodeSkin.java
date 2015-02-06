@@ -3,19 +3,19 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package eu.mihosoft.vrl.ui.codevisualization;
 
+import eu.mihosoft.vrl.lang.model.ControlFlowScope;
+import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkinBase;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
-import eu.mihosoft.vrl.workflow.fx.ScalableContentPane;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 
 /**
  * Custom flownode skin for leaf nodes. In addition to the basic node
@@ -37,25 +37,37 @@ public abstract class CustomFlowNodeSkin extends FXFlowNodeSkinBase {
     public void updateView() {
 
         super.updateView();
-
-        // we don't create custom view for flows
-        if (getModel() instanceof VFlowModel) {
-            return;
-        }
-
-        // we don't create a custom view if no value has been defined
+        
+         // we don't create a custom view if no value has been defined
         if (getModel().getValueObject().getValue() == null) {
             return;
         }
+
+        if (getModel() instanceof VFlowModel) {
+
+            if (!(getModel().getValueObject().getValue() instanceof ScopeInvocation)) {
+                return;
+            }
+            
+            ScopeInvocation scopeInv = 
+                    (ScopeInvocation) getModel().getValueObject().getValue();
+
+            // we create custom views for control flow scopes (for, while etc.)
+            if (scopeInv.getScope() instanceof ControlFlowScope) {
+                // ?
+            } else {
+                // we don't create custom view for regular flows
+                return;
+            }
+        }
+
+        Pane contentPane = getNode().getContentPane();
 
         // create the view
         Node view = createView();
 
         // add the view to scalable content pane
         if (view != null) {
-
-//            ScalableContentPane scalableContentPane = new ScalableContentPane();
-//            scalableContentPane.setPadding(new Insets(10));
 
             GridPane nodePane = new GridPane();
             nodePane.setAlignment(Pos.CENTER);

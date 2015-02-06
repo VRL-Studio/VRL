@@ -9,12 +9,17 @@ import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ArgumentType;
 import eu.mihosoft.vrl.lang.model.CodeEvent;
 import eu.mihosoft.vrl.lang.model.CodeEventType;
+import eu.mihosoft.vrl.lang.model.ForDeclaration;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
+import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
+import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
@@ -38,6 +43,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
     @Override
     public void configureCanvas(VCanvas canvas) {
         super.configureCanvas(canvas);
+
     }
 
     @Override
@@ -45,8 +51,21 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
         Object value = getModel().getValueObject().getValue();
 
+        if (value instanceof ScopeInvocation) {
+
+        }
+
         if (value instanceof Invocation) {
 
+//            if (value instanceof ScopeInvocation) {
+//                ScopeInvocation inv = (ScopeInvocation) value;
+//                Scope s = inv.getScope();
+//                
+//                if (s instanceof ForDeclaration) {
+//                    System.out.println("SCOPE: " + s);
+//                    System.exit(1);
+//                }
+//            }
             Invocation invocation = (Invocation) value;
 
             VBox inputs = new VBox();
