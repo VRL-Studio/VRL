@@ -164,8 +164,8 @@ public class MainWindowController implements Initializable {
         canvas.setMaxScaleX(1);
         canvas.setMaxScaleY(1);
         
-        canvas.setScaleBehavior(ScaleBehavior.IF_NECESSARY);
-        canvas.setTranslateBehavior(TranslateBehavior.IF_NECESSARY);
+//        canvas.setScaleBehavior(ScaleBehavior.IF_NECESSARY);
+//        canvas.setTranslateBehavior(TranslateBehavior.IF_NECESSARY);
 
         addResetViewMenu(canvas);
 
