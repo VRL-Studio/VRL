@@ -72,10 +72,12 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.Keymap;
 import org.fife.ui.rsyntaxtextarea.CodeTemplateManager;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaUI;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rsyntaxtextarea.folding.Fold;
 import org.fife.ui.rsyntaxtextarea.templates.CodeTemplate;
 import org.fife.ui.rsyntaxtextarea.templates.StaticCodeTemplate;
+import org.fife.ui.rtextarea.RTextAreaUI;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
@@ -140,6 +142,9 @@ public class VCodeEditor extends JPanel implements CanvasChild {
     public static final String EDITOR_STYLE_KEY
             = "VCodeEditor:EditorStyle";
 
+    public static final String EDITOR_HIGHLIGHTED_LINE_KEY
+            = "VCodeEditor:HighlightedLine:Color";
+
     static {
         // enable code templates
         RSyntaxTextArea.setTemplatesEnabled(true);
@@ -189,6 +194,20 @@ public class VCodeEditor extends JPanel implements CanvasChild {
 
         editor = new RSyntaxTextArea() {
 
+            {
+                setOpaque(false);
+            }
+
+            @Override
+            public void setOpaque(boolean isOpaque) {
+
+                // this editor ignores opaque request.
+                // its paint method makes sure that the component behaves 
+                // currectly.
+                super.setOpaque(false);
+
+            }
+
             /**
              * Updates layout on fold toggle. TODO improve design, use standard
              * listener/events!
@@ -219,22 +238,27 @@ public class VCodeEditor extends JPanel implements CanvasChild {
                 });
             }
 
-//            @Override
-//            protected void paintComponent(Graphics g) {
-////                TextUI ui = getUI();
-////                if (ui != null) {
-////
-////                    try {
-////                        ui.update(g, this);
-////                    } finally {
-////                        //scratchGraphics.dispose();
-////                    }
-////                }
-//            }
+            @Override
+            public void paint(Graphics g) {
 
+                // we paint editor augmentations before painting text to
+                // ensure everything is in the background
+                ((VCodeEditorUI) getUI()).paintEditorAugmentations(g);
+
+                // paint the text and foreground ui as usual
+                super.paint(g);
+            }
+
+            @Override
+            protected RTextAreaUI createRTextAreaUI() {
+                // we need a custom ui to support non-opaque components
+                return new VCodeEditorUI(this);
+            }
         };
 
         editor.setBracketMatchingEnabled(true);
+        editor.setAnimateBracketMatching(true);
+        editor.setFadeCurrentLineHighlight(false);
 
         editor.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
         editor.setBorder(new EmptyBorder(0, 8, 0, 0));
@@ -389,10 +413,11 @@ public class VCodeEditor extends JPanel implements CanvasChild {
             editor.setSelectedTextColor(selectedText);
             editor.setSelectionColor(selectedTextBackground);
 
-//            editor.setBackgroundImage(
-//                    new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB));
-//            
+            editor.setCurrentLineHighlightColor(style.getBaseValues().
+                    getColor(EDITOR_HIGHLIGHTED_LINE_KEY));
+
             editor.setBackground(VSwingUtil.TRANSPARENT_COLOR);
+
             editor.setSyntaxScheme(
                     style.getBaseValues().getEditorStyle(EDITOR_STYLE_KEY));
         }
@@ -752,11 +777,11 @@ class LineNumberView extends TransparentPanel {
 
 class FindAndReplaceToolbar extends VComponent implements ActionListener {
 
-    private RSyntaxTextArea textArea;
+    private final RSyntaxTextArea textArea;
     private VTextField searchField;
-    private VTextField replaceField;
-    private JCheckBox regexCB;
-    private JCheckBox matchCaseCB;
+    private final VTextField replaceField;
+    private final JCheckBox regexCB;
+    private final JCheckBox matchCaseCB;
     private JButton nextButton;
     private JButton prevButton;
     private JButton replaceButton;
@@ -887,6 +912,9 @@ class FindAndReplaceToolbar extends VComponent implements ActionListener {
         if (isVisible()) {
             searchField.requestFocus();
             searchField.selectAll();
+        } else {
+            SearchContext context = new SearchContext();
+            SearchEngine.find(textArea, context);
         }
     }
 
@@ -987,4 +1015,33 @@ class FindAndReplaceToolbar extends VComponent implements ActionListener {
         revalidate();
         getMainCanvas().revalidate();
     }
+}
+
+/**
+ * Custom editor ui that does support non-opaque components.
+ *
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ */
+class VCodeEditorUI extends RSyntaxTextAreaUI {
+
+    public VCodeEditorUI(JComponent rSyntaxTextArea) {
+        super(rSyntaxTextArea);
+    }
+
+    /**
+     * Paints editor augmentations such as matching brackets etc.
+     *
+     * @param g graphics context that shall be used for painting
+     */
+    public void paintEditorAugmentations(Graphics g) {
+        paintLineHighlights(g);
+
+        Rectangle visibleRect = textArea.getVisibleRect();
+
+        paintCurrentLineHighlight(g, visibleRect);
+        paintMarginLine(g, visibleRect);
+
+        paintMatchedBracket(g);
+    }
+
 }

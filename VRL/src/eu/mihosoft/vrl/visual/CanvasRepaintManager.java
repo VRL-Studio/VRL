@@ -49,18 +49,19 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.reflection.DefaultObjectRepresentation;
 import eu.mihosoft.vrl.types.VCanvas3D;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import javax.swing.JComponent;
 import javax.swing.RepaintManager;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 /**
  * Custom repaint manager. The problem without this customization was that Swing
@@ -80,23 +81,21 @@ public class CanvasRepaintManager extends RepaintManager {
     @Override
     public void addDirtyRegion(JComponent c, int x, int y, int w, int h) {
 
-
         // first we perform the default task
         super.addDirtyRegion(c, x, y, w, h);
-
 
         // additionally we need to update the whole canvas at the specified
         // region because most objects are transparent and that is why also the
         // parent objects have to repaint this region
         if (!(c instanceof EffectPane)) {
+
             try {
-                Point location =
-                        mainCanvas.getAbsPos(c, false);
+                Point location
+                        = mainCanvas.getAbsPos(c, false);
 
 //                super.addDirtyRegion(
 //                        mainCanvas, location.x, location.y,
 //                        c.getWidth(), c.getHeight());
-
                 Rectangle vRect = c.getVisibleRect();
 
                 int vRectX = location.x + vRect.x;
@@ -115,7 +114,9 @@ public class CanvasRepaintManager extends RepaintManager {
             } catch (Exception ex) {
                 // catch nullpointer exceptions etc.
             }
+
         }
 
     }
+
 }

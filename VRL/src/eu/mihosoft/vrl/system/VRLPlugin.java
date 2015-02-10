@@ -543,6 +543,8 @@ class DarkStyle {
         scheme.getStyle(Token.ERROR_NUMBER_FORMAT).foreground = new Color(230, 0, 30);
 
         s.getBaseValues().setEditorStyle(VCodeEditor.EDITOR_STYLE_KEY, scheme);
+        
+        s.getBaseValues().set(VCodeEditor.EDITOR_HIGHLIGHTED_LINE_KEY, new Color(220,220,220,20));
 
         return s;
     }

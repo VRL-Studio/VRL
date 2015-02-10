@@ -298,6 +298,8 @@ public final class Style {
         scheme.getStyle(Token.ERROR_NUMBER_FORMAT).foreground = new Color(230, 0, 30);
 
         getBaseValues().setEditorStyle(VCodeEditor.EDITOR_STYLE_KEY, scheme);
+        
+        getBaseValues().set(VCodeEditor.EDITOR_HIGHLIGHTED_LINE_KEY, new Color(140,140,140,60));
 
     }
 
