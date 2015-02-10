@@ -415,8 +415,7 @@ public class DefaultObjectRepresentation extends JPanel
                     != MethodType.REFERENCE
                     && method.getDescription().getMethodType()
                     != MethodType.CUSTOM_REFERENCE) {
-                methodList.addItem(method.getDescription(),
-                        method.getDescription().getSignature());
+
                 getMethods().remove(method);
 
                 if (!selectionView.isVisible()) {
