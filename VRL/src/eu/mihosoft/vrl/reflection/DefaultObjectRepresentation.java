@@ -407,16 +407,13 @@ public class DefaultObjectRepresentation extends JPanel
                 getMethodView().remove(method);
             }
 
-            // TODO start dissapearing after fade out
-            // currently this is done inside of FadeOut effect
-//                method.setVisible(false);
+
             // we ignore reference methods
             if (method.getDescription().getMethodType()
                     != MethodType.REFERENCE
                     && method.getDescription().getMethodType()
                     != MethodType.CUSTOM_REFERENCE) {
-                methodList.addItem(method.getDescription(),
-                        method.getDescription().getSignature());
+
                 getMethods().remove(method);
 
                 if (!selectionView.isVisible()) {
