@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.system.VSysUtil;
@@ -66,6 +65,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.plaf.TextUI;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
@@ -79,7 +79,6 @@ import org.fife.ui.rsyntaxtextarea.templates.StaticCodeTemplate;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.fife.ui.rtextarea.SearchContext;
 import org.fife.ui.rtextarea.SearchEngine;
-
 
 /**
  * Code editor component with line number view and error notification.
@@ -98,48 +97,48 @@ public class VCodeEditor extends JPanel implements CanvasChild {
     /**
      *
      */
-    public static final String BACKGROUND_COLOR_KEY =
-            "VCodeEditor:Background:Color";
+    public static final String BACKGROUND_COLOR_KEY
+            = "VCodeEditor:Background:Color";
     /**
      *
      */
-    public static final String BACKGROUND_TRANSPARENCY_KEY =
-            "VCodeEditor:Background:Transparency";
+    public static final String BACKGROUND_TRANSPARENCY_KEY
+            = "VCodeEditor:Background:Transparency";
     /**
      *
      */
-    public static final String BORDER_COLOR_KEY =
-            "VCodeEditor:Border:Color";
+    public static final String BORDER_COLOR_KEY
+            = "VCodeEditor:Border:Color";
     /**
      *
      */
-    public static final String BORDER_THICKNESS_KEY =
-            "VCodeEditor:Border:Thickness";
+    public static final String BORDER_THICKNESS_KEY
+            = "VCodeEditor:Border:Thickness";
     /**
      *
      */
-    public static final String LINE_NUMBER_FIELD_COLOR_KEY =
-            "VCodeEditor:LineNumberField:Color";
+    public static final String LINE_NUMBER_FIELD_COLOR_KEY
+            = "VCodeEditor:LineNumberField:Color";
     /**
      *
      */
-    public static final String LINE_NUMBER_COLOR_KEY =
-            "VCodeEditor:LineNumber:Color";
+    public static final String LINE_NUMBER_COLOR_KEY
+            = "VCodeEditor:LineNumber:Color";
     /**
      *
      */
-    public static final String COMPILE_ERROR_COLOR_KEY =
-            "VCodeEditor:CompileError:Color";
+    public static final String COMPILE_ERROR_COLOR_KEY
+            = "VCodeEditor:CompileError:Color";
     /**
      *
      */
-    public static final String COMPILE_ERROR_BORDER_COLOR_KEY =
-            "VCodeEditor:CompileError:Border:Color";
+    public static final String COMPILE_ERROR_BORDER_COLOR_KEY
+            = "VCodeEditor:CompileError:Border:Color";
     /**
      *
      */
-    public static final String EDITOR_STYLE_KEY =
-            "VCodeEditor:EditorStyle";
+    public static final String EDITOR_STYLE_KEY
+            = "VCodeEditor:EditorStyle";
 
     static {
         // enable code templates
@@ -185,8 +184,6 @@ public class VCodeEditor extends JPanel implements CanvasChild {
         this.parent = parent;
 
 //        editor = new VCodePane(parent);
-
-
         BoxLayout layout = new BoxLayout(this, BoxLayout.PAGE_AXIS);
         setLayout(layout);
 
@@ -209,9 +206,9 @@ public class VCodeEditor extends JPanel implements CanvasChild {
                         getScrollPane().setPreferredSize(null);
                         getScrollPane().revalidate();
 
-                        Container parentWindow =
-                                VSwingUtil.getParent(
-                                VCodeEditor.this, CanvasWindow.class);
+                        Container parentWindow
+                                = VSwingUtil.getParent(
+                                        VCodeEditor.this, CanvasWindow.class);
 
                         if (parentWindow != null) {
                             CanvasWindow w = (CanvasWindow) parentWindow;
@@ -220,29 +217,43 @@ public class VCodeEditor extends JPanel implements CanvasChild {
                         }
                     }
                 });
-
             }
+
+//            @Override
+//            protected void paintComponent(Graphics g) {
+////                TextUI ui = getUI();
+////                if (ui != null) {
+////
+////                    try {
+////                        ui.update(g, this);
+////                    } finally {
+////                        //scratchGraphics.dispose();
+////                    }
+////                }
+//            }
+
         };
+
+        editor.setBracketMatchingEnabled(true);
 
         editor.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_NONE);
         editor.setBorder(new EmptyBorder(0, 8, 0, 0));
         editor.setLineWrap(false);
 
-        findAndReplaceToolbar =
-                new FindAndReplaceToolbar(editor);
+        findAndReplaceToolbar
+                = new FindAndReplaceToolbar(editor);
         add(findAndReplaceToolbar);
         findAndReplaceToolbar.setVisible(false);
-
 
         // add find and replace shortcut
         KeyStroke findAndReplace = null;
 
         if (!VSysUtil.isMacOSX()) {
-            findAndReplace =
-                    KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK);
+            findAndReplace
+                    = KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.CTRL_MASK);
         } else {
-            findAndReplace =
-                    KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.META_MASK);
+            findAndReplace
+                    = KeyStroke.getKeyStroke(KeyEvent.VK_F, KeyEvent.META_MASK);
         }
 
         editor.registerKeyboardAction(new ActionListener() {
@@ -252,7 +263,6 @@ public class VCodeEditor extends JPanel implements CanvasChild {
                 toggleFindAndReplaceToolbarVisibility();
             }
         }, findAndReplace, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-
 
         // remove code folding menu due to several bugs
         JMenu delMenu = null;
@@ -271,7 +281,6 @@ public class VCodeEditor extends JPanel implements CanvasChild {
             editor.getPopupMenu().remove(delMenu);
         }
 
-
         // add Find and Replace menu entry
         JMenuItem findAndReplaceItem = new JMenuItem("Find and Replace");
 
@@ -285,11 +294,10 @@ public class VCodeEditor extends JPanel implements CanvasChild {
 
         editor.getPopupMenu().add(findAndReplaceItem);
 
-
         // finally add the editor to a scrollpane which is added to this
         scrollPane = new VRTextScrollPane(editor);
         add(scrollPane);
-        setOpaque(true);
+        setOpaque(false);
     }
 
     public void toggleFindAndReplaceToolbarVisibility() {
@@ -297,13 +305,12 @@ public class VCodeEditor extends JPanel implements CanvasChild {
         revalidate();
         findAndReplaceToolbar.getMainCanvas().revalidate();
 
-
         getScrollPane().setPreferredSize(null);
         getScrollPane().revalidate();
 
-        Container parentWindow =
-                VSwingUtil.getParent(
-                VCodeEditor.this, CanvasWindow.class);
+        Container parentWindow
+                = VSwingUtil.getParent(
+                        VCodeEditor.this, CanvasWindow.class);
 
         if (parentWindow != null) {
             CanvasWindow w = (CanvasWindow) parentWindow;
@@ -328,12 +335,9 @@ public class VCodeEditor extends JPanel implements CanvasChild {
 //        numberView.addCodeErrorMessage(line, message);
 
         //editor.getParagraphs().get(line - 1).setErrorView(true);
-
-
         parent.getMainCanvas().getMessageBox().
                 addMessage("Can't compile code:",
-                message, null, MessageType.ERROR);
-
+                        message, null, MessageType.ERROR);
 
         BufferedImage errorImage = ImageUtils.createCompatibleImage(10, 10);
         Graphics2D g2 = errorImage.createGraphics();
@@ -362,30 +366,33 @@ public class VCodeEditor extends JPanel implements CanvasChild {
     @Override
     protected void paintComponent(Graphics g) {
 
-        Style newStyle = new Style("Default");
+        Style newStyle;
 
         if (getMainCanvas() != null) {
             newStyle = parent.getStyle();
+        } else {
+            newStyle = new Style("Default");
         }
 
         if (style == null || !style.equals(newStyle)) {
             style = newStyle;
-            Color defaultText =
-                    style.getBaseValues().getColor(Canvas.TEXT_COLOR_KEY);
-            Color selectedText =
-                    style.getBaseValues().getColor(Canvas.SELECTED_TEXT_COLOR_KEY);
-            Color selectedTextBackground =
-                    style.getBaseValues().getColor(Canvas.TEXT_SELECTION_COLOR_KEY);
-            Color caretColor =
-                    style.getBaseValues().getColor(Canvas.CARET_COLOR_KEY);
+            Color defaultText
+                    = style.getBaseValues().getColor(Canvas.TEXT_COLOR_KEY);
+            Color selectedText
+                    = style.getBaseValues().getColor(Canvas.SELECTED_TEXT_COLOR_KEY);
+            Color selectedTextBackground
+                    = style.getBaseValues().getColor(Canvas.TEXT_SELECTION_COLOR_KEY);
+            Color caretColor
+                    = style.getBaseValues().getColor(Canvas.CARET_COLOR_KEY);
 
             editor.setCaretColor(caretColor);
             editor.setSelectedTextColor(selectedText);
             editor.setSelectionColor(selectedTextBackground);
 
-            editor.setBackgroundImage(
-                    new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB));
-
+//            editor.setBackgroundImage(
+//                    new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB));
+//            
+//            editor.setBackground(VSwingUtil.TRANSPARENT_COLOR);
             editor.setSyntaxScheme(
                     style.getBaseValues().getEditorStyle(EDITOR_STYLE_KEY));
         }
@@ -404,9 +411,9 @@ public class VCodeEditor extends JPanel implements CanvasChild {
         float alpha = style.getBaseValues().
                 getFloat(BACKGROUND_TRANSPARENCY_KEY);
 
-        AlphaComposite ac1 =
-                AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                alpha);
+        AlphaComposite ac1
+                = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                        alpha);
         g2.setComposite(ac1);
 
         g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 20, 20);
@@ -417,9 +424,9 @@ public class VCodeEditor extends JPanel implements CanvasChild {
 
         g2.setColor(border);
 
-        BasicStroke stroke =
-                new BasicStroke(
-                style.getBaseValues().getFloat(BORDER_THICKNESS_KEY));
+        BasicStroke stroke
+                = new BasicStroke(
+                        style.getBaseValues().getFloat(BORDER_THICKNESS_KEY));
 
         g2.setStroke(stroke);
 
@@ -429,7 +436,6 @@ public class VCodeEditor extends JPanel implements CanvasChild {
 
         g2.setComposite(original);
 
-//        super.paintComponent(g);
     }
 
     /**
@@ -462,6 +468,7 @@ public class VCodeEditor extends JPanel implements CanvasChild {
         return scrollPane;
     }
 }
+
 /**
  * Draws a colored rectangle over the code line where an error occured.
  *
@@ -567,7 +574,7 @@ class LineNumberView extends TransparentPanel {
 
         parent.getMainCanvas().getMessageBox().
                 addMessage("Can't compile code:",
-                message, errorNotifier, MessageType.ERROR);
+                        message, errorNotifier, MessageType.ERROR);
     }
 
     /**
@@ -582,11 +589,10 @@ class LineNumberView extends TransparentPanel {
      */
     private void updateWidth() {
         int maxLineNumber = getMaxLineNumber();
-        int charLength =
-                Math.max(getNumberOfChars(maxLineNumber), minNumberCharLength);
+        int charLength
+                = Math.max(getNumberOfChars(maxLineNumber), minNumberCharLength);
 
         //  Update sizes when number of digits in the line number changes
-
         if (charLength != numberCharLength && charLength > 1) {
             numberCharLength = charLength;
             int width = digitWidth * charLength;
@@ -603,8 +609,6 @@ class LineNumberView extends TransparentPanel {
 
 //        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
 //                RenderingHints.VALUE_ANTIALIAS_ON);
-
-
         Style style = null;
 
         if (parent != null) {
@@ -621,7 +625,6 @@ class LineNumberView extends TransparentPanel {
 
         int arcWidth = 20;
         int arcHeight = 20;
-
 
         Shape shape = new RoundRectangle2D.Double(insetValue, insetValue,
                 arcWidth, getHeight() - 1 - insetValue,
@@ -714,8 +717,8 @@ class LineNumberView extends TransparentPanel {
 
         int stopIndex = startLineNumber + getLineNumberAt(visibleRect.height);
 
-        int startY =
-                getLineNumberAt(visibleRect.y) * charHeight + getStartOffset();
+        int startY
+                = getLineNumberAt(visibleRect.y) * charHeight + getStartOffset();
 
         Style style = parent.getStyle();
 
@@ -765,16 +768,12 @@ class FindAndReplaceToolbar extends VComponent implements ActionListener {
 //      textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_JAVA);
 //      textArea.setCodeFoldingEnabled(true);
 //      textArea.setAntiAliasingEnabled(true);
-
         // Create a toolbar with searching options.
 //        JToolBar toolBar = new JToolBar();
-
         VComponent toolbar = new VComponent();
 
 //        toolbar.setStyle(VDialogWindow.createDialogStyle());
 //        toolbar.setPainterKey(CanvasWindow.BACKGROUND_PAINTER_KEY);
-
-
         searchField = new VTextField("", 8);
 //        searchField.setInvalidStateColor(Color.RED);
         searchField.selectAll();
@@ -870,8 +869,8 @@ class FindAndReplaceToolbar extends VComponent implements ActionListener {
                     @Override
                     public void run() {
                         FindAndReplaceToolbar.this.setVisible(false);
-                revalidate();
-                getMainCanvas().revalidate();
+                        revalidate();
+                        getMainCanvas().revalidate();
                     }
                 });
             }
@@ -884,7 +883,6 @@ class FindAndReplaceToolbar extends VComponent implements ActionListener {
     @Override
     public void setVisible(boolean visible) {
         super.setVisible(visible);
-
 
         if (isVisible()) {
             searchField.requestFocus();
@@ -909,7 +907,7 @@ class FindAndReplaceToolbar extends VComponent implements ActionListener {
         context.setWholeWord(false);
 
         // if not found
-        if (!SearchEngine.find(textArea, context)) {
+        if (!SearchEngine.find(textArea, context).wasFound()) {
             searchField.setInvalidState(true);
             searchField.repaint();
             nextButton.setEnabled(false);
@@ -965,9 +963,8 @@ class FindAndReplaceToolbar extends VComponent implements ActionListener {
         }
 
         if (find) {
-            found = SearchEngine.find(textArea, context);
+            found = SearchEngine.find(textArea, context).wasFound();
         }
-
 
         if (find && !found) {
             if (forward) {
@@ -977,7 +974,7 @@ class FindAndReplaceToolbar extends VComponent implements ActionListener {
             }
 
             if (find) {
-                found = SearchEngine.find(textArea, context);
+                found = SearchEngine.find(textArea, context).wasFound();
             }
         }
 

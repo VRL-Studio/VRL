@@ -70,7 +70,7 @@ public class ImportTestCompletion extends AbstractCompletion{
     }
 
     @Override
-	public int compareTo(Object o) {
+	public int compareTo(Completion o) {
 		if (o==this) {
 			return 0;
 		}

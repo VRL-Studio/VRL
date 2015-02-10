@@ -209,6 +209,21 @@ public class VRTextScrollPane extends RTextScrollPane implements StyleChangedLis
                 }
             }
         });
+        
+        getHorizontalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+
+            @Override
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                VSwingUtil.repaintRequest((JComponent)getParent());
+            }
+        });
+        getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
+
+            @Override
+            public void adjustmentValueChanged(AdjustmentEvent e) {
+                VSwingUtil.repaintRequest((JComponent)getParent());
+            }
+        });
     }
 
     @Override
