@@ -89,9 +89,9 @@ public class VAutoCompletion extends AutoCompletion {
     }
 
     @Override
-    protected void insertCompletion(Completion c) {
+    protected void insertCompletion(Completion c, boolean typedParamListStartChar) {
 
-        super.insertCompletion(c);
+        super.insertCompletion(c, typedParamListStartChar);
 
         JTextComponent textComponent = getTextComponent();
 
