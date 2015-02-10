@@ -392,7 +392,7 @@ public class VCodeEditor extends JPanel implements CanvasChild {
 //            editor.setBackgroundImage(
 //                    new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB));
 //            
-//            editor.setBackground(VSwingUtil.TRANSPARENT_COLOR);
+            editor.setBackground(VSwingUtil.TRANSPARENT_COLOR);
             editor.setSyntaxScheme(
                     style.getBaseValues().getEditorStyle(EDITOR_STYLE_KEY));
         }
