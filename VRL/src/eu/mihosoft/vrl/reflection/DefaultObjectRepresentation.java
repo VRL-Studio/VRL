@@ -407,7 +407,6 @@ public class DefaultObjectRepresentation extends JPanel
                 getMethodView().remove(method);
             }
 
-
             // we ignore reference methods
             if (method.getDescription().getMethodType()
                     != MethodType.REFERENCE
@@ -553,23 +552,25 @@ public class DefaultObjectRepresentation extends JPanel
                     methodList.addItem(m, m.getSignature());
                 }
 
-                if (mInfo != null) {
+                if (!getMainCanvas().isLoadingSession()) {
+                    if (mInfo != null) {
 
-                    // TODO duplicated check (see DefaultMethodRepresentation.initRepresentation())
-                    boolean hideMethod
-                            = mInfo.hide() && !mInfo.hideCloseIcon();
+                        // TODO duplicated check (see DefaultMethodRepresentation.initRepresentation())
+                        boolean hideMethod
+                                = mInfo.hide() && !mInfo.hideCloseIcon();
 
-                    if (!hideMethod) {
-                        int visualMethodID = computeNextVisualMethodID(m);
-                        addMethodToView(m, visualMethodID);
-                    }
-                } else if (!isReferenceMethod) {
+                        if (!hideMethod) {
+                            int visualMethodID = computeNextVisualMethodID(m);
+                            addMethodToView(m, visualMethodID);
+                        }
+                    } else if (!isReferenceMethod) {
                     // if this method does not have a method info and
-                    // only this method and a reference method are available
-                    // then show this method as default
-                    if (getDescription().getMethods().size() == 2) {
-                        int visualMethodID = computeNextVisualMethodID(m);
-                        addMethodToView(m, visualMethodID);
+                        // only this method and a reference method are available
+                        // then show this method as default
+                        if (getDescription().getMethods().size() == 2) {
+                            int visualMethodID = computeNextVisualMethodID(m);
+                            addMethodToView(m, visualMethodID);
+                        }
                     }
                 }
             }
