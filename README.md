@@ -1,7 +1,7 @@
 VRL (Visual Reflection Library)
 ===============================
 
-[![Build Status](https://travis-ci.org/miho/VRL.png?branch=master)](https://travis-ci.org/miho/VRL)
+[![Build Status](https://travis-ci.org/VRL-Studio/VRL.svg?branch=master)](https://travis-ci.org/VRL-Studio/VRL) 
 
 Webpage: http://vrl-studio.mihosoft.eu
 
@@ -9,7 +9,7 @@ Join the [Developer Group](https://groups.google.com/forum/#!forum/vrl-developer
 
 # Dependencies
 
-- Java >= 1.6 
+- Java >= 1.6 (JDK)
 - NetBeans >= 7.4
 
 # How To Build
@@ -30,7 +30,7 @@ To see what is possible with VRL check out [VRL-Studio](http://vrl-studio.mihoso
 
 ###For 0.5 (Playground)
 
-- Test Reports: http://vrl.mihosoft.eu/test-reports/latest/vrl/
+- Test Reports: http://vrl.mihosoft.eu/test-reports/latest/
 
 # Maven Artifacts
 
