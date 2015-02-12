@@ -81,7 +81,7 @@ public @interface MethodInfo {
     boolean interactive() default true;
     
     /**
-     * Defines the maximum number of visual instances per object. 
+     * Defines the maximum number of visual method instances per object. 
      * <code>numInstances=0</code> is equivalent to <code>noGUI=true</code>.
      */
     int num() default Integer.MAX_VALUE;
