@@ -1400,6 +1400,11 @@ public class ArrayBaseType extends TypeRepresentationBase {
             public String parentName() {
                 return "";
             }
+
+            @Override
+            public int num() {
+                return Integer.MAX_VALUE;
+            }
         };
 
         return result;

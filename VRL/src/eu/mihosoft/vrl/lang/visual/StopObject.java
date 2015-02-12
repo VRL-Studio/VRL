@@ -76,7 +76,7 @@ public class StopObject implements Serializable {
     public transient Thread thread;
     transient VisualInvocationObject invocationObj;
 
-    @MethodInfo(name=" ", buttonText="stop", hideCloseIcon=true)
+    @MethodInfo(name=" ", buttonText="stop", hideCloseIcon=true, num = 1)
     public void stop(CanvasRequest cReq, MethodRequest mReq) {
         if (invocationObj != null) {
             invocationStopped(cReq.getCanvas());

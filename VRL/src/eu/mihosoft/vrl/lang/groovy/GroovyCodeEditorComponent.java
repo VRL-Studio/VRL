@@ -758,7 +758,7 @@ public class GroovyCodeEditorComponent implements Serializable {
     }
 
     @MethodInfo(name = "compile", hide = false, buttonText = "Compile",
-    askIfClose = true)
+    askIfClose = true, num = 1)
     public void compile(
             MethodRequest mReq,
             @ParamInfo(name = " ", style = "code") String compileCode) {

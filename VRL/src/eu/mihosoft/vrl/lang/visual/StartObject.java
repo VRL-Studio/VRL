@@ -77,7 +77,7 @@ public class StartObject implements Serializable {
     public transient Thread thread;
     private transient DefaultMethodRepresentation mRep;
 
-    @MethodInfo(name = " ", buttonText = "start", hideCloseIcon = true)
+    @MethodInfo(name = " ", buttonText = "start", hideCloseIcon = true, num = 1)
     public void start(CanvasRequest cReq, MethodRequest mReq) {
 
         mRep = mReq.getMethod();

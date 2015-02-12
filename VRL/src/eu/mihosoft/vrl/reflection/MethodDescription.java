@@ -570,6 +570,11 @@ public final class MethodDescription {
             public String parentName() {
                 return "";
             }
+
+            @Override
+            public int num() {
+                return Integer.MAX_VALUE;
+            }
         };
 
         MethodDescription referenceMethod = new MethodDescription(

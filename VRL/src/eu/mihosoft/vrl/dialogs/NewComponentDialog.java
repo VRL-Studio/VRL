@@ -124,7 +124,7 @@ class NewComponentInfo extends DialogUIClass {
     }
 
     @MethodInfo(name = "Component Properties:",
-    interactive = false, hide = false)
+    interactive = false, hide = false, num = 1)
     public void setValues(
             @ParamInfo(name = "Name:",
             style = "class-name") String name,

@@ -321,7 +321,13 @@ public class DefaultObjectRepresentation extends JPanel
         // TODO start appearing with fade in
         // currently this is done inside of FadeIn effect
         //                method.setVisible(true);
-//        methodList.removeItem(mDesc);
+        
+        MethodInfo mInfo = mDesc.getMethodInfo();
+        
+        if (mInfo!=null && mInfo.num()==1) {
+            methodList.removeItem(mDesc);
+        }
+        
         methodView.add(mRep);
 
         // prevents drawing bugs (setVisible(true) is called later)
@@ -412,6 +418,13 @@ public class DefaultObjectRepresentation extends JPanel
                     != MethodType.REFERENCE
                     && method.getDescription().getMethodType()
                     != MethodType.CUSTOM_REFERENCE) {
+                
+                MethodInfo mInfo = method.getDescription().getMethodInfo();
+
+                if (mInfo!=null && !mInfo.hide() && mInfo.num()==1) {
+                    methodList.addItem(method.getDescription(),
+                            method.getDescription().getSignature());
+                }
 
                 getMethods().remove(method);
 
@@ -548,7 +561,8 @@ public class DefaultObjectRepresentation extends JPanel
                     || m.getMethodType() == MethodType.CUSTOM_REFERENCE;
 
             if (!isReferenceMethod) {
-                if (mInfo == null || !mInfo.noGUI()) {
+
+                if (methodNeedsListEntry(mInfo)) {
                     methodList.addItem(m, m.getSignature());
                 }
 
@@ -564,7 +578,7 @@ public class DefaultObjectRepresentation extends JPanel
                             addMethodToView(m, visualMethodID);
                         }
                     } else if (!isReferenceMethod) {
-                    // if this method does not have a method info and
+                        // if this method does not have a method info and
                         // only this method and a reference method are available
                         // then show this method as default
                         if (getDescription().getMethods().size() == 2) {
@@ -591,17 +605,28 @@ public class DefaultObjectRepresentation extends JPanel
         selectionView.getEffectManager().setDisabled(false);
     }
 
+    private boolean methodNeedsListEntry(MethodInfo mInfo) {
+        boolean methodNeedsListEntry = mInfo == null;
+        if (mInfo != null) {
+            methodNeedsListEntry = methodNeedsListEntry || !mInfo.noGUI();
+            methodNeedsListEntry = methodNeedsListEntry && (mInfo.num() > 1);
+        }
+        return methodNeedsListEntry;
+    }
+
     public boolean isNotallowedOnView(MethodDescription mDesc) {
 
-        boolean isStartObject = ((VisualCanvas) getMainCanvas()).getInspector().
-                getObject(this.getObjectID()).getClass() == StartObject.class;
-        boolean isStopObject = ((VisualCanvas) getMainCanvas()).getInspector().
-                getObject(this.getObjectID()).getClass() == StopObject.class;
+        int numberOfInstances = getMethodsByMethodDescription(mDesc).size();
 
-        boolean methodFound = !getMethodsByMethodDescription(mDesc).isEmpty();
+        int numberOfallowedInstances;
 
-        // start and stop methods are only allowed once
-        return methodFound && (isStartObject || isStopObject);
+        if (mDesc.getMethodInfo() != null) {
+            numberOfallowedInstances = mDesc.getMethodInfo().num();
+        } else {
+            numberOfallowedInstances = Integer.MAX_VALUE;
+        }
+
+        return numberOfInstances >= numberOfallowedInstances;
     }
 
     /**

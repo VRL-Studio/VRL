@@ -120,7 +120,7 @@ class NewPluginDialogInfo extends DialogUIClass {
     }
 
     @MethodInfo(name = "Plugin Properties:",
-    interactive = false, hide = false)
+    interactive = false, hide = false, num = 1)
     public void setValues(
             @ParamInfo(name = "Name:",
             style = "plugin-name") String name,

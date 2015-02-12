@@ -154,4 +154,9 @@ final class DefaultMethodInfo implements MethodInfo, Serializable{
         return "";
     }
 
+    @Override
+    public int num() {
+        return Integer.MAX_VALUE;
+    }
+
 }

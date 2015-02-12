@@ -73,7 +73,7 @@ public class CommitDialogInfo extends DialogUIClass{
     }
     
     @MethodInfo(name = "Save Project:",
-    interactive = false, hide=false)
+    interactive = false, hide=false, num = 1)
     public void setCommitMessage(
             @ParamInfo(name = "Commit message:",
             style = "editor") String commitMessage) {

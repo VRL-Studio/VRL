@@ -79,6 +79,12 @@ public @interface MethodInfo {
      * possible to call this method implicitly.
      */
     boolean interactive() default true;
+    
+    /**
+     * Defines the maximum number of visual instances per object. 
+     * <code>numInstances=0</code> is equivalent to <code>noGUI=true</code>.
+     */
+    int num() default Integer.MAX_VALUE;
 
     /**
      * Defines whether this method is to be hidden. If so it is accessible via
