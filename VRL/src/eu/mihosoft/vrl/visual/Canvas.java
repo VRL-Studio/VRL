@@ -306,6 +306,8 @@ public class Canvas extends JPanel
     private static ArrayList<Disposable> disposables =
             new ArrayList<Disposable>();
     
+    private boolean autoScrollEnabled = true;
+    
 //    private JTextArea backgroundLogView;
 //    private LoggingController loggingController;
 
@@ -1949,6 +1951,20 @@ public class Canvas extends JPanel
 
     public void setIgnoreMessages(boolean v) {
         ignoreMessages = v;
+    }
+
+    /**
+     * @return the autoScrollEnabled
+     */
+    public boolean isAutoScrollEnabled() {
+        return autoScrollEnabled;
+    }
+
+    /**
+     * @param autoScrollEnabled the autoScrollEnabled to set
+     */
+    public void setAutoScrollEnabled(boolean autoScrollEnabled) {
+        this.autoScrollEnabled = autoScrollEnabled;
     }
 }
 

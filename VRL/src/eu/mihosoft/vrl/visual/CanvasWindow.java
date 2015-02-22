@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.animation.Animation;
@@ -102,8 +101,8 @@ public class CanvasWindow extends VComponent
     private boolean selected;
     private SelectionEffect colorizeEffect;
     private CloseIcon closeIcon;
-    private ArrayList<CapabilityChangedListener> capabilityChangedListeners =
-            new ArrayList<CapabilityChangedListener>();
+    private ArrayList<CapabilityChangedListener> capabilityChangedListeners
+            = new ArrayList<CapabilityChangedListener>();
     private boolean selectable = true;
     private boolean movable = true;
     private boolean menuEnabled = true;
@@ -119,8 +118,8 @@ public class CanvasWindow extends VComponent
     /**
      * list of action listeners
      */
-    private Collection<CanvasActionListener> actionListeners =
-            new ArrayList<CanvasActionListener>();
+    private final Collection<CanvasActionListener> actionListeners
+            = new ArrayList<CanvasActionListener>();
     /**
      * Defines the identifier for window selected action (caused by clicking on
      * the title bar)
@@ -142,13 +141,13 @@ public class CanvasWindow extends VComponent
      */
     public static final String MAXIMIZE_ACTION = "set-maximize";
     /**
-     * Defines the identifier for window close action (caused by
-     * clicking on the close icon)
+     * Defines the identifier for window close action (caused by clicking on the
+     * close icon)
      */
     public static final String CLOSE_ACTION = "set-close";
     /**
-     * Defines the identifier for window closed action (caused by
-     * clicking on the close icon)
+     * Defines the identifier for window closed action (caused by clicking on
+     * the close icon)
      */
     public static final String CLOSED_ACTION = "set-closed";
     /**
@@ -189,13 +188,13 @@ public class CanvasWindow extends VComponent
     /**
      * Key for fade-in duration property.
      */
-    public static final String FADE_IN_DURATION_KEY =
-            "CanvasWindow:fadeInDuration";
+    public static final String FADE_IN_DURATION_KEY
+            = "CanvasWindow:fadeInDuration";
     /**
      * Key for fade-out duration property.
      */
-    public static final String FADE_OUT_DURATION_KEY =
-            "CanvasWindow:fadeOutDuration";
+    public static final String FADE_OUT_DURATION_KEY
+            = "CanvasWindow:fadeOutDuration";
     /**
      * Key for flip duration style property.
      */
@@ -207,38 +206,38 @@ public class CanvasWindow extends VComponent
     /**
      * Key for shadow width style property.
      */
-    public static final String BORDER_THICKNESS_KEY =
-            "CanvasWindow:borderThickness";
+    public static final String BORDER_THICKNESS_KEY
+            = "CanvasWindow:borderThickness";
     /**
      * Key for shadow width style property.
      */
-    public static final String BORDER_COLOR_KEY =
-            "CanvasWindow:borderColor";
+    public static final String BORDER_COLOR_KEY
+            = "CanvasWindow:borderColor";
     /**
      * Key for shadow width style property.
      */
-    public static final String TRANSPARENCY_KEY =
-            "CanvasWindow:transparency";
+    public static final String TRANSPARENCY_KEY
+            = "CanvasWindow:transparency";
     /**
      * Key for shadow width style property.
      */
-    public static final String UPPER_BACKGROUND_COLOR_KEY =
-            "CanvasWindow:upperBackgroundColor";
+    public static final String UPPER_BACKGROUND_COLOR_KEY
+            = "CanvasWindow:upperBackgroundColor";
     /**
      * Key for shadow width style property.
      */
-    public static final String LOWER_BACKGROUND_COLOR_KEY =
-            "CanvasWindow:lowerBackgroundColor";
+    public static final String LOWER_BACKGROUND_COLOR_KEY
+            = "CanvasWindow:lowerBackgroundColor";
     /**
      * Key for shadow width style property.
      */
-    public static final String ACTIVE_ICON_COLOR_KEY =
-            "CanvasWindow:Icon[active]:Color";
+    public static final String ACTIVE_ICON_COLOR_KEY
+            = "CanvasWindow:Icon[active]:Color";
     /**
      * Key for shadow width style property.
      */
-    public static final String ICON_COLOR_KEY =
-            "CanvasWindow:Icon[inactive]:Color";
+    public static final String ICON_COLOR_KEY
+            = "CanvasWindow:Icon[inactive]:Color";
     public static final String TITLE_TRANSPARENCY_KEY = "CanvasWindow:Title:transparency";
     public static final String UPPER_TITLE_COLOR_KEY = "CanvasWindow:Title:upperColor";
     public static final String LOWER_TITLE_COLOR_KEY = "CanvasWindow:Title:lowerColor";
@@ -292,24 +291,22 @@ public class CanvasWindow extends VComponent
                 // just ignore exception
             }
 
-            CapabilityChangedListener capabilityListener =
-                    new CapabilityChangedListener() {
+            CapabilityChangedListener capabilityListener
+                    = new CapabilityChangedListener() {
 
                         @Override
                         public void capabilityChanged(
                                 CapabilityManager manager, Integer bit) {
-                            defineCapabilities();
-                        }
+                                    defineCapabilities();
+                                }
                     };
 
             addCapabilityListener(capabilityListener);
-
 
             VBoxLayout layout = new VBoxLayout(this, VBoxLayout.Y_AXIS);
             this.setLayout(layout);
 
 //            this.setLayout(new BorderLayout() );
-
             this.add(getTitleBar());
 
             this.setBorder(new ShadowBorder(this));
@@ -322,7 +319,6 @@ public class CanvasWindow extends VComponent
 
             // TODO: this is only an EXPERIMENT
 //            this.setOpaque(false);
-
             Style style = getStyle();
 
             setBackground(style.getBaseValues().getColor(UPPER_BACKGROUND_COLOR_KEY));
@@ -384,8 +380,8 @@ public class CanvasWindow extends VComponent
                 @Override
                 public void componentMoved(ComponentEvent ce) {
                     try {
-                        java.util.List<Connection> connections =
-                                CanvasWindow.this.getMainCanvas().
+                        java.util.List<Connection> connections
+                                = CanvasWindow.this.getMainCanvas().
                                 getDataConnections().
                                 getAllWith(CanvasWindow.this);
                         //
@@ -407,6 +403,59 @@ public class CanvasWindow extends VComponent
                         }
                     } catch (Exception ex) {
                     }
+
+                }
+            });
+
+            final JScrollPane scrollPane;
+
+            ArrayList<Container> parentContainersOfCanvas
+                    = VSwingUtil.
+                    getAllParents(mainCanvas, JScrollPane.class);
+
+            if (!parentContainersOfCanvas.isEmpty()) {
+                scrollPane
+                        = (JScrollPane) parentContainersOfCanvas.get(0);
+            } else {
+                scrollPane = null;
+            }
+
+            addActionListener(new CanvasActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (e.getActionCommand().equals(MOVE_ACTION)
+                            && mainCanvas.isAutoScrollEnabled()) {
+                        if (scrollPane == null) {
+                            return;
+                        }
+
+                        if (getY() + 50
+                                > mainCanvas.getVisibleRect().y
+                                + mainCanvas.getVisibleRect().height) {
+                            scrollPane.getVerticalScrollBar().setValue(
+                                    scrollPane.getVerticalScrollBar().getValue() + 30);
+                        }
+
+                        if (getY() - 50
+                                < mainCanvas.getVisibleRect().y) {
+                            scrollPane.getVerticalScrollBar().setValue(
+                                    scrollPane.getVerticalScrollBar().getValue() - 30);
+                        }
+                        
+                        if (getX() + 50
+                                > mainCanvas.getVisibleRect().x
+                                + mainCanvas.getVisibleRect().width) {
+                            scrollPane.getHorizontalScrollBar().setValue(
+                                    scrollPane.getHorizontalScrollBar().getValue() + 30);
+                        }
+
+                        if (getX() - 50
+                                < mainCanvas.getVisibleRect().x) {
+                            scrollPane.getHorizontalScrollBar().setValue(
+                                    scrollPane.getHorizontalScrollBar().getValue() - 30);
+                        }
+                    }
                 }
             });
 
@@ -416,9 +465,7 @@ public class CanvasWindow extends VComponent
             System.out.println(">> CanvasObject: already initialized!");
         }
 
-
 //        setPainter(new BackgroundPainter(this));
-
 //        class CustomPainter implements Painter {
 //
 //            CanvasWindow window;
@@ -439,7 +486,6 @@ public class CanvasWindow extends VComponent
 //        }
 //
 //        setPainter(new CustomPainter(this));
-
         setPainterKey(CanvasWindow.BACKGROUND_PAINTER_KEY);
     }
 
@@ -536,8 +582,8 @@ public class CanvasWindow extends VComponent
 
                 if (title != null) {
 
-                    ArrayList<CanvasWindow> windows =
-                            new ArrayList<CanvasWindow>();
+                    ArrayList<CanvasWindow> windows
+                            = new ArrayList<CanvasWindow>();
 
                     if (!isSelected()) {
                         windows.add(CanvasWindow.this);
@@ -657,9 +703,9 @@ public class CanvasWindow extends VComponent
                                     + "</div></html>", VDialog.DialogType.YES_NO)
                                     == VDialog.YES;
                         }
-                        
+
                         closeIcon.deactivate();
-                        
+
                         if (close) {
                             CanvasWindow.this.close();
                         }
@@ -703,16 +749,18 @@ public class CanvasWindow extends VComponent
     }
 
     /**
-     * <p> Defines the maximum window size. No layout manager can override this
+     * <p>
+     * Defines the maximum window size. No layout manager can override this
      * definition. The purpose of this method is to prevent heap overflows
      * caused by insanely large windows. As windows use buffers to increase
      * drawing performance these values are highly important. Setting these
      * values to {@link Short#MAX_VALUE} or even worse to
      * {@link Integer#MAX_VALUE} will definitely cause heap overflows on
      * virtually any computer if windows show large content far beyond screen
-     * resolution. </p> <p> <b>Note:</b> Buffers internally use Integer arrays
-     * (RGBA, 32 bit per pixel). How to compute memory consumption of internal
-     * buffers:
+     * resolution. </p>
+     * <p>
+     * <b>Note:</b> Buffers internally use Integer arrays (RGBA, 32 bit per
+     * pixel). How to compute memory consumption of internal buffers:
      * <code>memInMB = (width*height*32)/1024/1024</code>. </p>
      */
     public void setMaxWindowSize(int maxWidth, int maxHeight) {
@@ -799,8 +847,7 @@ public class CanvasWindow extends VComponent
     /**
      * Indicates whether this canvas window has currently been moved (dragged).
      *
-     * @return
-     * <code>true</code> if the canvas window has currently been moved;
+     * @return <code>true</code> if the canvas window has currently been moved;
      * <code>false</code> otherwise
      */
     public boolean isMoved() {
@@ -905,8 +952,8 @@ public class CanvasWindow extends VComponent
     @Override
     public Shape getShape() {
 
-        boolean validShadowPainter =
-                getPainter() != null && getPainter() instanceof ShadowPainter;
+        boolean validShadowPainter
+                = getPainter() != null && getPainter() instanceof ShadowPainter;
 
         if (validShadowPainter) {
             shape = ((ShadowPainter) getPainter()).getShape();
@@ -929,8 +976,7 @@ public class CanvasWindow extends VComponent
     /**
      * Indicates whether this window is currently active.
      *
-     * @return
-     * <code>true</code> if the window is currently active;
+     * @return <code>true</code> if the window is currently active;
      * <code>false</code> otherwise
      */
     public boolean isActive() {
@@ -983,9 +1029,8 @@ public class CanvasWindow extends VComponent
     /**
      * Indicates whether this window is minimized.
      *
-     * @return
-     * <code>true</code> if this window is minimized;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if this window is minimized; <code>false</code>
+     * otherwise
      */
     public boolean isMinimized() {
         return minimized;
@@ -1003,8 +1048,7 @@ public class CanvasWindow extends VComponent
     /**
      * Indicates whether this window is currently resizing.
      *
-     * @return
-     * <code>true</code> if this window is currently resizing;
+     * @return <code>true</code> if this window is currently resizing;
      * <code>false</code> otherwise
      */
     public boolean isResizing() {
@@ -1042,8 +1086,7 @@ public class CanvasWindow extends VComponent
     /**
      * Returns the minimize value of this window.
      *
-     * @return the minimization value;
-     * <code>range: [0,1]</code>
+     * @return the minimization value; <code>range: [0,1]</code>
      */
     double getMinimizeValue() {
         return minimizeValue;
@@ -1052,8 +1095,7 @@ public class CanvasWindow extends VComponent
     /**
      * Defines the minimization value.
      *
-     * @param minimizeValue the value to set (;
-     * <code>valid range: [0,1]</code>)
+     * @param minimizeValue the value to set (; <code>valid range: [0,1]</code>)
      */
     void setMinimizationValue(double minimizeValue) {
         this.minimizeValue = minimizeValue;
@@ -1117,8 +1159,8 @@ public class CanvasWindow extends VComponent
 
     /**
      * Adds a capability changed listener to the capability manager. The
-     * listener will be removed if the
-     * <code>dispose()</code> method of this window is called.
+     * listener will be removed if the <code>dispose()</code> method of this
+     * window is called.
      *
      * @param listener the listener to add
      */
@@ -1270,9 +1312,9 @@ public class CanvasWindow extends VComponent
 
         setPreviousSize(getPreferredSize());
 
-        Animation resizeAnimation =
-                new MinimizeAnimation(this, getHeight(),
-                minHeight);
+        Animation resizeAnimation
+                = new MinimizeAnimation(this, getHeight(),
+                        minHeight);
         resizeAnimation.setDuration(0.05 / 100.0 * this.getHeight());
         this.getMainCanvas().getAnimationManager().
                 addAnimation(resizeAnimation);
@@ -1325,10 +1367,8 @@ public class CanvasWindow extends VComponent
 
             //        setPreferredSize(new Dimension(
 //                getPreviousSize().width, this.getHeight()));
-
 //        setPreferredSize(new Dimension(
 //                getSize().width, this.getHeight()));
-
             revalidate();
         } else {
             if (t != null) {
@@ -1484,8 +1524,7 @@ public class CanvasWindow extends VComponent
      * Adds a change listener to this window.
      *
      * @param l the listener to add
-     * @return
-     * <code>true</code> (as specified by {@link Collection#add})
+     * @return <code>true</code> (as specified by {@link Collection#add})
      */
     public boolean addActionListener(CanvasActionListener l) {
         return actionListeners.add(l);
@@ -1495,8 +1534,7 @@ public class CanvasWindow extends VComponent
      * Removes a change listener from this window.
      *
      * @param l the listener to remove
-     * @return
-     * <code>true</code> (as specified by {@link Collection#remove})
+     * @return <code>true</code> (as specified by {@link Collection#remove})
      */
     public boolean removeActionListener(CanvasActionListener l) {
         return actionListeners.remove(l);
@@ -1539,10 +1577,8 @@ public class CanvasWindow extends VComponent
 
         // ensure that component is always completely inside of the
         // canvas
-
         x = Math.max(0, x);
         y = Math.max(0, y);
-
 
         if (x + getWidth() > getMainCanvas().getWidth()) {
             getMainCanvas().doLayout();
@@ -1560,11 +1596,10 @@ public class CanvasWindow extends VComponent
     /**
      * Returns the canvas position of this window. This method works like
      * {@link javax.swing.JComponent#getLocation() }. However, it uses the
-     * coordinates defined by
-     * {@link CanvasWindow#setWindowLocation(int, int) } even if these
-     * coordinates are outside the canvas. This makes it easier to remember
-     * window position relative to other windows (usefull for moving window
-     * groups). This method converts window coordinates to the correct
+     * coordinates defined by {@link CanvasWindow#setWindowLocation(int, int) }
+     * even if these coordinates are outside the canvas. This makes it easier to
+     * remember window position relative to other windows (usefull for moving
+     * window groups). This method converts window coordinates to the correct
      * coordinates of the Swing component. That is, insets will be handled
      * automatically.
      *
@@ -2001,7 +2036,6 @@ class MouseControl implements MouseListener, MouseMotionListener,
             int moveX = (int) (mouseEvent.getX() - initMousePos.getX());
             int moveY = (int) (mouseEvent.getY() - initMousePos.getY());
 
-
             if (parent.getWindowLocation().x + moveX < 0) {
                 moveX = -parent.getWindowLocation().x;
             }
@@ -2030,7 +2064,6 @@ class MouseControl implements MouseListener, MouseMotionListener,
 //                    break;
 //                }
 //            }
-
             // convert to canvas coordinates
             Point locationOnCanvas = SwingUtilities.convertPoint(
                     mouseEvent.getComponent(),
@@ -2041,16 +2074,13 @@ class MouseControl implements MouseListener, MouseMotionListener,
                     mouseEvent.getPoint(), parent);
 
             //System.out.println("POINT: " + locationOnCanvas);
-
 //            child =
 //                    parent.getMainCanvas().
 //                    getComponentAt(locationOnCanvas);
-
             Area parentArea = new Area(parent.getBounds());
 //            parentArea.transform(parent.getGroupDraggingTransform());
 
             Rectangle parentBounds = parentArea.getBounds();
-
 
             for (CanvasWindow w : parent.getMainCanvas().getWindows()) {
 
@@ -2070,12 +2100,10 @@ class MouseControl implements MouseListener, MouseMotionListener,
 
                 System.out.println("DRAGGING TO GROUP");
 
-
                 Area a1 = new Area(parent.getBounds());
                 Area a2 = new Area(child.getBounds());
 
 //                a1.transform(parent.getGroupDraggingTransform());
-
                 // TODO use scaled and translated instance of a1 for intersection
                 a1.intersect(a2);
 
@@ -2086,16 +2114,11 @@ class MouseControl implements MouseListener, MouseMotionListener,
 //                } catch (NoninvertibleTransformException ex) {
 //                    Logger.getLogger(MouseControl.class.getName()).log(Level.SEVERE, null, ex);
 //                }
-
-
-
                 double distX = a1.getBounds().getWidth();
                 double distY = a1.getBounds().getHeight();
 
 //                double dist = Math.sqrt(distX*distX+distY*distY);
-
 //                int dist = Math.min(distX,distY);
-
                 boolean widthIsSmaller = distX < distY;
 
                 double scale = 1.f;
@@ -2160,14 +2183,13 @@ class WindowBackgroundPainter implements Painter, ShadowPainter, BufferedPainter
 //                int bottom = getInsets().bottom;
 //                int left = getInsets().left;
 //                int right = getInsets().right;
-
             int top = 0;
             int bottom = 0;
             int left = 0;
             int right = 0;
 
-            buffer =
-                    ImageUtils.createCompatibleImage(d.width, d.height);
+            buffer
+                    = ImageUtils.createCompatibleImage(d.width, d.height);
 
             Graphics2D g2 = buffer.createGraphics();
 
@@ -2176,23 +2198,22 @@ class WindowBackgroundPainter implements Painter, ShadowPainter, BufferedPainter
 
             Composite original = g2.getComposite();
 
-            AlphaComposite ac1 =
-                    AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                    s.getBaseValues().getFloat(
-                    CanvasWindow.TRANSPARENCY_KEY));
+            AlphaComposite ac1
+                    = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                            s.getBaseValues().getFloat(
+                                    CanvasWindow.TRANSPARENCY_KEY));
             g2.setComposite(ac1);
 
             GradientPaint paint = new GradientPaint(0, 0,
                     s.getBaseValues().getColor(
-                    CanvasWindow.UPPER_BACKGROUND_COLOR_KEY),
+                            CanvasWindow.UPPER_BACKGROUND_COLOR_KEY),
                     0, d.height,
                     s.getBaseValues().getColor(
-                    CanvasWindow.LOWER_BACKGROUND_COLOR_KEY),
+                            CanvasWindow.LOWER_BACKGROUND_COLOR_KEY),
                     false); // true means to repeat pattern
             g2.setPaint(paint);
 
             //g2.setColor(getBackground());
-
             Shape sh = new RoundRectangle2D.Double(left + 0, top + 0,
                     d.width - right - left - 1,
                     d.height - bottom - top - 1, 20, 20);
@@ -2201,9 +2222,9 @@ class WindowBackgroundPainter implements Painter, ShadowPainter, BufferedPainter
 
             Stroke oldStroke = g2.getStroke();
 
-            BasicStroke stroke =
-                    new BasicStroke(s.getBaseValues().
-                    getFloat(CanvasWindow.BORDER_THICKNESS_KEY));
+            BasicStroke stroke
+                    = new BasicStroke(s.getBaseValues().
+                            getFloat(CanvasWindow.BORDER_THICKNESS_KEY));
 
             g2.setStroke(stroke);
             g2.setColor(s.getBaseValues().getColor(
