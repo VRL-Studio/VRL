@@ -9,10 +9,8 @@ import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ArgumentType;
 import eu.mihosoft.vrl.lang.model.CodeEvent;
 import eu.mihosoft.vrl.lang.model.CodeEventType;
-import eu.mihosoft.vrl.lang.model.ForDeclaration;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.Invocation;
-import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.workflow.VFlow;
@@ -44,6 +42,8 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
     public void configureCanvas(VCanvas canvas) {
         super.configureCanvas(canvas);
 
+        canvas.setScaleBehavior(ScaleBehavior.ALWAYS);
+        canvas.setTranslateBehavior(TranslateBehavior.ALWAYS);
     }
 
     @Override
