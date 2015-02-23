@@ -430,27 +430,27 @@ public class CanvasWindow extends VComponent
                             return;
                         }
 
-                        if (getY() + 50
+                        if (getY() + mainCanvas.getAutoScrollSensitiveBorderSize()
                                 > mainCanvas.getVisibleRect().y
                                 + mainCanvas.getVisibleRect().height) {
                             scrollPane.getVerticalScrollBar().setValue(
                                     scrollPane.getVerticalScrollBar().getValue() + 30);
                         }
 
-                        if (getY() - 50
+                        if (getY() - mainCanvas.getAutoScrollSensitiveBorderSize()
                                 < mainCanvas.getVisibleRect().y) {
                             scrollPane.getVerticalScrollBar().setValue(
                                     scrollPane.getVerticalScrollBar().getValue() - 30);
                         }
                         
-                        if (getX() + 50
+                        if (getX() + mainCanvas.getAutoScrollSensitiveBorderSize()
                                 > mainCanvas.getVisibleRect().x
                                 + mainCanvas.getVisibleRect().width) {
                             scrollPane.getHorizontalScrollBar().setValue(
                                     scrollPane.getHorizontalScrollBar().getValue() + 30);
                         }
 
-                        if (getX() - 50
+                        if (getX() - mainCanvas.getAutoScrollSensitiveBorderSize()
                                 < mainCanvas.getVisibleRect().x) {
                             scrollPane.getHorizontalScrollBar().setValue(
                                     scrollPane.getHorizontalScrollBar().getValue() - 30);

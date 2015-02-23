@@ -307,6 +307,7 @@ public class Canvas extends JPanel
             new ArrayList<Disposable>();
     
     private boolean autoScrollEnabled = true;
+    private int autoScrollSensitiveBorderSize = 50;
     
 //    private JTextArea backgroundLogView;
 //    private LoggingController loggingController;
@@ -1965,6 +1966,20 @@ public class Canvas extends JPanel
      */
     public void setAutoScrollEnabled(boolean autoScrollEnabled) {
         this.autoScrollEnabled = autoScrollEnabled;
+    }
+
+    /**
+     * @return the autoScrollSensitiveBorderSize
+     */
+    public int getAutoScrollSensitiveBorderSize() {
+        return autoScrollSensitiveBorderSize;
+    }
+
+    /**
+     * @param autoScrollSensitiveBorderSize the autoScrollSensitiveBorderSize to set
+     */
+    public void setAutoScrollSensitiveBorderSize(int autoScrollSensitiveBorderSize) {
+        this.autoScrollSensitiveBorderSize = autoScrollSensitiveBorderSize;
     }
 }
 
