@@ -12,9 +12,11 @@ import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkinBase;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
+import eu.mihosoft.vrl.workflow.fx.NodeUtil;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 
 /**
@@ -37,8 +39,8 @@ public abstract class CustomFlowNodeSkin extends FXFlowNodeSkinBase {
     public void updateView() {
 
         super.updateView();
-        
-         // we don't create a custom view if no value has been defined
+
+        // we don't create a custom view if no value has been defined
         if (getModel().getValueObject().getValue() == null) {
             return;
         }
@@ -48,9 +50,9 @@ public abstract class CustomFlowNodeSkin extends FXFlowNodeSkinBase {
             if (!(getModel().getValueObject().getValue() instanceof ScopeInvocation)) {
                 return;
             }
-            
-            ScopeInvocation scopeInv = 
-                    (ScopeInvocation) getModel().getValueObject().getValue();
+
+            ScopeInvocation scopeInv
+                    = (ScopeInvocation) getModel().getValueObject().getValue();
 
             // we create custom views for control flow scopes (for, while etc.)
             if (scopeInv.getScope() instanceof ControlFlowScope) {
@@ -63,15 +65,21 @@ public abstract class CustomFlowNodeSkin extends FXFlowNodeSkinBase {
 
         Pane contentPane = getNode().getContentPane();
 
+        contentPane.setStyle("-fx-border-color: red;");
+
         // create the view
         Node view = createView();
 
         // add the view to scalable content pane
         if (view != null) {
-
-            GridPane nodePane = new GridPane();
+            HBox nodePane = new HBox();
             nodePane.setAlignment(Pos.CENTER);
             nodePane.getChildren().add(view);
+
+            if (contentPane.getParent() != null) {
+                NodeUtil.removeFromParent(contentPane);
+            }
+            nodePane.getChildren().add(contentPane);
 
             getNode().setContentPane(nodePane);
         }
