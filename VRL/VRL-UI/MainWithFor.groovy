@@ -1,0 +1,166 @@
+package my.testpackage;
+public class MainWithFor {
+
+    
+    public static void main() {
+        for(int i = 0; i <= 3; i++) {
+            println("Hello " + i);
+        }
+    }
+}
+// <editor-fold defaultstate="collapsed" desc="VRL-Data">
+/*<!VRL!><Type:VRL-Layout>
+<map>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:scope</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>220.73666667938232</width>
+      <height>169.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>599.5355224609375</width>
+      <height>315.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:op PLUS:0</string>
+    <layout>
+      <x>370.3688133172181</x>
+      <y>67.23255528369882</y>
+      <width>200.0</width>
+      <height>234.90370274982044</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:declare i</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>220.73666667938232</width>
+      <height>169.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:0</string>
+    <layout>
+      <x>244.71058585523957</x>
+      <y>36.18288818093036</y>
+      <width>296.92312967288706</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:println:0</string>
+    <layout>
+      <x>633.5809646423365</x>
+      <y>149.76066457982265</y>
+      <width>308.0338463569452</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:declare i:0</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:op PLUS</string>
+    <layout>
+      <x>370.3688133172181</x>
+      <y>67.23255528369882</y>
+      <width>200.0</width>
+      <height>234.90370274982044</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:println</string>
+    <layout>
+      <x>633.5809646423365</x>
+      <y>149.76066457982265</y>
+      <width>308.0338463569452</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>523.828369140625</width>
+      <height>222.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:scope:0</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>220.73666667938232</width>
+      <height>169.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:0</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>220.73666667938232</width>
+      <height>169.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main</string>
+    <layout>
+      <x>244.71058585523957</x>
+      <y>36.18288818093036</y>
+      <width>296.92312967288706</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:inv:declare this</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>215.8607280023523</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+</map>
+*/
+// </editor-fold>
