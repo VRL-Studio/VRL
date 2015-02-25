@@ -12,10 +12,10 @@ import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkinBase;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
+import eu.mihosoft.vrl.workflow.fx.FlowNodeWindow;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.HBox;
 
 /**
  * Custom flownode skin for leaf nodes. In addition to the basic node
@@ -37,8 +37,8 @@ public abstract class CustomFlowNodeSkin extends FXFlowNodeSkinBase {
     public void updateView() {
 
         super.updateView();
-        
-         // we don't create a custom view if no value has been defined
+
+        // we don't create a custom view if no value has been defined
         if (getModel().getValueObject().getValue() == null) {
             return;
         }
@@ -48,9 +48,9 @@ public abstract class CustomFlowNodeSkin extends FXFlowNodeSkinBase {
             if (!(getModel().getValueObject().getValue() instanceof ScopeInvocation)) {
                 return;
             }
-            
-            ScopeInvocation scopeInv = 
-                    (ScopeInvocation) getModel().getValueObject().getValue();
+
+            ScopeInvocation scopeInv
+                    = (ScopeInvocation) getModel().getValueObject().getValue();
 
             // we create custom views for control flow scopes (for, while etc.)
             if (scopeInv.getScope() instanceof ControlFlowScope) {
@@ -61,19 +61,24 @@ public abstract class CustomFlowNodeSkin extends FXFlowNodeSkinBase {
             }
         }
 
-        Pane contentPane = getNode().getContentPane();
-
         // create the view
         Node view = createView();
 
         // add the view to scalable content pane
         if (view != null) {
 
-            GridPane nodePane = new GridPane();
-            nodePane.setAlignment(Pos.CENTER);
-            nodePane.getChildren().add(view);
+            if (getModel() instanceof VFlowModel) {
+                ((FlowNodeWindow) getNode()).getParamContainer().getChildren().add(view);
+            } else {
+                // add the view to scalable content pane
 
-            getNode().setContentPane(nodePane);
+                HBox nodePane = new HBox();
+                nodePane.setAlignment(Pos.CENTER);
+                nodePane.getChildren().add(view);
+
+                getNode().setContentPane(nodePane);
+
+            }
         }
     }
 }
