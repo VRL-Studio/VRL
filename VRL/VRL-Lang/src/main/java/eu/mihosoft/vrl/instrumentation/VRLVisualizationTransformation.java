@@ -984,6 +984,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
                 forD.setFrom((Integer) ce.getValue());
 
+                if (forD.getInvocation().isPresent()) {
+                    Invocation forInv = forD.getInvocation().get();
+                    forInv.getArguments().add(Argument.constArg(Type.INT, forD.getFrom()));
+                }
+
                 stateMachine.setBoolean("for-loop:declaration", true);
             }
 
@@ -1083,6 +1088,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 }
 
                 forD.setTo((int) ce.getValue());
+                
+                if (forD.getInvocation().isPresent()) {
+                    Invocation forInv = forD.getInvocation().get();
+                    forInv.getArguments().add(Argument.constArg(Type.INT, forD.getTo()));
+                }
 
                 stateMachine.setBoolean("for-loop:compareExpression", true);
             }
