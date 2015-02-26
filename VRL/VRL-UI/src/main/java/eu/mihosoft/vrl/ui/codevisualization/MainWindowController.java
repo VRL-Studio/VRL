@@ -60,7 +60,7 @@ import eu.mihosoft.vrl.lang.model.CodeEventType;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.CommentType;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
-import eu.mihosoft.vrl.lang.model.ForDeclaration;
+import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.WhileDeclaration;
@@ -585,8 +585,8 @@ public class MainWindowController implements Initializable {
             }
 
             return "inv:" + ((Invocation) cE).getMethodName();
-        } else if (cE instanceof ForDeclaration) {
-            return "for:var=" + ((ForDeclaration) cE).getVarName();
+        } else if (cE instanceof SimpleForDeclaration) {
+            return "for:var=" + ((SimpleForDeclaration) cE).getVarName();
         } else if (cE instanceof WhileDeclaration) {
             return "while";
         } else if (cE instanceof Scope) {

@@ -11,6 +11,7 @@ import eu.mihosoft.vrl.lang.model.CodeEvent;
 import eu.mihosoft.vrl.lang.model.CodeEventType;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.workflow.VFlow;
@@ -75,11 +76,11 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
             createArgView(invocation, inputs, false);
 
-            invocation.getArguments().addListener(
-                    (ListChangeListener.Change<? extends IArgument> c) -> {
-
-                        createArgView(invocation, inputs, invocation.getArguments().size() == inputs.getChildren().size());
-                    });
+//            invocation.getArguments().addListener(
+//                    (ListChangeListener.Change<? extends IArgument> c) -> {
+//
+//                        createArgView(invocation, inputs, invocation.getArguments().size() == inputs.getChildren().size());
+//                    });
 
             return hbox;
         }
@@ -89,16 +90,19 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
     private void setFieldListener(int argIndex, TextField field, Invocation invocation, IArgument a) {
         field.textProperty().addListener((ov, oldV, newV) -> {
-            try {
+            
                 Integer intValue = Integer.parseInt(newV);
-
                 invocation.getArguments().set(argIndex,
                         Argument.constArg(Type.INT, intValue));
                 invocation.getParent().fireEvent(new CodeEvent(
                         CodeEventType.CHANGE, invocation.getParent()));
-            } catch (NumberFormatException ex) {
 
-            }
+                if (invocation instanceof ScopeInvocation) {
+                    ScopeInvocation scopeInv = (ScopeInvocation) invocation;
+                    Scope scope = scopeInv.getScope();
+                    
+                    System.out.println("SCOPE: " + scope.getName() + ", scopeInv-#args:" + scopeInv.getArguments().size());
+                }
         });
 //        EventStream<Change<String>> textEvents
 //                = EventStreams.changesOf(field.textProperty());

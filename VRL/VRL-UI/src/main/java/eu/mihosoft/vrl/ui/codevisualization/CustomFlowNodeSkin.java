@@ -69,7 +69,7 @@ public abstract class CustomFlowNodeSkin extends FXFlowNodeSkinBase {
         if (view != null) {
 
             if (getModel() instanceof VFlowModel) {
-                ((FlowNodeWindow) getNode()).getParamContainer().getChildren().add(view);
+                ((FlowNodeWindow) getNode()).getInputContainer().getChildren().add(view);
             } else {
                 // add the view to scalable content pane
 
