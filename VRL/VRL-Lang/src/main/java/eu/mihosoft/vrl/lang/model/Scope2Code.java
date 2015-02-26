@@ -378,8 +378,8 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             ScopeInvocation si = (ScopeInvocation) i;
             Scope s = si.getScope();
 
-            if (s instanceof ForDeclaration) {
-                ForDeclaration forD = (ForDeclaration) s;
+            if (s instanceof SimpleForDeclaration) {
+                SimpleForDeclaration forD = (SimpleForDeclaration) s;
                 cb.append("for(").append("int ").append(forD.getVarName()).
                         append(" = " + forD.getFrom()).
                         append("; ").append(forD.getVarName());

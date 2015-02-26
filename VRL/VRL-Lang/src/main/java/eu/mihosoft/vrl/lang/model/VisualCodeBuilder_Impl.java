@@ -111,7 +111,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public ForDeclaration invokeForLoop(ControlFlowScope scope, String varName, int from, int to, int inc) {
+    public SimpleForDeclaration invokeForLoop(ControlFlowScope scope, String varName, int from, int to, int inc) {
 
         if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
             throw new UnsupportedOperationException("Unsupported parent scope specified."
@@ -119,7 +119,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
                     + " based implementations are not supported!");
         }
 
-        ForDeclaration result = new ForDeclaration_Impl(
+        SimpleForDeclaration result = new SimpleForDeclaration_Impl(
                 idRequest.request(), scope, varName, from, to, inc);
 
         return result;

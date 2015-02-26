@@ -67,7 +67,7 @@ public interface VisualCodeBuilder {
 
     DeclarationInvocation declareVariable(Scope scope, IType type, String varName);
 
-    ForDeclaration invokeForLoop(ControlFlowScope scope, String varName, int from, int to, int inc);
+    SimpleForDeclaration invokeForLoop(ControlFlowScope scope, String varName, int from, int to, int inc);
 
     ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type, IModifiers modifiers, IExtends extendz, IExtends implementz);
     ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type);

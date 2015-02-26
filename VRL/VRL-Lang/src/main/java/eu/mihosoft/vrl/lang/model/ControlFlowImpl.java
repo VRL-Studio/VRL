@@ -96,15 +96,16 @@ class ControlFlowImpl implements ControlFlow {
 
         });
 
-        flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().addListener(new ListChangeListener<Connection>() {
+        flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().addListener(
+                new ListChangeListener<Connection>() {
 
-            @Override
-            public void onChanged(ListChangeListener.Change<? extends Connection> c) {
-                if (!currentlyUpdatingConnections) {
-                    updateInvocations();
-                }
-            }
-        });
+                    @Override
+                    public void onChanged(ListChangeListener.Change<? extends Connection> c) {
+                        if (!currentlyUpdatingConnections) {
+                            updateInvocations();
+                        }
+                    }
+                });
 
         flow.getNodes().addListener((ListChangeListener.Change<? extends VNode> c) -> {
             if (c.next()) {
@@ -125,8 +126,7 @@ class ControlFlowImpl implements ControlFlow {
         for (Invocation invocation : invocations) {
 
             if (prevInvocation != null) {
-                flow.connect(
-                        prevInvocation.getNode(), invocation.getNode(),
+                flow.connect(prevInvocation.getNode(), invocation.getNode(),
                         WorkflowUtil.CONTROL_FLOW);
             }
 
@@ -137,28 +137,21 @@ class ControlFlowImpl implements ControlFlow {
 
     private void updateInvocations() {
         currentlyUpdatingInvocations = true;
-        invocations.clear();
-//        for (Connection connection : flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections()) {
-//            
-//            Invocation senderInv = (Invocation) connection.getSender().getNode().getValueObject().getValue();
-//            Invocation receiverInv = (Invocation) connection.getReceiver().getNode().getValueObject().getValue();
-//            if (!invocations.contains(senderInv)) {
-//                invocations.add(senderInv);
-//            }
-//             if (!invocations.contains(receiverInv)) {
-//                invocations.add(receiverInv);
-//            }
-//            
-//        }
 
-        List<VNode> roots = flow.getNodes().filtered(WorkflowUtil.nodeNotConnected(WorkflowUtil.CONTROL_FLOW));
+        List<Invocation> prevInvocations = new ArrayList<>(invocations);
+
+        invocations.clear();
+
+        List<VNode> roots = flow.getNodes().filtered(WorkflowUtil.
+                nodeNotConnected(WorkflowUtil.CONTROL_FLOW));
 
         List<List<VNode>> paths = new ArrayList<>();
 
         // follow controlflow from roots to end
         roots.forEach(
                 r -> {
-                    List<VNode> path = WorkflowUtil.getPathInLayerFromRoot(r, WorkflowUtil.CONTROL_FLOW);
+                    List<VNode> path = WorkflowUtil.getPathInLayerFromRoot(
+                            r, WorkflowUtil.CONTROL_FLOW);
                     paths.add(path);
                 }
         );
@@ -174,26 +167,48 @@ class ControlFlowImpl implements ControlFlow {
         );
 
         currentlyUpdatingInvocations = false;
-        getParent().fireEvent(new CodeEvent(CodeEventType.CHANGE, parent));
+
+        // fire code changed event if invocations differ
+        boolean changed = false;
+
+        if (invocations.size() != prevInvocations.size()) {
+            return;
+        }
+
+        for (int i = 0; i < prevInvocations.size(); i++) {
+            if (!invocations.get(i).equals(prevInvocations.get(i))) {
+                changed = true;
+                break;
+            }
+        }
+
+        if (changed) {
+            getParent().fireEvent(new CodeEvent(CodeEventType.CHANGE, parent));
+        }
     }
 
     @Override
     public Invocation createInstance(String id, IType type, IArgument... args) {
-        Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), "<init>", type, true, false, true, args);
+        Invocation result = new InvocationImpl(parent, id, type.getFullClassName(),
+                "<init>", type, true, false, true, args);
         getInvocations().add(result);
         return result;
     }
 
     @Override
-    public Invocation callMethod(String id, String varName, String mName, IType returnType, boolean isVoid, IArgument... args) {
-        Invocation result = new InvocationImpl(parent, id, varName, mName, returnType, false, isVoid, false, args);
+    public Invocation callMethod(String id, String varName, String mName, IType returnType,
+            boolean isVoid, IArgument... args) {
+        Invocation result = new InvocationImpl(parent, id, varName, mName, returnType,
+                false, isVoid, false, args);
         getInvocations().add(result);
         return result;
     }
 
     @Override
-    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType, boolean isVoid, IArgument... args) {
-        Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), mName, returnType, false, isVoid, true, args);
+    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType,
+            boolean isVoid, IArgument... args) {
+        Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), mName,
+                returnType, false, isVoid, true, args);
         getInvocations().add(result);
         return result;
     }
@@ -226,12 +241,15 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public Invocation callMethod(String id, String varName, MethodDeclaration mDec, IArgument... args) {
+    public Invocation callMethod(String id, String varName,
+            MethodDeclaration mDec, IArgument... args) {
 
         if (mDec.getModifiers().getModifiers().contains(Modifier.STATIC)) {
-            return callStaticMethod(id, mDec.getClassDeclaration().getClassType(), varName, mDec.getReturnType(), true, args);
+            return callStaticMethod(id, mDec.getClassDeclaration().getClassType(),
+                    varName, mDec.getReturnType(), true, args);
         } else {
-            return callMethod(id, varName, mDec.getName(), mDec.getReturnType(), Type.VOID.equals(mDec.getReturnType()), args);
+            return callMethod(id, varName, mDec.getName(), mDec.getReturnType(),
+                    Type.VOID.equals(mDec.getReturnType()), args);
         }
 
     }
@@ -272,8 +290,8 @@ class ControlFlowImpl implements ControlFlow {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-//        AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
-        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, Argument.varArg(var), arg, Operator.ASSIGN);
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent,
+                Argument.varArg(var), arg, Operator.ASSIGN);
 
         getInvocations().add(invocation);
 
@@ -288,8 +306,8 @@ class ControlFlowImpl implements ControlFlow {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-//        AssignmentInvocationImpl invocation = new AssignmentInvocationImpl(parent, var, arg);
-        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, Argument.varArg(var), arg, Operator.ASSIGN);
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent,
+                Argument.varArg(var), arg, Operator.ASSIGN);
 
         getInvocations().add(invocation);
 
@@ -304,8 +322,8 @@ class ControlFlowImpl implements ControlFlow {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-//        AssignmentInvocationImpl result = new AssignmentInvocationImpl(parent, var, Argument.invArg(invocation));
-        BinaryOperatorInvocation result = new BinaryOperatorInvocationImpl(parent, Argument.varArg(var), Argument.invArg(invocation), Operator.ASSIGN);
+        BinaryOperatorInvocation result = new BinaryOperatorInvocationImpl(parent,
+                Argument.varArg(var), Argument.invArg(invocation), Operator.ASSIGN);
 
         getInvocations().add(result);
 
@@ -338,8 +356,10 @@ class ControlFlowImpl implements ControlFlow {
 //        return invocation;
 //    }
     @Override
-    public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg, IArgument rightArg, Operator operator) {
-        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent, leftArg, rightArg, operator);
+    public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg,
+            IArgument rightArg, Operator operator) {
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent,
+                leftArg, rightArg, operator);
 
         getInvocations().add(invocation);
 

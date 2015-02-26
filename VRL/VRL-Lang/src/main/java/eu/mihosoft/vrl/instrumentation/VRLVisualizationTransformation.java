@@ -51,7 +51,7 @@ package eu.mihosoft.vrl.instrumentation;
 
 import com.google.common.base.Objects;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
-import eu.mihosoft.vrl.lang.model.ForDeclaration_Impl;
+import eu.mihosoft.vrl.lang.model.SimpleForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.CommentImpl;
 import eu.mihosoft.vrl.lang.model.UIBinding;
@@ -165,7 +165,7 @@ public class VRLVisualizationTransformation implements ASTTransformation {
         // apply transformation for each class in the specified source unit
         for (ClassNode clsNode : sourceUnit.getAST().getClasses()) {
 
-            System.err.println("CLS: " + clsNode.getName());
+//            System.err.println("CLS: " + clsNode.getName());
 
             transformation.visit(clsNode, sourceUnit);
 
@@ -179,19 +179,19 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 //            clsNode.visitContents(visitor);
 
             //scopes.get(clsNode.getName()).add(visitor.getRootScope());
-            for (MethodNode m : clsNode.getAllDeclaredMethods()) {
-                System.out.println("method: " + m.getName());
-            }
+//            for (MethodNode m : clsNode.getAllDeclaredMethods()) {
+//                System.out.println("method: " + m.getName());
+//            }
         }
 
         /*
          //
          */
-        for (String clazz : scopes.keySet()) {
-            for (Scope s : scopes.get(clazz)) {
-                System.out.println(s.toString());
-            }
-        }
+//        for (String clazz : scopes.keySet()) {
+//            for (Scope s : scopes.get(clazz)) {
+//                System.out.println(s.toString());
+//            }
+//        }
 
         UIBinding.scopes.putAll(scopes);
 
@@ -246,7 +246,7 @@ final class StateMachine {
 
     public <T> List<T> addToList(String name, T element) {
 
-        System.out.println("add-to-list: " + name + ", " + element);
+//        System.out.println("add-to-list: " + name + ", " + element);
 
         Object obj = stateStack.peek().get(name);
 
@@ -371,11 +371,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             result = vIdStack.pop();
 
             if (generator.getIds().contains(result)) {
-                System.err.println(">> requestId(): Id already defined: " + result);
+//                System.err.println(">> requestId(): Id already defined: " + result);
                 result = generator.newId();
             } else {
                 generator.addId(result);
-                System.out.println(">> USING ID: " + result);
+//                System.out.println(">> USING ID: " + result);
             }
         } else {
             result = generator.newId();
@@ -387,7 +387,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     @Override
     public void visitClass(ClassNode s) {
 
-        System.out.println("CLASS: " + s.getName());
+//        System.out.println("CLASS: " + s.getName());
 
 //        currentScope = codeBuilder.createScope(currentScope, ScopeType.CLASS, s.getName(), new Object[0]);
         currentScope = codeBuilder.declareClass((CompilationUnitDeclaration) currentScope,
@@ -409,7 +409,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     @Override
     public void visitMethod(MethodNode s) {
 
-        System.out.println("m: " + s.getName() + ", parentscope: " + currentScope.getName() + ": " + currentScope.getType());
+//        System.out.println("m: " + s.getName() + ", parentscope: " + currentScope.getName() + ": " + currentScope.getType());
 
         if (currentScope instanceof ClassDeclaration) {
 
@@ -635,8 +635,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         stateMachine.push("if-statement", true);
 
-        System.out.println(" --> IF-STATEMENT: " + s.getBooleanExpression());
-
         if (s.getBooleanExpression().getExpression() == null) {
             throwErrorMessage("if-statement: must contain boolean"
                     + " expression!", s.getBooleanExpression());
@@ -700,8 +698,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             return;
         }
 
-        System.out.println(" --> CONSTRUCTOR: " + s.getType());
-
         super.visitConstructorCallExpression(s);
 
         ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
@@ -719,7 +715,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             System.out.println("DECL-add-inv: " + invocation);
         }
 
-        System.out.println("put val: " + s + " : " + invocation);
         returnVariables.put(s, invocation);
 
         // TODO range
@@ -736,8 +731,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         if (returnVariables.containsKey(s)) {
             return;
         }
-
-        System.out.println(" --> METHOD: " + s.getMethodAsString());
 
         super.visitStaticMethodCallExpression(s);
 
@@ -756,7 +749,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             throwErrorMessage("Method can only be invoked inside ControlFlowScopes!", s);
         }
 
-        System.out.println("RET-TYPE: " + returnType);
 
         Invocation invocation = codeBuilder.invokeStaticMethod(
                 (ControlFlowScope) currentScope,
@@ -769,8 +761,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         if (stateMachine.getBoolean("variable-declaration")) {
 
             stateMachine.addToList("variable-declaration:assignment-invocations", invocation);
-
-            System.out.println("DECL-add-inv: " + invocation);
 
         }
 
@@ -788,7 +778,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             return;
         }
 
-        System.out.println(" --> METHOD: " + s.getMethodAsString());
 
         super.visitMethodCallExpression(s);
 
@@ -808,9 +797,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
             if (ce.getType().getName().equals(VSource.class.getName())) {
                 isIdCall = true;
-                System.out.println(">> VSource: push");
+
                 for (IArgument arg : arguments) {
-                    System.out.println(" -->" + arg.toString());
 
                     // TODO is this still in use? 18.02.2014
                     vIdStack.push(arg.toString());
@@ -829,8 +817,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         if (!isIdCall) {
             if (objectName != null) {
 
-                System.out.println("RET-TYPE: " + returnType);
-
                 Invocation invocation = codeBuilder.invokeMethod(
                         (ControlFlowScope) currentScope, objectName,
                         s.getMethod().getText(),
@@ -841,8 +827,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 if (stateMachine.getBoolean("variable-declaration")) {
 
                     stateMachine.addToList("variable-declaration:assignment-invocations", invocation);
-
-                    System.out.println("DECL-add-inv: " + invocation);
 
                 }
 
@@ -951,12 +935,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     @Override
     public void visitDeclarationExpression(DeclarationExpression s) {
-        System.out.println(" --> DECLARATION: " + s.getVariableExpression());
 
-        if (currentScope instanceof ForDeclaration_Impl
+        if (currentScope instanceof SimpleForDeclaration_Impl
                 && !stateMachine.getBoolean("for-loop:declaration")) {
 
-            ForDeclaration_Impl forD = (ForDeclaration_Impl) currentScope;
+            SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) currentScope;
 
             if (!stateMachine.getBoolean("for-loop:declaration")) {
 
@@ -984,11 +967,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
                 forD.setFrom((Integer) ce.getValue());
 
-                if (forD.getInvocation().isPresent()) {
-                    Invocation forInv = forD.getInvocation().get();
-                    forInv.getArguments().add(Argument.constArg(Type.INT, forD.getFrom()));
-                }
-
                 stateMachine.setBoolean("for-loop:declaration", true);
             }
 
@@ -1006,7 +984,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //            stateMachine.setEntity("variable-declaration:declaration-invocation", declInv);
 
 //            Variable variable = declInv.getDeclaredVariable();
-            System.out.println("decl: " + declInv);
+//            System.out.println("decl: " + declInv);
 
 //            if (s.getRightExpression() != null) {
 //
@@ -1050,7 +1028,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 && !stateMachine.getBoolean("for-loop:compareExpression")
                 && !stateMachine.getBoolean("for-loop:incExpression")) {
 
-            ForDeclaration_Impl forD = (ForDeclaration_Impl) currentScope;
+            SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) currentScope;
 
             if (stateMachine.getBoolean("for-loop:declaration")
                     && !stateMachine.getBoolean("for-loop:compareExpression")) {
@@ -1088,11 +1066,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 }
 
                 forD.setTo((int) ce.getValue());
-                
-                if (forD.getInvocation().isPresent()) {
-                    Invocation forInv = forD.getInvocation().get();
-                    forInv.getArguments().add(Argument.constArg(Type.INT, forD.getTo()));
-                }
 
                 stateMachine.setBoolean("for-loop:compareExpression", true);
             }
@@ -1101,7 +1074,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 && stateMachine.getBoolean("for-loop:compareExpression")
                 && !stateMachine.getBoolean("for-loop:incExpression")) {
 
-            ForDeclaration_Impl forD = (ForDeclaration_Impl) currentScope;
+            SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) currentScope;
 
             if (!"+=".equals(s.getOperation().getText())
                     && !"-=".equals(s.getOperation().getText())) {
@@ -1174,11 +1147,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
                     setCodeRange(invocation, s);
 
-                    System.out.println("AS-ARG: " + stateMachine.getBoolean("convert-argument") + " " + invocation);
                     returnVariables.put(s, invocation);
                 }
-            } else {
-                System.out.println("containsRet: " + returnVariables.get(s));
             }
         }
 
@@ -1196,7 +1166,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         if (stateMachine.getBoolean("for-loop")) {
 
-            ForDeclaration_Impl forD = (ForDeclaration_Impl) currentScope;
+            SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) currentScope;
 
             if ("++".equals(s.getOperation().getText())) {
                 forD.setInc(1);
@@ -1322,8 +1292,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     private IArgument convertExpressionToArgument(Expression e) {
 
         stateMachine.push("convert-argument", true);
-
-        System.out.println("convert-arg: " + e.getText());
 
         IArgument result = null;
 
@@ -1468,16 +1436,16 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 astNode.getLineNumber() - 1, astNode.getColumnNumber() - 1,
                 astNode.getLastLineNumber() - 1, astNode.getLastColumnNumber() - 1,
                 codeReader));
-
-        System.out.println("range: " + codeEntity.getRange());
-
-        CodeReader reader = new CodeReader(codeReader);
-        try {
-
-            System.out.println("----code:----\n" + reader.read(codeEntity.getRange()) + "\n-------------");
-        } catch (IOException ex) {
-            Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
-        }
+//
+//        System.out.println("range: " + codeEntity.getRange());
+//
+//        CodeReader reader = new CodeReader(codeReader);
+//        try {
+//
+//            System.out.println("----code:----\n" + reader.read(codeEntity.getRange()) + "\n-------------");
+//        } catch (IOException ex) {
+//            Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
+//        }
 
     }
 
@@ -1494,13 +1462,13 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         scope.setRange(new CodeRange(new CodeLocation(0, codeReader),
                 codeReader));
 
-        System.out.println("range: " + scope.getRange());
+//        System.out.println("range: " + scope.getRange());
 
     }
 
     private void addCommentsToScope(Scope scope, List<Comment> comments) {
         for (Comment comment : comments) {
-            System.out.println("comment: " + comment.getRange());
+//            System.out.println("comment: " + comment.getRange());
             if (scope.getRange().contains(comment.getRange())) {
                 ((CommentImpl) comment).setParent(scope);
                 scope.getComments().add(comment);

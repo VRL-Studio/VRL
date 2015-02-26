@@ -49,9 +49,6 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.WhileDeclaration;
-import eu.mihosoft.vrl.lang.model.Invocation;
 import javafx.collections.ListChangeListener;
 
 /**

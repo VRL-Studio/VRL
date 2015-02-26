@@ -49,15 +49,17 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
+import javafx.collections.ListChangeListener;
+
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
+public class SimpleForDeclaration_Impl extends ScopeImpl implements SimpleForDeclaration {
 
     private final ForDeclarationMetaData metadata;
 
-    public ForDeclaration_Impl(String id, Scope parent, String varName, int from, int to, int inc) {
+    public SimpleForDeclaration_Impl(String id, Scope parent, String varName, int from, int to, int inc) {
         super(id, parent, ScopeType.FOR, ScopeType.FOR.name(), new ForDeclarationMetaData(varName, from, to, inc));
 
         boolean forceIncrement = from < to;
@@ -104,13 +106,26 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
 //            createParamVariable(Type.INT, varName);
 //        }
 //    }
+    @Override
+    public void defineParameters(Invocation i) {
+        i.getArguments().clear();
+
+        i.getArguments().addAll(Argument.constArg(Type.INT, 0),Argument.constArg(Type.INT, 0),Argument.constArg(Type.INT, 0));
+
+        i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
+            System.out.println("change: " + c);
+            i.getArguments().get(0).getConstant().ifPresent(constVal->metadata.setFrom((Integer)constVal));
+            i.getArguments().get(1).getConstant().ifPresent(constVal->metadata.setTo((Integer)constVal));
+            i.getArguments().get(2).getConstant().ifPresent(constVal->metadata.setInc((Integer)constVal));
+        });
+    }
 
     public final void setVarName(String varName, ICodeRange codeRange) {
         metadata.setVarName(varName);
         if (varName != null && !varName.isEmpty()) {
-            DeclarationInvocationImpl inv = 
-                    (DeclarationInvocationImpl) getControlFlow().
-                            declareVariable(getId(), Type.INT, varName);
+            DeclarationInvocationImpl inv
+                    = (DeclarationInvocationImpl) getControlFlow().
+                    declareVariable(getId(), Type.INT, varName);
             inv.setTextRenderingEnabled(false);
             inv.setRange(codeRange);
         }
@@ -121,6 +136,8 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
      */
     public void setFrom(int from) {
         metadata.setFrom(from);
+        getInvocation().ifPresent(i -> i.getArguments().
+                set(0, Argument.constArg(Type.INT, getFrom())));
     }
 
     /**
@@ -128,6 +145,8 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
      */
     public void setTo(int to) {
         metadata.setTo(to);
+        getInvocation().ifPresent(i -> i.getArguments().
+                set(1, Argument.constArg(Type.INT, getTo())));
     }
 
     /**
@@ -135,6 +154,8 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
      */
     public void setInc(int inc) {
         metadata.setInc(inc);
+        getInvocation().ifPresent(i -> i.getArguments().
+                set(2, Argument.constArg(Type.INT, getInc())));
     }
 
 }
