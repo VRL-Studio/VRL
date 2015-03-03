@@ -70,7 +70,7 @@ class InvocationImpl implements Invocation {
     private final String methodName;
     private final ObservableList<IArgument> arguments = FXCollections.observableArrayList();
     private final boolean constructor;
-    private final boolean Void;
+    private boolean Void;
 //    private String code;
     private final Scope parent;
     private boolean Static;
@@ -85,13 +85,13 @@ class InvocationImpl implements Invocation {
             Scope parent,
             String id,
             String varName, String methodName, IType returnType,
-            boolean constructor, boolean isVoid, boolean isStatic, IArgument... args) {
+            boolean constructor, boolean isStatic, IArgument... args) {
         this.parent = parent;
         this.id = id;
         this.varName = varName;
         this.methodName = methodName;
         this.constructor = constructor;
-        this.Void = isVoid;
+        this.Void = Type.VOID.equals(returnType);
 
         this.Static = isStatic;
         this.returnType = returnType;
@@ -335,6 +335,8 @@ class InvocationImpl implements Invocation {
      * @param returnType the returnType to set
      */
     protected void setReturnType(IType returnType) {
+        
+        this.Void = Type.VOID.equals(returnType);
 
         List<Connector> connectorsToRemove
                 = node.getOutputs().filtered(o -> o.getType().equals(WorkflowUtil.DATA_FLOW));

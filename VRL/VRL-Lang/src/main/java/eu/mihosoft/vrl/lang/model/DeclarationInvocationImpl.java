@@ -10,13 +10,13 @@ public class DeclarationInvocationImpl extends InvocationImpl implements Declara
     private final Variable declaredVariable;
     
     public DeclarationInvocationImpl(Scope parent, IType type, String varName) {
-        super(parent, "", null, "declare " + varName, type, false, false, true, new IArgument[0]);
+        super(parent, "", null, "declare " + varName, type, false, true, new IArgument[0]);
         this.declaredVariable = parent.createVariable(type, varName);
         getNode().setTitle("declare " + varName);
     }
     
     public DeclarationInvocationImpl(Scope parent, Variable declaredVariable) {
-        super(parent, "", null, "declare " + declaredVariable.getName(), declaredVariable.getType(), false, false, true, new IArgument[0]);
+        super(parent, "", null, "declare " + declaredVariable.getName(), declaredVariable.getType(), false, true, new IArgument[0]);
         this.declaredVariable = declaredVariable;
         getNode().setTitle("declare " + declaredVariable.getName());
     }

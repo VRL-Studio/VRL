@@ -13,7 +13,7 @@ public class BreakInvocationImpl extends InvocationImpl implements BreakInvocati
 
     public BreakInvocationImpl(Scope parent) {
 
-        super(parent, "", null, "break", Type.VOID, false, false, true);
+        super(parent, "", null, "break", Type.VOID, false, true);
 
         getNode().setTitle("break");
     }

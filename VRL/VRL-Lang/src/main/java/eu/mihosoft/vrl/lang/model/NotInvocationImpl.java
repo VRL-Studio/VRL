@@ -14,7 +14,7 @@ public class NotInvocationImpl extends InvocationImpl implements NotInvocation {
 
         public NotInvocationImpl(Scope parent, IArgument arg) {
 
-        super(parent, "", null, "not", Type.BOOLEAN, false, false, true, arg);
+        super(parent, "", null, "not", Type.BOOLEAN, false, true, arg);
     }
     
     @Override

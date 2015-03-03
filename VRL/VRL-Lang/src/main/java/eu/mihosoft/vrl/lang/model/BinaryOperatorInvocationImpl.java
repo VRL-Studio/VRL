@@ -17,7 +17,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
 
     public BinaryOperatorInvocationImpl(Scope parent, IArgument leftArg, IArgument rightArg, Operator operator) {
 
-        super(parent, "", null, "op " + operator, Type.VOID, false, false, true, leftArg, rightArg);
+        super(parent, "", null, "op " + operator, Type.VOID, false, true, leftArg, rightArg);
 
         this.operator = operator;
 

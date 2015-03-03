@@ -755,7 +755,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 convertStaticMethodOwnerType(s),
                 s.getMethod(),
                 returnType,
-                returnType.equals(Type.VOID),
                 arguments);
 
         if (stateMachine.getBoolean("variable-declaration")) {
@@ -821,7 +820,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                         (ControlFlowScope) currentScope, objectName,
                         s.getMethod().getText(),
                         returnType,
-                        returnType.equals(Type.VOID),
                         arguments);
 
                 if (stateMachine.getBoolean("variable-declaration")) {
@@ -840,7 +838,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                        returnValueName, arguments).setCode(getCode(s));
                 Invocation invocation = codeBuilder.invokeStaticMethod(
                         (ControlFlowScope) currentScope, new Type("System.out"),
-                        s.getMethod().getText(), Type.VOID, returnType.equals(Type.VOID),
+                        s.getMethod().getText(), Type.VOID,
                         arguments);
                 setCodeRange(invocation, s);
                 addCommentsToScope(currentScope, comments);

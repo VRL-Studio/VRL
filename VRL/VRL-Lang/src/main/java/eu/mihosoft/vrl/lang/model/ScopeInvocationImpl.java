@@ -65,7 +65,7 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
     private ObservableCodeImpl observableCode;
 
     public ScopeInvocationImpl(Scope s) {
-        super(s, "", null, "scope", Type.VOID, false, true, true);
+        super(s, "", null, "scope", Type.VOID, false, true);
         this.scope = s;
 
         VNode node = scope.getNode();

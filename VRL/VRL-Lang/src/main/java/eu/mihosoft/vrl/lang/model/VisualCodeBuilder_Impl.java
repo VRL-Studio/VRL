@@ -149,19 +149,19 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args) {
+    public Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, IArgument... args) {
         String id = idRequest.request();
 
-        Invocation result = scope.getControlFlow().callMethod(id, varName, mName, returnType, isVoid, args);
+        Invocation result = scope.getControlFlow().callMethod(id, varName, mName, returnType, args);
 
         return result;
     }
 
     @Override
-    public Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args) {
+    public Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, IArgument... args) {
         String id = idRequest.request();
 
-        Invocation result = scope.getControlFlow().callStaticMethod(id, type, mName, returnType, isVoid, args);
+        Invocation result = scope.getControlFlow().callStaticMethod(id, type, mName, returnType, args);
 
         return result;
     }

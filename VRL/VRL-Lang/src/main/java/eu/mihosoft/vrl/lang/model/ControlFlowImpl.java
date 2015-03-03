@@ -190,25 +190,25 @@ class ControlFlowImpl implements ControlFlow {
     @Override
     public Invocation createInstance(String id, IType type, IArgument... args) {
         Invocation result = new InvocationImpl(parent, id, type.getFullClassName(),
-                "<init>", type, true, false, true, args);
+                "<init>", type, true, true, args);
         getInvocations().add(result);
         return result;
     }
 
     @Override
     public Invocation callMethod(String id, String varName, String mName, IType returnType,
-            boolean isVoid, IArgument... args) {
+            IArgument... args) {
         Invocation result = new InvocationImpl(parent, id, varName, mName, returnType,
-                false, isVoid, false, args);
+                false, false, args);
         getInvocations().add(result);
         return result;
     }
 
     @Override
     public Invocation callStaticMethod(String id, IType type, String mName, IType returnType,
-            boolean isVoid, IArgument... args) {
+            IArgument... args) {
         Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), mName,
-                returnType, false, isVoid, true, args);
+                returnType, false, true, args);
         getInvocations().add(result);
         return result;
     }
@@ -246,10 +246,9 @@ class ControlFlowImpl implements ControlFlow {
 
         if (mDec.getModifiers().getModifiers().contains(Modifier.STATIC)) {
             return callStaticMethod(id, mDec.getClassDeclaration().getClassType(),
-                    varName, mDec.getReturnType(), true, args);
+                    varName, mDec.getReturnType(), args);
         } else {
-            return callMethod(id, varName, mDec.getName(), mDec.getReturnType(),
-                    Type.VOID.equals(mDec.getReturnType()), args);
+            return callMethod(id, varName, mDec.getName(), mDec.getReturnType(), args);
         }
 
     }

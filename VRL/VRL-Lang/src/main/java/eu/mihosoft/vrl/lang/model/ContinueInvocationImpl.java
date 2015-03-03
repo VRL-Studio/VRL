@@ -13,7 +13,7 @@ public class ContinueInvocationImpl extends InvocationImpl implements ContinueIn
 
     public ContinueInvocationImpl(Scope parent) {
 
-        super(parent, "", null, "continue", Type.VOID, false, false, true);
+        super(parent, "", null, "continue", Type.VOID, false, true);
 
         getNode().setTitle("continue");
     }

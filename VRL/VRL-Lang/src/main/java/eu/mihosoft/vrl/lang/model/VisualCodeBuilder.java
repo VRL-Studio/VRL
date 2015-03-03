@@ -84,9 +84,9 @@ public interface VisualCodeBuilder {
 
     ContinueInvocation invokeContinue(ControlFlowScope scope);
 
-    Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, boolean isVoid, IArgument... args);
+    Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, IArgument... args);
 
-    Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, boolean isVoid, IArgument... args);
+    Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, IArgument... args);
 
     Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, IArgument... args);
 
