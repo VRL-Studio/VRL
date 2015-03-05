@@ -90,7 +90,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
     private void setFieldListener(int argIndex, TextField field, Invocation invocation, IArgument a) {
         field.textProperty().addListener((ov, oldV, newV) -> {
-            
+                try {
                 Integer intValue = Integer.parseInt(newV);
                 invocation.getArguments().set(argIndex,
                         Argument.constArg(Type.INT, intValue));
@@ -102,6 +102,9 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                     Scope scope = scopeInv.getScope();
                     
                     System.out.println("SCOPE: " + scope.getName() + ", scopeInv-#args:" + scopeInv.getArguments().size());
+                }
+                } catch(Exception ex) {
+                    
                 }
         });
 //        EventStream<Change<String>> textEvents
