@@ -90,4 +90,6 @@ public interface ICodeLocation extends Comparable<ICodeLocation>{
     public void setSource(Reader source);
     
     public ICodeLocation distance(ICodeLocation other);
+    
+    public CodeLineColumnMapper getCodeLineColumnMapper();
 }
