@@ -166,7 +166,6 @@ public class VRLVisualizationTransformation implements ASTTransformation {
         for (ClassNode clsNode : sourceUnit.getAST().getClasses()) {
 
 //            System.err.println("CLS: " + clsNode.getName());
-
             transformation.visit(clsNode, sourceUnit);
 
 //            if (!scopes.containsKey(clsNode.getName())) {
@@ -192,7 +191,6 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 //                System.out.println(s.toString());
 //            }
 //        }
-
         UIBinding.scopes.putAll(scopes);
 
     }
@@ -247,7 +245,6 @@ final class StateMachine {
     public <T> List<T> addToList(String name, T element) {
 
 //        System.out.println("add-to-list: " + name + ", " + element);
-
         Object obj = stateStack.peek().get(name);
 
         if (obj == null) {
@@ -388,7 +385,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     public void visitClass(ClassNode s) {
 
 //        System.out.println("CLASS: " + s.getName());
-
 //        currentScope = codeBuilder.createScope(currentScope, ScopeType.CLASS, s.getName(), new Object[0]);
         currentScope = codeBuilder.declareClass((CompilationUnitDeclaration) currentScope,
                 new Type(s.getName(), false),
@@ -410,7 +406,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     public void visitMethod(MethodNode s) {
 
 //        System.out.println("m: " + s.getName() + ", parentscope: " + currentScope.getName() + ": " + currentScope.getType());
-
         if (currentScope instanceof ClassDeclaration) {
 
             currentScope = codeBuilder.declareMethod(
@@ -749,7 +744,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             throwErrorMessage("Method can only be invoked inside ControlFlowScopes!", s);
         }
 
-
         Invocation invocation = codeBuilder.invokeStaticMethod(
                 (ControlFlowScope) currentScope,
                 convertStaticMethodOwnerType(s),
@@ -776,7 +770,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         if (returnVariables.containsKey(s)) {
             return;
         }
-
 
         super.visitMethodCallExpression(s);
 
@@ -983,7 +976,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
 //            Variable variable = declInv.getDeclaredVariable();
 //            System.out.println("decl: " + declInv);
-
 //            if (s.getRightExpression() != null) {
 //
 //                if (s.getRightExpression() instanceof ConstantExpression) {
@@ -1313,31 +1305,70 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //            Variable v = VariableFactory.createObjectVariable(currentScope, new Type("vrl.internal.PROPERTYEXPR", true), "don't know");
 //            result = Argument.varArg(v);
 
-            throw new UnsupportedOperationException("vrl.internal.PROPERTYEXPR not supported");
+            PropertyExpression pe = (PropertyExpression) e;
+            String objName = pe.getObjectExpression().getText();
+            String typeName = pe.getType().getName();
 
+            Variable objVar = currentScope.getVariable(objName);
+
+            if (objVar == null) {
+
+                if (objName.split("\\.").length > 0) {
+                    throwErrorMessage("Referencing class object properties is "
+                            + "currently not supported. "
+                            + "Use accessor methods instead.", pe.getProperty());
+                } else {
+                    throwErrorMessage("Variable '" + objName + "' does not"
+                            + " exist in the current scope.", pe.getProperty());
+                }
+
+                result = null;
+            } else {
+
+                Scope objScope = objVar.getScope();
+                String propVarName = pe.getProperty().getText();
+                Variable propVar = objScope.getVariable(propVarName);
+
+                if (propVar == null) {
+                    throwErrorMessage("Field '" + objName + "." + propVarName
+                            + "' cannot be referenced. "
+                            + "Referencing properties is currently not supported. "
+                            + "Use accessor methods instead.", pe.getProperty());
+                }
+
+                if (Objects.equal(objName, typeName)) {
+                    System.out.println("pe-static: " + objName);
+                } else {
+                    System.out.println("pe: " + objName + ", type: " + typeName + ", " + propVar);
+                }
+
+                result = Argument.varArg(propVar);
+            }
+
+//            throw new UnsupportedOperationException("vrl.internal.PROPERTYEXPR not supported");
         } else if (e instanceof MethodCallExpression) {
-            System.out.println("TYPE: " + e);
+//            System.out.println("TYPE: " + e);
             visitMethodCallExpression((MethodCallExpression) e);
             result = Argument.invArg(returnVariables.get((MethodCallExpression) e));
         } else if (e instanceof StaticMethodCallExpression) {
-            System.out.println("TYPE: " + e);
+//            System.out.println("TYPE: " + e);
             visitStaticMethodCallExpression((StaticMethodCallExpression) e);
             result = Argument.invArg(returnVariables.get((StaticMethodCallExpression) e));
         } else if (e instanceof ConstructorCallExpression) {
-            System.out.println("TYPE: " + e);
-            System.out.println("CONSTRUCTOR: " + returnVariables.get((ConstructorCallExpression) e));
+//            System.out.println("TYPE: " + e);
+//            System.out.println("CONSTRUCTOR: " + returnVariables.get((ConstructorCallExpression) e));
             visitConstructorCallExpression((ConstructorCallExpression) e);
             result = Argument.invArg(returnVariables.get((ConstructorCallExpression) e));
         } else if (e instanceof BinaryExpression) {
-            System.out.println("TYPE: " + e);
-            System.out.println("BINARY-EXPR: " + returnVariables.get((BinaryExpression) e));
-            System.out.println("ARG: " + stateMachine.getBoolean("convert-argument"));
+//            System.out.println("TYPE: " + e);
+//            System.out.println("BINARY-EXPR: " + returnVariables.get((BinaryExpression) e));
+//            System.out.println("ARG: " + stateMachine.getBoolean("convert-argument"));
             visitBinaryExpression((BinaryExpression) e);
             result = Argument.invArg(returnVariables.get((BinaryExpression) e));
         } else if (e instanceof NotExpression) {
-            System.out.println("TYPE: " + e);
-            System.out.println("NOT-EXPR: " + returnVariables.get((NotExpression) e));
-            System.out.println("ARG: " + stateMachine.getBoolean("convert-argument"));
+//            System.out.println("TYPE: " + e);
+//            System.out.println("NOT-EXPR: " + returnVariables.get((NotExpression) e));
+//            System.out.println("ARG: " + stateMachine.getBoolean("convert-argument"));
             visitNotExpression((NotExpression) e);
             result = Argument.invArg(returnVariables.get((NotExpression) e));
         } else // if nothing worked so far, we assumen null arg
@@ -1461,7 +1492,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 codeReader));
 
 //        System.out.println("range: " + scope.getRange());
-
     }
 
     private void addCommentsToScope(Scope scope, List<Comment> comments) {
