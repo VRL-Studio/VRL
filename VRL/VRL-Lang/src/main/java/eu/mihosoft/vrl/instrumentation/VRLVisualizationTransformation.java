@@ -50,6 +50,8 @@
 package eu.mihosoft.vrl.instrumentation;
 
 import com.google.common.base.Objects;
+
+import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.Variable;
@@ -83,6 +85,7 @@ import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -95,6 +98,7 @@ import java.util.Optional;
 import java.util.Stack;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 import org.codehaus.groovy.control.SourceUnit;
@@ -294,6 +298,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     private IdGenerator generator = FlowFactory.newIdGenerator();
     private List<Comment> comments = new ArrayList<>();
     private Reader codeReader;
+    private CodeLineColumnMapper mapper;
 
     private Map<Expression, Invocation> returnVariables
             = new HashMap<>();
@@ -320,6 +325,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             }
 
             codeReader = sourceUnit.getSource().getReader();
+            mapper = new CodeLineColumnMapper();
+            mapper.init(codeReader);
 
         } catch (IOException ex) {
             Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
@@ -1464,7 +1471,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         codeEntity.setRange(new CodeRange(
                 astNode.getLineNumber() - 1, astNode.getColumnNumber() - 1,
                 astNode.getLastLineNumber() - 1, astNode.getLastColumnNumber() - 1,
-                codeReader));
+                mapper));
 //
 //        System.out.println("range: " + codeEntity.getRange());
 //
@@ -1483,13 +1490,15 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         return new CodeRange(
                 astNode.getLineNumber() - 1, astNode.getColumnNumber() - 1,
                 astNode.getLastLineNumber() - 1, astNode.getLastColumnNumber() - 1,
-                codeReader);
+                mapper);
     }
 
     private void setRootCodeRange(Scope scope, Reader codeReader) {
 
-        scope.setRange(new CodeRange(new CodeLocation(0, codeReader),
-                codeReader));
+    	CodeLineColumnMapper mapper = new CodeLineColumnMapper();
+    	mapper.init(codeReader);
+        scope.setRange(new CodeRange(new CodeLocation(0, mapper),
+                mapper));
 
 //        System.out.println("range: " + scope.getRange());
     }

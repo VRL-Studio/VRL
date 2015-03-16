@@ -52,6 +52,7 @@ package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.ICodeReader;
 import eu.mihosoft.vrl.lang.CodeReader;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -60,6 +61,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -73,226 +75,234 @@ import org.junit.Test;
  */
 public class CodeRangeTest {
 
-    @BeforeClass
-    public static void setUpClass() {
-        //
-    }
+	@BeforeClass
+	public static void setUpClass() {
+		//
+	}
 
-    @AfterClass
-    public static void tearDownClass() {
-    }
+	@AfterClass
+	public static void tearDownClass() {
+	}
 
-    @Before
-    public void setUp() {
-    }
+	@Before
+	public void setUp() {
+	}
 
-    @After
-    public void tearDown() {
-    }
+	@After
+	public void tearDown() {
+	}
 
-    @Test
-    public void testValidReadRangeTest() {
+	@Test
+	public void testValidReadRangeTest() {
 
-        // note:
-        // - newline (\n, \r\n, \r) is treatet as single char!
-        // - [ and ] are used to define text ranges
-        //
-        String code = String.join("\n",
-                "class A {}",
-                "",
-                "// comment 1",
-                "// comment 2",
-                "",
-                "class B {}", "");
+		// note:
+		// - newline (\n, \r\n, \r) is treatet as single char!
+		// - [ and ] are used to define text ranges
+		//
+		String code = String.join("\n", "class A {}", "", "// comment 1",
+				"// comment 2", "", "class B {}", "");
 
-        // 0:c[las]s A {}\n
-        parameterizedValidReadRangeTestCharIndex(code, 1, 4, "las");
+		// 0:c[las]s A {}\n
+		parameterizedValidReadRangeTestCharIndex(code, 1, 4, "las");
 
-        // note:
-        // - newline (\n, \r\n, \r) is treatet as single char!
-        // - [ and ] are used to define text ranges
-        //
-        // 0:class A {}\n
-        // 1:\n
-        // 2:/[/ comment 1\n
-        // 3:// comment 2\n
-        // 4:\n
-        // 5:class B] {}\n
-        parameterizedValidReadRangeTestLineAndColumn(code, 2, 1, 5, 7, "/ comment 1\n// comment 2\n\nclass B");
+		// note:
+		// - newline (\n, \r\n, \r) is treatet as single char!
+		// - [ and ] are used to define text ranges
+		//
+		// 0:class A {}\n
+		// 1:\n
+		// 2:/[/ comment 1\n
+		// 3:// comment 2\n
+		// 4:\n
+		// 5:class B] {}\n
+		parameterizedValidReadRangeTestLineAndColumn(code, 2, 1, 5, 7,
+				"/ comment 1\n// comment 2\n\nclass B");
 
-        parameterizedValidReadRangeTestLineAndColumn(code, 0, 0, 0, 0, "");
-    }
+		parameterizedValidReadRangeTestLineAndColumn(code, 0, 0, 0, 0, "");
+	}
 
-    @Test
-    public void rangeIntersectionTest() {
-        // note:
-        // - newline (\n, \r\n, \r) is treatet as single char!
-        // - [ and ] are used to define text ranges
-        //
-        String code = String.join("\n",
-                "class A {}",
-                "",
-                "// comment 1",
-                "// comment 2",
-                "",
-                "class B {}", "");
+	@Test
+	public void rangeIntersectionTest() {
+		// note:
+		// - newline (\n, \r\n, \r) is treatet as single char!
+		// - [ and ] are used to define text ranges
+		//
+		String code = String.join("\n", "class A {}", "", "// comment 1",
+				"// comment 2", "", "class B {}", "");
 
-        // intersection of 
-        // a):
-        //
-        // 0:[A {}\n
-        // 1:\n
-        // 2:// comment 1\n
-        // 3:// comment 2\n
-        // 4:\n
-        // 5:class]
-        //
-        // and b):
-        // 2:// co[mment 1\n
-        // 3:// comment 2\n
-        // 4:\n
-        // 5:class B {}]
-        Reader codeReader = new StringReader(code);
+		// intersection of
+		// a):
+		//
+		// 0:[A {}\n
+		// 1:\n
+		// 2:// comment 1\n
+		// 3:// comment 2\n
+		// 4:\n
+		// 5:class]
+		//
+		// and b):
+		// 2:// co[mment 1\n
+		// 3:// comment 2\n
+		// 4:\n
+		// 5:class B {}]
+		CodeLineColumnMapper locator = new CodeLineColumnMapper();
+		Reader codeReader = new StringReader(code);
+		locator.init(codeReader);
 
-        ICodeRange a = new CodeRange(6, 44, codeReader);
-        ICodeRange b = new CodeRange(2, 5, 5, 10, codeReader);
+		ICodeRange a = new CodeRange(6, 44, locator);
+		ICodeRange b = new CodeRange(2, 5, 5, 10, locator);
 
-        String expectedCode = "mment 1\n// comment 2\n\nclass";
+		String expectedCode = "mment 1\n// comment 2\n\nclass";
 
-        ICodeRange intersection = a.intersection(b);
+		ICodeRange intersection = a.intersection(b);
 
-        ICodeReader intersectionReader = new CodeReader(codeReader);
+		ICodeReader intersectionReader = new CodeReader(codeReader);
 
-        boolean readSuccess = false;
-        String intersectionCode = "";
-        try {
-            intersectionCode = intersectionReader.read(intersection);
-            readSuccess = true;
-        } catch (IOException ex) {
-            Logger.getLogger(CodeRangeTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+		boolean readSuccess = false;
+		String intersectionCode = "";
+		try {
+			intersectionCode = intersectionReader.read(intersection);
+			readSuccess = true;
+		} catch (IOException ex) {
+			Logger.getLogger(CodeRangeTest.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
 
-        Assert.assertTrue("Reader must not throw an exception!", readSuccess);
+		Assert.assertTrue("Reader must not throw an exception!", readSuccess);
 
-        Assert.assertTrue("Intersection [" + expectedCode.replace("\n", "\\n") + "] expected, got [" + intersectionCode.replace("\n", "\\n") + "]", expectedCode.equals(intersectionCode));
-    }
+		Assert.assertTrue("Intersection [" + expectedCode.replace("\n", "\\n")
+				+ "] expected, got [" + intersectionCode.replace("\n", "\\n")
+				+ "]", expectedCode.equals(intersectionCode));
+	}
 
-    @Test
-    public void resetReaderTest() {
+	@Test
+	public void resetReaderTest() {
 
-        // note:
-        // - newline (\n, \r\n, \r) is treatet as single char!
-        // - [ and ] are used to define text ranges
-        //
-        String code = String.join("\n",
-                "class A {}",
-                "",
-                "// comment 1",
-                "// comment 2",
-                "",
-                "class B {}", "");
+		// note:
+		// - newline (\n, \r\n, \r) is treatet as single char!
+		// - [ and ] are used to define text ranges
+		//
+		String code = String.join("\n", "class A {}", "", "// comment 1",
+				"// comment 2", "", "class B {}", "");
+		CodeLineColumnMapper locator = new CodeLineColumnMapper();
+		Reader reader = new StringReader(code);
+		locator.init(reader);
 
-        Reader reader = new StringReader(code);
+		ICodeRange range = new CodeRange(1, 4, locator);
 
-        ICodeRange range = new CodeRange(1, 4, reader);
+		ICodeReader codeReader = new CodeReader(reader);
 
-        ICodeReader codeReader = new CodeReader(reader);
+		boolean readSuccess = false;
 
-        boolean readSuccess = false;
+		String firstResult = "";
+		String secondResult = "";
 
-        String firstResult = "";
-        String secondResult = "";
+		try {
+			firstResult = codeReader.read(range);
+			secondResult = codeReader.read(range);
+			readSuccess = true;
+		} catch (IOException ex) {
+			Logger.getLogger(CodeRangeTest.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
 
-        try {
-            firstResult = codeReader.read(range);
-            secondResult = codeReader.read(range);
-            readSuccess = true;
-        } catch (IOException ex) {
-            Logger.getLogger(CodeRangeTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+		Assert.assertTrue("Reader must not throw an exception", readSuccess);
+		Assert.assertTrue("First result must not be empty",
+				!firstResult.isEmpty());
+		Assert.assertTrue("Second result must not be empty",
+				!secondResult.isEmpty());
+		Assert.assertTrue("First result must be equal to second result: ["
+				+ firstResult + "] == [" + secondResult + "]",
+				firstResult.equals(secondResult));
+	}
 
-        Assert.assertTrue("Reader must not throw an exception", readSuccess);
-        Assert.assertTrue("First result must not be empty", !firstResult.isEmpty());
-        Assert.assertTrue("Second result must not be empty", !secondResult.isEmpty());
-        Assert.assertTrue("First result must be equal to second result: [" + firstResult + "] == [" + secondResult + "]", firstResult.equals(secondResult));
-    }
+	@Test
+	public void rangeOrderTest() {
 
-    @Test
-    public void rangeOrderTest() {
+		List<ICodeRange> ranges = new ArrayList<>();
 
-        List<ICodeRange> ranges = new ArrayList<>();
+		for (int i = 0; i < 100; i++) {
+			ranges.add(new CodeRange(i, i * (int) (10 * Math.random())));
+		}
 
-        for (int i = 0; i < 100; i++) {
-            ranges.add(new CodeRange(i, i * (int)(10*Math.random())));
-        }
+		Collections.shuffle(ranges);
 
-        Collections.shuffle(ranges);
+		boolean shuffled = false;
 
-        boolean shuffled = false;
+		for (int i = 0; i < 100; i++) {
+			if (ranges.get(i).getBegin().getCharIndex() != i) {
+				shuffled = true;
+				break;
+			}
+		}
 
-        for (int i = 0; i < 100; i++) {
-            if (ranges.get(i).getBegin().getCharIndex() != i) {
-                shuffled = true;
-                break;
-            }
-        }
+		Assert.assertTrue("Range list must be shuffled", shuffled);
 
-        Assert.assertTrue("Range list must be shuffled", shuffled);
+		Collections.sort(ranges);
 
-        Collections.sort(ranges);
+		boolean sorted = true;
 
-        boolean sorted = true;
+		for (int i = 0; i < 100; i++) {
+			if (ranges.get(i).getBegin().getCharIndex() != i) {
+				sorted = false;
+				break;
+			}
+		}
 
-        for (int i = 0; i < 100; i++) {
-            if (ranges.get(i).getBegin().getCharIndex() != i) {
-                sorted = false;
-                break;
-            }
-        }
-        
-        Assert.assertTrue("Range list must be sorted", sorted);
-    }
+		Assert.assertTrue("Range list must be sorted", sorted);
+	}
 
-    private void parameterizedValidReadRangeTestCharIndex(String code, int beginCharIdx, int endCharIdx, String expectedSubString) {
-        Reader codeReader = new StringReader(code);
-        ICodeRange range = new CodeRange(beginCharIdx, endCharIdx, codeReader);
+	private void parameterizedValidReadRangeTestCharIndex(String code,
+			int beginCharIdx, int endCharIdx, String expectedSubString) {
+		Reader codeReader = new StringReader(code);
+		CodeLineColumnMapper locator = new CodeLineColumnMapper();
+		locator.init(codeReader);
+		ICodeRange range = new CodeRange(beginCharIdx, endCharIdx, locator);
 
-        ICodeReader reader = new CodeReader(codeReader);
+		ICodeReader reader = new CodeReader(codeReader);
 
-        boolean successRead = false;
+		boolean successRead = false;
 
-        String rangeCode = "";
+		String rangeCode = "";
 
-        try {
-            rangeCode = reader.read(range);
-            successRead = true;
-        } catch (IOException ex) {
-            Logger.getLogger(CodeRangeTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+		try {
+			rangeCode = reader.read(range);
+			successRead = true;
+		} catch (IOException ex) {
+			Logger.getLogger(CodeRangeTest.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
 
-        Assert.assertTrue("Reader must not throw an exception", successRead);
-        Assert.assertEquals("[" + expectedSubString + "] expected, got [" + rangeCode + "]", expectedSubString, rangeCode);
-    }
+		Assert.assertTrue("Reader must not throw an exception", successRead);
+		Assert.assertEquals("[" + expectedSubString + "] expected, got ["
+				+ rangeCode + "]", expectedSubString, rangeCode);
+	}
 
-    private void parameterizedValidReadRangeTestLineAndColumn(String code, int beginL, int beginC, int endL, int endC, String expectedSubString) {
-        Reader codeReader = new StringReader(code);
-        ICodeRange range = new CodeRange(beginL, beginC, endL, endC, codeReader);
+	private void parameterizedValidReadRangeTestLineAndColumn(String code,
+			int beginL, int beginC, int endL, int endC, String expectedSubString) {
+		Reader codeReader = new StringReader(code);
+		CodeLineColumnMapper locator = new CodeLineColumnMapper();
+		locator.init(codeReader);
+		ICodeRange range = new CodeRange(beginL, beginC, endL, endC, locator);
 
-        ICodeReader reader = new CodeReader(codeReader);
+		ICodeReader reader = new CodeReader(codeReader);
 
-        boolean successRead = false;
+		boolean successRead = false;
 
-        String rangeCode = "";
+		String rangeCode = "";
 
-        try {
-            rangeCode = reader.read(range);
-            successRead = true;
-        } catch (IOException ex) {
-            Logger.getLogger(CodeRangeTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+		try {
+			rangeCode = reader.read(range);
+			successRead = true;
+		} catch (IOException ex) {
+			Logger.getLogger(CodeRangeTest.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
 
-        Assert.assertTrue("Reader must not throw an exception", successRead);
-        Assert.assertTrue("[" + rangeCode.replace("\n", "\\n") + "] expected, got [" + expectedSubString.replace("\n", "\\n") + "]", expectedSubString.equals(rangeCode));
-    }
+		Assert.assertTrue("Reader must not throw an exception", successRead);
+		Assert.assertTrue("[" + rangeCode.replace("\n", "\\n")
+				+ "] expected, got [" + expectedSubString.replace("\n", "\\n")
+				+ "]", expectedSubString.equals(rangeCode));
+	}
 
 }

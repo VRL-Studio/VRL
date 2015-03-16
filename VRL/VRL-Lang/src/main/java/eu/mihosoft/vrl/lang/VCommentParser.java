@@ -50,6 +50,7 @@
 
 package eu.mihosoft.vrl.lang;
 
+import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.CommentImpl;
 import eu.mihosoft.vrl.lang.model.CommentType;
@@ -58,6 +59,7 @@ import eu.mihosoft.vrl.lang.commentparser.antlr.CommentsLexer;
 import eu.mihosoft.vrl.lang.commentparser.antlr.CommentsListener;
 import eu.mihosoft.vrl.lang.commentparser.antlr.CommentsParser;
 import eu.mihosoft.vrl.lang.model.CodeRange;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -66,9 +68,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.antlr.v4.runtime.ANTLRInputStream;
+
 import static org.antlr.v4.runtime.ANTLRInputStream.INITIAL_BUFFER_SIZE;
 import static org.antlr.v4.runtime.ANTLRInputStream.READ_BUFFER_SIZE;
+
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
@@ -127,6 +132,8 @@ public class VCommentParser {
         final List<Comment> result = new ArrayList<>();
 
         final Reader reader = is;
+        final CodeLineColumnMapper mapper = new CodeLineColumnMapper();
+        mapper.init(reader);
 
         final ANTLRInputStream input;
 
@@ -146,7 +153,7 @@ public class VCommentParser {
             public void enterPlainMultiLineComment(CommentsParser.PlainMultiLineCommentContext ctx) {
                 String commentText = parser.getTokenStream().getText(ctx.start, ctx.stop);
 
-                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), reader);
+                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), mapper);
 
                 Comment comment = new CommentImpl(
                         "COMMENT:UNDEFINED",
@@ -166,7 +173,7 @@ public class VCommentParser {
             public void enterPlainLineComment(CommentsParser.PlainLineCommentContext ctx) {
                 String commentText = parser.getTokenStream().getText(ctx.start, ctx.stop);
 
-                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), reader);
+                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), mapper);
 
                 Comment comment = new CommentImpl(
                         "COMMENT:UNDEFINED",
@@ -186,7 +193,7 @@ public class VCommentParser {
             public void enterJavadocComment(CommentsParser.JavadocCommentContext ctx) {
                 String commentText = parser.getTokenStream().getText(ctx.start, ctx.stop);
 
-                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), reader);
+                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), mapper);
 
                 Comment comment = new CommentImpl(
                         "COMMENT:UNDEFINED",
@@ -206,7 +213,7 @@ public class VCommentParser {
             public void enterVrlLineComment(CommentsParser.VrlLineCommentContext ctx) {
                 String commentText = parser.getTokenStream().getText(ctx.start, ctx.stop);
 
-                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), reader);
+                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), mapper);
 
                 Comment comment = new CommentImpl(
                         "COMMENT:UNDEFINED",
@@ -226,7 +233,7 @@ public class VCommentParser {
             public void enterVrlMultiLineComment(CommentsParser.VrlMultiLineCommentContext ctx) {
                 String commentText = parser.getTokenStream().getText(ctx.start, ctx.stop);
 
-                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), reader);
+                CodeRange range = new CodeRange(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), mapper);
 
                 Comment comment = new CommentImpl(
                         "COMMENT:UNDEFINED",

@@ -50,12 +50,8 @@
 
 package eu.mihosoft.vrl.lang.model;
 
-import java.io.IOException;
-import java.io.LineNumberReader;
 import java.io.Reader;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -63,163 +59,145 @@ import java.util.logging.Logger;
  */
 public final class CodeRange implements ICodeRange {
 
-    private final ICodeLocation begin;
-    private final ICodeLocation end;
-    private Reader source;
+	private final ICodeLocation begin;
+	private final ICodeLocation end;
+	private Reader source;
 
-    public CodeRange(ICodeRange other) {
-        this.begin = other.getBegin();
-        this.end = other.getEnd();
-        this.source = other.getSource();
-    }
+	public CodeRange(ICodeRange other) {
+		this.begin = other.getBegin();
+		this.end = other.getEnd();
+		this.source = other.getSource();
+	}
 
-    public CodeRange(ICodeLocation begin, Reader code) {
-        this.begin = begin;
+	public CodeRange(ICodeLocation begin, CodeLineColumnMapper code) {
+		this.begin = begin;
+		this.end = new CodeLocation(code.getEnd().getOffset(), code);
 
-        ICodeLocation result = new CodeLocation(-1, code);
+	}
 
-        try {
-//            if (code.markSupported()) {
-//                code.mark(Integer.MAX_VALUE);
-//            }
-            LineNumberReader lR = new LineNumberReader(code);
-            String line;
-            int numChars = 0;
-            while ((line = lR.readLine()) != null) {
-                numChars += line.length() + 1; // TODO: newline on windows is two;
-            }
-            result = new CodeLocation(numChars-1, code);
-        } catch (IOException ex) {
-            Logger.getLogger(CodeRange.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            try {
-                code.reset();
-            } catch (IOException ex) {
-                Logger.getLogger(CodeRange.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
+	@Override
+	public String toString() {
+		return "[begin: " + this.begin + ", end: " + this.end + ")";
+	}
 
-        this.end = result;
+	/**
+	 * Constructor.
+	 *
+	 * @param begin
+	 *            beginning index, inclusive
+	 * @param end
+	 *            ending index, exclusive
+	 */
+	public CodeRange(ICodeLocation begin, ICodeLocation end) {
+		this.begin = begin;
+		this.end = end;
+	}
 
-    }
-    
-    @Override
-    public String toString() {
-        return "[begin: " + this.begin + ", end: " + this.end + ")";
-    }
+	public CodeRange(int begin, int end) {
+		this.begin = new CodeLocation(begin);
+		this.end = new CodeLocation(end);
+	}
 
-    /**
-     * Constructor.
-     *
-     * @param begin beginning index, inclusive
-     * @param end ending index, exclusive
-     */
-    public CodeRange(ICodeLocation begin, ICodeLocation end) {
-        this.begin = begin;
-        this.end = end;
-    }
+	public CodeRange(int begin, int end, CodeLineColumnMapper loc) {
+		this.begin = new CodeLocation(begin, loc);
+		this.end = new CodeLocation(end, loc);
+		this.setSource(loc.getSource());
+	}
 
-    public CodeRange(int begin, int end) {
-        this.begin = new CodeLocation(begin);
-        this.end = new CodeLocation(end);
-    }
+	public CodeRange(int lineBegin, int columnBegin, int lineEnd,
+			int columnEnd, CodeLineColumnMapper loc) {
+		this.begin = new CodeLocation(lineBegin, columnBegin, loc);
+		this.end = new CodeLocation(lineEnd, columnEnd, loc);
+		this.setSource(loc.getSource());
+	}
 
-    public CodeRange(int begin, int end, Reader code) {
-        this.begin = new CodeLocation(begin, code);
-        this.end = new CodeLocation(end, code);
-        this.setSource(code);
-    }
+	@Override
+	public ICodeLocation getBegin() {
+		return this.begin;
+	}
 
-    public CodeRange(int lineBegin, int columnBegin, int lineEnd, int columnEnd, Reader code) {
-        this.begin = new CodeLocation(lineBegin, columnBegin, code);
-        this.end = new CodeLocation(lineEnd, columnEnd, code);
-        this.setSource(code);
-    }
+	@Override
+	public ICodeLocation getEnd() {
+		return this.end;
+	}
 
-    @Override
-    public ICodeLocation getBegin() {
-        return this.begin;
-    }
+	@Override
+	public int compareTo(ICodeRange o) {
+		return this.getBegin().compareTo(o.getBegin());
+	}
 
-    @Override
-    public ICodeLocation getEnd() {
-        return this.end;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final CodeRange other = (CodeRange) obj;
+		if (!Objects.equals(this.begin, other.begin)) {
+			return false;
+		}
+		if (!Objects.equals(this.end, other.end)) {
+			return false;
+		}
+		return true;
+	}
 
-    @Override
-    public int compareTo(ICodeRange o) {
-        return this.getBegin().compareTo(o.getBegin());
-    }
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 29 * hash + Objects.hashCode(this.begin);
+		hash = 29 * hash + Objects.hashCode(this.end);
+		return hash;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final CodeRange other = (CodeRange) obj;
-        if (!Objects.equals(this.begin, other.begin)) {
-            return false;
-        }
-        if (!Objects.equals(this.end, other.end)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public boolean contains(ICodeRange o) {
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 29 * hash + Objects.hashCode(this.begin);
-        hash = 29 * hash + Objects.hashCode(this.end);
-        return hash;
-    }
+		boolean weContainTheBeginningIndex = this.getBegin().compareTo(
+				o.getBegin()) < 1;
+		boolean weContainTheEndingIndex = this.getEnd().compareTo(o.getEnd()) > -1;
 
-    @Override
-    public boolean contains(ICodeRange o) {
+		return weContainTheBeginningIndex && weContainTheEndingIndex;
+	}
 
-        boolean weContainTheBeginningIndex = this.getBegin().compareTo(o.getBegin()) < 1;
-        boolean weContainTheEndingIndex = this.getEnd().compareTo(o.getEnd()) > -1;
+	@Override
+	public boolean contains(ICodeLocation o) {
+		boolean weContainTheBeginningIndex = this.getBegin().compareTo(o) < 1;
+		boolean weContainTheEndingIndex = this.getEnd().compareTo(o) > -1;
 
-        return weContainTheBeginningIndex && weContainTheEndingIndex;
-    }
+		return weContainTheBeginningIndex && weContainTheEndingIndex;
+	}
 
-    @Override
-    public boolean contains(ICodeLocation o) {
-        boolean weContainTheBeginningIndex = this.getBegin().compareTo(o) < 1;
-        boolean weContainTheEndingIndex = this.getEnd().compareTo(o) > -1;
+	@Override
+	public ICodeRange intersection(ICodeRange o) {
+		return new CodeRange(Math.max(this.getBegin().getCharIndex(), o
+				.getBegin().getCharIndex()), Math.min(this.getEnd()
+				.getCharIndex(), o.getEnd().getCharIndex()),
+				this.begin.getCodeLineColumnMapper());
+	}
 
-        return weContainTheBeginningIndex && weContainTheEndingIndex;
-    }
+	@Override
+	public int size() {
+		return getEnd().getCharIndex() - getBegin().getCharIndex();
+	}
 
-    @Override
-    public ICodeRange intersection(ICodeRange o) {
-        return new CodeRange(Math.max(this.getBegin().getCharIndex(), o.getBegin().getCharIndex()),
-                Math.min(this.getEnd().getCharIndex(), o.getEnd().getCharIndex()), getSource());
-    }
+	@Override
+	public boolean isEmpty() {
+		return size() <= 0;
+	}
 
-    @Override
-    public int size() {
-        return getEnd().getCharIndex() - getBegin().getCharIndex();
-    }
+	@Override
+	public void setSource(Reader r) {
+		this.begin.setSource(r);
+		this.end.setSource(r);
+		this.source = r;
+	}
 
-    @Override
-    public boolean isEmpty() {
-        return size() <= 0;
-    }
-
-    @Override
-    public void setSource(Reader r) {
-        this.begin.setSource(r);
-        this.end.setSource(r);
-        this.source = r;
-    }
-
-    @Override
-    public Reader getSource() {
-        return this.source;
-    }
+	@Override
+	public Reader getSource() {
+		return this.source;
+	}
 
 }
