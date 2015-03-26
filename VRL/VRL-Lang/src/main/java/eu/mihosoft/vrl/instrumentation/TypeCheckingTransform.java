@@ -71,12 +71,14 @@ public class TypeCheckingTransform extends StaticTypesTransformation {
         if (node instanceof ClassNode) {
             ClassNode classNode = (ClassNode) node;
             visitor = newVisitor(source, classNode);
+            visitor.setCompilationUnit(compilationUnit);
             addTypeCheckingExtensions(visitor, extensions);
             visitor.initialize();
             visitor.visitClass(classNode);
         } else if (node instanceof MethodNode) {
             MethodNode methodNode = (MethodNode) node;
             visitor = newVisitor(source, methodNode.getDeclaringClass());
+            visitor.setCompilationUnit(compilationUnit);
             addTypeCheckingExtensions(visitor, extensions);
             visitor.setMethodsToBeVisited(Collections.singleton(methodNode));
             visitor.initialize();
