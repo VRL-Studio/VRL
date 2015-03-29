@@ -7,6 +7,7 @@ package eu.mihosoft.vrl.instrumentation;
 
 import static org.junit.Assert.*;
 
+import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -33,7 +34,11 @@ public class InstrumentationTest {
 
 	@Test
 	public void testMethodCallInstrumentation() {
-		new GroovyShell().parse(
+		CompilerConfiguration conf = new CompilerConfiguration();
+		conf.addCompilationCustomizers(new ASTTransformationCustomizer(
+				new VRLInstrumentationTransformation()));
+		GroovyShell shell = new GroovyShell(conf);
+		shell.parse(
 				"@eu.mihosoft.vrl.instrumentation.VRLInstrumentation\n"
 						+ "public class A {\n"
 						+ "    public boolean m3(int i) {return i < 3;}\n"
@@ -46,6 +51,7 @@ public class InstrumentationTest {
 						+ "    public static void main(String[] args) {"
 						+ "        A a = new A();" + "        a.m2(1);"
 						+ "    }" + "}").run();
+		assertEquals(1, conf.getCompilationCustomizers().size());
 	}
 
 	@Test
@@ -57,15 +63,18 @@ public class InstrumentationTest {
 				.getClassLoader(), conf);
 
 		UIBinding.scopes.clear();
-		String classX = "package x.y.z; public class X {\npublic int foo(){ return 0; } }";
+		String classX = "package x.y.z;\npublic class X {\n  public int foo(){\n    return 0;\n  }\n}\n";
 		loader.parseClass(classX);
 
-		// get scopes in CompilationUnit -> Class X, get scopes within class X -> Method foo
-		Collection<Scope> scopes = UIBinding.scopes.values().iterator().next().get(0).getScopes().get(0).getScopes();
-		
-		// but foo is added twice
-        assertEquals(2, scopes.size());
-        Iterator<Scope> iter = scopes.iterator();
-        assertTrue(iter.next() == iter.next());
+		// get scopes in CompilationUnit -> class X
+		// then get scopes within class X -> should be a list containing only
+		// method foo()
+		Collection<Scope> scopes = UIBinding.scopes.values().iterator().next()
+				.get(0).getScopes().get(0).getScopes();
+
+		// assert foo is only added once
+		assertEquals(1, scopes.size());
+		Iterator<Scope> iter = scopes.iterator();
+		assertEquals("foo", iter.next().getName());
 	}
 }

@@ -104,8 +104,6 @@ class ClassDeclaration_Impl extends ScopeImpl implements ClassDeclaration {
         MethodDeclaration methodScope = new MethodDeclaration_Impl(id, methodName, this, returnType, modifiers, params);
 
         metadata.getDeclaredMethods().add(methodScope);
-        
-        addScope(methodScope);
 
         return methodScope;
     }
