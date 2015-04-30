@@ -334,7 +334,7 @@ public abstract class Connector extends VComponent
     }
 
     @Override
-    public void mouseReleased(MouseEvent mouseEvent) {
+    public void mouseReleased(MouseEvent mouseEvent) {        
     }
 
     @Override
@@ -359,6 +359,7 @@ public abstract class Connector extends VComponent
 //        {
 //            this.getParentObject().unselectConnectors();
 //        }
+        
         this.setSelected(false);
     }
 
@@ -419,7 +420,7 @@ public abstract class Connector extends VComponent
         this.draggingObj = dragginObj;
         draggingObj.setSourceObject(this);
         this.add(draggingObj);
-        draggingObj.setLocation(0, 0);
+//        draggingObj.setLocation(0, 0);
 
         draggingObj.setSize((int) this.getSize().getWidth() - 1,
                 (int) this.getSize().getHeight() - 1);

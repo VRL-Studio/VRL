@@ -49,10 +49,8 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
-import java.util.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -70,7 +68,8 @@ import java.util.List;
  * <p>
  * The transferable is always connected to it's parent and a wire is drawn from
  * the parent to it's current position.
- * </p> 
+ * </p>
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public final class Transferable extends JPanel implements
@@ -116,8 +115,8 @@ public final class Transferable extends JPanel implements
 
     /**
      * Creates a new instance of Transferable
-     * @param mainCanvas the Canvas object the Transferable object
-     * belongs to
+     *
+     * @param mainCanvas the Canvas object the Transferable object belongs to
      */
     public Transferable(Canvas mainCanvas) {
         // INIT
@@ -129,16 +128,21 @@ public final class Transferable extends JPanel implements
         setDragged(false);
 
         setOpaque(false);
+
+        setBorder(VSwingUtil.createDebugBorder());
     }
 
     @Override
     public void paintGlobal(Graphics g) {
         paintConnections(g);
+        Point absPos = getAbsPos();
+        g.drawRect((int) absPos.getX(), (int) absPos.getY(), getWidth(), getHeight());
     }
 
     /**
      * Paints the connections.
-     * @param g the Graphics context in which to paint 
+     *
+     * @param g the Graphics context in which to paint
      */
     public void paintConnections(Graphics g) {
         if (isDragged()) {
@@ -149,9 +153,9 @@ public final class Transferable extends JPanel implements
 
             Composite originalComposite = g2.getComposite();
 
-            AlphaComposite ac1 =
-                    AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                    getTransparency());
+            AlphaComposite ac1
+                    = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                            getTransparency());
             g2.setComposite(ac1);
 
             Style style = getMainCanvas().getStyle();
@@ -159,24 +163,22 @@ public final class Transferable extends JPanel implements
             float thickness = style.getBaseValues().getFloat(
                     Connection.ACTIVE_CONNECTION_THICKNESS_KEY);
 
-            BasicStroke stroke =
-                    new BasicStroke(thickness,
-                    BasicStroke.CAP_ROUND,
-                    BasicStroke.JOIN_ROUND);
+            BasicStroke stroke
+                    = new BasicStroke(thickness,
+                            BasicStroke.CAP_ROUND,
+                            BasicStroke.JOIN_ROUND);
 
             g2.setStroke(stroke);
 
             g2.setColor(style.getBaseValues().
                     getColor(Connection.ACTIVE_CONNECTION_COLOR_KEY));
 
-            Connector parentConnector = (Connector) this.getParent();
-
-            Point startLocation = parentConnector.getAbsPos();
+            Point startLocation = sourceObject.getAbsPos();
 
             int startLocationX = startLocation.x
-                    + this.getParent().getWidth() / 2;
+                    + sourceObject.getWidth() / 2;
             int startLocationY = startLocation.y
-                    + this.getParent().getHeight() / 2;
+                    + sourceObject.getHeight() / 2;
 
             Point targetLocation = this.getAbsPos();
 
@@ -200,16 +202,13 @@ public final class Transferable extends JPanel implements
 //            int yDist = Math.abs(targetLocationY - startLocationY);
 //            
 //            double dist = Math.sqrt(xDist*xDist+yDist*yDist);
-
 //            x1+=35*dist/100;
 //            x2-=35*dist/100;
-
             p.curveTo(x1, y1, x2, y2, targetLocationX, targetLocationY);
 
             g2.draw(p);
 
             g2.setComposite(originalComposite);
-
 
             // set dirty rectangle to ensure our custom repaint manager repaints
             // the corresponding canvas area correctly
@@ -231,6 +230,7 @@ public final class Transferable extends JPanel implements
 
     /**
      * Returns position relative to main canvas's upper left corner.
+     *
      * @return transferable's position
      */
     public Point getAbsPos() {
@@ -252,7 +252,7 @@ public final class Transferable extends JPanel implements
 
     @Override
     public void paintComponent(Graphics g) {
-        //want an invisible object
+        // we want an invisible object
     }
 
     /**
@@ -265,6 +265,7 @@ public final class Transferable extends JPanel implements
      * <b>Note:</b> Values with <code>x2 < x1</code> or <code>y2 < y1</code>
      * </p>
      * are allowed.
+     *
      * @param x1 first x coordinate
      * @param y1 first y coordinate
      * @param x2 second x coordinate
@@ -288,27 +289,28 @@ public final class Transferable extends JPanel implements
 
     /**
      * <p>
-     * If the transferable is currently dragged this method will
-     * check whether the user
+     * If the transferable is currently dragged this method will check whether
+     * the user
      * <ul>
-     *  <li> wants to create a connection by dragging the transferable object of
-     *           one connector to another.</li>
-     *   <li>wants to remove an existing connection by dragging the transferable 
-     *           to a clear position of the canvas and releasing it (can only be
-     *           performed  on an input connector)</li>
-     *  <li> wants to drag the transferable of an existing connection to another
-     *            connector  (can only be performed on an input connector) </li>
+     * <li> wants to create a connection by dragging the transferable object of
+     * one connector to another.</li>
+     * <li>wants to remove an existing connection by dragging the transferable
+     * to a clear position of the canvas and releasing it (can only be performed
+     * on an input connector)</li>
+     * <li> wants to drag the transferable of an existing connection to another
+     * connector (can only be performed on an input connector) </li>
      * </ul>
      * </p>
+     *
      * @param ev the mouse event
      */
     @Override
     public void mouseDragged(MouseEvent ev) {
         if (getMainCanvas().getCapabilityManager().
                 isCapable(CanvasCapabilities.ALLOW_CONNECT)) {
-            Point newLocation =
-                    new Point(this.getX() + ev.getX() - this.getWidth() / 2,
-                    this.getY() + ev.getY() - this.getHeight() / 2);
+            Point newLocation
+                    = new Point(this.getX() + ev.getX() - this.getWidth() / 2,
+                            this.getY() + ev.getY() - this.getHeight() / 2);
 
             draggingAllowed = true;
 
@@ -319,8 +321,8 @@ public final class Transferable extends JPanel implements
                         alreadyConnected(this.getSourceObject());
 
                 if (weAreInput && weAreConnected) {
-                    Connection connection =
-                            getSourceObject().
+                    Connection connection
+                            = getSourceObject().
                             getConnections().getAllWith(sourceObject).get(0);
 
                     draggingAllowed = connection.isVisible();
@@ -329,18 +331,18 @@ public final class Transferable extends JPanel implements
                 if (draggingAllowed) {
                     getMainCanvas().setActualDraggable(this);
                     setDragged(true);
-//                    System.out.println(">> Transferable: Dragging!");
+                    System.out.println(">> Transferable: Dragging!");
                 } else {
-//                    System.out.println(">> Transferable: Dragging not allowed!");
+                    System.out.println(">> Transferable: Dragging not allowed!");
                 }
 
                 if (draggingAllowed && weAreConnected && weAreInput) {
 
-//                    System.out.println(">> Transferable: "
-//                            + "Connection remove gesture performed!");
+                    System.out.println(">> Transferable: "
+                            + "Connection remove gesture performed!");
 
-                    Connection connection =
-                            getSourceObject().
+                    Connection connection
+                            = getSourceObject().
                             getConnections().getAllWith(sourceObject).get(0);
 
                     Connector sourceConnector = this.getSourceObject();
@@ -351,7 +353,6 @@ public final class Transferable extends JPanel implements
                     sourceConnector.connectionRemoved(connection);
                     targetConnector.connectionRemoved(connection);
 
-
                     List<Connection> connections;
 
                     connections = getSourceObject().getConnections().
@@ -359,45 +360,15 @@ public final class Transferable extends JPanel implements
 
                     // Inputs occure only once. Thus only one connection
                     // may exist.
-                    assert (connections.size() == 1);
-
+                    //
                     // retrieve corresponding output
                     Connector c = connections.get(0).getSender();
 
                     // remove the connection
                     getSourceObject().getConnections().
                             removeAllWith(sourceConnector);
-
-                    // transferable gets new parent
-                    Point oldParentLocation = sourceConnector.getAbsPos();
-
-                    sourceConnector.remove(sourceConnector.getTransferable());
-                    c.remove(c.getTransferable());
-                    c.setTransferable(this);
-
-                    // we need the absolute position of the swing component
-                    // and not the absolute position as defined in Connector
-                    Point newParentLocation =
-                            getMainCanvas().getAbsPos(c, false);
-
-                    // compute new location (now relative to the new parent)
-                    int offsetX = oldParentLocation.x - newParentLocation.x;
-                    int offsetY = oldParentLocation.y - newParentLocation.y;
-
-                    newLocation.x += offsetX;
-                    newLocation.y += offsetY;
-
-                    this.setLocation(newLocation);
-
-                    c.repaint();
-
-                    // the source connector, i.e. the parent connector needs
-                    // a new transferable because we have detached this one and
-                    // attached it to the output connector (connection sender)
-                    Transferable draggingObj =
-                            new Transferable(this.getMainCanvas());
-
-                    sourceConnector.setTransferable(draggingObj);
+                    
+                    setSourceObject(c);
                 }
             }
 
@@ -410,22 +381,11 @@ public final class Transferable extends JPanel implements
 //                    getParentObject().isVisible()) {
 //                mainCanvas.repaint();
 //            }
-
             if (draggingAllowed) {
                 this.setLocation(newLocation);
                 checkConnection();
             }
 
-            // repaint canvas, otherwise the connection won't be shown
-            // we tried to aviod this call before
-            // this is new because we try to get rid of the custom repaint
-            // manager
-//            mainCanvas.repaint();
-
-            // we keep the custom repaint manager and even improved it,
-            // this has several reasons, but speeed is the most important one
-            // thus, we define the dirty region manually
-            // the curresponding method is in the paintConnections() method.
         }
     }
 
@@ -458,8 +418,9 @@ public final class Transferable extends JPanel implements
     }
 
     /**
-     * If the transferable is not dragged anymore it will be placed 
-     * at the position of it's parent.
+     * If the transferable is not dragged anymore it will be placed at the
+     * position of it's parent.
+     *
      * @param mouseEvent the mouse event
      */
     @Override
@@ -479,6 +440,7 @@ public final class Transferable extends JPanel implements
 
     /**
      * If transferable has been released doConnect() will be called.
+     *
      * @param ev the event
      */
     @Override
@@ -499,8 +461,6 @@ public final class Transferable extends JPanel implements
         //
         // the previous call seems to be needless. we will still use our custom
         // repaint manager in the near future (30.05.2011).
-
-
         // unselect all connectors. this is a fix for a very old and annoying
         // bug
         if (wasDragging) {
@@ -510,19 +470,22 @@ public final class Transferable extends JPanel implements
                 c.setSelected(false);
             }
         }
+        
+        setSourceObject(getParent());
     }
 
     /**
      * Checks a connection between two connectors. Connections are valid if
      * <ul>
-     *      <li>connectors are of different type, i.e. one is an input connector
-     *              and the other is an output connector</li>
-     *      <li>the target connector, i.e. the input connector is not already
-     *              connected, as we only allow one connection per input</li>
-     *      <li>types of both typerepresentation objects are equal</li>
+     * <li>connectors are of different type, i.e. one is an input connector and
+     * the other is an output connector</li>
+     * <li>the target connector, i.e. the input connector is not already
+     * connected, as we only allow one connection per input</li>
+     * <li>types of both typerepresentation objects are equal</li>
      * </ul>
+     *
      * @return the connection to add/remove or <code>null</code> if no correct
-     *         connection mouse gesture detected
+     * connection mouse gesture detected
      * @see #doConnect()
      */
     public Connection checkConnection() {
@@ -551,10 +514,10 @@ public final class Transferable extends JPanel implements
         for (Component i : mainCanvas.getComponents()) {
 
             // check if the transferable is dropped on the component
-            boolean xRange =
-                    (posX > i.getX()) && (posX < i.getX() + i.getWidth());
-            boolean yRange =
-                    (posY > i.getY()) && (posY < i.getY() + i.getHeight());
+            boolean xRange
+                    = (posX > i.getX()) && (posX < i.getX() + i.getWidth());
+            boolean yRange
+                    = (posY > i.getY()) && (posY < i.getY() + i.getHeight());
 
             boolean contains = xRange && yRange;
 
@@ -573,41 +536,35 @@ public final class Transferable extends JPanel implements
                 setCurrentTargetConnector(obj.getSelected());
             }
 
-
             if (getCurrentTargetConnector() != null) {
                 boolean weAreOutput = getSourceObject().isOutput();
                 boolean targetIsConnected = getSourceObject().getConnections().
                         alreadyConnected(getCurrentTargetConnector());
-                boolean targetIsOutput =
-                        getCurrentTargetConnector().isOutput();
+                boolean targetIsOutput
+                        = getCurrentTargetConnector().isOutput();
                 boolean differentTargetType = weAreOutput != targetIsOutput;
 
 //                Class sourceType =
 //                        getSourceObject().getValueObject().getType();
 //                Class targetType =
 //                        getCurrentTargetConnector().getValueObject().getType();
-
-
-
                 // only establish connection if connectors type are not equal,
                 // i.e. not both are outputs and if the targetConnector is not
                 // already connected (we only allow one connection per input)
                 if (differentTargetType
                         && (!targetIsConnected || targetIsOutput)) {
 
-                    ConnectionResult connectionResult =
-                            getSourceObject().getValueObject().
+                    ConnectionResult connectionResult
+                            = getSourceObject().getValueObject().
                             compatible(getCurrentTargetConnector().
-                            getValueObject());
+                                    getValueObject());
 
-                    boolean compatibleValueType =
-                            connectionResult.getStatus()
+                    boolean compatibleValueType
+                            = connectionResult.getStatus()
                             == ConnectionStatus.VALID;
 
 //                    System.out.println("ConnectionResult: " + connectionResult.getStatus());
-
 //                    System.out.println(">> check-msg: " + connectionResult.getMessage());
-                    
                     setStatusMessage(connectionResult.getMessage());
 
                     // only continue if types of both typerepresentation objects
@@ -615,16 +572,14 @@ public final class Transferable extends JPanel implements
                     if (compatibleValueType) {
 
                         // connection valid, create it
-
                         result = getSourceObject().
                                 getConnections().getPrototype().newInstance(
-                                getSourceObject(), getCurrentTargetConnector());
+                                        getSourceObject(), getCurrentTargetConnector());
 
                         setConnectionStatus(ConnectionStatus.VALID);
                     } else {
 
                         // error: value type missmatch
-
                         getCurrentTargetConnector().setActiveColor(
                                 (Color) mainCanvas.getStyle().getBaseValues().
                                 get("Connector:errorColor"));
@@ -638,7 +593,6 @@ public final class Transferable extends JPanel implements
                             && !sourceObject.equals(getCurrentTargetConnector())) {
 
                         // error: two outputs
-
                         setConnectionStatus(
                                 ConnectionStatus.ERROR_BOTH_ARE_OUTPUTS);
                     }
@@ -646,14 +600,12 @@ public final class Transferable extends JPanel implements
                             && !sourceObject.equals(getCurrentTargetConnector()))) {
 
                         // error: two inputs
-
                         setConnectionStatus(
                                 ConnectionStatus.ERROR_BOTH_ARE_INPUTS);
                     }
                     if (differentTargetType && (targetIsConnected)) {
 
                         // error: more than one connection per input
-
                         setConnectionStatus(
                                 ConnectionStatus.ERROR_INPUT_ALREADY_CONNECTED);
                     }
@@ -675,7 +627,6 @@ public final class Transferable extends JPanel implements
 
                 // this case might not be used because it is handled inside
                 // mouseDragged() method
-
                 setConnectionStatus(
                         ConnectionStatus.CONNECTION_REMOVED);
             }
@@ -697,24 +648,24 @@ public final class Transferable extends JPanel implements
                 break;
         }
 
-
         return result;
     }
 
     /**
      * Creates a connection between two connectors if
      * <ul>
-     *      <li>connectors are of different type, i.e. one is an input connector
-     *              and the other is an output connector</li>     
-     *      <li>the target connector, i.e. the input connector is not already
-     *              connected, as we only allow one connection per input</li>
-     *      <li>types of both typerepresentation objects are equal</li>
+     * <li>connectors are of different type, i.e. one is an input connector and
+     * the other is an output connector</li>
+     * <li>the target connector, i.e. the input connector is not already
+     * connected, as we only allow one connection per input</li>
+     * <li>types of both typerepresentation objects are equal</li>
      * </ul>
-     * @see #checkConnection() 
+     *
+     * @see #checkConnection()
      */
     public void doConnect() {
         MessageBox mBox = getMainCanvas().getMessageBox();
-        
+
         System.out.println(">> connection mouse gesture:");
 
         Connection connection = checkConnection();
@@ -816,7 +767,6 @@ public final class Transferable extends JPanel implements
 //                getParentObject().isVisible()) {
 //            mainCanvas.repaint();
 //        }
-
         // release the reference to prevent memory leaks
         getMainCanvas().setActualDraggable(null);
     }
@@ -824,6 +774,7 @@ public final class Transferable extends JPanel implements
     /**
      * If mouse enters the transferable set it's parent color mode to active,
      * i.e., display it with the color set with <code>setActiveColor()</code>
+     *
      * @param mouseEvent the mouse event
      */
     @Override
@@ -834,8 +785,8 @@ public final class Transferable extends JPanel implements
 
         try {
 
-            List<Connection> connections =
-                    getSourceObject().getConnections().
+            List<Connection> connections
+                    = getSourceObject().getConnections().
                     getAllWith(getCurrentTargetConnector());
 
         } catch (Exception ex) {
@@ -847,6 +798,7 @@ public final class Transferable extends JPanel implements
      * If mouse leaves the transferable set its parent color mode to inactive,
      * i.e., display it with the color as defined by
      * <code>setInactiveColor()</code>
+     *
      * @param mouseEvent the mouse event
      */
     @Override
@@ -858,6 +810,7 @@ public final class Transferable extends JPanel implements
 
     /**
      * Returns the source object of the transferable.
+     *
      * @return the source object of the transferable
      */
     public Connector getSourceObject() {
@@ -866,6 +819,7 @@ public final class Transferable extends JPanel implements
 
     /**
      * Defines the source object of the transferable.
+     *
      * @param sourceObject the source object of the transferable
      */
     public void setSourceObject(Connector sourceObject) {
@@ -874,6 +828,7 @@ public final class Transferable extends JPanel implements
 
     /**
      * Defines the source object of the transferable.
+     *
      * @param sourceObject the source object of the transferable
      */
     public void setSourceObject(Object sourceObject) {
@@ -882,8 +837,9 @@ public final class Transferable extends JPanel implements
 
     /**
      * Checks if the transferable is cuurently be dragged.
+     *
      * @return <code>true</code>, if the transferable is currently dragged;
-     *                 <code>false</code> otherwise
+     * <code>false</code> otherwise
      */
     public boolean isDragged() {
         return dragged;
@@ -891,12 +847,12 @@ public final class Transferable extends JPanel implements
 
     /**
      * Defines whether the transferable is dragged or not.
-     * @param dragged <code>true</code>, if the transferable is currently 
-     *                               dragged;<code>false</code> otherwise
+     *
+     * @param dragged <code>true</code>, if the transferable is currently
+     * dragged;<code>false</code> otherwise
      */
     public void setDragged(boolean dragged) {
         this.dragged = dragged;
-//          mainCanvas.repaint();
     }
 
     @Override
@@ -912,6 +868,7 @@ public final class Transferable extends JPanel implements
 
     /**
      * Returns the transparency of the transferable.
+     *
      * @return the transparency of the transferable
      */
     public float getTransparency() {
@@ -920,6 +877,7 @@ public final class Transferable extends JPanel implements
 
     /**
      * Defines the transparency of the transferable.
+     *
      * @param transparency the transparency of the transferable
      */
     public void setTransparency(float transparency) {
@@ -928,6 +886,7 @@ public final class Transferable extends JPanel implements
 
     /**
      * Returns the connection status.
+     *
      * @return the connection status
      */
     public ConnectionStatus getConnectionStatus() {
@@ -936,6 +895,7 @@ public final class Transferable extends JPanel implements
 
     /**
      * Defines the connection status.
+     *
      * @param connectionStatus the connection status to set
      */
     private void setConnectionStatus(ConnectionStatus connectionStatus) {
@@ -945,6 +905,7 @@ public final class Transferable extends JPanel implements
     /**
      * Returns the current target connector or <code>null</code> if no such
      * connector has ben defined.
+     *
      * @return the current target connector
      */
     public Connector getCurrentTargetConnector() {
@@ -953,6 +914,7 @@ public final class Transferable extends JPanel implements
 
     /**
      * Defines the current target connector.
+     *
      * @param currentTargetConnector the connector to set
      */
     private void setCurrentTargetConnector(Connector currentTargetConnector) {
