@@ -87,8 +87,8 @@ public class OrderedBoxLayout implements LayoutManager2 {
         // only allow move if we don't change position of sorted components
         if (pos < positions.size()
                 && !(positions.get(pos) instanceof OrderedLayoutConstraint)) {
-            target.remove(c);
-            target.add(c, pos);
+            
+            target.setComponentZOrder(c, pos);
 
             target.doLayout();
         }
@@ -119,8 +119,7 @@ public class OrderedBoxLayout implements LayoutManager2 {
 
         for (int i = 0; i < positions.size(); i++) {
             for (Component comp : positions.get(i)) {
-                target.remove(comp);
-                target.add(comp, i);
+                target.setComponentZOrder(comp, i);
             }
         }
 

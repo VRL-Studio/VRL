@@ -1294,9 +1294,10 @@ public class DefaultMethodRepresentation extends VComponent
         if (i == 0) {
             return getConnectorByKey(KEY_RETURN_VALUE_CONNECTOR);
         } else {
-            return getConnectorByKey(KEY_INPUT_CONNECTOR_PREFIX+(i-1));
+            return getConnectorByKey(KEY_INPUT_CONNECTOR_PREFIX + (i - 1));
         }
     }
+
     /**
      * Returns all connectors of the method.
      *
@@ -1874,14 +1875,12 @@ class MethodTitleBar extends JPanel {
                 OrderedBoxLayout boxLayout = oRep.getMethodLayout();
                 int duplicatePos = boxLayout.getOrder().indexOf(method);
                 oRep.getMethodLayout().moveTo(duplicate, duplicatePos);
-                
+
                 // copy and paste parameter data via xml
                 String duplicateArgs = ClipboardUtil.
                         paramDataToXml(method.getParameters());
                 ClipboardUtil.xmlToParamData(
                         duplicateArgs, duplicate.getParameters());
-                
-              
 
             }
         });
@@ -2147,6 +2146,7 @@ class MethodMouseControl implements MouseListener, MouseMotionListener {
         if (componentIndex != null) {
             layout.moveTo(method, componentIndex);
         }
+
     }
 
     @Override
