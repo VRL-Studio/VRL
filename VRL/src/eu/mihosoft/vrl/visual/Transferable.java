@@ -128,15 +128,11 @@ public final class Transferable extends JPanel implements
         setDragged(false);
 
         setOpaque(false);
-
-        setBorder(VSwingUtil.createDebugBorder());
     }
 
     @Override
     public void paintGlobal(Graphics g) {
         paintConnections(g);
-        Point absPos = getAbsPos();
-        g.drawRect((int) absPos.getX(), (int) absPos.getY(), getWidth(), getHeight());
     }
 
     /**
