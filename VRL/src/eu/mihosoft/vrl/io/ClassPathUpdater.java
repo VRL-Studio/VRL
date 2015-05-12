@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io;
 
 import eu.mihosoft.vrl.visual.SplashScreenGenerator;
@@ -57,12 +56,10 @@ import java.lang.reflect.InvocationTargetException;
 
 import java.lang.reflect.Method;
 
-
 import java.io.File;
 import java.io.FileFilter;
 
 import java.io.IOException;
-
 
 import java.net.URL;
 
@@ -75,19 +72,23 @@ import java.util.logging.Logger;
  */
 public class ClassPathUpdater {
 
-    /** Used to find the method signature. */
+    /**
+     * Used to find the method signature.
+     */
     private static final Class<?>[] PARAMETERS = new Class<?>[]{URL.class};
-    /** Class containing the private addURL method. */
+    /**
+     * Class containing the private addURL method.
+     */
     private static final Class<?> CLASS_LOADER = URLClassLoader.class;
 
     /**
      * Adds a new path to the classloader. If the given string points to a file,
-     * then that file's parent file (i.e., directory) is used as the
-     * directory to add to the classpath. If the given string represents
-     * directory, then the directory is directly added to the classpath.
+     * then that file's parent file (i.e., directory) is used as the directory
+     * to add to the classpath. If the given string represents directory, then
+     * the directory is directly added to the classpath.
      *
-     * @param s the directory to add to the classpath (or a file, which
-     * will relegate to its directory).
+     * @param s the directory to add to the classpath (or a file, which will
+     * relegate to its directory).
      * @throws IOException
      * @throws NoSuchMethodException
      * @throws IllegalAccessException
@@ -101,10 +102,10 @@ public class ClassPathUpdater {
     }
 
     /**
-     * Adds a new path to the classloader. If the given file object is
-     * a file, then its parent file (i.e., directory) is used as the directory
-     * to add to the classpath. If the given string represents a directory,
-     * then the directory it represents is added.
+     * Adds a new path to the classloader. If the given file object is a file,
+     * then its parent file (i.e., directory) is used as the directory to add to
+     * the classpath. If the given string represents a directory, then the
+     * directory it represents is added.
      *
      * @param f the directory (or enclosing directory if a file) to add to the
      * classpath.
@@ -112,7 +113,7 @@ public class ClassPathUpdater {
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
      * @throws IllegalAccessException
-
+     *
      */
     public static void addDir(File f)
             throws IOException, NoSuchMethodException, IllegalAccessException,
@@ -122,18 +123,18 @@ public class ClassPathUpdater {
     }
 
     /**
-     * Adds a new path to the classloader. If the given file object is
-     * a file, then its parent file (i.e., directory) is used as the directory
-     * to add to the classpath. If the given string represents a directory,
-     * then the directory it represents is added.
+     * Adds a new path to the classloader. If the given file object is a file,
+     * then its parent file (i.e., directory) is used as the directory to add to
+     * the classpath. If the given string represents a directory, then the
+     * directory it represents is added.
      *
      * @param f the directory (or enclosing directory if a file) to add to the
      * classpath.
-     * 
+     *
      * @throws IOException
      */
     public static void add(File f) throws IOException {
-            add(f.toURI().toURL());
+        add(f.toURI().toURL());
     }
 
     /**
@@ -145,14 +146,16 @@ public class ClassPathUpdater {
     public static void add(URL url)
             throws IOException {
         try {
+
             String message = ">> adding \"" + url + "\" to system classpath";
+
             System.out.println(message);
-            
             SplashScreenGenerator.printBootMessage(message);
-            
+
             Method method = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
             method.setAccessible(true);
             method.invoke(getClassLoader(), new Object[]{url});
+
         } catch (IllegalAccessException ex) {
             Logger.getLogger(ClassPathUpdater.class.getName()).
                     log(Level.SEVERE, null, ex);
@@ -173,6 +176,7 @@ public class ClassPathUpdater {
 
     /**
      * Adds all jar files in the given directory (recursive).
+     *
      * @param dir the directory
      */
     public static void addAllJarsInDirectory(File dir) {
@@ -194,7 +198,7 @@ public class ClassPathUpdater {
                         Logger.getLogger(ClassPathUpdater.class.getName())
                                 .log(Level.SEVERE, null, ex);
                     }
-                } else if (f.isDirectory()){
+                } else if (f.isDirectory()) {
                     addAllJarsInDirectory(f);
                 }
             }

@@ -57,37 +57,26 @@ import com.sun.j3d.exp.swing.JCanvas3D;
 import eu.mihosoft.vrl.animation.Animation;
 import eu.mihosoft.vrl.animation.AnimationManager;
 import eu.mihosoft.vrl.animation.AnimationTask;
-import eu.mihosoft.vrl.animation.FrameListener;
-import eu.mihosoft.vrl.animation.RepaintThread;
-import eu.mihosoft.vrl.animation.TaskAnimation;
 import eu.mihosoft.vrl.visual.ImageUtils;
 import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
 import eu.mihosoft.vrl.visual.BufferedPainter;
 import eu.mihosoft.vrl.visual.Canvas;
 import eu.mihosoft.vrl.visual.CanvasChild;
-import eu.mihosoft.vrl.visual.CanvasLabel;
 import eu.mihosoft.vrl.visual.CanvasWindow;
-import eu.mihosoft.vrl.visual.Connection;
 import eu.mihosoft.vrl.visual.Style;
 import eu.mihosoft.vrl.visual.TransparentPanel;
 import eu.mihosoft.vrl.visual.VBoxLayout;
-import eu.mihosoft.vrl.visual.VSwingUtil;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Composite;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
@@ -96,20 +85,12 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Area;
-import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
-import java.util.ArrayList;
-import javax.media.j3d.ImageComponent;
-import javax.media.j3d.ImageComponent2D;
 import javax.swing.Box;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.RepaintManager;
 import javax.swing.SwingUtilities;
 
 /**
@@ -172,14 +153,11 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
      * @param typeRepresentation the type representation that uses this canvas
      */
     public VCanvas3D(TypeRepresentationBase typeRepresentation) {
+        
         setTypeRepresentation(typeRepresentation);
-
-//        VBoxLayout layout = new VBoxLayout(this, VBoxLayout.X_AXIS);
-//        setLayout(layout);
 
         setLayout(new BorderLayout());
 
-//        this.add(Box.createGlue());
         Box box = new Box(VBoxLayout.Y_AXIS);
 
         box.add(Box.createVerticalGlue());
@@ -230,7 +208,6 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
                     || renderBuffer.getHeight() != getHeight();
 
             if (newImageNeeded || isRealTimeRenderOptimization()) {
-//                System.out.println("BLUR" + getWidth() + " " + renderBuffer);
 
                 if (newImageNeeded) {
                     renderBuffer =
@@ -266,13 +243,6 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
         }
     }
 
-//    @Override
-//    public void paint(Graphics g){
-//        paintComponent(g);
-//        for (Component c : getComponents()){
-//            c.paint(g);
-//        }
-//    }
     @Override
     public void paintComponent(Graphics g) {
 

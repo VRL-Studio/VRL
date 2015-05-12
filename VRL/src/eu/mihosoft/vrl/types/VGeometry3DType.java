@@ -49,26 +49,28 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.types;
 
 import eu.mihosoft.vrl.annotation.TypeInfo;
 import eu.mihosoft.vrl.reflection.ComponentUtil;
 import eu.mihosoft.vrl.reflection.RepresentationType;
+import eu.mihosoft.vrl.v3d.Shape3DArray;
 import eu.mihosoft.vrl.v3d.VGeometry3D;
 import eu.mihosoft.vrl.v3d.VTriangleArray;
 
 /**
  * TypeRepresentation for {@link eu.mihosoft.vrl.v3d.VGeometry3D}.
- * 
+ *
  * <p>
  * This type representation can be used to easily visualize 3D geometries.
  * </p>
- * <p><b>Note:</b> the memory footprint of VGeometry3D based geometries is
- * significantly higher than using Shape3D. Therefore, do not use it for
- * highly complex geometries (#Triangles > 10^5)</p>
- * 
- * <p><b>Example (Groovy code):</b></p>
+ * <p>
+ * <b>Note:</b> the memory footprint of VGeometry3D based geometries is
+ * significantly higher than using Shape3D. Therefore, do not use it for highly
+ * complex geometries (#Triangles > 10^5)</p>
+ *
+ * <p>
+ * <b>Example (Groovy code):</b></p>
  * <code>
  * <pre>
  * &#64;ComponentInfo(name="3D Geometry Sample")
@@ -95,18 +97,19 @@ import eu.mihosoft.vrl.v3d.VTriangleArray;
  * </pre>
  * </code>
  * </p>
- * 
- * <p>The visualization should look like this:</p>
+ *
+ * <p>
+ * The visualization should look like this:</p>
  * <br/>
  * <img src="doc-files/vgeometry3dtype01.png"/>
  * <br/>
- * 
+ *
  *
  * @see eu.mihosoft.vrl.v3d.VTriangleArray
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-@TypeInfo(type=VGeometry3D.class, input = true, output = true, style="default")
+@TypeInfo(type = VGeometry3D.class, input = true, output = true, style = "default")
 public class VGeometry3DType extends Shape3DArrayType {
 
     private VGeometry3D geometryValue;
@@ -124,6 +127,8 @@ public class VGeometry3DType extends Shape3DArrayType {
             geometryValue = geometry;
             setOrientationFromValues(geometry.getOrientation());
             super.setViewValue(geometry.generateShape3DArray());
+        } else if (o instanceof Shape3DArray) {
+            super.setViewValue(o);
         } else {
             super.setViewValue(null);
         }
@@ -148,42 +153,41 @@ public class VGeometry3DType extends Shape3DArrayType {
     // Thomas Licht
     // added - needed for sunflow component
     @Override
-    public Object getValue()
-    {
+    public Object getValue() {
 //        // always set orientation
         geometryValue.setOrientation(getOrientationFromUniverse());
-        return (Object)geometryValue;
-    }    
-    
-    
+        return (Object) geometryValue;
+    }
+
     @Override
     public boolean preferBinarySerialization() {
         return (geometryValue == null)
                 ? super.preferBinarySerialization()
-                : geometryValue.getGeometry().size() > 500;
+                : geometryValue.getGeometry().size() > 100;
     }
-    
+
     /**
-     * Indicates whether to prevent value serialization.
-     * Sometimes the value may be too big or unimportant to be saved.
-     * This property can be controlled via the variable 
-     * <code>serialization</code> in the options string of the param info.
+     * Indicates whether to prevent value serialization. Sometimes the value may
+     * be too big or unimportant to be saved. This property can be controlled
+     * via the variable <code>serialization</code> in the options string of the
+     * param info.
+     *
      * @return <code>true</code> if the value shall not be serialized;
-     *         <code>false</code> otherwise
+     * <code>false</code> otherwise
      */
     @Override
     public boolean noSerialization() {
-        
+
         // TODO join implementations. 
         // current code taken from TypeRepresentationBase
-        boolean paramSerialization=true;
-                
-        if (value!=null) {
-            paramSerialization = 
-                    ComponentUtil.
+        boolean paramSerialization = true;
+
+        if (value != null) {
+            paramSerialization
+                    = ComponentUtil.
                     isParameterSerializationEnabled(value.getClass());
         }
-        
+
         return !serialization || !paramSerialization;
     }
 }

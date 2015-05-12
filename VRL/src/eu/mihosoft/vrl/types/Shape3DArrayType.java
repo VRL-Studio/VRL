@@ -59,11 +59,18 @@ import eu.mihosoft.vrl.v3d.Shape3DArray;
 import eu.mihosoft.vrl.visual.VBoxLayout;
 import eu.mihosoft.vrl.visual.VContainer;
 import eu.mihosoft.vrl.visual.VGraphicsUtil;
+import eu.mihosoft.vrl.visual.VSwingUtil;
 import groovy.lang.Script;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Group;
@@ -77,9 +84,9 @@ import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 
 /**
- * TypeRepresentation for
- * <code>eu.mihosoft.vrl.v3d.Shape3DArray</code>. The easiest way to create 3D
- * shapes is to use {@link eu.mihosoft.vrl.v3d.VTriangleArray} or
+ * TypeRepresentation for <code>eu.mihosoft.vrl.v3d.Shape3DArray</code>. The
+ * easiest way to create 3D shapes is to use
+ * {@link eu.mihosoft.vrl.v3d.VTriangleArray} or
  * {@link eu.mihosoft.vrl.v3d.TxT2Geometry}. This type representation works just
  * like {@link Shape3DType} but can visualize several Shape3D objects at once.
  *
@@ -87,7 +94,8 @@ import javax.swing.JMenuItem;
  * is suggested to use {@link eu.mihosoft.vrl.v3d.VGeometry3D} objects and the
  * corresponding type representation.
  *
- * <p>Sample:</p> <br/> <img src="doc-files/shape3d-default-01.png"/> <br/>
+ * <p>
+ * Sample:</p> <br/> <img src="doc-files/shape3d-default-01.png"/> <br/>
  *
  * @see eu.mihosoft.vrl.v3d.VTriangleArray
  * @see eu.mihosoft.vrl.v3d.Shape3DArray
@@ -113,6 +121,14 @@ public class Shape3DArrayType extends TypeRepresentationBase {
      * Defines whether to force branch group in favour of ordered group.
      */
     private boolean forceBranchGroup = false;
+    private Object tmpViewValue = null;
+//    private final ReentrantLock tmpViewValueLock = new ReentrantLock();
+    private Script canvasSizeScript;
+//    private final ReentrantLock tmpViewCanvasSizeScriptLock = new ReentrantLock();
+    private Script renderOptScript;
+//    private final ReentrantLock tmpRenderOptScriptLock = new ReentrantLock();
+    private volatile boolean initialized;
+    private final ReentrantLock initializedLock = new ReentrantLock();
 
     /**
      * Constructor.
@@ -120,23 +136,71 @@ public class Shape3DArrayType extends TypeRepresentationBase {
      * @param canvas the 3D canvas
      * @param universeCreator the universe creator
      */
-    public Shape3DArrayType(VCanvas3D canvas, UniverseCreator universeCreator) {
-        init();
-        init3DView(canvas, universeCreator);
-    }
-
+//    public Shape3DArrayType(VCanvas3D canvas, UniverseCreator universeCreator) {
+//        init();
+//        init3DView(canvas, universeCreator);
+//    }
     /**
      * Constructor.
      */
     public Shape3DArrayType() {
         init();
         if (!VGraphicsUtil.NO_3D) {
-            VCanvas3D c = null;
-            c = new VCanvas3D(this);
-            init3DView(new VCanvas3D(this), new VUniverseCreator());
+//            new Thread(() -> {
+            VCanvas3D c = new VCanvas3D(this);
+            VUniverseCreator uc = new VUniverseCreator();
+
+            setInitialized(true);
+
+            VSwingUtil.invokeLater(() -> {
+
+                init3DView(c, uc);
+
+                if (tmpViewValue != null) {
+                    try {
+                        setViewValue(tmpViewValue);
+                        tmpViewValue = null;
+                    } catch (Exception ex) {
+                        Logger.getLogger(Shape3DArrayType.class.getName()).
+                                log(Level.SEVERE, null, ex);
+                    }
+                }
+
+                if (canvasSizeScript != null) {
+                    setVCanvas3DSizeFromValueOptions(canvasSizeScript);
+                }
+
+                canvasSizeScript = null;
+
+                if (renderOptScript != null) {
+                    setRenderOptionsFromValueOptions(renderOptScript);
+                }
+
+                renderOptScript = null;
+
+                evaluateCustomParamData();
+            });
+
+//            }).start();
         } else {
             add(new JLabel("Java3D support disabled!"));
         }
+    }
+
+    private void setInitialized(boolean b) {
+        initializedLock.lock();
+        initialized = b;
+        initializedLock.unlock();
+    }
+
+    private boolean isInitialized() {
+
+        boolean result;
+        initializedLock.lock();
+        result = initialized;
+        initializedLock.unlock();
+
+        return result;
     }
 
     /**
@@ -161,6 +225,9 @@ public class Shape3DArrayType extends TypeRepresentationBase {
      * @param universeCreator the universe creator
      */
     protected void init3DView(final VCanvas3D canvas, UniverseCreator universeCreator) {
+
+        System.out.println("canvas: " + canvas);
+
         dispose3D(); // very important to prevent memory leaks of derived classes!
 
         switchGroup = new Switch(Switch.CHILD_MASK);
@@ -172,23 +239,20 @@ public class Shape3DArrayType extends TypeRepresentationBase {
         this.canvas = canvas;
         this.universeCreator = universeCreator;
 
-
         //canvas = new VCanvas3D(this);
-
-        canvas.setOpaque(false);
-        canvas.setMinimumSize(new Dimension(160, 120));
-        canvas.setPreferredSize(new Dimension(160, 120));
-        canvas.setSize(new Dimension(160, 120));
+        getCanvas().setOpaque(false);
+        getCanvas().setMinimumSize(new Dimension(160, 120));
+        getCanvas().setPreferredSize(new Dimension(160, 120));
+        getCanvas().setSize(new Dimension(160, 120));
         setValueOptions("width=160;height=120;blurValue=0.7F;"
                 + "renderOptimization=false;realtimeOptimization=false;"
                 + "doEmpty=true");
 
-        minimumVCanvas3DSize = canvas.getMinimumSize();
+        minimumVCanvas3DSize = getCanvas().getMinimumSize();
 
-//            canvas.setRenderOptimizationEnabled(true);
-//            canvas.setRealTimeRenderOptimization(true);
-//            canvas.setBlurValue(0.8f);
-
+//            getCanvas().setRenderOptimizationEnabled(true);
+//            getCanvas().setRealTimeRenderOptimization(true);
+//            getCanvas().setBlurValue(0.8f);
         switchGroup.setCapability(Switch.ALLOW_SWITCH_WRITE);
         switchGroup.setCapability(Switch.ENABLE_PICK_REPORTING);
         switchGroup.setCapability(Switch.ALLOW_CHILDREN_EXTEND);
@@ -208,18 +272,19 @@ public class Shape3DArrayType extends TypeRepresentationBase {
             switchGroup.addChild(shapeGroups[i]);
         }
 
-        visibleNodes =
-                new java.util.BitSet(switchGroup.numChildren());
+        visibleNodes
+                = new java.util.BitSet(switchGroup.numChildren());
 
-        container = new VContainer();
+        // 12.05.2015 define canvas3d parent since offscreencanvas will be null
+        // otherwise
+        // see: https://java.net/jira/browse/JAVA3D-386
+        VSwingUtil.invokeAndWait(() -> {
+            container = new VContainer();
+            container.add(getCanvas());
+            this.add(container);
+        });
 
-        container.add(canvas);
-
-        this.add(container);
-
-        this.setInputComponent(container);
-
-        universeCreator.init(canvas);
+        universeCreator.init(getCanvas());
 
         BranchGroup switchParentGroup = new BranchGroup();
 
@@ -233,8 +298,13 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
         universeCreator.getRootGroup().addChild(switchParentGroup);
 
-        JMenuItem item = new JMenuItem("Reset View");
+        VSwingUtil.invokeLater(() -> initSwingUI());
+    }
 
+    private void initSwingUI() {
+
+        this.setInputComponent(container);
+        JMenuItem item = new JMenuItem("Reset View");
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -243,30 +313,20 @@ public class Shape3DArrayType extends TypeRepresentationBase {
                 getCanvas().contentChanged();
             }
         });
-
-        canvas.getMenu().add(item);
-
+        getCanvas().getMenu().add(item);
         item = new JMenuItem("Save as Image");
-
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
                 int w = 4096;
-                int h = (int) (((double) canvas.getHeight() / (double) canvas.getWidth()) * w);
-
+                int h = (int) (((double) getCanvas().getHeight() / (double) getCanvas().getWidth()) * w);
                 BufferedImage img = getOffscreenCanvas().doRender(w, h);
-
                 SaveImageDialog.showDialog(getMainCanvas(), img);
             }
         });
-
-        canvas.getMenu().add(item);
-
-        canvas.getMenu().addSeparator();
-
+        getCanvas().getMenu().add(item);
+        getCanvas().getMenu().addSeparator();
         item = new JMenuItem("Increase Zoom Speed");
-
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -275,11 +335,8 @@ public class Shape3DArrayType extends TypeRepresentationBase {
                         getUniverseCreator().getZoomFactor() + 0.5);
             }
         });
-
-        canvas.getMenu().add(item);
-
+        getCanvas().getMenu().add(item);
         item = new JMenuItem("Decrease Zoom Speed");
-
         item.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -288,91 +345,101 @@ public class Shape3DArrayType extends TypeRepresentationBase {
                         getUniverseCreator().getZoomFactor() - 0.5);
             }
         });
-
-        canvas.getMenu().add(item);
+        getCanvas().getMenu().add(item);
     }
 
     @Override
-    synchronized public void setViewValue(Object o) {
+    synchronized public void setViewValue(final Object o) {
+
+        System.out.println("SET-O: " + o);
 
         clearView();
 
-        if (!VGraphicsUtil.NO_3D) {
+        if (VGraphicsUtil.NO_3D) {
+            return;
+        }
 
-            final Shape3DArray shapes = (Shape3DArray) o;
+        if (!isInitialized()) {
+            System.out.println(" -> not initialized");
+            tmpViewValue = o;
+            return;
+        } else {
+            System.out.println(" -> initialized");
+        }
 
-            if (shapeParents[0] != null) {
-                shapeParents[1] = new BranchGroup();
-                shapeParents[1].setCapability(BranchGroup.ENABLE_PICK_REPORTING);
-                shapeParents[1].setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
-                shapeParents[1].setCapability(BranchGroup.ALLOW_CHILDREN_READ);
-                shapeParents[1].setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
-                shapeParents[1].setCapability(BranchGroup.ALLOW_DETACH);
+        final Shape3DArray shapes = (Shape3DArray) o;
 
-                Group childGroup = null;
+        if (shapeParents[0] != null) {
+            shapeParents[1] = new BranchGroup();
+            shapeParents[1].setCapability(BranchGroup.ENABLE_PICK_REPORTING);
+            shapeParents[1].setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+            shapeParents[1].setCapability(BranchGroup.ALLOW_CHILDREN_READ);
+            shapeParents[1].setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
+            shapeParents[1].setCapability(BranchGroup.ALLOW_DETACH);
 
-                if (!shapes.isEmpty() && !isForceBranchGroup()) {
-                    Appearance app = shapes.get(0).getAppearance();
-                    if (app != null && app.getTransparencyAttributes()!=null) {
-                        TransparencyAttributes tA = app.getTransparencyAttributes();
-                        if (tA.getTransparency() > 0) {
-                            childGroup = new OrderedGroup();
-                        }
+            Group childGroup = null;
+
+            if (!shapes.isEmpty() && !isForceBranchGroup()) {
+                Appearance app = shapes.get(0).getAppearance();
+                if (app != null && app.getTransparencyAttributes() != null) {
+                    TransparencyAttributes tA = app.getTransparencyAttributes();
+                    if (tA.getTransparency() > 0) {
+                        childGroup = new OrderedGroup();
                     }
                 }
-                if (childGroup == null) {
-                    childGroup = new BranchGroup();
-                }
-                for (Shape3D s : shapes) {
-                    childGroup.addChild(s);
-                }
+            }
+            if (childGroup == null) {
+                childGroup = new BranchGroup();
+            }
+            for (Shape3D s : shapes) {
+                childGroup.addChild(s);
+            }
 
-                shapeParents[1].addChild(childGroup);
+            shapeParents[1].addChild(childGroup);
 
-                shapeGroups[1].addChild(shapeParents[1]);
-                visibleNodes.set(1, true);
-                visibleNodes.set(0, false);
-                switchGroup.setChildMask(visibleNodes);
+            shapeGroups[1].addChild(shapeParents[1]);
+            visibleNodes.set(1, true);
+            visibleNodes.set(0, false);
+            switchGroup.setChildMask(visibleNodes);
 
-                shapeParents[0].detach();
-                shapeParents[0] = null;
-            } else {
-                shapeParents[0] = new BranchGroup();
-                shapeParents[0].setCapability(BranchGroup.ENABLE_PICK_REPORTING);
-                shapeParents[0].setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
-                shapeParents[0].setCapability(BranchGroup.ALLOW_CHILDREN_READ);
-                shapeParents[0].setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
-                shapeParents[0].setCapability(BranchGroup.ALLOW_DETACH);
+            shapeParents[0].detach();
+            shapeParents[0] = null;
+        } else {
+            shapeParents[0] = new BranchGroup();
+            shapeParents[0].setCapability(BranchGroup.ENABLE_PICK_REPORTING);
+            shapeParents[0].setCapability(BranchGroup.ALLOW_CHILDREN_EXTEND);
+            shapeParents[0].setCapability(BranchGroup.ALLOW_CHILDREN_READ);
+            shapeParents[0].setCapability(BranchGroup.ALLOW_CHILDREN_WRITE);
+            shapeParents[0].setCapability(BranchGroup.ALLOW_DETACH);
 
-                Group childGroup = null;
+            Group childGroup = null;
 
-                if (!shapes.isEmpty() && !isForceBranchGroup()) {
-                    Appearance app = shapes.get(0).getAppearance();
-                    if (app != null && app.getTransparencyAttributes()!=null) {
-                        TransparencyAttributes tA = app.getTransparencyAttributes();
-                        if (tA.getTransparency() > 0) {
-                            childGroup = new OrderedGroup();
-                        }
+            if (!shapes.isEmpty() && !isForceBranchGroup()) {
+                Appearance app = shapes.get(0).getAppearance();
+                if (app != null && app.getTransparencyAttributes() != null) {
+                    TransparencyAttributes tA = app.getTransparencyAttributes();
+                    if (tA.getTransparency() > 0) {
+                        childGroup = new OrderedGroup();
                     }
                 }
-                if (childGroup == null) {
-                    childGroup = new BranchGroup();
-                }
-                for (Shape3D s : shapes) {
-                    childGroup.addChild(s);
-                }
+            }
+            if (childGroup == null) {
+                childGroup = new BranchGroup();
+            }
+            for (Shape3D s : shapes) {
+                childGroup.addChild(s);
+            }
 
-                shapeParents[0].addChild(childGroup);
+            shapeParents[0].addChild(childGroup);
 
-                shapeGroups[0].addChild(shapeParents[0]);
-                visibleNodes.set(0, true);
-                visibleNodes.set(1, false);
-                switchGroup.setChildMask(visibleNodes);
+            shapeGroups[0].addChild(shapeParents[0]);
+            visibleNodes.set(0, true);
+            visibleNodes.set(1, false);
+            switchGroup.setChildMask(visibleNodes);
 
-                if (shapeParents[1] != null) {
-                    shapeParents[1].detach();
-                    shapeParents[1] = null;
-                }
+            if (shapeParents[1] != null) {
+                shapeParents[1].detach();
+                shapeParents[1] = null;
             }
         }
     }
@@ -417,6 +484,13 @@ public class Shape3DArrayType extends TypeRepresentationBase {
             return;
         }
 
+        if (!isInitialized()) {
+//            tmpViewCanvasSizeScriptLock.lock();
+            this.canvasSizeScript = script;
+//            tmpViewCanvasSizeScriptLock.unlock();
+            return;
+        }
+
         Integer w = null;
         Integer h = null;
         Object property = null;
@@ -440,7 +514,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
             if (property != null) {
                 h = (Integer) property;
             }
-            
+
             property = null;
 
             if (getValueOptions().contains("forceBranchGroup")) {
@@ -469,6 +543,15 @@ public class Shape3DArrayType extends TypeRepresentationBase {
      */
     private void setRenderOptionsFromValueOptions(Script script) {
 
+        if (!isInitialized()) {
+
+//            tmpRenderOptScriptLock.lock();
+            this.renderOptScript = script;
+//            tmpRenderOptScriptLock.unlock();
+
+            return;
+        }
+
         Object property = null;
         Boolean enableRenderOptimization = true;
         Boolean enableRealtimeOptimization = false;
@@ -482,7 +565,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
             if (property != null) {
                 enableRenderOptimization = (Boolean) property;
-                canvas.setRenderOptimizationEnabled(
+                getCanvas().setRenderOptimizationEnabled(
                         enableRenderOptimization);
             }
 
@@ -494,7 +577,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
             if (property != null) {
                 enableRealtimeOptimization = (Boolean) property;
-                canvas.setRealTimeRenderOptimization(
+                getCanvas().setRealTimeRenderOptimization(
                         enableRealtimeOptimization);
             }
 
@@ -506,7 +589,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
             if (property != null) {
                 blurValue = (Float) property;
-                canvas.setBlurValue(blurValue);
+                getCanvas().setBlurValue(blurValue);
             }
 
             property = null;
@@ -665,14 +748,14 @@ public class Shape3DArrayType extends TypeRepresentationBase {
     @Override
     public void enterFullScreenMode(Dimension size) {
         super.enterFullScreenMode(size);
-        previousVCanvas3DSize = canvas.getSize();
+        previousVCanvas3DSize = getCanvas().getSize();
         container.setPreferredSize(new Dimension(Short.MAX_VALUE, Short.MAX_VALUE));
         container.setMinimumSize(null);
         container.setMaximumSize(null);
 
-        canvas.setPreferredSize(null);
-        canvas.setMinimumSize(minimumVCanvas3DSize);
-        canvas.setMaximumSize(null);
+        getCanvas().setPreferredSize(null);
+        getCanvas().setMinimumSize(minimumVCanvas3DSize);
+        getCanvas().setMaximumSize(null);
 
         revalidate();
     }
@@ -684,11 +767,11 @@ public class Shape3DArrayType extends TypeRepresentationBase {
         container.setMinimumSize(null);
         container.setMaximumSize(null);
 
-        canvas.setSize(previousVCanvas3DSize);
-        canvas.setPreferredSize(previousVCanvas3DSize);
-        canvas.setMinimumSize(minimumVCanvas3DSize);
+        getCanvas().setSize(previousVCanvas3DSize);
+        getCanvas().setPreferredSize(previousVCanvas3DSize);
+        getCanvas().setMinimumSize(minimumVCanvas3DSize);
 
-        canvas.contentChanged();
+        getCanvas().contentChanged();
 
         revalidate();
     }

@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.types;
 
 import com.sun.j3d.exp.swing.JCanvas3D;
@@ -82,8 +81,8 @@ public class VUniverseCreator implements UniverseCreator {
     private TransformGroup camGroup;
     private VCanvas3D canvas;
     private VOffscreenCanvas3D offscreenCanvas;
-    private BoundingSphere bounds =
-            new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 1000.0);
+    private BoundingSphere bounds
+            = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 1000.0);
     private MouseWheelZoom zoomBehavior;
 
     /**
@@ -101,6 +100,12 @@ public class VUniverseCreator implements UniverseCreator {
 
         this.canvas = canvas;
         canvas.setDoubleBuffered(true);
+        
+        // 12.05.2015 define default size since offscreencanvas will be null
+        // otherwise
+        // see: https://java.net/jira/browse/JAVA3D-386
+        canvas.setSize(100, 100);
+
         canvas.getOffscreenCanvas3D().setDoubleBufferEnable(true);
         canvas.setResizeMode(JCanvas3D.RESIZE_IMMEDIATELY);
 
@@ -113,14 +118,12 @@ public class VUniverseCreator implements UniverseCreator {
 
         // offscreen rendering does not work with sceneantialiasing enabled!
         // universe.getViewer().getView().setSceneAntialiasingEnable(true);
-
         universe.getViewingPlatform().setNominalViewingTransform();
 
         universe.getViewer().getView().setMinimumFrameCycleTime(0);
 
         universe.getViewer().getView().setFrontClipDistance(0.1);
         universe.getViewer().getView().setBackClipDistance(100);
-
 
         BranchGroup scene = createSceneGraph();
         scene.compile();
@@ -153,8 +156,8 @@ public class VUniverseCreator implements UniverseCreator {
         rootGroup.setCapability(BranchGroup.ALLOW_DETACH);
 
         // initialize camera
-        camGroup =
-                universe.getViewingPlatform().getViewPlatformTransform();
+        camGroup
+                = universe.getViewingPlatform().getViewPlatformTransform();
         Transform3D camTranslate = new Transform3D();
         camTranslate.set(new Vector3f(0.0f, 0.0f, 20.0f));
         camGroup.setTransform(camTranslate);
@@ -179,14 +182,12 @@ public class VUniverseCreator implements UniverseCreator {
 //        DirectionalLight lgt3 = new DirectionalLight(lColor3, lDir3);
 //        lgt3.setInfluencingBounds(bounds);
 //        objRoot.addChild(lgt3);
-
 //        // define light source
 //        Color3f lColor4 = new Color3f(0.6f, 0.6f, 0.6f);
 //        Vector3f lDir4 = new Vector3f(-1f, -1.0f, -1.0f);
 //        DirectionalLight lgt4 = new DirectionalLight(lColor4, lDir4);
 //        lgt4.setInfluencingBounds(bounds);
 //        objRoot.addChild(lgt4);
-
         // standard mouse rotation
         MouseRotate rotateBehavior = new MouseRotate(canvas, rootGroup);
         objRoot.addChild(rotateBehavior);
@@ -208,7 +209,6 @@ public class VUniverseCreator implements UniverseCreator {
         objRoot.addChild(translateBehavior);
 
 //        rootGroup.addChild(new ColorCube(1));
-
         Background background = new Background();
         background.setColor(0.285f, 0.285f, 0.3f);
         background.setApplicationBounds(bounds);
