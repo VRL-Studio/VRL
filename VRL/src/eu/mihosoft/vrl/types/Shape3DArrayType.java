@@ -741,6 +741,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
     @Override
     public void dispose() {
+        canvas.dispose();
         dispose3D();
         super.dispose();
     }

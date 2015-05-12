@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.types;
 
 import eu.mihosoft.vrl.visual.Ruler;
@@ -63,6 +62,7 @@ import eu.mihosoft.vrl.visual.BufferedPainter;
 import eu.mihosoft.vrl.visual.Canvas;
 import eu.mihosoft.vrl.visual.CanvasChild;
 import eu.mihosoft.vrl.visual.CanvasWindow;
+import eu.mihosoft.vrl.visual.Disposable;
 import eu.mihosoft.vrl.visual.Style;
 import eu.mihosoft.vrl.visual.TransparentPanel;
 import eu.mihosoft.vrl.visual.VBoxLayout;
@@ -71,10 +71,12 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Composite;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.GridLayout;
 import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.event.ComponentEvent;
@@ -84,12 +86,18 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Area;
+import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
+import java.util.Locale;
 import javax.swing.Box;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
@@ -97,12 +105,13 @@ import javax.swing.SwingUtilities;
  * Extended version of <code>JCanvas3D</code>. In addition it provides
  * functionality for post render tasks, i.e., render optimization. Also its
  * appearance is different. It is designed for use within type representations.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class VCanvas3D extends JCanvas3D implements MouseListener,
         MouseMotionListener,
         BufferedPainter,
-        MouseWheelListener, ComponentListener, CanvasChild {
+        MouseWheelListener, ComponentListener, CanvasChild, Disposable {
 
     private static final long serialVersionUID = -1672983251248240258L;
     /**
@@ -128,8 +137,8 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
      */
     private boolean renderOptimizationEnabled;
     /**
-     * defines whether render optimization is used as realtime effect
-     * (if enabled)
+     * defines whether render optimization is used as realtime effect (if
+     * enabled)
      */
     private boolean realTimeRenderOptimization;
     /**
@@ -143,17 +152,22 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
     private TransparentPanel toolPane;
     private JPopupMenu menu;
 
+    private boolean disableRoundRectangle = false;
+
+    private JFrame frame;
+
     public static final String UPPER_COLOR_KEY = "VCanvas3D:upperColor";
     public static final String LOWER_COLOR_KEY = "VCanvas3D:lowerColor";
-    public static final String CONTENT_TRANSPARENCY_KEY =
-            "VCanvas3D:Content:transparency";
+    public static final String CONTENT_TRANSPARENCY_KEY
+            = "VCanvas3D:Content:transparency";
 
     /**
      * Constructor.
+     *
      * @param typeRepresentation the type representation that uses this canvas
      */
     public VCanvas3D(TypeRepresentationBase typeRepresentation) {
-        
+
         setTypeRepresentation(typeRepresentation);
 
         setLayout(new BorderLayout());
@@ -197,6 +211,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
     /**
      * Applies blur filter after rendering.
+     *
      * @param g2 the graphics context that is to be used for post render
      * operations
      */
@@ -210,9 +225,9 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
             if (newImageNeeded || isRealTimeRenderOptimization()) {
 
                 if (newImageNeeded) {
-                    renderBuffer =
-                            ImageUtils.createCompatibleImage(
-                            getWidth(), getHeight());
+                    renderBuffer
+                            = ImageUtils.createCompatibleImage(
+                                    getWidth(), getHeight());
                 } else {
                     ImageUtils.clearImage(renderBuffer);
                 }
@@ -260,7 +275,6 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 //            buffer = ImageEffects.createCompatibleImage(getWidth(), getHeight());
 //
 //            Graphics2D g2 = buffer.createGraphics();
-
         // this is necessary to restore size when loaded from file
         if (!initialized) {
             revalidate();
@@ -268,18 +282,22 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
             initialized = true;
         }
 
-
         style = typeRepresentation.getStyle();
 
         Graphics2D g2 = (Graphics2D) g;
 
         // paint background shape (round rectangle with gradient background)
-
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
-        setShape(new RoundRectangle2D.Double(0, 0,
-                getWidth(), getHeight(), 20, 20));
+        if (disableRoundRectangle) {
+            setShape(new Rectangle2D.Double(0, 0,
+                    getWidth(), getHeight()));
+
+        } else {
+            setShape(new RoundRectangle2D.Double(0, 0,
+                    getWidth(), getHeight(), 20, 20));
+        }
 
         Color upperColor = style.getBaseValues().getColor(UPPER_COLOR_KEY);
         Color lowerColor = style.getBaseValues().getColor(LOWER_COLOR_KEY);
@@ -297,9 +315,9 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
         // define alpha composite for 3d content
         Composite originalComposite = g2.getComposite();
 
-        AlphaComposite ac1 =
-                AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-               style.getBaseValues().getFloat(CONTENT_TRANSPARENCY_KEY));
+        AlphaComposite ac1
+                = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                        style.getBaseValues().getFloat(CONTENT_TRANSPARENCY_KEY));
         g2.setComposite(ac1);
 
         Shape originalClip = g.getClip();
@@ -311,16 +329,17 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
         // compute reduced clip by intersection realclip and round rectangle
         // clip for scrollbars (otherwise 3d was drawn above, occured for other
         // components as well)
+        if (!disableRoundRectangle) {
+            RoundRectangle2D roundClip = new RoundRectangle2D.Double(0, 0,
+                    width,
+                    height, 20, 20);
 
-        RoundRectangle2D roundClip = new RoundRectangle2D.Double(0, 0,
-                width,
-                height, 20, 20);
+            Area roundClipArea = new Area(roundClip);
+            Area originalClipArea = new Area(originalClip);
+            originalClipArea.intersect(roundClipArea);
 
-        Area roundClipArea = new Area(roundClip);
-        Area originalClipArea = new Area(originalClip);
-        originalClipArea.intersect(roundClipArea);
-        
-        g2.setClip(originalClipArea);
+            g2.setClip(originalClipArea);
+        }
 
         postRender(g2);
 
@@ -330,16 +349,18 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
                 CanvasWindow.BORDER_COLOR_KEY));
         g2.setStroke(new BasicStroke(1));
 
-        g2.draw(new RoundRectangle2D.Double(0, 0,
-                getWidth() - 1, getHeight() - 1, 20, 20));
+        if (!disableRoundRectangle) {
+            g2.draw(new RoundRectangle2D.Double(0, 0,
+                    getWidth() - 1, getHeight() - 1, 20, 20));
+        }
 
 //    } // end if (imageHasChanged || styleHasChanged)
-
 //        g.drawImage(buffer, 0, 0, null);
     }
 
     /**
      * Returns the shape of the canvas.
+     *
      * @return the shape
      */
     public Shape getShape() {
@@ -348,6 +369,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
     /**
      * Defines the shape of the canvas.
+     *
      * @param shape the shape to set
      */
     public void setShape(Shape shape) {
@@ -356,6 +378,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
     /**
      * Returns the type representation that uses this canvas.
+     *
      * @return the typeRepresentation that uses this canvas
      */
     public TypeRepresentationBase getTypeRepresentation() {
@@ -364,6 +387,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
     /**
      * Defines the type representation that uses this canvas.
+     *
      * @param typeRepresentation the type representation to set
      */
     protected void setTypeRepresentation(
@@ -385,6 +409,47 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
         postRenderTask();
         if (e.getButton() == MouseEvent.BUTTON3) {
             getMenu().show(this, e.getX(), e.getY());
+        } else if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
+            
+            if (getTypeRepresentation().getViewValueWithoutValidation()==null) {
+                return;
+            }
+            
+            Container parent = getParent();
+
+            if (frame != null) {
+                frame.setVisible(false);
+                frame.dispose();
+            }
+
+            frame = new JFrame("VRL 3D View");
+            frame.setSize(400, 300);
+            
+            JPanel p = new JPanel(new GridLayout());
+            p.add(this);
+            p.setBackground(getMainCanvas().getStyle().getBaseValues().
+                    getColor(Canvas.BACKGROUND_COLOR_KEY));
+            frame.setContentPane(p);
+            frame.addWindowListener(new WindowAdapter() {
+
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    VCanvas3D.this.disableRoundRectangle = false;
+                    parent.add(VCanvas3D.this);
+                    VCanvas3D.this.revalidate();
+                    VCanvas3D.this.repaint();
+                }
+
+                @Override
+                public void windowOpened(WindowEvent e) {
+                    VCanvas3D.this.disableRoundRectangle = true;
+                    VCanvas3D.this.revalidate();
+                    VCanvas3D.this.contentChanged();
+                    VCanvas3D.this.setSize(new Dimension(1, 1));
+                    VCanvas3D.this.revalidate();
+                }
+            });
+            frame.setVisible(true);
         }
     }
 
@@ -441,14 +506,13 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 //                && getTypeRepresentation().getMainCanvas() != null) {
 //            getTypeRepresentation().getMainCanvas().repaint();
 //        }
-
         if (isRenderOptimizationEnabled()) {
 
             if (isRealTimeRenderOptimization()) {
                 setPostRender(true);
             } else {
-                AnimationManager animationManager =
-                        getTypeRepresentation().
+                AnimationManager animationManager
+                        = getTypeRepresentation().
                         getMainCanvas().getAnimationManager();
 
                 Animation a = new PostRenderAnimation(this);
@@ -462,14 +526,17 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
     /**
      * Indicates whether post render tasks are currently active.
+     *
      * @return <code>true</code> if post render tasks are currently active;
-     *         <code>false</code> otherwise
+     * <code>false</code> otherwise
      */
     boolean isPostRender() {
         return postRendering;
     }
 
-    /**Defines if post render tasks are currently active.
+    /**
+     * Defines if post render tasks are currently active.
+     *
      * @param postRender the state to set
      */
     void setPostRender(boolean postRender) {
@@ -478,8 +545,9 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
     /**
      * Indicates whether renderOptimization is enabled.
+     *
      * @return <code>true</code> if render optimization is enabled;
-     *         <code>false</code> otherwise
+     * <code>false</code> otherwise
      */
     public boolean isRenderOptimizationEnabled() {
         return renderOptimizationEnabled;
@@ -487,6 +555,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
     /**
      * Defines if render optimization is to be enabled.
+     *
      * @param renderOptimizationEnabled the state to set
      */
     public void setRenderOptimizationEnabled(boolean renderOptimizationEnabled) {
@@ -495,8 +564,9 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
     /**
      * Indicates whether realtime optimization is enabled.
+     *
      * @return <code>true</code> if realtime optimization is enabled;
-     *         <code>false</code> otherwise
+     * <code>false</code> otherwise
      */
     public boolean isRealTimeRenderOptimization() {
         return realTimeRenderOptimization;
@@ -504,6 +574,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
     /**
      * Defines whether to use realtime optimization.
+     *
      * @param realTimeRenderOptimization the state to set
      */
     public void setRealTimeRenderOptimization(boolean realTimeRenderOptimization) {
@@ -512,6 +583,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
     /**
      * Returns the blur value of the image.
+     *
      * @return the blur value of the image
      */
     public float getBlurValue() {
@@ -522,6 +594,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
      * Defines the blur value of the image. Values less than <code>1.0</code>
      * result in smoother images. Values greater than <code>1.0</code> and less
      * than <code>0</code> result in sharper images.
+     *
      * @param blurValue the blur value of the image
      */
     public void setBlurValue(float blurValue) {
@@ -552,11 +625,12 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
     /**
      * Returns a snapshot of this canvas.
+     *
      * @return the renderBuffer
      */
     public BufferedImage getSnapShot() {
-        BufferedImage result =
-                ImageUtils.createCompatibleImage(getWidth(), getHeight());
+        BufferedImage result
+                = ImageUtils.createCompatibleImage(getWidth(), getHeight());
         Graphics g = result.createGraphics();
         super.paintComponent(g);
         return result;
@@ -577,6 +651,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
     /**
      * <b>Warning: </b> this method does nothing. The maincanvas of the
      * specified type representation is used instead.
+     *
      * @param mainCanvas canvas to set
      */
     @Override
@@ -590,10 +665,20 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
     public JPopupMenu getMenu() {
         return menu;
     }
+
+    @Override
+    public void dispose() {
+        if (frame != null) {
+            frame.setVisible(false);
+            frame.dispose();
+            frame = null;
+        }
+    }
 }
 
 /**
  * Enables and disables render optimization.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 class PostRenderAnimation extends Animation {
@@ -605,6 +690,7 @@ class PostRenderAnimation extends Animation {
 
     /**
      * Constructor.
+     *
      * @param canvas the canvas that is to be controlled by this animation.
      */
     public PostRenderAnimation(final VCanvas3D canvas) {
