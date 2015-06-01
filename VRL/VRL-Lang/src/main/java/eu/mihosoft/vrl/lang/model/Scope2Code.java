@@ -52,7 +52,7 @@ package eu.mihosoft.vrl.lang.model;
 //import org.stringtemplate.v4.ST;
 import eu.mihosoft.vrl.lang.CodeRenderer;
 import com.google.common.io.Files;
-import eu.mihosoft.vrl.lang.VLangUtils;
+import eu.mihosoft.vrl.lang.VLangUtilsNew;
 import groovy.lang.GroovyClassLoader;
 import java.io.File;
 import java.io.IOException;
@@ -544,7 +544,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
             if (arg.getType().equals(Type.STRING)) {
                 constString = "\""
-                        + VLangUtils.addEscapeCharsToCode(arg.getConstant().get().
+                        + VLangUtilsNew.addEscapeCharsToCode(arg.getConstant().get().
                                 toString()) + "\"";
             } else {
                 constString = arg.getConstant().get().toString();

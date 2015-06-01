@@ -52,7 +52,7 @@ package eu.mihosoft.vrl.lang.model;
 import eu.mihosoft.vrl.base.VClassLoaderUtil;
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.Patterns;
-import eu.mihosoft.vrl.lang.VLangUtils;
+import eu.mihosoft.vrl.lang.VLangUtilsNew;
 import java.util.Objects;
 
 /**
@@ -108,13 +108,13 @@ public final class Type implements IType {
         boolean isPackageNameSpecified = arrayDimension == 0;
 
         if (isPackageNameSpecified) {
-            isPackageNameSpecified = !VLangUtils.isShortName(fullName);
+            isPackageNameSpecified = !VLangUtilsNew.isShortName(fullName);
         }
 
         if (isPackageNameSpecified) {
-            this.packageName = VLangUtils.slashToDot(
-                    VLangUtils.packageNameFromFullClassName(fullName));
-            this.shortName = VLangUtils.shortNameFromFullClassName(fullName);
+            this.packageName = VLangUtilsNew.slashToDot(
+                    VLangUtilsNew.packageNameFromFullClassName(fullName));
+            this.shortName = VLangUtilsNew.shortNameFromFullClassName(fullName);
         } else {
             this.packageName = "";
             this.shortName = fullName;
@@ -137,20 +137,20 @@ public final class Type implements IType {
             if (shortName.startsWith("L") && shortName.endsWith(";")) {
                 shortName = shortName.substring(1, shortName.length() - 1);
             }
-            packageName = VLangUtils.slashToDot(
-                    VLangUtils.packageNameFromFullClassName(shortName));
-            shortName = VLangUtils.shortNameFromFullClassName(shortName);
+            packageName = VLangUtilsNew.slashToDot(
+                    VLangUtilsNew.packageNameFromFullClassName(shortName));
+            shortName = VLangUtilsNew.shortNameFromFullClassName(shortName);
         }
 
-        if (!VLangUtils.isPackageNameValid(VLangUtils.slashToDot(packageName))) {
+        if (!VLangUtilsNew.isPackageNameValid(VLangUtilsNew.slashToDot(packageName))) {
             throw new IllegalArgumentException("Specified package is invalid: " + getPackageName());
         }
         if (!isReturnOrParamType) {
-            if (!VLangUtils.isClassNameValid(shortName)) {
+            if (!VLangUtilsNew.isClassNameValid(shortName)) {
                 throw new IllegalArgumentException("Specified classname is invalid: " + getShortName());
             }
         } else {
-            if (!VLangUtils.isIdentifierValid(shortName, true)) {
+            if (!VLangUtilsNew.isIdentifierValid(shortName, true)) {
                 throw new IllegalArgumentException("Specified classname is invalid: " + getShortName());
             }
         }

@@ -68,7 +68,7 @@ import org.codehaus.groovy.control.CompilePhase;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public class VLangUtils {
+public class VLangUtilsNew {
 
     /**
      * Removes automatic imports from code .
@@ -211,7 +211,7 @@ public class VLangUtils {
     }
 
     // no instanciation allowed
-    private VLangUtils() {
+    private VLangUtilsNew() {
         throw new AssertionError(); // not in this class either!
     }
 

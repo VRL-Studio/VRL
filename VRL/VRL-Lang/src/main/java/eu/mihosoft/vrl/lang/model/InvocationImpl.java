@@ -96,6 +96,7 @@ class InvocationImpl implements Invocation {
         this.Static = isStatic;
         this.returnType = returnType;
 
+        if (args != null)
         arguments.addAll(Arrays.asList(args));
 
 //        if (isVoid) {

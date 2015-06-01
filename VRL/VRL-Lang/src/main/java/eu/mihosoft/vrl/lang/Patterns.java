@@ -68,7 +68,7 @@ public class Patterns {
     /**
      * Regular expression for a valid vrl identifier (variable, class or method
      * names). VRL does not allow names that contain the <code>$</code> sign.
-     * @see VLangUtils#isComponentClassNameValid(java.lang.String) 
+     * @see VLangUtilsNew#isComponentClassNameValid(java.lang.String) 
      */
     public static final String VRL_IDENTIFIER_STRING = "[a-zA-Z\\p{L}_][a-zA-Z\\p{L}_0-9]*";
     
@@ -76,7 +76,7 @@ public class Patterns {
      * Regular expression for a valid vrl class identifier. VRL does not allow
      * class names that start with lowercase characters or contain 
      * the <code>$</code> sign.
-     * @see VLangUtils#isComponentClassNameValid(java.lang.String) 
+     * @see VLangUtilsNew#isComponentClassNameValid(java.lang.String) 
      */
     public static final String VRL_CLASS_IDENTIFIER_STRING = "[\\p{Lu}_][\\p{L}_0-9]*";
     

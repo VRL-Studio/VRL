@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 import java.io.PrintWriter;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 
 import eu.mihosoft.vrl.lang.model.CodeRange;
@@ -24,6 +25,7 @@ import groovy.util.GroovyScriptEngine;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
+import org.codehaus.groovy.transform.GroovyASTTransformationClass;
 import org.junit.Test;
 
 /**
@@ -51,7 +53,19 @@ public class InstrumentationTest {
 						+ "    public static void main(String[] args) {"
 						+ "        A a = new A();" + "        a.m2(1);"
 						+ "    }" + "}").run();
-		assertEquals(1, conf.getCompilationCustomizers().size());
+	}
+	
+	@Test
+	public void testImplicitASTTransformationInstanceRetrieval()
+	{
+		CompilerConfiguration conf = new CompilerConfiguration();
+		conf.setJointCompilationOptions(new HashMap<String,Object>());
+		GroovyShell shell = new GroovyShell(conf);
+		Script script = shell.parse(
+				"public class A { @eu.mihosoft.vrl.instrumentation.Main public void greet() { System.out.println(\"test\"); }}");
+		script.run();
+		assertEquals(1, ((TestTransform)conf.getJointCompilationOptions().get("save")).counter);
+		
 	}
 
 	@Test
@@ -76,5 +90,42 @@ public class InstrumentationTest {
 		assertEquals(1, scopes.size());
 		Iterator<Scope> iter = scopes.iterator();
 		assertEquals("foo", iter.next().getName());
+	}
+
+	@Test
+	public void testInstrumentationVisitor() throws Exception {
+		CompilerConfiguration conf = new CompilerConfiguration();
+		conf.addCompilationCustomizers(new ASTTransformationCustomizer(
+				new VRLVisualizationTransformation()));
+		GroovyClassLoader loader = new GroovyClassLoader(this.getClass()
+				.getClassLoader(), conf);
+
+		UIBinding.scopes.clear();
+		String classX = "package x.y.z; public class X {\npublic int foo(){ int i; i = 4; i++; return i; } }";
+		int idx = classX.indexOf("i = 4");
+		Class cls = loader.parseClass(classX);
+
+		Object x = cls.newInstance();
+		cls.getMethod("bar").invoke(x);
+
+		CodeRange cr = new CodeRange(idx, idx + 1);
+		// checking whether code from new model is identical to new code
+		for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
+			recurse(scopeList, cr);
+		}
+	}
+
+	void recurse(Collection<Scope> parent, CodeRange cursor) {
+		for (Scope s : parent) {
+			// System.out.println("scope with range " + s.getRange());
+			if (s.getRange().contains(cursor)) {
+				System.out.println("intersecting scope " + s.getRange());
+				System.out.println("- " + s.getType().name());
+				for (Variable v : s.getVariables()) {
+					System.out.println("- scope contains variable " + v);
+				}
+			}
+			recurse(s.getScopes(), cursor);
+		}
 	}
 }

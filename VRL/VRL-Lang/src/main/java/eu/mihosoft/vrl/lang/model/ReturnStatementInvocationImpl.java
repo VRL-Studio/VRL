@@ -17,12 +17,10 @@ public class ReturnStatementInvocationImpl extends InvocationImpl implements Ret
 
         getNode().setTitle("return ");
     }
-
     
     @Override
     public IArgument getArgument() {
         return getArguments().get(0);
     }
-
 
 }

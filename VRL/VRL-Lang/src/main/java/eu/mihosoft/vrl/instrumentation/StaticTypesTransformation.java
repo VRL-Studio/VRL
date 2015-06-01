@@ -1,11 +1,4 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package eu.mihosoft.vrl.instrumentation;
-
-/*
  * Copyright 2003-2012 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,7 +13,10 @@ package eu.mihosoft.vrl.instrumentation;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package eu.mihosoft.vrl.instrumentation;
+
 import groovy.transform.CompilationUnitAware;
+
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.AnnotatedNode;
 import org.codehaus.groovy.ast.AnnotationNode;
@@ -33,45 +29,38 @@ import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.syntax.SyntaxException;
+import org.codehaus.groovy.transform.ASTTransformation;
+import org.codehaus.groovy.transform.GroovyASTTransformation;
 import org.codehaus.groovy.transform.stc.GroovyTypeCheckingExtensionSupport;
 import org.codehaus.groovy.transform.stc.StaticTypeCheckingVisitor;
 
 import java.util.Collections;
 import java.util.Map;
-import org.codehaus.groovy.transform.ASTTransformation;
-import org.codehaus.groovy.transform.GroovyASTTransformation;
-import org.codehaus.groovy.transform.StaticTypesTransformation;
 
 /**
- * Handles the implementation of the {@link groovy.transform.TypeChecked}
- * transformation.
+ * Handles the implementation of the {@link groovy.transform.TypeChecked} transformation.
  *
  * @author <a href="mailto:blackdrag@gmx.org">Jochen "blackdrag" Theodorou</a>
  * @author Cedric Champeau
  * @author Guillaume Laforge
  */
 @GroovyASTTransformation(phase = CompilePhase.INSTRUCTION_SELECTION)
-public class TypeCheckingTransform extends StaticTypesTransformation {
+public class StaticTypesTransformation implements ASTTransformation, CompilationUnitAware {
 
     public static final String STATIC_ERROR_PREFIX = "[Static type checking] - ";
-    private CompilationUnit compilationUnit;
+    protected CompilationUnit compilationUnit;
 
-    public void visit(ClassNode node, SourceUnit source) {
-        visit(new ASTNode[]{new AnnotationNode(node), node}, source);
-    }
-
-    @Override
+    //    @Override
     public void visit(ASTNode[] nodes, SourceUnit source) {
-        
         AnnotationNode annotationInformation = (AnnotationNode) nodes[0];
-        Map<String, Expression> members = annotationInformation.getMembers();
+        Map<String,Expression> members = annotationInformation.getMembers();
         Expression extensions = members.get("extensions");
         AnnotatedNode node = (AnnotatedNode) nodes[1];
         StaticTypeCheckingVisitor visitor = null;
         if (node instanceof ClassNode) {
             ClassNode classNode = (ClassNode) node;
             visitor = newVisitor(source, classNode);
-            //visitor.setCompilationUnit(compilationUnit);
+            visitor.setCompilationUnit(compilationUnit);
             addTypeCheckingExtensions(visitor, extensions);
             visitor.initialize();
             visitor.visitClass(classNode);
@@ -108,8 +97,8 @@ public class TypeCheckingTransform extends StaticTypesTransformation {
     }
 
     /**
-     * Allows subclasses to provide their own visitor. This is useful for
-     * example for transformations relying on the static type checker.
+     * Allows subclasses to provide their own visitor. This is useful for example for transformations relying
+     * on the static type checker.
      *
      *
      * @param unit the source unit

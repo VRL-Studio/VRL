@@ -1,8 +1,6 @@
-/* 
- * Parameter.java
- *
- * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
- * Copyright (c) 2006–2014 by Michael Hoffer
+/*
+ * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn),
+ * Copyright (c) 2006–2015 by Michael Hoffer
  * 
  * This file is part of Visual Reflection Library (VRL).
  *
@@ -47,66 +45,20 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
+package eu.mihosoft.vrl.instrumentation;
 
-package eu.mihosoft.vrl.lang.model;
+import java.util.Stack;
 
-import eu.mihosoft.vrl.lang.VLangUtilsNew;
+public interface TransformPart<In, Out, OutParent> {
 
-/**
- *
- * @author Michael Hoffer <info@michaelhoffer.de>
- */
-public class Parameter implements IParameter {
+	Out transform(Stack<Object> stackIn, In obj, Stack<Object> stackOut,
+			OutParent parent);
 
-    private final IType type;
-    private final String name;
-    private final ICodeRange range;
+	Class<In> getAcceptedType();
 
-    public Parameter(IType type, String name) {
-        this.type = type;
-        this.name = name;
-        this.range = null;
+	Class<OutParent> getParentType();
 
-        validate();
-    }
-    
-    public Parameter(IType type, String name, ICodeRange range) {
-        this.type = type;
-        this.name = name;
-        this.range = range;
-
-        validate();
-    }
-
-    private void validate() {
-        if (!VLangUtilsNew.isVariableNameValid(name)) {
-            throw new IllegalArgumentException("Specified name is not a valid parameter name: " + name);
-        }
-    }
-
-    /**
-     * @return the type
-     */
-    @Override
-    public IType getType() {
-        return type;
-    }
-
-    /**
-     * @return the name
-     */
-    @Override
-    public String getName() {
-        return name;
-    }
-
-    @Override
-    public ICodeRange getRange() {
-        return range;
-    }
-    
-    public static IParameter fromParameter(java.lang.reflect.Parameter p) {
-        return new Parameter(Type.fromClass(p.getType()), p.getName());
-    }
+	boolean accepts(Stack<Object> stackIn, In obj, Stack<Object> stackOut,
+			OutParent parent); 
 
 }
