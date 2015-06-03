@@ -49,21 +49,22 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
-import eu.mihosoft.vrl.base.IOUtil;
-import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
-import groovy.lang.GroovyClassLoader;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Collection;
-import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import junit.framework.Assert;
+
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 import org.junit.Test;
-import static org.junit.Assert.*;
+
+import eu.mihosoft.vrl.base.IOUtil;
+import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
+import groovy.lang.GroovyClassLoader;
 
 /**
  *
@@ -71,153 +72,177 @@ import static org.junit.Assert.*;
  */
 public class LangModelTest {
 
-    public static InputStream getResourceAsStream(String resourceName) {
-        return CommentTest.class.getResourceAsStream("/eu/mihosoft/vrl/lang/" + resourceName);
-    }
+	public static InputStream getResourceAsStream(String resourceName) {
+		return CommentTest.class.getResourceAsStream("/eu/mihosoft/vrl/lang/"
+				+ resourceName);
+	}
 
-    public static Reader getResourceAsStringReader(String resourceName) {
+	public static Reader getResourceAsStringReader(String resourceName) {
 
-        return new StringReader(getResourceAsString(resourceName));
-    }
+		return new StringReader(getResourceAsString(resourceName));
+	}
 
-    public static String getResourceAsString(String resourceName) {
-        InputStream is = CommentTest.class.getResourceAsStream("/eu/mihosoft/vrl/lang/" + resourceName);
-        String tmpCode = IOUtil.convertStreamToString(is);
-        return tmpCode;
-    }
+	public static String getResourceAsString(String resourceName) {
+		InputStream is = CommentTest.class
+				.getResourceAsStream("/eu/mihosoft/vrl/lang/" + resourceName);
+		String tmpCode = IOUtil.convertStreamToString(is);
+		return tmpCode;
+	}
 
-    @Test
-    public void codeToModelToCodeTest() {
+	@Test
+	public void codeToModelToCodeTest() {
 
-        createLangModelCompileAndCompareTest("ModelCode01.groovy");
+		createLangModelCompileAndCompareTest("ModelCode01.groovy");
 
-    }
+	}
 
-    @Test
-    public void arrayElementTest() {
+	@Test
+	public void arrayElementTest() {
 
-        createLangModelCompileAndCompareTest("ArrayElementCode01.groovy");
-        createLangModelCompileAndCompareTest("ArrayElementCode02.groovy");
-    }
+		createLangModelCompileAndCompareTest("ArrayElementCode01.groovy");
+		createLangModelCompileAndCompareTest("ArrayElementCode02.groovy");
+	}
 
-    @Test
-    public void IfTest() {
+	@Test
+	public void IfTest() {
 
-        createLangModelCompileAndCompareTest("IfCode01.groovy");
-        createLangModelCompileAndCompareTest("IfCode02.groovy");
+		createLangModelCompileAndCompareTest("IfCode01.groovy");
+		createLangModelCompileAndCompareTest("IfCode02.groovy");
 
-    }
+	}
 
-    @Test
-    public void ForLoopTest() {
+	@Test
+	public void ForLoopTest() {
 
-        createLangModelCompileAndCompareTest("ForLoopCode01.groovy");
+		createLangModelCompileAndCompareTest("ForLoopCode01.groovy");
 
-        createLangModelCompileMustFailTest("ForLoopIllegalCode01.groovy");
-        createLangModelCompileMustFailTest("ForLoopIllegalCode02.groovy");
+		createLangModelCompileMustFailTest("ForLoopIllegalCode01.groovy");
+		createLangModelCompileMustFailTest("ForLoopIllegalCode02.groovy");
 
-    }
+	}
 
-    @Test
-    public void WhileLoopTest() {
+	@Test
+	public void WhileLoopTest() {
 
-        createLangModelCompileAndCompareTest("WhileLoopCode01.groovy");
+		createLangModelCompileAndCompareTest("WhileLoopCode01.groovy");
 
-        createLangModelCompileMustFailTest("WhileLoopIllegalCode01.groovy");
-        createLangModelCompileMustFailTest("WhileLoopIllegalCode02.groovy");
-        createLangModelCompileMustFailTest("WhileLoopIllegalCode03.groovy");
-        createLangModelCompileMustFailTest("WhileLoopIllegalCode04.groovy");
+		createLangModelCompileMustFailTest("WhileLoopIllegalCode01.groovy");
+		createLangModelCompileMustFailTest("WhileLoopIllegalCode02.groovy");
+		createLangModelCompileMustFailTest("WhileLoopIllegalCode03.groovy");
+		createLangModelCompileMustFailTest("WhileLoopIllegalCode04.groovy");
 
-    }
+	}
 
-    private void createLangModelCompileMustFailTest(String fileName) {
+	private void createLangModelCompileMustFailTest(String fileName) {
 
-        UIBinding.scopes.clear();
+		UIBinding.scopes.clear();
 
-        String code = getResourceAsString(fileName);
+		String code = getResourceAsString(fileName);
 
-        // checking whether sample code compiles and generate model
-        boolean successCompile = false;
-        try {
-            GroovyClassLoader gcl = new GroovyClassLoader();
-            gcl.parseClass(code);
-            successCompile = true;
+		// checking whether sample code compiles and generate model
+		boolean successCompile = false;
+		try {
+			CompilerConfiguration conf = new CompilerConfiguration();
+			conf.addCompilationCustomizers(new ASTTransformationCustomizer(
+					new VRLVisualizationTransformation()));
+			GroovyClassLoader gcl = new GroovyClassLoader(this.getClass()
+					.getClassLoader(), conf);
+			gcl.parseClass(code);
+			successCompile = true;
 
-        } catch (Exception ex) {
-            Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+		} catch (Exception ex) {
+			Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
 
-        Assert.assertFalse(fileName + ": " + "Sample code must not compile", successCompile);
-    }
+		Assert.assertFalse(fileName + ": " + "Sample code must not compile",
+				successCompile);
+	}
 
-    private void createLangModelCompileAndCompareTest(String fileName) {
+	private void createLangModelCompileAndCompareTest(String fileName) {
 
-        UIBinding.scopes.clear();
+		UIBinding.scopes.clear();
 
-        String code = getResourceAsString(fileName);
+		String code = getResourceAsString(fileName);
 
-        // checking whether sample code compiles and generate model
-        boolean successCompile = false;
-        try {
-            GroovyClassLoader gcl = new GroovyClassLoader();
-            gcl.parseClass(code);
-            successCompile = true;
+		// checking whether sample code compiles and generate model
+		boolean successCompile = false;
+		try {
+			CompilerConfiguration conf = new CompilerConfiguration();
+			conf.addCompilationCustomizers(new ASTTransformationCustomizer(
+					new VRLVisualizationTransformation()));
+			GroovyClassLoader gcl = new GroovyClassLoader(this.getClass()
+					.getClassLoader(), conf);
+			gcl.parseClass(code);
+			successCompile = true;
+			gcl.close();
+		} catch (Exception ex) {
+			Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
 
-        } catch (Exception ex) {
-            Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+		Assert.assertTrue(fileName + ": " + "Sample code must compile",
+				successCompile);
+		Assert.assertTrue(fileName + ": "
+				+ "UIBindings.scopes must be initialized",
+				UIBinding.scopes != null);
+		Assert.assertTrue(fileName + ": "
+				+ "UIBindings must contain exactly one scope, got "
+				+ UIBinding.scopes.size(), UIBinding.scopes.size() == 1);
 
-        Assert.assertTrue(fileName + ": " + "Sample code must compile", successCompile);
-        Assert.assertTrue(fileName + ": " + "UIBindings.scopes must be initialized", UIBinding.scopes != null);
-        Assert.assertTrue(fileName + ": " + "UIBindings must contain exactly one scope, got " + UIBinding.scopes.size(), UIBinding.scopes.size() == 1);
+		// generating new code from model
+		String newCode = "";
+		for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
+			for (Scope s : scopeList) {
+				if (s instanceof CompilationUnitDeclaration) {
+					newCode = Scope2Code
+							.getCode((CompilationUnitDeclaration) s);
+					break;
+				}
+			}
+		}
 
-        // generating new code from model
-        String newCode = "";
-        for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
-            for (Scope s : scopeList) {
-                if (s instanceof CompilationUnitDeclaration) {
-                    newCode = Scope2Code.getCode((CompilationUnitDeclaration) s);
-                    break;
-                }
-            }
-        }
+		System.out.println("---- old code ----");
+		System.out.println(newCode);
 
-        System.out.println("---- old code ----");
-        System.out.println(newCode);
+		// checking whether new code compiles
+		successCompile = false;
+		UIBinding.scopes.clear();
+		try {
+			CompilerConfiguration cfg = new CompilerConfiguration();
+			cfg.addCompilationCustomizers(new ASTTransformationCustomizer(
+					new VRLVisualizationTransformation()));
+			GroovyClassLoader gcl = new GroovyClassLoader(
+					LangModelTest.class.getClassLoader(), cfg);
+			gcl.parseClass(newCode, "MyFileClass.groovy");
+			successCompile = true;
+		} catch (Exception ex) {
+			Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE,
+					null, ex);
+		}
+		Assert.assertTrue(fileName + ": "
+				+ "Sample code generated from model must compile",
+				successCompile);
 
-        // checking whether new code compiles
-        successCompile = false;
-        UIBinding.scopes.clear();
-        try {
-            CompilerConfiguration cfg = new CompilerConfiguration();
-            cfg.addCompilationCustomizers(new ASTTransformationCustomizer(
-                    new VRLVisualizationTransformation()));
-            GroovyClassLoader gcl = new GroovyClassLoader(LangModelTest.class.getClassLoader(), cfg);
-            gcl.parseClass(newCode, "MyFileClass.groovy");
-            successCompile = true;
-        } catch (Exception ex) {
-            Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        Assert.assertTrue(fileName + ": " + "Sample code generated from model must compile", successCompile);
+		String newNewCode = "";
+		// checking whether code from new model is identical to new code
+		for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
+			for (Scope s : scopeList) {
 
-        String newNewCode = "";
-        // checking whether code from new model is identical to new code
-        for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
-            for (Scope s : scopeList) {
+				System.out.println("scope: " + s);
 
-                System.out.println("scope: " + s);
+				if (s instanceof CompilationUnitDeclaration) {
+					newNewCode = Scope2Code
+							.getCode((CompilationUnitDeclaration) s);
+					break;
+				}
+			}
+		}
 
-                if (s instanceof CompilationUnitDeclaration) {
-                    newNewCode = Scope2Code.getCode((CompilationUnitDeclaration) s);
-                    break;
-                }
-            }
-        }
+		System.out.println("---- new code ----");
+		System.out.println(newNewCode);
 
-        System.out.println("---- new code ----");
-        System.out.println(newNewCode);
-
-        Assert.assertTrue(fileName + ": " + "Code strings must be identical", newCode.equals(newNewCode));
-    }
-
+		Assert.assertTrue(fileName + ": " + "Code strings must be identical",
+				newCode.equals(newNewCode));
+	}
 }

@@ -50,7 +50,20 @@
 package eu.mihosoft.vrl.instrumentation;
 
 import eu.mihosoft.vrl.instrumentation.composites.BinaryExpressionPart;
+import eu.mihosoft.vrl.instrumentation.composites.BreakPart;
+import eu.mihosoft.vrl.instrumentation.composites.ClassNodePart;
+import eu.mihosoft.vrl.instrumentation.composites.ContinuePart;
+import eu.mihosoft.vrl.instrumentation.composites.DeclarationExpressionPart;
+import eu.mihosoft.vrl.instrumentation.composites.FieldPart;
+import eu.mihosoft.vrl.instrumentation.composites.ForLoopPart;
+import eu.mihosoft.vrl.instrumentation.composites.IfStatementPart;
+import eu.mihosoft.vrl.instrumentation.composites.MethodNodePart;
+import eu.mihosoft.vrl.instrumentation.composites.ModuleNodePart;
+import eu.mihosoft.vrl.instrumentation.composites.PostFixExpressionPart;
+import eu.mihosoft.vrl.instrumentation.composites.ReturnStatementPart;
+import eu.mihosoft.vrl.instrumentation.composites.WhileLoopPart;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
+import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.IdRequest;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
@@ -105,58 +118,66 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 		Map<String, List<Scope>> scopes = new HashMap<>();
 
 		CompositeTransformingVisitorSupport visitor = init(sourceUnit);
+
 		// VGroovyCodeVisitor visitor = new VGroovyCodeVisitor(sourceUnit,
 		// codeBuilder);
 
 		List<Scope> clsScopes = new ArrayList<>();
-		scopes.put(sourceUnit.getName(), clsScopes);
-		
-		// apply transformation for each class in the specified source unit
-		for (ClassNode clsNode : sourceUnit.getAST().getClasses()) {
-			transformation.visit(clsNode, sourceUnit);
-			visitor.visitClass(clsNode);
-		}
+		UIBinding.scopes.put(sourceUnit.getName(), clsScopes);
 
-		UIBinding.scopes.putAll(scopes);
+		visitor.visitModuleNode(sourceUnit.getAST());
 
+		CompilationUnitDeclaration decl = (CompilationUnitDeclaration) visitor
+				.getRoot().getRootObject();
+
+		clsScopes.add(decl);
 	}
 
-	static CompositeTransformingVisitorSupport init(SourceUnit sourceUnit)
-    {
-    	VisualCodeBuilder_Impl codeBuilder = new VisualCodeBuilder_Impl();
-    	StateMachine stateMachine = new StateMachine();
-    	
-        codeBuilder.setIdRequest(new IdRequest() {
-        	
-        	private IdGenerator generator = FlowFactory.newIdGenerator();
-        	
-            @Override
-            public String request() {
-            	String result = generator.newId();
+	static CompositeTransformingVisitorSupport init(SourceUnit sourceUnit) {
+		VisualCodeBuilder_Impl codeBuilder = new VisualCodeBuilder_Impl();
+		StateMachine stateMachine = new StateMachine();
 
-        		while (generator.getIds().contains(result)) {
-        			result = generator.newId();
-        		}
+		codeBuilder.setIdRequest(new IdRequest() {
 
-        		generator.addId(result);
-        		return result;
-            }
-        });
+			private IdGenerator generator = FlowFactory.newIdGenerator();
 
-        try {
-            
+			@Override
+			public String request() {
+				String result = generator.newId(this.getClass().getSimpleName());
+				return result;
+			}
+		});
 
-            Reader in = sourceUnit.getSource().getReader();
-            CodeLineColumnMapper mapper = new CodeLineColumnMapper();
-            mapper.init(in);
-            
-            return new CompositeTransformingVisitorSupport(sourceUnit, 
-            		new BinaryExpressionPart(stateMachine, sourceUnit, codeBuilder, mapper)
-                    );
+		try {
 
-        } catch (IOException ex) {
-            Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(Level.SEVERE, null, ex);
-            throw new RuntimeException(ex);
-        }
-    }
+			Reader in = sourceUnit.getSource().getReader();
+			CodeLineColumnMapper mapper = new CodeLineColumnMapper();
+			mapper.init(in);
+
+			return new CompositeTransformingVisitorSupport(sourceUnit,
+					new BinaryExpressionPart(stateMachine, sourceUnit,
+							codeBuilder, mapper), new BreakPart(stateMachine,
+							sourceUnit, codeBuilder, mapper),
+					new ClassNodePart(stateMachine, sourceUnit, codeBuilder,
+							mapper), new ContinuePart(stateMachine, sourceUnit,
+							codeBuilder, mapper),
+					new DeclarationExpressionPart(stateMachine, sourceUnit,
+							codeBuilder, mapper), new FieldPart(stateMachine,
+							sourceUnit, codeBuilder, mapper), new ForLoopPart(
+							stateMachine, sourceUnit, codeBuilder, mapper),
+					new IfStatementPart(stateMachine, sourceUnit, codeBuilder,
+							mapper), new MethodNodePart(stateMachine,
+							sourceUnit, codeBuilder, mapper),
+					new ModuleNodePart(codeBuilder), new PostFixExpressionPart(
+							stateMachine, sourceUnit, codeBuilder, mapper),
+					new ReturnStatementPart(stateMachine, sourceUnit,
+							codeBuilder, mapper), new WhileLoopPart(
+							stateMachine, sourceUnit, codeBuilder, mapper));
+
+		} catch (IOException ex) {
+			Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(
+					Level.SEVERE, null, ex);
+			throw new RuntimeException(ex);
+		}
+	}
 }

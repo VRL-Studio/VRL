@@ -121,7 +121,7 @@ public class CompositeTransformingVisitorSupport extends
 	}
 
 	private final Root root = new Root();
-
+    public static final Object NULL = new Object();
 	private SourceUnit sourceUnit;
 	private Stack<Object> stackIn = new Stack<Object>();
 	private Stack<Object> stackOut = new Stack<Object>();
@@ -141,20 +141,23 @@ public class CompositeTransformingVisitorSupport extends
 	}
 
 	protected void dispatch(Object o) {
-		stackIn.push(o);
+		stackIn.push(o==null?NULL:o);
 		dispatch(stackIn, o);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void dispatch(Stack<Object> stackIn, Object in) {
 		if (in == null)
+		{
+			stackOut.push(NULL);
 			return; // AST visitor might dump null values for visiting, TODO
 					// ignore or fail?
+		}
 		Object parent = stackOut.peek();
 		boolean transformed = false;
 		all: for (TransformPart part : parts) {
 			if (part.getAcceptedType().equals(in.getClass())
-					&& part.getParentType().equals(parent.getClass())
+					&& part.getParentType().isAssignableFrom(parent.getClass())
 					&& part.accepts(stackIn, in, stackOut, parent)) {
 				Object out = part.transform(stackIn, in, stackOut, parent);
 				stackOut.push(out);
@@ -164,7 +167,7 @@ public class CompositeTransformingVisitorSupport extends
 		}
 		if (!transformed)
 		{
-			stackOut.push(new Object());
+			stackOut.push(NULL);
 		}
 
 	}
@@ -474,9 +477,13 @@ public class CompositeTransformingVisitorSupport extends
 
 	@Override
 	protected void visitObjectInitializerStatements(ClassNode node) {
-		dispatch(node);
+		/* Class node already has been visited at this point!
+		 * dispatch(node);
+		 */
 		super.visitObjectInitializerStatements(node);
-		pop();
+		/*
+		 * pop();
+		 */
 	}
 
 	@Override

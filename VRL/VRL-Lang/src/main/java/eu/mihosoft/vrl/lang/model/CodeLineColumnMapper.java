@@ -32,7 +32,7 @@ public class CodeLineColumnMapper {
 		if (offset < 0)
 			return new Location(-1, -1, -1);
 		if (offset > maxOffset)
-			return new Location(-1,-1, offset);
+			return new Location(-1, -1, offset);
 		int line = 0;
 		while (line < offsets.length && offsets[line] <= offset)
 			line++;
@@ -59,7 +59,11 @@ public class CodeLineColumnMapper {
 			maxOffset = offset;
 			offsets = new Integer[lineOffsets.size()];
 			lineOffsets.toArray(offsets);
-			source.reset();
+			try {
+				source.reset();
+			} catch (IOException ex) {
+                // defer exception...
+			}
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
