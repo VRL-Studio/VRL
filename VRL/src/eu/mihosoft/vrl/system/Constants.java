@@ -68,11 +68,11 @@ public class Constants {
      * variable indicate incompatible versions. Thus, for each major version, a
      * custom property folder will be generated.
      */
-    public static final String VERSION_MAJOR = "0.4.2";
+    public static final String VERSION_MAJOR = "0.4.3";
     /**
      * VRL version number that indicates major and minor changes.
      */
-    public static final String VERSION_BASE = VERSION_MAJOR + ".8.6";
+    public static final String VERSION_BASE = VERSION_MAJOR + ".0.1";
     // "-HEAD" or "-unstable" etc.
     public static final String VERSION_SUFFIX = "-HEAD";
     // full version (base+suffix+date)
@@ -96,7 +96,7 @@ public class Constants {
             new CompatibleFileVersionInfo(
             new FileVersionInfo(VERSION_BASE,
             "created by VRL version " + VERSION), // current version
-            new FileVersionInfo("0.4.0", ""), // min version
+            new FileVersionInfo("0.4.3", ""), // min version
             new FileVersionInfo(VERSION_MAJOR, ""));   // max version
     /**
      * VRL developers.
