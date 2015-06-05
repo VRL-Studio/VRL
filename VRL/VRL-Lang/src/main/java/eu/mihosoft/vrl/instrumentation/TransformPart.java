@@ -53,6 +53,8 @@ public interface TransformPart<In, Out, OutParent> {
 
 	Out transform(Stack<Object> stackIn, In obj, Stack<Object> stackOut,
 			OutParent parent);
+	
+	void postTransform(Out obj, In in, OutParent parent);
 
 	Class<In> getAcceptedType();
 

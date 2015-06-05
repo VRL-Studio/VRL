@@ -33,6 +33,30 @@ public class DeclarationExpressionPart
 		if (currentScope instanceof SimpleForDeclaration_Impl
                 && !stateMachine.getBoolean("for-loop:declaration")) {
 
+        } else {
+
+            stateMachine.setBoolean("variable-declaration", true);
+
+            DeclarationInvocation declInv
+                    = builder.declareVariable(currentScope,
+                            new Type(s.getVariableExpression().getType().getName(), true),
+                            s.getVariableExpression().getName());
+
+            setCodeRange(declInv, s);
+
+            stateMachine.setBoolean("variable-declaration", false);
+
+            return declInv;
+        }
+		return null;
+	}
+	
+	@Override
+	public void postTransform(DeclarationInvocation obj,
+			DeclarationExpression s, ControlFlowScope currentScope) {
+		if (currentScope instanceof SimpleForDeclaration_Impl
+                && !stateMachine.getBoolean("for-loop:declaration")) {
+
 			// TODO hmm, returns null in this case, but an DeclarationInvocation else...
             SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) currentScope;
 
@@ -64,23 +88,6 @@ public class DeclarationExpressionPart
 
                 stateMachine.setBoolean("for-loop:declaration", true);
             }
-            
-            return null;
-
-        } else {
-
-            stateMachine.setBoolean("variable-declaration", true);
-
-            DeclarationInvocation declInv
-                    = builder.declareVariable(currentScope,
-                            new Type(s.getVariableExpression().getType().getName(), true),
-                            s.getVariableExpression().getName());
-
-            setCodeRange(declInv, s);
-
-            stateMachine.setBoolean("variable-declaration", false);
-
-            return declInv;
         }
 	}
 

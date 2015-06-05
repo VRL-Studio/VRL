@@ -25,15 +25,24 @@ public class PostFixExpressionPart extends
 	public CodeEntity transform(Stack<Object> stackIn, PostfixExpression obj,
 			Stack<Object> stackOut, SimpleForDeclaration parent) {
 		
-		SimpleForDeclaration_Impl ARRGGGH = (SimpleForDeclaration_Impl) parent;
+		return null;
+	}
+	
+	@Override
+	public void postTransform(CodeEntity out, PostfixExpression obj,
+			SimpleForDeclaration parent) {
+		SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) parent;
+		
+		stateMachine.setBoolean("for-loop:incExpression", true);
+		
         if ("++".equals(obj.getOperation().getText())) {
-            ARRGGGH.setInc(1);
+            forD.setInc(1);
         } else if ("--".equals(obj.getOperation().getText())) {
-        	ARRGGGH.setInc(-1);
+        	forD.setInc(-1);
         }
 
-        if (ARRGGGH.getInc() > 0 && ">=".
-                equals("stateMachine.getString(\"for-loop:compareOperation")) {
+        if (forD.getInc() > 0 && ">=".
+                equals(stateMachine.getString("for-loop:compareOperation"))) {
 //            throw new IllegalStateException("In for-loop: infinite loops"
 //                    + " are not supported! Change '>=' to '<=' to prevent that."
 //            );
@@ -42,16 +51,14 @@ public class PostFixExpressionPart extends
             );
         }
 
-        if (ARRGGGH.getInc() < 0 && "<=".
-                equals("stateMachine.getString(\"for-loop:compareOperation")) {
+        if (forD.getInc() < 0 && "<=".
+                equals(stateMachine.getString("for-loop:compareOperation"))) {
 //            throw new IllegalStateException("In for-loop: infinite loops"
 //                    + " are not supported! Change '<=' to '>=' to prevent that."
 //            );
             throwErrorMessage("In for-loop: infinite loops"
                     + " are not supported! Change '<=' to '>=' to prevent that.", obj);
         }
-		// TODO: Pure Validation!
-		return null;
 	}
 
 	@Override

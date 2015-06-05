@@ -35,6 +35,47 @@ public class BinaryExpressionPart extends
 				&& !stateMachine.getBoolean("for-loop:compareExpression")
 				&& !stateMachine.getBoolean("for-loop:incExpression")) {
 
+		} else if (stateMachine.getBoolean("for-loop")
+				&& stateMachine.getBoolean("for-loop:declaration")
+				&& stateMachine.getBoolean("for-loop:compareExpression")
+				&& !stateMachine.getBoolean("for-loop:incExpression")) {
+
+			
+		} else {
+
+			if (!stateMachine.getReturnVariables().containsKey(s)) {
+
+				Operator operator = convertOperator(s);
+				IArgument leftArg = convertExpressionToArgument(
+						s.getLeftExpression(), currentScope);
+				IArgument rightArg = convertExpressionToArgument(
+						s.getRightExpression(), currentScope);
+
+				boolean emptyAssignment = (Objects.equal(Argument.NULL,
+						rightArg) && operator == Operator.ASSIGN);
+
+				if (!emptyAssignment) {
+
+					Invocation invocation = builder.invokeOperator(
+							currentScope, leftArg, rightArg, operator);
+
+					setCodeRange(invocation, s);
+
+					stateMachine.getReturnVariables().put(s, invocation);
+
+					return invocation;
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public void postTransform(Invocation obj, BinaryExpression s, ControlFlowScope currentScope) {
+		if (stateMachine.getBoolean("for-loop")
+				&& !stateMachine.getBoolean("for-loop:compareExpression")
+				&& !stateMachine.getBoolean("for-loop:incExpression")) {
+
 			SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) currentScope;
 
 			if (stateMachine.getBoolean("for-loop:declaration")
@@ -149,35 +190,9 @@ public class BinaryExpressionPart extends
 			stateMachine.setBoolean("for-loop:incExpression", true);
 
 			//
-		} else {
-
-			if (!stateMachine.getReturnVariables().containsKey(s)) {
-
-				Operator operator = convertOperator(s);
-				IArgument leftArg = convertExpressionToArgument(
-						s.getLeftExpression(), currentScope);
-				IArgument rightArg = convertExpressionToArgument(
-						s.getRightExpression(), currentScope);
-
-				boolean emptyAssignment = (Objects.equal(Argument.NULL,
-						rightArg) && operator == Operator.ASSIGN);
-
-				if (!emptyAssignment) {
-
-					Invocation invocation = builder.invokeOperator(
-							currentScope, leftArg, rightArg, operator);
-
-					setCodeRange(invocation, s);
-
-					stateMachine.getReturnVariables().put(s, invocation);
-
-					return invocation;
-				}
-			}
 		}
-		return null;
 	}
-
+	
 	@Override
 	public Class<BinaryExpression> getAcceptedType() {
 		return BinaryExpression.class;

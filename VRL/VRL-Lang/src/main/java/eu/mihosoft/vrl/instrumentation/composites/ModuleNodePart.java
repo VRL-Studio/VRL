@@ -32,14 +32,13 @@ public class ModuleNodePart implements
 		}
 
 		String unitName;
-		
-		if (obj.getMainClassName()!=null)
-		{
+
+		if (obj.getMainClassName() != null) {
 			unitName = obj.getMainClassName() + ".groovy";
 		} else {
 			unitName = "unknown.groovy";
 		}
-		
+
 		CompilationUnitDeclaration decl = builder.declareCompilationUnit(
 				unitName, packageName);
 		parent.setRootObject(decl);
@@ -60,6 +59,11 @@ public class ModuleNodePart implements
 	public boolean accepts(Stack<Object> stackIn, ModuleNode obj,
 			Stack<Object> stackOut, Root parent) {
 		return true;
+	}
+
+	@Override
+	public final void postTransform(CompilationUnitDeclaration obj,
+			ModuleNode in, Root parent) {
 	}
 
 }

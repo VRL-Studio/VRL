@@ -68,6 +68,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		this.builder = builder;
 		this.mapper = mapper;
 		this.stateMachine = stateMachine;
+		this.sourceUnit = sourceUnit;
 	}
 
 	protected void setCodeRange(CodeEntity codeEntity, ASTNode astNode) {
@@ -103,6 +104,11 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 
 		return new Modifiers(modifierList.toArray(new Modifier[modifierList
 				.size()]));
+	}
+	
+	@Override
+	public void postTransform(Out obj, In in, OutParent parent) {
+		
 	}
 
 	protected static Extends convertExtends(ClassNode n) {

@@ -14,7 +14,7 @@ import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
 public class ForLoopPart
 		extends
-		AbstractCodeBuilderPart<ForStatement, SimpleForDeclaration, ControlFlowStatement> {
+		AbstractCodeBuilderPart<ForStatement, SimpleForDeclaration, ControlFlowScope> {
 
 	public ForLoopPart(StateMachine stateMachine, SourceUnit sourceUnit,
 			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
@@ -24,40 +24,40 @@ public class ForLoopPart
 	@Override
 	public SimpleForDeclaration transform(Stack<Object> stackIn,
 			ForStatement s, Stack<Object> stackOut,
-			ControlFlowStatement currentScope) {
+			ControlFlowScope currentScope) {
 		System.out.println(" --> FOR-LOOP: " + s.getVariable());
 
-        if (!(currentScope instanceof ControlFlowScope)) {
-            throwErrorMessage("For-Loop can only be invoked inside ControlFlowScopes!", s);
-        }
-
-        // predeclaration, ranges will be defined later
-        SimpleForDeclaration decl = builder.invokeForLoop((ControlFlowScope) currentScope, null, 0, 0, 0);
-        setCodeRange(currentScope, s);
-        addCommentsToScope(currentScope, comments);
-
-        stateMachine.push("for-loop", true);
-
-        if (!stateMachine.getBoolean("for-loop:declaration")) {
-            throwErrorMessage(
-                    "For loop must contain a variable declaration "
-                    + "such as 'int i=0'!", s.getVariable());
-        }
-
-        if (!stateMachine.getBoolean("for-loop:compareExpression")) {
-            throwErrorMessage("for-loop: must contain binary"
-                    + " expressions of the form 'a <= b'/'a >= b' with a, b being"
-                    + " constant integers!", s);
-        }
-
-        if (!stateMachine.getBoolean("for-loop:incExpression")) {
-            throwErrorMessage("for-loop: must contain binary"
-                    + " expressions of the form 'i+=a'/'i-=a' with i being"
-                    + " an integer variable and a being a constant integer!", s);
-        }
-
-        stateMachine.pop();
+		// predeclaration, ranges will be defined later
+		SimpleForDeclaration decl = builder.invokeForLoop(
+				currentScope, null, 0, 0, 0);
+		setCodeRange(currentScope, s);
+		addCommentsToScope(currentScope, comments);
+		stateMachine.push("for-loop", true);
 		return decl;
+	}
+	
+	@Override
+	public void postTransform(SimpleForDeclaration obj, ForStatement s, ControlFlowScope scope) {
+		
+		if (!stateMachine.getBoolean("for-loop:declaration")) {
+			throwErrorMessage("For loop must contain a variable declaration "
+					+ "such as 'int i=0'!", s.getVariable());
+		}
+
+		if (!stateMachine.getBoolean("for-loop:compareExpression")) {
+			throwErrorMessage(
+					"for-loop: must contain binary"
+							+ " expressions of the form 'a <= b'/'a >= b' with a, b being"
+							+ " constant integers!", s);
+		}
+
+		if (!stateMachine.getBoolean("for-loop:incExpression")) {
+			throwErrorMessage("for-loop: must contain binary"
+					+ " expressions of the form 'i+=a'/'i-=a' with i being"
+					+ " an integer variable and a being a constant integer!", s);
+		}
+
+		stateMachine.pop();
 	}
 
 	@Override
@@ -66,13 +66,13 @@ public class ForLoopPart
 	}
 
 	@Override
-	public Class<ControlFlowStatement> getParentType() {
-		return ControlFlowStatement.class;
+	public Class<ControlFlowScope> getParentType() {
+		return ControlFlowScope.class;
 	}
 
 	@Override
 	public boolean accepts(Stack<Object> stackIn, ForStatement obj,
-			Stack<Object> stackOut, ControlFlowStatement parent) {
+			Stack<Object> stackOut, ControlFlowScope parent) {
 		return true;
 	}
 

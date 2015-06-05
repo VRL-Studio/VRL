@@ -113,6 +113,11 @@ public class CompositeTransformingVisitorSupportTest {
 				Stack<Object> stackOut, Root parent) {
 			return true;
 		}
+		
+		@Override
+		public void postTransform(CompilationUnitDeclaration obj, ModuleNode in, Root parent) {
+			
+		}
 
 	}
 
@@ -152,6 +157,11 @@ public class CompositeTransformingVisitorSupportTest {
 				Stack<Object> stackOut, CompilationUnitDeclaration parent) {
 			return true;
 		}
+		
+		@Override
+		public void postTransform(ClassDeclaration obj, ClassNode in, CompilationUnitDeclaration parent) {
+			
+		}
 
 	}
 
@@ -185,6 +195,11 @@ public class CompositeTransformingVisitorSupportTest {
 		public boolean accepts(Stack<Object> stackIn, MethodNode obj,
 				Stack<Object> stackOut, ClassDeclaration parent) {
 			return true;
+		}
+		
+		@Override
+		public void postTransform(MethodDeclaration obj, MethodNode in, ClassDeclaration parent) {
+			
 		}
 
 	}
@@ -230,7 +245,7 @@ public class CompositeTransformingVisitorSupportTest {
 		ClassDeclaration cls = cu.getDeclaredClasses().get(0);
 		assertEquals("TestX", cls.getName());
 
-		assertEquals(1, cls.getDeclaredMethods().size());
+		assertEquals(4, cls.getDeclaredMethods().size());
 		assertEquals("foo", cls.getDeclaredMethods().iterator().next()
 				.getName());
 	}

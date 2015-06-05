@@ -83,6 +83,8 @@ import org.codehaus.groovy.ast.expr.MapExpression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.MethodPointerExpression;
 import org.codehaus.groovy.ast.expr.NotExpression;
+import org.codehaus.groovy.ast.expr.PostfixExpression;
+import org.codehaus.groovy.ast.expr.PrefixExpression;
 import org.codehaus.groovy.ast.stmt.AssertStatement;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.BreakStatement;
@@ -121,7 +123,7 @@ public class CompositeTransformingVisitorSupport extends
 	}
 
 	private final Root root = new Root();
-    public static final Object NULL = new Object();
+	public static final Object NULL = new Object();
 	private SourceUnit sourceUnit;
 	private Stack<Object> stackIn = new Stack<Object>();
 	private Stack<Object> stackOut = new Stack<Object>();
@@ -140,413 +142,442 @@ public class CompositeTransformingVisitorSupport extends
 		return sourceUnit;
 	}
 
-	protected void dispatch(Object o) {
-		stackIn.push(o==null?NULL:o);
-		dispatch(stackIn, o);
+	protected TransformPart dispatch(Object o) {
+		if (!stackIn.empty() && o == stackIn.peek())
+		{
+			// Groovy visitor dumped input object twice
+			// like in visitWhileStatement followed by visitStatement
+			// we do nothing
+			stackIn.push(NULL);
+			stackOut.push(NULL);
+			return null;
+		}
+		Object in = o==null?NULL:o;
+		stackIn.push(in);
+		return dispatch(stackIn, in);
+	}
+	
+	private static Object getParent(Stack<Object> stack)
+	{
+		Object parent = null;
+		int index = stack.size();
+		do {
+			parent = stack.get(--index);
+		} while (parent == NULL || parent == null);
+		return parent;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	protected void dispatch(Stack<Object> stackIn, Object in) {
-		if (in == null)
-		{
-			stackOut.push(NULL);
-			return; // AST visitor might dump null values for visiting, TODO
-					// ignore or fail?
-		}
-		Object parent = stackOut.peek();
-		boolean transformed = false;
+	protected TransformPart dispatch(Stack<Object> stackIn, Object in) {
+		Object parent;
+		TransformPart usedPart = null;
+		
+		// stackOut contains NULL placeholders for input graph objects that
+		// were not transformed, these are not relevant as parent objects 
+		// in the output graph.
+		parent = getParent(stackOut);
 		all: for (TransformPart part : parts) {
 			if (part.getAcceptedType().equals(in.getClass())
 					&& part.getParentType().isAssignableFrom(parent.getClass())
 					&& part.accepts(stackIn, in, stackOut, parent)) {
+				usedPart = part;
 				Object out = part.transform(stackIn, in, stackOut, parent);
 				stackOut.push(out);
-				transformed = true;
 				break all;
 			}
 		}
-		if (!transformed)
-		{
+		if (usedPart==null) {
 			stackOut.push(NULL);
 		}
-
+        return usedPart;
 	}
 
-	void pop() {
-		stackIn.pop();
-		stackOut.pop();
+	void pop(TransformPart used) {
+		Object in = stackIn.pop();
+		Object out = stackOut.pop();
+		if (used!=null) used.postTransform(out, in, getParent(stackOut));
 	}
 
 	@Override
 	public void visitAnnotations(AnnotatedNode node) {
-		dispatch(node);
+		TransformPart used = dispatch(node);
 		super.visitAnnotations(node);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitArgumentlistExpression(ArgumentListExpression ale) {
-		dispatch(ale);
+		TransformPart used = dispatch(ale);
 		super.visitArgumentlistExpression(ale);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitArrayExpression(ArrayExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitArrayExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitAssertStatement(AssertStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitAssertStatement(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitAttributeExpression(AttributeExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitAttributeExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitBinaryExpression(BinaryExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitBinaryExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitBitwiseNegationExpression(
 			BitwiseNegationExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitBitwiseNegationExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitBlockStatement(BlockStatement block) {
-		dispatch(block);
+		TransformPart used = dispatch(block);
 		super.visitBlockStatement(block);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitBooleanExpression(BooleanExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitBooleanExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitBreakStatement(BreakStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitBreakStatement(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitBytecodeExpression(BytecodeExpression cle) {
-		dispatch(cle);
+		TransformPart used = dispatch(cle);
 		super.visitBytecodeExpression(cle);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitCaseStatement(CaseStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitCaseStatement(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitCastExpression(CastExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitCastExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitCatchStatement(CatchStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitCatchStatement(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitClass(ClassNode node) {
-		dispatch(node);
+		TransformPart used = dispatch(node);
 		super.visitClass(node);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	protected void visitClassCodeContainer(Statement code) {
-		dispatch(code);
+		TransformPart used = dispatch(code);
 		super.visitClassCodeContainer(code);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitClassExpression(ClassExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitClassExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitClosureExpression(ClosureExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitClosureExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitClosureListExpression(ClosureListExpression cle) {
-		dispatch(cle);
+		TransformPart used = dispatch(cle);
 		super.visitClosureListExpression(cle);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitConstantExpression(ConstantExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitConstantExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitConstructor(ConstructorNode node) {
-		dispatch(node);
+		TransformPart used = dispatch(node);
 		super.visitConstructor(node);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitConstructorCallExpression(ConstructorCallExpression call) {
-		dispatch(call);
+		TransformPart used = dispatch(call);
 		super.visitConstructorCallExpression(call);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	protected void visitConstructorOrMethod(MethodNode node,
 			boolean isConstructor) {
 		// TODO: differentiate between method/constructor...
-		dispatch(node);
+		TransformPart used = dispatch(node);
 		super.visitConstructorOrMethod(node, isConstructor);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitContinueStatement(ContinueStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitContinueStatement(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitDeclarationExpression(DeclarationExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitDeclarationExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitDoWhileLoop(DoWhileStatement loop) {
-		dispatch(loop);
+		TransformPart used = dispatch(loop);
 		super.visitDoWhileLoop(loop);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	protected void visitEmptyStatement(EmptyStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitEmptyStatement(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitExpressionStatement(ExpressionStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitExpressionStatement(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitField(FieldNode node) {
-		dispatch(node);
+		TransformPart used = dispatch(node);
 		super.visitField(node);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitFieldExpression(FieldExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitFieldExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitForLoop(ForStatement forLoop) {
-		dispatch(forLoop);
+		TransformPart used = dispatch(forLoop);
 		super.visitForLoop(forLoop);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitGStringExpression(GStringExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitGStringExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitIfElse(IfStatement ifElse) {
-		dispatch(ifElse);
+		TransformPart used = dispatch(ifElse);
 		super.visitIfElse(ifElse);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitImports(ModuleNode node) {
-		dispatch(node);
+		TransformPart used = dispatch(node);
 		super.visitImports(node);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitListExpression(ListExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitListExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	protected void visitListOfExpressions(List<? extends Expression> list) {
 		// TODO hide this or is the List important
-		dispatch(list);
+		TransformPart used = dispatch(list);
 		super.visitListOfExpressions(list);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitMapEntryExpression(MapEntryExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitMapEntryExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitMapExpression(MapExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitMapExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitMethod(MethodNode node) {
-		dispatch(node);
+		TransformPart used = dispatch(node);
 		super.visitMethod(node);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitMethodCallExpression(MethodCallExpression call) {
-		dispatch(call);
+		TransformPart used = dispatch(call);
 		super.visitMethodCallExpression(call);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitMethodPointerExpression(MethodPointerExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitMethodPointerExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitNotExpression(NotExpression expression) {
-		dispatch(expression);
+		TransformPart used = dispatch(expression);
 		super.visitNotExpression(expression);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	protected void visitObjectInitializerStatements(ClassNode node) {
-		/* Class node already has been visited at this point!
-		 * dispatch(node);
-		 */
+		TransformPart used = dispatch(node);
 		super.visitObjectInitializerStatements(node);
-		/*
-		 * pop();
-		 */
+		pop(used);
 	}
 
 	@Override
 	public void visitPackage(PackageNode node) {
-		dispatch(node);
+		TransformPart used = dispatch(node);
 		super.visitPackage(node);
-		pop();
+		pop(used);
+	}
+	
+	@Override
+	public void visitPostfixExpression(PostfixExpression expression) {
+		TransformPart used = dispatch(expression);
+		super.visitPostfixExpression(expression);
+		pop(used);
+	}
+	
+	@Override
+	public void visitPrefixExpression(PrefixExpression expression) {
+		TransformPart used = dispatch(expression);
+		super.visitPrefixExpression(expression);
+		pop(used);
 	}
 
 	@Override
 	public void visitProperty(PropertyNode node) {
-		dispatch(node);
+		TransformPart used = dispatch(node);
 		super.visitProperty(node);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	protected void visitStatement(Statement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitStatement(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitReturnStatement(ReturnStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitReturnStatement(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitSwitch(SwitchStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitSwitch(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitSynchronizedStatement(SynchronizedStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitSynchronizedStatement(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitThrowStatement(ThrowStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitThrowStatement(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitTryCatchFinally(TryCatchStatement statement) {
-		dispatch(statement);
+		TransformPart used = dispatch(statement);
 		super.visitTryCatchFinally(statement);
-		pop();
+		pop(used);
 	}
 
 	@Override
 	public void visitWhileLoop(WhileStatement loop) {
-		dispatch(loop);
+		TransformPart used = dispatch(loop);
 		super.visitWhileLoop(loop);
-		pop();
+		pop(used);
 	}
 
 	public Root getRoot() {
@@ -555,16 +586,17 @@ public class CompositeTransformingVisitorSupport extends
 
 	/**
 	 * Groovy code visitor pattern doesn't visit the groovy model root node.
+	 * 
 	 * @param module
 	 */
 	public void visitModuleNode(ModuleNode module) {
-		dispatch(module);
+		TransformPart used = dispatch(module);
 		for (ClassNode cls : module.getClasses()) {
 			visitClass(cls);
 		}
 		for (MethodNode meth : module.getMethods()) {
 			visitMethod(meth);
 		}
-		pop();
+		pop(used);
 	}
 }
