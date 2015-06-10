@@ -6,6 +6,7 @@ import org.codehaus.groovy.ast.stmt.ForStatement;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.ControlFlowStatement;
@@ -22,9 +23,9 @@ public class ForLoopPart
 	}
 
 	@Override
-	public SimpleForDeclaration transform(Stack<Object> stackIn,
-			ForStatement s, Stack<Object> stackOut,
-			ControlFlowScope currentScope) {
+	public SimpleForDeclaration transform(
+			ForStatement s, 
+			ControlFlowScope currentScope, TransformContext context) {
 		System.out.println(" --> FOR-LOOP: " + s.getVariable());
 
 		// predeclaration, ranges will be defined later
@@ -37,7 +38,7 @@ public class ForLoopPart
 	}
 	
 	@Override
-	public void postTransform(SimpleForDeclaration obj, ForStatement s, ControlFlowScope scope) {
+	public void postTransform(SimpleForDeclaration obj, ForStatement s, ControlFlowScope scope, TransformContext context) {
 		
 		if (!stateMachine.getBoolean("for-loop:declaration")) {
 			throwErrorMessage("For loop must contain a variable declaration "
@@ -69,11 +70,4 @@ public class ForLoopPart
 	public Class<ControlFlowScope> getParentType() {
 		return ControlFlowScope.class;
 	}
-
-	@Override
-	public boolean accepts(Stack<Object> stackIn, ForStatement obj,
-			Stack<Object> stackOut, ControlFlowScope parent) {
-		return true;
-	}
-
 }

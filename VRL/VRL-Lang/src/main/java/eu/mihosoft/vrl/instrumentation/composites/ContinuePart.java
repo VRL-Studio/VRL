@@ -6,6 +6,7 @@ import org.codehaus.groovy.ast.stmt.ContinueStatement;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ContinueInvocation;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
@@ -21,9 +22,9 @@ public class ContinuePart
 	}
 
 	@Override
-	public ContinueInvocation transform(Stack<Object> stackIn,
-			ContinueStatement obj, Stack<Object> stackOut,
-			ControlFlowScope parent) {
+	public ContinueInvocation transform(
+			ContinueStatement obj,
+			ControlFlowScope parent, TransformContext context) {
 		return builder.invokeContinue(parent);
 	}
 
@@ -36,11 +37,4 @@ public class ContinuePart
 	public Class<ControlFlowScope> getParentType() {
 		return ControlFlowScope.class;
 	}
-
-	@Override
-	public boolean accepts(Stack<Object> stackIn, ContinueStatement obj,
-			Stack<Object> stackOut, ControlFlowScope parent) {
-		return true;
-	}
-
 }

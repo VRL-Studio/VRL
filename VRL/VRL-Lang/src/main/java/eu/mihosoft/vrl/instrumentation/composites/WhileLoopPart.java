@@ -1,7 +1,5 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import java.util.Stack;
-
 import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.BooleanExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
@@ -11,6 +9,7 @@ import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
@@ -30,8 +29,8 @@ public class WhileLoopPart
 	}
 
 	@Override
-	public WhileDeclaration transform(Stack<Object> stackIn, WhileStatement s,
-			Stack<Object> stackOut, ControlFlowScope parent) {
+	public WhileDeclaration transform(WhileStatement s,
+			ControlFlowScope parent, TransformContext context) {
 
 		stateMachine.push("while-loop", true);
 
@@ -123,11 +122,5 @@ public class WhileLoopPart
 	@Override
 	public Class<ControlFlowScope> getParentType() {
 		return ControlFlowScope.class;
-	}
-
-	@Override
-	public boolean accepts(Stack<Object> stackIn, WhileStatement obj,
-			Stack<Object> stackOut, ControlFlowScope parent) {
-		return true;
 	}
 }

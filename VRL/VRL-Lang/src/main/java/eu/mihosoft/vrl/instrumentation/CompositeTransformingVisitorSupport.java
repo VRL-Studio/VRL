@@ -49,7 +49,11 @@ package eu.mihosoft.vrl.instrumentation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.codehaus.groovy.ast.AnnotatedNode;
@@ -143,8 +147,7 @@ public class CompositeTransformingVisitorSupport extends
 	}
 
 	protected TransformPart dispatch(Object o) {
-		if (!stackIn.empty() && o == stackIn.peek())
-		{
+		if (!stackIn.empty() && o == stackIn.peek()) {
 			// Groovy visitor dumped input object twice
 			// like in visitWhileStatement followed by visitStatement
 			// we do nothing
@@ -152,13 +155,12 @@ public class CompositeTransformingVisitorSupport extends
 			stackOut.push(NULL);
 			return null;
 		}
-		Object in = o==null?NULL:o;
+		Object in = o == null ? NULL : o;
 		stackIn.push(in);
 		return dispatch(stackIn, in);
 	}
-	
-	private static Object getParent(Stack<Object> stack)
-	{
+
+	private static Object getParent(Stack<Object> stack) {
 		Object parent = null;
 		int index = stack.size();
 		do {
@@ -171,31 +173,35 @@ public class CompositeTransformingVisitorSupport extends
 	protected TransformPart dispatch(Stack<Object> stackIn, Object in) {
 		Object parent;
 		TransformPart usedPart = null;
-		
+
 		// stackOut contains NULL placeholders for input graph objects that
-		// were not transformed, these are not relevant as parent objects 
+		// were not transformed, these are not relevant as parent objects
 		// in the output graph.
 		parent = getParent(stackOut);
 		all: for (TransformPart part : parts) {
 			if (part.getAcceptedType().equals(in.getClass())
-					&& part.getParentType().isAssignableFrom(parent.getClass())
-					&& part.accepts(stackIn, in, stackOut, parent)) {
+					&& part.getParentType().isAssignableFrom(parent.getClass())) {
 				usedPart = part;
-				Object out = part.transform(stackIn, in, stackOut, parent);
+				support.setCurrent(in);
+				Object out = part.transform(in, parent, support);
+				support.update(in, out);
 				stackOut.push(out);
 				break all;
 			}
 		}
-		if (usedPart==null) {
+		if (usedPart == null) {
 			stackOut.push(NULL);
 		}
-        return usedPart;
+		return usedPart;
 	}
 
 	void pop(TransformPart used) {
 		Object in = stackIn.pop();
 		Object out = stackOut.pop();
-		if (used!=null) used.postTransform(out, in, getParent(stackOut));
+		if (used != null) {
+			support.setCurrent(in);
+			used.postTransform(out, in, getParent(stackOut), support);
+		}
 	}
 
 	@Override
@@ -509,14 +515,14 @@ public class CompositeTransformingVisitorSupport extends
 		super.visitPackage(node);
 		pop(used);
 	}
-	
+
 	@Override
 	public void visitPostfixExpression(PostfixExpression expression) {
 		TransformPart used = dispatch(expression);
 		super.visitPostfixExpression(expression);
 		pop(used);
 	}
-	
+
 	@Override
 	public void visitPrefixExpression(PrefixExpression expression) {
 		TransformPart used = dispatch(expression);
@@ -533,9 +539,10 @@ public class CompositeTransformingVisitorSupport extends
 
 	@Override
 	protected void visitStatement(Statement statement) {
-		TransformPart used = dispatch(statement);
-		super.visitStatement(statement);
-		pop(used);
+		/*
+		 * TransformPart used = dispatch(statement);
+		 * super.visitStatement(statement); pop(used);
+		 */
 	}
 
 	@Override
@@ -598,5 +605,58 @@ public class CompositeTransformingVisitorSupport extends
 			visitMethod(meth);
 		}
 		pop(used);
+	}
+
+	TransformingSupportImpl support = new TransformingSupportImpl();
+
+	class TransformingSupportImpl implements TransformContext {
+		Map<String, Object> resolvables = new HashMap<String, Object>();
+		Set<Object> unresolved = new HashSet<Object>();
+		Object current;
+
+		public void setCurrent(Object current) {
+			this.current = current;
+		}
+
+		@Override
+		public void bind(String key, Object input) {
+			String resolutionKey = current.hashCode() + key;
+			resolvables.put(resolutionKey, input);
+			unresolved.add(input);
+		}
+
+		@Override
+		public <T> T resolve(String key, Class<T> outputType) {
+			String resolutionKey = current.hashCode() + key;
+			if (!resolvables.containsKey(resolutionKey))
+				return null;
+			Object r = resolvables.get(resolutionKey);
+			if (unresolved.contains(r))
+				return null;
+			return outputType.cast(r);
+		}
+
+		void update(Object input, Object result) {
+			if (unresolved.contains(input)) {
+				entries: for (Map.Entry<String, Object> entry : resolvables
+						.entrySet()) {
+					if (input.equals(entry.getValue())) {
+						resolvables.put(entry.getKey(), result);
+						unresolved.remove(entry.getValue());
+						break entries;
+					}
+				}
+			}
+		}
+
+		@Override
+		public Stack<Object> getInputPath() {
+			return stackIn;
+		}
+
+		@Override
+		public Stack<Object> getOutputPath() {
+			return stackOut;
+		}
 	}
 }

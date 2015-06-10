@@ -9,6 +9,7 @@ import org.codehaus.groovy.control.SourceUnit;
 import com.google.common.base.Objects;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
@@ -27,68 +28,81 @@ public class DeclarationExpressionPart
 	}
 
 	@Override
-	public DeclarationInvocation transform(Stack<Object> stackIn,
-			DeclarationExpression s, Stack<Object> stackOut,
-			ControlFlowScope currentScope) {
+	public DeclarationInvocation transform(DeclarationExpression s,
+			ControlFlowScope currentScope, TransformContext context) {
 		if (currentScope instanceof SimpleForDeclaration_Impl
-                && !stateMachine.getBoolean("for-loop:declaration")) {
+				&& !stateMachine.getBoolean("for-loop:declaration")) {
 
-        } else {
+		} else {
 
-            stateMachine.setBoolean("variable-declaration", true);
+			stateMachine.setBoolean("variable-declaration", true);
 
-            DeclarationInvocation declInv
-                    = builder.declareVariable(currentScope,
-                            new Type(s.getVariableExpression().getType().getName(), true),
-                            s.getVariableExpression().getName());
+			DeclarationInvocation declInv = builder.declareVariable(
+					currentScope, new Type(s.getVariableExpression().getType()
+							.getName(), true), s.getVariableExpression()
+							.getName());
 
-            setCodeRange(declInv, s);
+			setCodeRange(declInv, s);
 
-            stateMachine.setBoolean("variable-declaration", false);
+			stateMachine.setBoolean("variable-declaration", false);
 
-            return declInv;
-        }
+			return declInv;
+		}
 		return null;
 	}
-	
+
 	@Override
 	public void postTransform(DeclarationInvocation obj,
-			DeclarationExpression s, ControlFlowScope currentScope) {
+			DeclarationExpression s, ControlFlowScope currentScope,
+			TransformContext context) {
 		if (currentScope instanceof SimpleForDeclaration_Impl
-                && !stateMachine.getBoolean("for-loop:declaration")) {
+				&& !stateMachine.getBoolean("for-loop:declaration")) {
 
-			// TODO hmm, returns null in this case, but an DeclarationInvocation else...
-            SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) currentScope;
+			// TODO hmm, returns null in this case, but an DeclarationInvocation
+			// else...
+			SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) currentScope;
 
-            if (!stateMachine.getBoolean("for-loop:declaration")) {
+			if (!stateMachine.getBoolean("for-loop:declaration")) {
 
-                String varType = s.getVariableExpression().getType().getNameWithoutPackage();
-                String varName = s.getVariableExpression().getAccessedVariable().getName();
+				String varType = s.getVariableExpression().getType()
+						.getNameWithoutPackage();
+				String varName = s.getVariableExpression()
+						.getAccessedVariable().getName();
 
-                if (!(Objects.equal(varType, "int") || Objects.equal(varType, "Integer"))) {
-                    throwErrorMessage("In for-loop: variable '" + varName
-                            + "' must be of type integer!", s.getVariableExpression());
-                }
+				if (!(Objects.equal(varType, "int") || Objects.equal(varType,
+						"Integer"))) {
+					throwErrorMessage("In for-loop: variable '" + varName
+							+ "' must be of type integer!",
+							s.getVariableExpression());
+				}
 
-                forD.setVarName(s.getVariableExpression().getName(), setCodeRange(s));
+				forD.setVarName(s.getVariableExpression().getName(),
+						setCodeRange(s));
 
-                if (!(s.getRightExpression() instanceof ConstantExpression)) {
-                    throwErrorMessage("In for-loop: variable '" + forD.getVarName()
-                            + "' must be initialized with an integer constant!", s);
-                }
+				if (!(s.getRightExpression() instanceof ConstantExpression)) {
+					throwErrorMessage(
+							"In for-loop: variable '"
+									+ forD.getVarName()
+									+ "' must be initialized with an integer constant!",
+							s);
+				}
 
-                ConstantExpression ce = (ConstantExpression) s.getRightExpression();
+				ConstantExpression ce = (ConstantExpression) s
+						.getRightExpression();
 
-                if (!(ce.getValue() instanceof Integer)) {
-                    throwErrorMessage("In for-loop: variable '" + forD.getVarName()
-                            + "' must be initialized with an integer constant!", s);
-                }
+				if (!(ce.getValue() instanceof Integer)) {
+					throwErrorMessage(
+							"In for-loop: variable '"
+									+ forD.getVarName()
+									+ "' must be initialized with an integer constant!",
+							s);
+				}
 
-                forD.setFrom((Integer) ce.getValue());
+				forD.setFrom((Integer) ce.getValue());
 
-                stateMachine.setBoolean("for-loop:declaration", true);
-            }
-        }
+				stateMachine.setBoolean("for-loop:declaration", true);
+			}
+		}
 	}
 
 	@Override
@@ -100,11 +114,4 @@ public class DeclarationExpressionPart
 	public Class<ControlFlowScope> getParentType() {
 		return ControlFlowScope.class;
 	}
-
-	@Override
-	public boolean accepts(Stack<Object> stackIn, DeclarationExpression obj,
-			Stack<Object> stackOut, ControlFlowScope parent) {
-		return true;
-	}
-
 }

@@ -10,6 +10,7 @@ import org.codehaus.groovy.control.SourceUnit;
 import com.google.common.base.Objects;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
@@ -29,8 +30,7 @@ public class BinaryExpressionPart extends
 	}
 
 	@Override
-	public Invocation transform(Stack<Object> stackIn, BinaryExpression s,
-			Stack<Object> stackOut, ControlFlowScope currentScope) {
+	public Invocation transform(BinaryExpression s, ControlFlowScope currentScope, TransformContext context) {
 		if (stateMachine.getBoolean("for-loop")
 				&& !stateMachine.getBoolean("for-loop:compareExpression")
 				&& !stateMachine.getBoolean("for-loop:incExpression")) {
@@ -71,7 +71,7 @@ public class BinaryExpressionPart extends
 	}
 
 	@Override
-	public void postTransform(Invocation obj, BinaryExpression s, ControlFlowScope currentScope) {
+	public void postTransform(Invocation obj, BinaryExpression s, ControlFlowScope currentScope, TransformContext context) {
 		if (stateMachine.getBoolean("for-loop")
 				&& !stateMachine.getBoolean("for-loop:compareExpression")
 				&& !stateMachine.getBoolean("for-loop:incExpression")) {
@@ -201,12 +201,6 @@ public class BinaryExpressionPart extends
 	@Override
 	public Class<ControlFlowScope> getParentType() {
 		return ControlFlowScope.class;
-	}
-
-	@Override
-	public boolean accepts(Stack<Object> stackIn, BinaryExpression obj,
-			Stack<Object> stackOut, ControlFlowScope parent) {
-		return true;
 	}
 
 }

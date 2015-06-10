@@ -18,9 +18,18 @@ public class ReturnStatementInvocationImpl extends InvocationImpl implements Ret
         getNode().setTitle("return ");
     }
     
+    public ReturnStatementInvocationImpl(Scope parent) {
+		super(parent, "", null, "return", null, false, true, new IArgument[0]);
+	}
+    
     @Override
     public IArgument getArgument() {
         return getArguments().get(0);
+    }
+    
+    public void setArgument(IArgument arg)
+    {
+    	getArguments().add(arg);
     }
 
 }

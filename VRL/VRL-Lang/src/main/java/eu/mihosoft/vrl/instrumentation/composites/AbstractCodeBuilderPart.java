@@ -30,6 +30,7 @@ import org.codehaus.groovy.transform.stc.StaticTypesMarker;
 import com.google.common.base.Objects;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.instrumentation.TransformPart;
 import eu.mihosoft.vrl.instrumentation.VSource;
 import eu.mihosoft.vrl.lang.model.Argument;
@@ -63,7 +64,8 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 	List<Comment> comments = new ArrayList<>();
 	StateMachine stateMachine;
 
-	public AbstractCodeBuilderPart(StateMachine stateMachine, SourceUnit sourceUnit, VisualCodeBuilder builder,
+	public AbstractCodeBuilderPart(StateMachine stateMachine,
+			SourceUnit sourceUnit, VisualCodeBuilder builder,
 			CodeLineColumnMapper mapper) {
 		this.builder = builder;
 		this.mapper = mapper;
@@ -105,10 +107,11 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		return new Modifiers(modifierList.toArray(new Modifier[modifierList
 				.size()]));
 	}
-	
+
 	@Override
-	public void postTransform(Out obj, In in, OutParent parent) {
-		
+	public void postTransform(Out obj, In in, OutParent parent,
+			TransformContext context) {
+
 	}
 
 	protected static Extends convertExtends(ClassNode n) {
@@ -154,102 +157,108 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 				astNode.getColumnNumber() - 1, astNode.getLastLineNumber() - 1,
 				astNode.getLastColumnNumber() - 1, mapper);
 	}
-	
-	protected Operator convertOperator(BinaryExpression be) {
-        switch (be.getOperation().getType()) {
-            case org.codehaus.groovy.syntax.Types.PLUS:
-                return Operator.PLUS;
-            case org.codehaus.groovy.syntax.Types.MINUS:
-                return Operator.MINUS;
-            case org.codehaus.groovy.syntax.Types.MULTIPLY:
-                return Operator.TIMES;
-            case org.codehaus.groovy.syntax.Types.DIVIDE:
-                return Operator.DIV;
-            case org.codehaus.groovy.syntax.Types.ASSIGN:
-                return Operator.ASSIGN;
-            case org.codehaus.groovy.syntax.Types.PLUS_EQUAL:
-                return Operator.PLUS_ASSIGN;
-            case org.codehaus.groovy.syntax.Types.MINUS_EQUAL:
-                return Operator.MINUS_ASSIGN;
-            case org.codehaus.groovy.syntax.Types.MULTIPLY_EQUAL:
-                return Operator.TIMES_ASSIGN;
-            case org.codehaus.groovy.syntax.Types.DIVIDE_EQUAL:
-                return Operator.DIV_ASSIGN;
-            case org.codehaus.groovy.syntax.Types.COMPARE_EQUAL:
-                return Operator.EQUALS;
-            case org.codehaus.groovy.syntax.Types.COMPARE_NOT_EQUAL:
-                return Operator.NOT_EQUALS;
-            case org.codehaus.groovy.syntax.Types.COMPARE_GREATER_THAN:
-                return Operator.GREATER;
-            case org.codehaus.groovy.syntax.Types.COMPARE_GREATER_THAN_EQUAL:
-                return Operator.GREATER_EQUALS;
-            case org.codehaus.groovy.syntax.Types.COMPARE_LESS_THAN:
-                return Operator.LESS;
-            case org.codehaus.groovy.syntax.Types.COMPARE_LESS_THAN_EQUAL:
-                return Operator.LESS_EQUALS;
-            case org.codehaus.groovy.syntax.Types.LOGICAL_OR:
-                return Operator.OR;
-            case org.codehaus.groovy.syntax.Types.LOGICAL_AND:
-                return Operator.AND;
-            case org.codehaus.groovy.syntax.Types.LEFT_SQUARE_BRACKET:
-                return Operator.ACCESS_ARRAY_ELEMENT;
 
-            default:
+	protected static Operator convertOperator(BinaryExpression be) {
+		switch (be.getOperation().getType()) {
+		case org.codehaus.groovy.syntax.Types.PLUS:
+			return Operator.PLUS;
+		case org.codehaus.groovy.syntax.Types.MINUS:
+			return Operator.MINUS;
+		case org.codehaus.groovy.syntax.Types.MULTIPLY:
+			return Operator.TIMES;
+		case org.codehaus.groovy.syntax.Types.DIVIDE:
+			return Operator.DIV;
+		case org.codehaus.groovy.syntax.Types.ASSIGN:
+			return Operator.ASSIGN;
+		case org.codehaus.groovy.syntax.Types.PLUS_EQUAL:
+			return Operator.PLUS_ASSIGN;
+		case org.codehaus.groovy.syntax.Types.MINUS_EQUAL:
+			return Operator.MINUS_ASSIGN;
+		case org.codehaus.groovy.syntax.Types.MULTIPLY_EQUAL:
+			return Operator.TIMES_ASSIGN;
+		case org.codehaus.groovy.syntax.Types.DIVIDE_EQUAL:
+			return Operator.DIV_ASSIGN;
+		case org.codehaus.groovy.syntax.Types.COMPARE_EQUAL:
+			return Operator.EQUALS;
+		case org.codehaus.groovy.syntax.Types.COMPARE_NOT_EQUAL:
+			return Operator.NOT_EQUALS;
+		case org.codehaus.groovy.syntax.Types.COMPARE_GREATER_THAN:
+			return Operator.GREATER;
+		case org.codehaus.groovy.syntax.Types.COMPARE_GREATER_THAN_EQUAL:
+			return Operator.GREATER_EQUALS;
+		case org.codehaus.groovy.syntax.Types.COMPARE_LESS_THAN:
+			return Operator.LESS;
+		case org.codehaus.groovy.syntax.Types.COMPARE_LESS_THAN_EQUAL:
+			return Operator.LESS_EQUALS;
+		case org.codehaus.groovy.syntax.Types.LOGICAL_OR:
+			return Operator.OR;
+		case org.codehaus.groovy.syntax.Types.LOGICAL_AND:
+			return Operator.AND;
+		case org.codehaus.groovy.syntax.Types.LEFT_SQUARE_BRACKET:
+			return Operator.ACCESS_ARRAY_ELEMENT;
 
-                String leftStr = be.getLeftExpression().getText();
-                String opStr = be.getOperation().getText();
-                String rightStr = be.getRightExpression().getText();
+		default:
 
-                throw new UnsupportedOperationException(
-                        "Operation " + opStr + " not supported! Left: " + leftStr + ", right: " + rightStr);
+			String leftStr = be.getLeftExpression().getText();
+			String opStr = be.getOperation().getText();
+			String rightStr = be.getRightExpression().getText();
 
-        }
-    }
-	
-	protected IType convertMethodReturnType(StaticMethodCallExpression s) {
-        boolean isVoid = true;
-        MethodNode mTarget = (MethodNode) s.getNodeMetaData(StaticTypesMarker.DIRECT_METHOD_CALL_TARGET);
-        if (mTarget != null && mTarget.getReturnType() != null) {
-            isVoid = mTarget.getReturnType().getName().toLowerCase().equals("void");
-            //System.out.println("TYPECHECKED!!!");
-        } else {
-            System.out.println("NO TYPECHECKING!!!");
-        }
-        IType returnType;
-        if (!isVoid) {
-            returnType = new Type(mTarget.getReturnType().getName());
-        } else {
-            returnType = Type.VOID;
-        }
-        return returnType;
-    }
-	
-	protected IType convertMethodReturnType(MethodCallExpression s) {
-        boolean isVoid = true;
-        MethodNode mTarget = (MethodNode) s.getNodeMetaData(StaticTypesMarker.DIRECT_METHOD_CALL_TARGET);
-        if (mTarget != null && mTarget.getReturnType() != null) {
-            isVoid = mTarget.getReturnType().getName().toLowerCase().equals("void");
-            //System.out.println("TYPECHECKED!!!");
-        } else {
-            System.out.println("NO TYPECHECKING!!!");
-        }
-        IType returnType;
-        if (!isVoid) {
-            returnType = new Type(mTarget.getReturnType().getName());
-        } else {
-            returnType = Type.VOID;
-        }
-        return returnType;
-    }
-	
-	protected IType convertStaticMethodOwnerType(StaticMethodCallExpression s) {
-        return convertType(s.getOwnerType());
-    }
-	
-	protected IType convertType(ClassNode type) {
-        return new Type(type.getName());
-    }
-	
+			throw new UnsupportedOperationException("Operation " + opStr
+					+ " not supported! Left: " + leftStr + ", right: "
+					+ rightStr);
+
+		}
+	}
+
+	protected static IType convertMethodReturnType(StaticMethodCallExpression s) {
+		boolean isVoid = true;
+		MethodNode mTarget = (MethodNode) s
+				.getNodeMetaData(StaticTypesMarker.DIRECT_METHOD_CALL_TARGET);
+		if (mTarget != null && mTarget.getReturnType() != null) {
+			isVoid = mTarget.getReturnType().getName().toLowerCase()
+					.equals("void");
+			// System.out.println("TYPECHECKED!!!");
+		} else {
+			System.out.println("NO TYPECHECKING!!!");
+		}
+		IType returnType;
+		if (!isVoid) {
+			returnType = new Type(mTarget.getReturnType().getName());
+		} else {
+			returnType = Type.VOID;
+		}
+		return returnType;
+	}
+
+	protected static IType convertMethodReturnType(MethodCallExpression s) {
+		boolean isVoid = true;
+		MethodNode mTarget = (MethodNode) s
+				.getNodeMetaData(StaticTypesMarker.DIRECT_METHOD_CALL_TARGET);
+		if (mTarget != null && mTarget.getReturnType() != null) {
+			isVoid = mTarget.getReturnType().getName().toLowerCase()
+					.equals("void");
+			// System.out.println("TYPECHECKED!!!");
+		} else {
+			System.out.println("NO TYPECHECKING!!!");
+		}
+		IType returnType;
+		if (!isVoid) {
+			returnType = new Type(mTarget.getReturnType().getName());
+		} else {
+			returnType = Type.VOID;
+		}
+		return returnType;
+	}
+
+	protected static IType convertStaticMethodOwnerType(
+			StaticMethodCallExpression s) {
+		return convertType(s.getOwnerType());
+	}
+
+	protected static IType convertType(ClassNode type) {
+		return new Type(type.getName());
+	}
+
 	protected void throwErrorMessage(String text, ASTNode node) {
 
 		// thanks to
@@ -259,8 +268,8 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		LocatedMessage message = new LocatedMessage(text, token, sourceUnit);
 		sourceUnit.getErrorCollector().addError(message);
 	}
-	
-    IArgument convertExpressionToArgument(Expression e,
+
+	IArgument convertExpressionToArgument(Expression e,
 			ControlFlowScope currentScope) {
 
 		stateMachine.push("convert-argument", true);
@@ -336,14 +345,15 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 			System.err.println(" -> UNSUPPORTED-ARG: " + e);
 			result = Argument.NULL;
 		}
+		
+		setCodeRange(result, e);
 
 		stateMachine.pop();
 
 		return result;
 	}
 
-    void visitNotExpression(NotExpression n,
-			ControlFlowScope currentScope) {
+	void visitNotExpression(NotExpression n, ControlFlowScope currentScope) {
 
 		if (stateMachine.getReturnVariables().containsKey(n)) {
 			return;
@@ -359,7 +369,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		}
 	}
 
-    void visitStaticMethodCallExpression(StaticMethodCallExpression s,
+	void visitStaticMethodCallExpression(StaticMethodCallExpression s,
 			ControlFlowScope currentScope) {
 
 		if (stateMachine.getReturnVariables().containsKey(s)) {
@@ -395,7 +405,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 
 	}
 
-    void visitMethodCallExpression(MethodCallExpression s,
+	void visitMethodCallExpression(MethodCallExpression s,
 			ControlFlowScope currentScope) {
 
 		if (stateMachine.getReturnVariables().containsKey(s)) {
@@ -473,7 +483,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 
 	}
 
-    void visitConstructorCallExpression(ConstructorCallExpression s,
+	void visitConstructorCallExpression(ConstructorCallExpression s,
 			ControlFlowScope currentScope) {
 
 		if (stateMachine.getReturnVariables().containsKey(s)) {
@@ -500,8 +510,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		// TODO range
 	}
 
-    void visitBinaryExpression(BinaryExpression s,
-			ControlFlowScope currentScope) {
+	void visitBinaryExpression(BinaryExpression s, ControlFlowScope currentScope) {
 
 		if (stateMachine.getBoolean("for-loop")
 				&& !stateMachine.getBoolean("for-loop:compareExpression")
@@ -657,5 +666,3 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		return arguments;
 	}
 }
-
-

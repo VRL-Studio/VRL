@@ -51,16 +51,13 @@ import java.util.Stack;
 
 public interface TransformPart<In, Out, OutParent> {
 
-	Out transform(Stack<Object> stackIn, In obj, Stack<Object> stackOut,
-			OutParent parent);
+	Out transform(In obj,
+			OutParent parent, TransformContext ctx);
 	
-	void postTransform(Out obj, In in, OutParent parent);
+	void postTransform(Out obj, In in, OutParent parent, TransformContext ctx);
 
 	Class<In> getAcceptedType();
 
-	Class<OutParent> getParentType();
-
-	boolean accepts(Stack<Object> stackIn, In obj, Stack<Object> stackOut,
-			OutParent parent); 
+	Class<OutParent> getParentType(); 
 
 }

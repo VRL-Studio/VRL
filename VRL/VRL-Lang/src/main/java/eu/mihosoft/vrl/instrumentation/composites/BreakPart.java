@@ -7,6 +7,7 @@ import org.codehaus.groovy.ast.stmt.ContinueStatement;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.lang.model.BreakInvocation;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ContinueInvocation;
@@ -23,9 +24,9 @@ public class BreakPart
 	}
 
 	@Override
-	public BreakInvocation transform(Stack<Object> stackIn,
-			BreakStatement obj, Stack<Object> stackOut,
-			ControlFlowScope parent) {
+	public BreakInvocation transform(
+			BreakStatement obj,
+			ControlFlowScope parent, TransformContext context) {
 		return builder.invokeBreak(parent);
 	}
 
@@ -38,11 +39,4 @@ public class BreakPart
 	public Class<ControlFlowScope> getParentType() {
 		return ControlFlowScope.class;
 	}
-
-	@Override
-	public boolean accepts(Stack<Object> stackIn, BreakStatement obj,
-			Stack<Object> stackOut, ControlFlowScope parent) {
-		return true;
-	}
-
 }

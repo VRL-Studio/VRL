@@ -1,11 +1,10 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import java.util.Stack;
-
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
@@ -24,8 +23,8 @@ public class MethodNodePart
 	}
 
 	@Override
-	public MethodDeclaration transform(Stack<Object> stackIn, MethodNode obj,
-			Stack<Object> stackOut, ClassDeclaration parent) {
+	public MethodDeclaration transform(MethodNode obj, ClassDeclaration parent,
+			TransformContext context) {
 		MethodDeclaration md = builder.declareMethod((ClassDeclaration) parent,
 				convertModifiers(obj.getModifiers()), new Type(obj
 						.getReturnType().getName(), true), obj.getName(),
@@ -43,12 +42,6 @@ public class MethodNodePart
 	@Override
 	public Class<ClassDeclaration> getParentType() {
 		return ClassDeclaration.class;
-	}
-
-	@Override
-	public boolean accepts(Stack<Object> stackIn, MethodNode obj,
-			Stack<Object> stackOut, ClassDeclaration parent) {
-		return true;
 	}
 
 	private Parameters convertMethodParameters(

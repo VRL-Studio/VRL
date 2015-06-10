@@ -1,11 +1,10 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import java.util.Stack;
-
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
@@ -19,8 +18,8 @@ public class ClassNodePart extends AbstractCodeBuilderPart<ClassNode, ClassDecla
 	}
 
 	@Override
-	public ClassDeclaration transform(Stack<Object> stackIn, ClassNode obj,
-			Stack<Object> stackOut, CompilationUnitDeclaration parent) {
+	public ClassDeclaration transform(ClassNode obj,
+			CompilationUnitDeclaration parent, TransformContext context) {
 		ClassDeclaration cd = builder.declareClass(parent,
                 new Type(obj.getName(), false),
                 convertModifiers(obj.getModifiers()),
@@ -40,12 +39,6 @@ public class ClassNodePart extends AbstractCodeBuilderPart<ClassNode, ClassDecla
 	@Override
 	public Class<CompilationUnitDeclaration> getParentType() {
 		return CompilationUnitDeclaration.class;
-	}
-
-	@Override
-	public boolean accepts(Stack<Object> stackIn, ClassNode obj,
-			Stack<Object> stackOut, CompilationUnitDeclaration parent) {
-		return true;
 	}
 
 }

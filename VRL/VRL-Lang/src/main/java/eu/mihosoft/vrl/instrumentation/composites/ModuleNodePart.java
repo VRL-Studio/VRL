@@ -5,6 +5,7 @@ import java.util.Stack;
 import org.codehaus.groovy.ast.ModuleNode;
 
 import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupport.Root;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.instrumentation.TransformPart;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
@@ -19,8 +20,8 @@ public class ModuleNodePart implements
 	}
 
 	@Override
-	public CompilationUnitDeclaration transform(Stack<Object> stackIn,
-			ModuleNode obj, Stack<Object> stackOut, Root parent) {
+	public CompilationUnitDeclaration transform(ModuleNode obj, Root parent,
+			TransformContext context) {
 		String packageName = "";
 
 		if (obj.getPackage() != null) {
@@ -56,14 +57,8 @@ public class ModuleNodePart implements
 	}
 
 	@Override
-	public boolean accepts(Stack<Object> stackIn, ModuleNode obj,
-			Stack<Object> stackOut, Root parent) {
-		return true;
-	}
-
-	@Override
 	public final void postTransform(CompilationUnitDeclaration obj,
-			ModuleNode in, Root parent) {
+			ModuleNode in, Root parent, TransformContext context) {
 	}
 
 }

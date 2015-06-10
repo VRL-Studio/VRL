@@ -1,20 +1,19 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import java.util.Stack;
-
 import org.codehaus.groovy.ast.stmt.EmptyStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.ElseIfDeclaration;
-import eu.mihosoft.vrl.lang.model.IfDeclaration;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
-public class IfStatementPart extends
+public class IfStatementPart
+		extends
 		AbstractCodeBuilderPart<IfStatement, ElseIfDeclaration, ControlFlowScope> {
 
 	public IfStatementPart(StateMachine stateMachine, SourceUnit sourceUnit,
@@ -23,66 +22,71 @@ public class IfStatementPart extends
 	}
 
 	@Override
-	public ElseIfDeclaration transform(Stack<Object> stackIn, IfStatement s,
-			Stack<Object> stackOut, ControlFlowScope currentScope) {
+	public ElseIfDeclaration transform(IfStatement s,
+			ControlFlowScope currentScope, TransformContext context) {
 		boolean isElseIf = stateMachine.getBoolean("else-statement:else-is-if");
 
-        stateMachine.push("if-statement", true);
+		stateMachine.push("if-statement", true);
 
-        ElseIfDeclaration decl = null;
-        
-        if (s.getBooleanExpression().getExpression() == null) {
-            throwErrorMessage("if-statement: must contain boolean"
-                    + " expression!", s.getBooleanExpression());
-        }
+		ElseIfDeclaration decl = null;
 
-        if (!(currentScope instanceof ControlFlowScope)) {
-            throwErrorMessage("If-Statement can only be invoked inside ControlFlowScopes!", s);
-        }
+		if (s.getBooleanExpression().getExpression() == null) {
+			throwErrorMessage("if-statement: must contain boolean"
+					+ " expression!", s.getBooleanExpression());
+		}
 
-        if (isElseIf) {
-            decl = builder.invokeElseIf((ControlFlowScope) currentScope,
-                    convertExpressionToArgument(
-                            s.getBooleanExpression().getExpression(), currentScope));
-        } else {
-            // TODO decl = builder.invokeIf((ControlFlowScope) currentScope,
-            //        convertExpressionToArgument(
-            //                s.getBooleanExpression().getExpression(), currentScope));
-        }
+		if (!(currentScope instanceof ControlFlowScope)) {
+			throwErrorMessage(
+					"If-Statement can only be invoked inside ControlFlowScopes!",
+					s);
+		}
 
-        setCodeRange(currentScope, s);
-        addCommentsToScope(currentScope, comments);
+		if (isElseIf) {
+			decl = builder.invokeElseIf(
+					(ControlFlowScope) currentScope,
+					convertExpressionToArgument(s.getBooleanExpression()
+							.getExpression(), currentScope));
 
-        Statement elseBlock = s.getElseBlock();
-        if (elseBlock instanceof EmptyStatement) {
-            // dispatching to EmptyStatement will not call back visitor, 
-            // must call our visitEmptyStatement explicitly
-        	
-        	// TODO visitEmptyStatement is noop
-            // visitEmptyStatement((EmptyStatement) elseBlock);
-        } else {
+		} else {
+			// TODO decl = builder.invokeIf((ControlFlowScope) currentScope,
+			// convertExpressionToArgument(
+			// s.getBooleanExpression().getExpression(), currentScope));
+		}
 
-            stateMachine.push("else-statement", true);
+		setCodeRange(currentScope, s);
+		addCommentsToScope(currentScope, comments);
 
-            boolean elseIsIf = (elseBlock instanceof IfStatement);
+		Statement elseBlock = s.getElseBlock();
+		if (elseBlock instanceof EmptyStatement) {
+			// dispatching to EmptyStatement will not call back visitor,
+			// must call our visitEmptyStatement explicitly
 
-            stateMachine.setBoolean("else-statement:else-is-if", elseIsIf);
+			// TODO visitEmptyStatement is noop
+			// visitEmptyStatement((EmptyStatement) elseBlock);
+		} else {
 
-            if (elseIsIf) {
-                // TODO visitIfElse((IfStatement) elseBlock);
-            } else {
-                // TODO decl = builder.invokeElse((ControlFlowScope) currentScope);
-                setCodeRange(currentScope, s);
-                addCommentsToScope(currentScope, comments);
-            }
+			stateMachine.push("else-statement", true);
 
-            stateMachine.pop();
-        }
+			boolean elseIsIf = (elseBlock instanceof IfStatement);
 
-        stateMachine.pop();
-        
-        return decl;
-        
+			stateMachine.setBoolean("else-statement:else-is-if", elseIsIf);
+
+			if (elseIsIf) {
+				// TODO visitIfElse((IfStatement) elseBlock);
+			} else {
+				// TODO decl = builder.invokeElse((ControlFlowScope)
+				// currentScope);
+				setCodeRange(currentScope, s);
+				addCommentsToScope(currentScope, comments);
+			}
+
+			stateMachine.pop();
+		}
+
+		stateMachine.pop();
+
+		return decl;
+
 	}
 
 	@Override
@@ -94,11 +98,4 @@ public class IfStatementPart extends
 	public Class<ControlFlowScope> getParentType() {
 		return ControlFlowScope.class;
 	}
-
-	@Override
-	public boolean accepts(Stack<Object> stackIn, IfStatement obj,
-			Stack<Object> stackOut, ControlFlowScope parent) {
-		return true;
-	}
-
 }

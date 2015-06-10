@@ -11,7 +11,7 @@ import java.util.Optional;
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public final class Argument implements IArgument {
+public final class Argument extends CodeEntityImpl implements IArgument {
 
     private final ArgumentType argType;
     private final Variable variable;
@@ -37,7 +37,6 @@ public final class Argument implements IArgument {
 
     public static IArgument varArg(Variable v) {
         IArgument result = new Argument(ArgumentType.VARIABLE, v, null, null, null);
-
         return result;
     }
 

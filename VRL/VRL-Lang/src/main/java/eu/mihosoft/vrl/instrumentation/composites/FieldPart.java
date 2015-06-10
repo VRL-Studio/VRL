@@ -7,6 +7,7 @@ import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.TransformContext;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
@@ -14,7 +15,8 @@ import eu.mihosoft.vrl.lang.model.IModifiers;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
-public class FieldPart extends
+public class FieldPart
+		extends
 		AbstractCodeBuilderPart<FieldNode, DeclarationInvocation, ClassDeclaration> {
 
 	public FieldPart(StateMachine stateMachine, SourceUnit sourceUnit,
@@ -23,47 +25,46 @@ public class FieldPart extends
 	}
 
 	@Override
-	public DeclarationInvocation transform(Stack<Object> stackIn,
-			FieldNode field, Stack<Object> stackOut, ClassDeclaration currentScope) {
+	public DeclarationInvocation transform(FieldNode field,
+			ClassDeclaration currentScope, TransformContext context) {
 		if (!(currentScope instanceof ClassDeclaration)) {
-            throwErrorMessage("Field '"
-                    + field.getName()
-                    + "' cannot be declared inside a scope of type '"
-                    + currentScope.getType() + "'.", field);
+			throwErrorMessage("Field '" + field.getName()
+					+ "' cannot be declared inside a scope of type '"
+					+ currentScope.getType() + "'.", field);
 
-            return null;
-        }
+			return null;
+		}
 
-        String varType = field.getType().getName();
-        String varName = field.getName();
+		String varType = field.getType().getName();
+		String varName = field.getName();
 
-        DeclarationInvocation declInv
-                = builder.declareVariable(currentScope,
-                        new Type(varType, true),
-                        varName);
+		DeclarationInvocation declInv = builder.declareVariable(currentScope,
+				new Type(varType, true), varName);
 
-        IModifiers fieldModifiers = convertModifiers(field.getModifiers());
+		IModifiers fieldModifiers = convertModifiers(field.getModifiers());
 
-        declInv.getDeclaredVariable().setModifiers(fieldModifiers);
+		declInv.getDeclaredVariable().setModifiers(fieldModifiers);
 
-        Expression initialValueExpression = field.getInitialExpression();
+		Expression initialValueExpression = field.getInitialExpression();
 
-        if (initialValueExpression != null) {
+		if (initialValueExpression != null) {
 
-            throwErrorMessage("Direct field initialization currently not supported. Field '"
-                    + field.getName()
-                    + "' cannot be initialized. Please move initialization to a constructor.", initialValueExpression);
+			throwErrorMessage(
+					"Direct field initialization currently not supported. Field '"
+							+ field.getName()
+							+ "' cannot be initialized. Please move initialization to a constructor.",
+					initialValueExpression);
 
-            return null;
-//            TODO 30.07.2014 : fix this!
-//            codeBuilder.assign(currentScope, varName,
-//                    convertExpressionToArgument(initialValueExpression)
-//            );
-        }
+			return null;
+			// TODO 30.07.2014 : fix this!
+			// codeBuilder.assign(currentScope, varName,
+			// convertExpressionToArgument(initialValueExpression)
+			// );
+		}
 
-        setCodeRange(declInv, field);
-        
-        return declInv;
+		setCodeRange(declInv, field);
+
+		return declInv;
 	}
 
 	@Override
@@ -74,12 +75,6 @@ public class FieldPart extends
 	@Override
 	public Class<ClassDeclaration> getParentType() {
 		return ClassDeclaration.class;
-	}
-
-	@Override
-	public boolean accepts(Stack<Object> stackIn, FieldNode obj,
-			Stack<Object> stackOut, ClassDeclaration parent) {
-		return true;
 	}
 
 }
