@@ -10,7 +10,7 @@ import org.codehaus.groovy.control.SourceUnit;
 import com.google.common.base.Objects;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
-import eu.mihosoft.vrl.instrumentation.TransformContext;
+import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
@@ -30,7 +30,8 @@ public class BinaryExpressionPart extends
 	}
 
 	@Override
-	public Invocation transform(BinaryExpression s, ControlFlowScope currentScope, TransformContext context) {
+	public Invocation transform(BinaryExpression s,
+			ControlFlowScope currentScope, TransformContext context) {
 		if (stateMachine.getBoolean("for-loop")
 				&& !stateMachine.getBoolean("for-loop:compareExpression")
 				&& !stateMachine.getBoolean("for-loop:incExpression")) {
@@ -40,16 +41,15 @@ public class BinaryExpressionPart extends
 				&& stateMachine.getBoolean("for-loop:compareExpression")
 				&& !stateMachine.getBoolean("for-loop:incExpression")) {
 
-			
 		} else {
 
 			if (!stateMachine.getReturnVariables().containsKey(s)) {
 
 				Operator operator = convertOperator(s);
-				IArgument leftArg = convertExpressionToArgument(
-						s.getLeftExpression(), currentScope);
-				IArgument rightArg = convertExpressionToArgument(
-						s.getRightExpression(), currentScope);
+				IArgument leftArg = context.resolve("leftArgument",
+						s.getLeftExpression(), IArgument.class);
+				IArgument rightArg = context.resolve("rightArgument",
+						s.getRightExpression(), IArgument.class);
 
 				boolean emptyAssignment = (Objects.equal(Argument.NULL,
 						rightArg) && operator == Operator.ASSIGN);
@@ -71,7 +71,8 @@ public class BinaryExpressionPart extends
 	}
 
 	@Override
-	public void postTransform(Invocation obj, BinaryExpression s, ControlFlowScope currentScope, TransformContext context) {
+	public void postTransform(Invocation obj, BinaryExpression s,
+			ControlFlowScope currentScope, TransformContext context) {
 		if (stateMachine.getBoolean("for-loop")
 				&& !stateMachine.getBoolean("for-loop:compareExpression")
 				&& !stateMachine.getBoolean("for-loop:incExpression")) {
@@ -192,7 +193,7 @@ public class BinaryExpressionPart extends
 			//
 		}
 	}
-	
+
 	@Override
 	public Class<BinaryExpression> getAcceptedType() {
 		return BinaryExpression.class;

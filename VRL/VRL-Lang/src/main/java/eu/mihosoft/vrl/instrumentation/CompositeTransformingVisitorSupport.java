@@ -47,6 +47,7 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
+import java.lang.reflect.Proxy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -89,6 +90,7 @@ import org.codehaus.groovy.ast.expr.MethodPointerExpression;
 import org.codehaus.groovy.ast.expr.NotExpression;
 import org.codehaus.groovy.ast.expr.PostfixExpression;
 import org.codehaus.groovy.ast.expr.PrefixExpression;
+import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.AssertStatement;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.BreakStatement;
@@ -109,6 +111,10 @@ import org.codehaus.groovy.ast.stmt.TryCatchStatement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.classgen.BytecodeExpression;
 import org.codehaus.groovy.control.SourceUnit;
+
+import eu.mihosoft.vrl.instrumentation.transform.DefaultProxy;
+import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
+import eu.mihosoft.vrl.instrumentation.transform.TransformPart;
 
 public class CompositeTransformingVisitorSupport extends
 		ClassCodeVisitorSupport {
@@ -182,7 +188,6 @@ public class CompositeTransformingVisitorSupport extends
 			if (part.getAcceptedType().equals(in.getClass())
 					&& part.getParentType().isAssignableFrom(parent.getClass())) {
 				usedPart = part;
-				support.setCurrent(in);
 				Object out = part.transform(in, parent, support);
 				support.update(in, out);
 				stackOut.push(out);
@@ -199,7 +204,6 @@ public class CompositeTransformingVisitorSupport extends
 		Object in = stackIn.pop();
 		Object out = stackOut.pop();
 		if (used != null) {
-			support.setCurrent(in);
 			used.postTransform(out, in, getParent(stackOut), support);
 		}
 	}
@@ -579,6 +583,14 @@ public class CompositeTransformingVisitorSupport extends
 		super.visitTryCatchFinally(statement);
 		pop(used);
 	}
+	
+	@Override
+	public void visitVariableExpression(VariableExpression expression) {
+		@SuppressWarnings("rawtypes")
+		TransformPart used = dispatch(expression);
+		super.visitVariableExpression(expression);
+		pop(used);
+	}
 
 	@Override
 	public void visitWhileLoop(WhileStatement loop) {
@@ -607,47 +619,11 @@ public class CompositeTransformingVisitorSupport extends
 		pop(used);
 	}
 
-	TransformingSupportImpl support = new TransformingSupportImpl();
+	DeferredTransformingSupportImpl support = new DeferredTransformingSupportImpl();
 
-	class TransformingSupportImpl implements TransformContext {
-		Map<String, Object> resolvables = new HashMap<String, Object>();
+	class DeferredTransformingSupportImpl implements TransformContext {
 		Set<Object> unresolved = new HashSet<Object>();
-		Object current;
-
-		public void setCurrent(Object current) {
-			this.current = current;
-		}
-
-		@Override
-		public void bind(String key, Object input) {
-			String resolutionKey = current.hashCode() + key;
-			resolvables.put(resolutionKey, input);
-			unresolved.add(input);
-		}
-
-		@Override
-		public <T> T resolve(String key, Class<T> outputType) {
-			String resolutionKey = current.hashCode() + key;
-			if (!resolvables.containsKey(resolutionKey))
-				return null;
-			Object r = resolvables.get(resolutionKey);
-			if (unresolved.contains(r))
-				return null;
-			return outputType.cast(r);
-		}
-
-		void update(Object input, Object result) {
-			if (unresolved.contains(input)) {
-				entries: for (Map.Entry<String, Object> entry : resolvables
-						.entrySet()) {
-					if (input.equals(entry.getValue())) {
-						resolvables.put(entry.getKey(), result);
-						unresolved.remove(entry.getValue());
-						break entries;
-					}
-				}
-			}
-		}
+		Map<Object, DefaultProxy> proxies = new HashMap<Object, DefaultProxy>();
 
 		@Override
 		public Stack<Object> getInputPath() {
@@ -657,6 +633,23 @@ public class CompositeTransformingVisitorSupport extends
 		@Override
 		public Stack<Object> getOutputPath() {
 			return stackOut;
+		}
+
+		@Override
+		public <T> T resolve(String key, Object input, Class<T> outputType) {
+			unresolved.add(input);
+			DefaultProxy<T> proxy = new DefaultProxy<T>(key, input, outputType);
+			T proxied = outputType.cast(Proxy.newProxyInstance(outputType.getClassLoader(), new Class[]{outputType}, proxy));
+			proxies.put(input, proxy);
+			return proxied;
+		}
+		
+		public void update(Object in, Object result)
+		{
+			if (unresolved.contains(in))
+			{
+				proxies.get(in).setProxied(result);
+			}
 		}
 	}
 }

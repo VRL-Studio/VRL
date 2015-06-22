@@ -5,8 +5,8 @@ import java.util.Stack;
 import org.codehaus.groovy.ast.ModuleNode;
 
 import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupport.Root;
-import eu.mihosoft.vrl.instrumentation.TransformContext;
-import eu.mihosoft.vrl.instrumentation.TransformPart;
+import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
+import eu.mihosoft.vrl.instrumentation.transform.TransformPart;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 

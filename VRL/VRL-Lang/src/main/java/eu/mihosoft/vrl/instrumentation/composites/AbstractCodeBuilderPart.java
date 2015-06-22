@@ -30,9 +30,9 @@ import org.codehaus.groovy.transform.stc.StaticTypesMarker;
 import com.google.common.base.Objects;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
-import eu.mihosoft.vrl.instrumentation.TransformContext;
-import eu.mihosoft.vrl.instrumentation.TransformPart;
 import eu.mihosoft.vrl.instrumentation.VSource;
+import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
+import eu.mihosoft.vrl.instrumentation.transform.TransformPart;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
@@ -40,6 +40,7 @@ import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.CommentImpl;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
+import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.Extends;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
@@ -269,6 +270,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		sourceUnit.getErrorCollector().addError(message);
 	}
 
+	@Deprecated
 	IArgument convertExpressionToArgument(Expression e,
 			ControlFlowScope currentScope) {
 
@@ -292,14 +294,14 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 			result = Argument.varArg(v);
 
 		} else if (e instanceof PropertyExpression) {
-			// PropertyExpression pe = (PropertyExpression) e;
-			//
-			// Variable v = VariableFactory.createObjectVariable(currentScope,
-			// new Type("vrl.internal.PROPERTYEXPR", true), "don't know");
-			// result = Argument.varArg(v);
+			PropertyExpression pe = (PropertyExpression) e;
+		
+			Variable v = currentScope.getVariable(pe.getObjectExpression().getText());
+			
+			result = Argument.varArg(v);
 
-			throw new UnsupportedOperationException(
-					"vrl.internal.PROPERTYEXPR not supported");
+			//throw new UnsupportedOperationException(
+			//		"vrl.internal.PROPERTYEXPR not supported");
 
 		} else if (e instanceof MethodCallExpression) {
 			System.out.println("TYPE: " + e);
@@ -656,6 +658,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		}
 	}
 
+	@Deprecated
 	IArgument[] convertArguments(ArgumentListExpression args,
 			ControlFlowScope currentScope) {
 		IArgument[] arguments = new IArgument[args.getExpressions().size()];

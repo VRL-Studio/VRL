@@ -6,7 +6,7 @@ import org.codehaus.groovy.ast.expr.PostfixExpression;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
-import eu.mihosoft.vrl.instrumentation.TransformContext;
+import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;

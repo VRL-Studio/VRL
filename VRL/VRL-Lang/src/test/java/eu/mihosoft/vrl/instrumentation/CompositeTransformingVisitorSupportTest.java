@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.Reader;
+import java.lang.reflect.Proxy;
 
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
@@ -22,6 +23,7 @@ import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupport.Root;
 import eu.mihosoft.vrl.instrumentation.composites.BinaryExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.BreakPart;
 import eu.mihosoft.vrl.instrumentation.composites.ClassNodePart;
+import eu.mihosoft.vrl.instrumentation.composites.ConstantExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.ContinuePart;
 import eu.mihosoft.vrl.instrumentation.composites.DeclarationExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.FieldPart;
@@ -32,9 +34,15 @@ import eu.mihosoft.vrl.instrumentation.composites.ModuleNodePart;
 import eu.mihosoft.vrl.instrumentation.composites.PostFixExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.ReturnStatementPart;
 import eu.mihosoft.vrl.instrumentation.composites.WhileLoopPart;
+import eu.mihosoft.vrl.instrumentation.transform.DefaultProxy;
+import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
+import eu.mihosoft.vrl.instrumentation.transform.TransformPart;
+import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.model.ControlFlow;
+import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IdRequest;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Type;
@@ -46,6 +54,18 @@ import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
 public class CompositeTransformingVisitorSupportTest {
+
+	@Test
+	public void proxy() throws Exception {
+
+		IArgument nullArg = Argument.nullArg();
+		DefaultProxy<IArgument> proxy = new DefaultProxy<IArgument>("test", null, IArgument.class);
+		proxy.setProxied(nullArg);
+		IArgument arg = (IArgument) Proxy.newProxyInstance(this.getClass().getClassLoader(),
+				new Class[] { IArgument.class }, proxy);
+		assertEquals(nullArg.getArgType(), arg.getArgType());
+
+	}
 
 	static class ModuleTransformer implements
 			TransformPart<ModuleNode, CompilationUnitDeclaration, Root> {
@@ -217,6 +237,22 @@ public class CompositeTransformingVisitorSupportTest {
 		assertEquals(1, decl.getDeclaredClasses().size());
 	}
 
+	@Test
+	public void testDeferredResolution() throws Exception {
+		// ReturnPart uses deferred resolution to connect the constant
+		// expression "0" with the
+		// ReturnInvocation instance.
+		SourceUnit src = fromCode("class A{ void run(){ return 0; }}");
+		CompositeTransformingVisitorSupport visitor = init(src);
+		visitor.visitModuleNode(src.getAST());
+		CompilationUnitDeclaration decl = (CompilationUnitDeclaration) visitor
+				.getRoot().getRootObject();
+		ControlFlow flow = decl.getDeclaredClasses().get(0)
+				.getDeclaredMethods().get(0).getControlFlow();
+		assertEquals(0, flow.getInvocations().get(0).getArguments().get(0)
+				.getConstant().get());
+	}
+
 	static SourceUnit fromCode(String code) throws Exception {
 		SourceUnit sourceUnit = SourceUnit.create("Test.groovy", code);
 		CompilationUnit compUnit = new CompilationUnit();
@@ -252,6 +288,8 @@ public class CompositeTransformingVisitorSupportTest {
 				new BreakPart(stateMachine, sourceUnit, codeBuilder, mapper),
 				new ClassNodePart(stateMachine, sourceUnit, codeBuilder, mapper),
 				new ContinuePart(stateMachine, sourceUnit, codeBuilder, mapper),
+				new ConstantExpressionPart(stateMachine, sourceUnit,
+						codeBuilder, mapper),
 				new DeclarationExpressionPart(stateMachine, sourceUnit,
 						codeBuilder, mapper),
 				new FieldPart(stateMachine, sourceUnit, codeBuilder, mapper),

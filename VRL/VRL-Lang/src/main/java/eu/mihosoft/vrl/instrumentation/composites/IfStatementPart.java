@@ -6,10 +6,11 @@ import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
-import eu.mihosoft.vrl.instrumentation.TransformContext;
+import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.ElseIfDeclaration;
+import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
 public class IfStatementPart
@@ -42,10 +43,9 @@ public class IfStatementPart
 		}
 
 		if (isElseIf) {
-			decl = builder.invokeElseIf(
-					(ControlFlowScope) currentScope,
-					convertExpressionToArgument(s.getBooleanExpression()
-							.getExpression(), currentScope));
+			decl = builder.invokeElseIf((ControlFlowScope) currentScope,
+					context.resolve("elseClause", s.getBooleanExpression()
+							.getExpression(), IArgument.class));
 
 		} else {
 			// TODO decl = builder.invokeIf((ControlFlowScope) currentScope,

@@ -9,7 +9,7 @@ import org.codehaus.groovy.control.SourceUnit;
 import com.google.common.base.Objects;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
-import eu.mihosoft.vrl.instrumentation.TransformContext;
+import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;

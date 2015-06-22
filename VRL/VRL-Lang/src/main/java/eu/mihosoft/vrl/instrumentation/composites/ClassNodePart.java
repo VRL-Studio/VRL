@@ -4,7 +4,7 @@ import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
-import eu.mihosoft.vrl.instrumentation.TransformContext;
+import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;

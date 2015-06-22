@@ -62,6 +62,7 @@ import eu.mihosoft.vrl.instrumentation.composites.MethodNodePart;
 import eu.mihosoft.vrl.instrumentation.composites.ModuleNodePart;
 import eu.mihosoft.vrl.instrumentation.composites.PostFixExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.ReturnStatementPart;
+import eu.mihosoft.vrl.instrumentation.composites.VariableExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.WhileLoopPart;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
@@ -176,7 +177,8 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 							codeBuilder, mapper), new WhileLoopPart(
 							stateMachine, sourceUnit, codeBuilder, mapper),
 					new ConstantExpressionPart(stateMachine, sourceUnit,
-							codeBuilder, mapper));
+							codeBuilder, mapper), new VariableExpressionPart(
+							stateMachine, sourceUnit, codeBuilder, mapper));
 
 		} catch (IOException ex) {
 			Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(

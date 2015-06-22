@@ -77,6 +77,7 @@ public final class Type implements IType {
     public static final IType CHAR = new Type("char");
     public static final IType STRING = new Type("java.lang.String");
     public static final IType OBJECT = new Type("java.lang.Object");
+	public static final IType ANY = new Type("any");
 
 //    public Type(String packageName, String shortName, boolean isReturnOrParamType) {
 //        this.packageName = packageName;
