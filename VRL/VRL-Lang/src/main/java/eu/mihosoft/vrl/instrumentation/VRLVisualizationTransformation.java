@@ -58,9 +58,11 @@ import eu.mihosoft.vrl.instrumentation.composites.DeclarationExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.FieldPart;
 import eu.mihosoft.vrl.instrumentation.composites.ForLoopPart;
 import eu.mihosoft.vrl.instrumentation.composites.IfStatementPart;
+import eu.mihosoft.vrl.instrumentation.composites.MethodCallExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.MethodNodePart;
 import eu.mihosoft.vrl.instrumentation.composites.ModuleNodePart;
 import eu.mihosoft.vrl.instrumentation.composites.PostFixExpressionPart;
+import eu.mihosoft.vrl.instrumentation.composites.PropertyExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.ReturnStatementPart;
 import eu.mihosoft.vrl.instrumentation.composites.VariableExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.WhileLoopPart;
@@ -135,11 +137,11 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 		clsScopes.add(decl);
 	}
 
-	static CompositeTransformingVisitorSupport init(SourceUnit sourceUnit) {
-		VisualCodeBuilder_Impl codeBuilder = new VisualCodeBuilder_Impl();
+	public static CompositeTransformingVisitorSupport init(SourceUnit sourceUnit) {
+		VisualCodeBuilder_Impl builder = new VisualCodeBuilder_Impl();
 		StateMachine stateMachine = new StateMachine();
 
-		codeBuilder.setIdRequest(new IdRequest() {
+		builder.setIdRequest(new IdRequest() {
 
 			private IdGenerator generator = FlowFactory.newIdGenerator();
 
@@ -159,26 +161,30 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 
 			return new CompositeTransformingVisitorSupport(sourceUnit,
 					new BinaryExpressionPart(stateMachine, sourceUnit,
-							codeBuilder, mapper), new BreakPart(stateMachine,
-							sourceUnit, codeBuilder, mapper),
-					new ClassNodePart(stateMachine, sourceUnit, codeBuilder,
+							builder, mapper), new BreakPart(stateMachine,
+							sourceUnit, builder, mapper),
+					new ClassNodePart(stateMachine, sourceUnit, builder,
 							mapper), new ContinuePart(stateMachine, sourceUnit,
-							codeBuilder, mapper),
+							builder, mapper),
 					new DeclarationExpressionPart(stateMachine, sourceUnit,
-							codeBuilder, mapper), new FieldPart(stateMachine,
-							sourceUnit, codeBuilder, mapper), new ForLoopPart(
-							stateMachine, sourceUnit, codeBuilder, mapper),
-					new IfStatementPart(stateMachine, sourceUnit, codeBuilder,
+							builder, mapper), new FieldPart(stateMachine,
+							sourceUnit, builder, mapper), new ForLoopPart(
+							stateMachine, sourceUnit, builder, mapper),
+					new IfStatementPart(stateMachine, sourceUnit, builder,
 							mapper), new MethodNodePart(stateMachine,
-							sourceUnit, codeBuilder, mapper),
-					new ModuleNodePart(codeBuilder), new PostFixExpressionPart(
-							stateMachine, sourceUnit, codeBuilder, mapper),
-					new ReturnStatementPart(stateMachine, sourceUnit,
-							codeBuilder, mapper), new WhileLoopPart(
-							stateMachine, sourceUnit, codeBuilder, mapper),
-					new ConstantExpressionPart(stateMachine, sourceUnit,
-							codeBuilder, mapper), new VariableExpressionPart(
-							stateMachine, sourceUnit, codeBuilder, mapper));
+							sourceUnit, builder, mapper),
+					new ModuleNodePart(builder, mapper),
+					new PostFixExpressionPart(stateMachine, sourceUnit,
+							builder, mapper), new ReturnStatementPart(
+							stateMachine, sourceUnit, builder, mapper),
+					new WhileLoopPart(stateMachine, sourceUnit, builder,
+							mapper), new ConstantExpressionPart(stateMachine,
+							sourceUnit, builder, mapper),
+					new VariableExpressionPart(stateMachine, sourceUnit,
+							builder, mapper), new MethodCallExpressionPart(
+							stateMachine, sourceUnit, builder, mapper),
+					new PropertyExpressionPart(stateMachine, sourceUnit,
+							builder, mapper));
 
 		} catch (IOException ex) {
 			Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(

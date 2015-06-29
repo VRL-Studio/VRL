@@ -90,6 +90,7 @@ import org.codehaus.groovy.ast.expr.MethodPointerExpression;
 import org.codehaus.groovy.ast.expr.NotExpression;
 import org.codehaus.groovy.ast.expr.PostfixExpression;
 import org.codehaus.groovy.ast.expr.PrefixExpression;
+import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.AssertStatement;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
@@ -538,6 +539,13 @@ public class CompositeTransformingVisitorSupport extends
 	public void visitProperty(PropertyNode node) {
 		TransformPart used = dispatch(node);
 		super.visitProperty(node);
+		pop(used);
+	}
+	
+	@Override
+	public void visitPropertyExpression(PropertyExpression expression) {
+		TransformPart used = dispatch(expression);
+		super.visitPropertyExpression(expression);
 		pop(used);
 	}
 

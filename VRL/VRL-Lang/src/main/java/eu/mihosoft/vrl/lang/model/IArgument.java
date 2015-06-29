@@ -16,6 +16,6 @@ public interface IArgument extends CodeEntity {
     public ArgumentType getArgType();
     public Optional<Variable> getVariable();
     public Optional<Invocation> getInvocation();
-    public Optional<Object> getConstant();
+    public Optional<ConstantValue> getConstant();
     public IType getType();
 }

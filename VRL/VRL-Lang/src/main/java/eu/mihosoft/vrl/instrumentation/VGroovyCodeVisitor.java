@@ -57,6 +57,7 @@ import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.CommentImpl;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.model.ConstantValueFactory;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.Extends;
@@ -1095,7 +1096,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             if (ce.isNullExpression()) {
                 result = Argument.NULL;
             } else {
-                result = Argument.constArg(new Type(ce.getType().getName(), true), ce.getValue());
+            	result = Argument.constArg(ConstantValueFactory.createConstantValue(ce.getValue(),new Type(ce.getType().getName())));
             }
         } else if (e instanceof VariableExpression) {
             VariableExpression ve = (VariableExpression) e;

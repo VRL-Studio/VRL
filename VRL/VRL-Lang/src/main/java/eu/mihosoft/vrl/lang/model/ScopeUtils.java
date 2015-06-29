@@ -60,7 +60,6 @@ public class ScopeUtils {
             return false;
         }
 
-        return i.getVariableName().equals(enclosingClass.get().getName());
-
+        return enclosingClass.get().getName().equals(i.getVariableName());
     }
 }

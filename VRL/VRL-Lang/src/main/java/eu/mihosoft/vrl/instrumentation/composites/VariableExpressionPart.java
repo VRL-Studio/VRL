@@ -5,18 +5,14 @@ import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
-import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
-import eu.mihosoft.vrl.lang.model.ControlFlowScope;
-import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
-import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
 public class VariableExpressionPart
 		extends
-		AbstractCodeBuilderPart<VariableExpression, IArgument, Invocation> {
+		AbstractCodeBuilderPart<VariableExpression, Variable, Invocation> {
 
 	public VariableExpressionPart(StateMachine stateMachine,
 			SourceUnit sourceUnit, VisualCodeBuilder builder,
@@ -25,10 +21,11 @@ public class VariableExpressionPart
 	}
 
 	@Override
-	public IArgument transform(VariableExpression obj, Invocation parent,
+	public Variable transform(VariableExpression obj, Invocation parent,
 			TransformContext ctx) {
 		Variable v = parent.getParent().getVariable(obj.getName());
-		return Argument.varArg(v);
+		setCodeRange(v,obj);
+		return v;
 	}
 
 	@Override

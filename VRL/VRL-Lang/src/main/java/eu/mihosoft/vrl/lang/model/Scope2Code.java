@@ -544,10 +544,10 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
             if (arg.getType().equals(Type.STRING)) {
                 constString = "\""
-                        + VLangUtilsNew.addEscapeCharsToCode(arg.getConstant().get().
+                        + VLangUtilsNew.addEscapeCharsToCode(arg.getConstant().get().getValue(Object.class).
                                 toString()) + "\"";
             } else {
-                constString = arg.getConstant().get().toString();
+                constString = arg.getConstant().get().getValue(Object.class).toString();
             }
 
             cb.append(constString);

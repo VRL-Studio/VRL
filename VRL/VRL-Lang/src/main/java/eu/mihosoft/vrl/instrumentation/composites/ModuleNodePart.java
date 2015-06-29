@@ -1,22 +1,33 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import java.util.Stack;
-
+import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ModuleNode;
 
 import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupport.Root;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.instrumentation.transform.TransformPart;
+import eu.mihosoft.vrl.lang.model.CodeEntity;
+import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
+import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
-public class ModuleNodePart implements
-		TransformPart<ModuleNode, CompilationUnitDeclaration, Root> {
+public class ModuleNodePart implements TransformPart<ModuleNode, CompilationUnitDeclaration, Root> {
 
+	CodeLineColumnMapper mapper;
 	VisualCodeBuilder builder;
-
-	public ModuleNodePart(VisualCodeBuilder builder) {
+	
+	public ModuleNodePart(
+			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
+		this.mapper = mapper;
 		this.builder = builder;
+	}
+
+	protected void setCodeRange(CodeEntity codeEntity, ASTNode astNode) {
+
+		codeEntity.setRange(new CodeRange(astNode.getLineNumber() - 1, astNode
+				.getColumnNumber() - 1, astNode.getLastLineNumber() - 1,
+				astNode.getLastColumnNumber() - 1, mapper));
 	}
 
 	@Override
@@ -43,6 +54,7 @@ public class ModuleNodePart implements
 		CompilationUnitDeclaration decl = builder.declareCompilationUnit(
 				unitName, packageName);
 		parent.setRootObject(decl);
+		setCodeRange(decl, obj);
 		return decl;
 	}
 

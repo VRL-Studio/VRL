@@ -19,9 +19,11 @@ import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.NotExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
+import org.codehaus.groovy.ast.expr.SpreadExpression;
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.IfStatement;
+import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
 import org.codehaus.groovy.syntax.Token;
@@ -34,11 +36,14 @@ import eu.mihosoft.vrl.instrumentation.VSource;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.instrumentation.transform.TransformPart;
 import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.CommentImpl;
+import eu.mihosoft.vrl.lang.model.ConstantValue;
+import eu.mihosoft.vrl.lang.model.ConstantValueFactory;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.Extends;
@@ -284,8 +289,9 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 			if (ce.isNullExpression()) {
 				result = Argument.NULL;
 			} else {
-				result = Argument.constArg(new Type(ce.getType().getName(),
-						true), ce.getValue());
+				result = Argument.constArg(ConstantValueFactory
+						.createConstantValue(ce.getValue(), new Type(ce
+								.getType().getName())));
 			}
 		} else if (e instanceof VariableExpression) {
 			VariableExpression ve = (VariableExpression) e;
@@ -295,13 +301,14 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 
 		} else if (e instanceof PropertyExpression) {
 			PropertyExpression pe = (PropertyExpression) e;
-		
-			Variable v = currentScope.getVariable(pe.getObjectExpression().getText());
-			
+
+			Variable v = currentScope.getVariable(pe.getObjectExpression()
+					.getText());
+
 			result = Argument.varArg(v);
 
-			//throw new UnsupportedOperationException(
-			//		"vrl.internal.PROPERTYEXPR not supported");
+			// throw new UnsupportedOperationException(
+			// "vrl.internal.PROPERTYEXPR not supported");
 
 		} else if (e instanceof MethodCallExpression) {
 			System.out.println("TYPE: " + e);
@@ -347,7 +354,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 			System.err.println(" -> UNSUPPORTED-ARG: " + e);
 			result = Argument.NULL;
 		}
-		
+
 		setCodeRange(result, e);
 
 		stateMachine.pop();
@@ -371,6 +378,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		}
 	}
 
+	@Deprecated
 	void visitStaticMethodCallExpression(StaticMethodCallExpression s,
 			ControlFlowScope currentScope) {
 
@@ -379,7 +387,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		}
 
 		ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
-		IArgument[] arguments = convertArguments(args, currentScope);
+		IArgument[] arguments = convertArguments(null, args, null);
 
 		IType returnType = convertMethodReturnType(s);
 
@@ -407,6 +415,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 
 	}
 
+	@Deprecated
 	void visitMethodCallExpression(MethodCallExpression s,
 			ControlFlowScope currentScope) {
 
@@ -415,7 +424,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		}
 
 		ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
-		IArgument[] arguments = convertArguments(args, currentScope);
+		IArgument[] arguments = convertArguments(null, args, null);
 
 		String objectName = null;
 
@@ -485,6 +494,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 
 	}
 
+	@Deprecated
 	void visitConstructorCallExpression(ConstructorCallExpression s,
 			ControlFlowScope currentScope) {
 
@@ -494,7 +504,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 
 		ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
 
-		IArgument[] arguments = convertArguments(args, currentScope);
+		IArgument[] arguments = convertArguments(null, args, null);
 
 		Invocation invocation = builder.createInstance(currentScope, new Type(s
 				.getType().getName(), false), arguments);
@@ -658,14 +668,53 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		}
 	}
 
-	@Deprecated
-	IArgument[] convertArguments(ArgumentListExpression args,
-			ControlFlowScope currentScope) {
+	protected static IArgument[] convertArguments(String key,
+			ArgumentListExpression args, TransformContext context) {
 		IArgument[] arguments = new IArgument[args.getExpressions().size()];
 		for (int i = 0; i < args.getExpressions().size(); i++) {
-			arguments[i] = convertExpressionToArgument(args.getExpression(i),
-					currentScope);
+			arguments[i] = convertToArgument(key + "[" + i + "]",
+					args.getExpression(i), context);
 		}
 		return arguments;
+	}
+
+	protected static IArgument convertToArgument(String key, Expression expr,
+			TransformContext context) {
+		IArgument arg;
+		if (expr instanceof ConstantExpression) {
+			ConstantValue constVal = context.resolve(key, expr,
+					ConstantValue.class);
+			arg = Argument.constArg(constVal);
+		} else if (expr instanceof BinaryExpression) {
+			Invocation inv = context.resolve(key, expr,
+					BinaryOperatorInvocation.class);
+			arg = Argument.invArg(inv);
+		} else if (expr instanceof MethodCallExpression) {
+			Invocation inv = context.resolve(key, expr, Invocation.class);
+			arg = Argument.invArg(inv);
+		} else if (expr instanceof PropertyExpression) {
+			Variable inv = context.resolve(key, expr, Variable.class);
+			arg = Argument.varArg(inv);
+		} else if (expr instanceof VariableExpression) {
+			Variable v = context.resolve(key, expr, Variable.class);
+			arg = Argument.varArg(v);
+		} else if (expr instanceof SpreadExpression) {
+			// TODO add support for SpreadExpression
+			Variable v = context.resolve(key,
+					((SpreadExpression) expr).getExpression(), Variable.class);
+			arg = Argument.varArg(v);
+		} else {
+			throw new UnsupportedOperationException(
+					"Unsupported expression type for argument encountered (key '"
+							+ key + "') " + expr.getClass().getSimpleName());
+		}
+		return arg;
+	}
+
+	protected static <T extends CodeEntity> T getParentScope(CodeEntity entity,
+			Class<T> cls) {
+		if (cls.isInstance(entity))
+			return cls.cast(entity);
+		return getParentScope(entity.getParent(), cls);
 	}
 }

@@ -10,14 +10,12 @@ import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
-import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IType;
-import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
@@ -104,10 +102,10 @@ public class WhileLoopPart
 			throwErrorMessage("While-Loop can only be invoked "
 					+ "inside ControlFlowScopes!", s);
 		}
+		
+		IArgument arg = convertToArgument("WhileLoop.condition", s.getBooleanExpression().getExpression(), context);
 
-		WhileDeclaration inv = builder.invokeWhileLoop(parent, context.resolve(
-				"whileCondition", s.getBooleanExpression().getExpression(),
-				IArgument.class));
+		WhileDeclaration inv = builder.invokeWhileLoop(parent, arg);
 
 		setCodeRange(inv, s);
 		addCommentsToScope(inv, comments);

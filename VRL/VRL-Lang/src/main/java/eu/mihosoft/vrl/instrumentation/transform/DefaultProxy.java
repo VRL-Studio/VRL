@@ -21,7 +21,7 @@ public class DefaultProxy<T> implements InvocationHandler {
 			throws Throwable {
 		if (!resolved || proxied == null)
 			throw new IllegalStateException(
-					"Call to proxy instance created during graph traversion failed: object transformation has been requested, but never has been performed: "
+					"Call to proxy instance created for source type '"+ source.getClass().getSimpleName() + "' with key '" + key + "' failed: object transformation has been requested, but never has been performed: "
 							+ source);
 		return method.invoke(proxied, args);
 

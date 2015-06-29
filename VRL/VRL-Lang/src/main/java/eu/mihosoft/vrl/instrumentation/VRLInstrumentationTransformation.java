@@ -83,8 +83,11 @@ public class VRLInstrumentationTransformation implements ASTTransformation {
     public void visit(ASTNode[] astNodes, SourceUnit sourceUnit) {
 
         StaticTypesTransformation transformation = new StaticTypesTransformation();
-        transformation.visit(astNodes, sourceUnit);
-
+        if (astNodes!=null)
+        {
+        	transformation.visit(astNodes, sourceUnit);
+        }
+        
         // create transformer instance
         MethodCallExpressionTransformer transformer
                 = new MethodCallExpressionTransformer(sourceUnit);

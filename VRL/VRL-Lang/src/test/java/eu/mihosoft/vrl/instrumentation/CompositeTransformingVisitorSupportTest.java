@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 
 import java.io.Reader;
 import java.lang.reflect.Proxy;
+import java.util.Collection;
 
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
@@ -29,6 +30,7 @@ import eu.mihosoft.vrl.instrumentation.composites.DeclarationExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.FieldPart;
 import eu.mihosoft.vrl.instrumentation.composites.ForLoopPart;
 import eu.mihosoft.vrl.instrumentation.composites.IfStatementPart;
+import eu.mihosoft.vrl.instrumentation.composites.MethodCallExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.MethodNodePart;
 import eu.mihosoft.vrl.instrumentation.composites.ModuleNodePart;
 import eu.mihosoft.vrl.instrumentation.composites.PostFixExpressionPart;
@@ -45,7 +47,10 @@ import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IdRequest;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.Type;
+import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
 import eu.mihosoft.vrl.workflow.FlowFactory;
@@ -59,10 +64,11 @@ public class CompositeTransformingVisitorSupportTest {
 	public void proxy() throws Exception {
 
 		IArgument nullArg = Argument.nullArg();
-		DefaultProxy<IArgument> proxy = new DefaultProxy<IArgument>("test", null, IArgument.class);
+		DefaultProxy<IArgument> proxy = new DefaultProxy<IArgument>("test",
+				null, IArgument.class);
 		proxy.setProxied(nullArg);
-		IArgument arg = (IArgument) Proxy.newProxyInstance(this.getClass().getClassLoader(),
-				new Class[] { IArgument.class }, proxy);
+		IArgument arg = (IArgument) Proxy.newProxyInstance(this.getClass()
+				.getClassLoader(), new Class[] { IArgument.class }, proxy);
 		assertEquals(nullArg.getArgType(), arg.getArgType());
 
 	}
@@ -229,7 +235,7 @@ public class CompositeTransformingVisitorSupportTest {
 	public void testModuleNodePart() throws Exception {
 
 		SourceUnit source = fromCode("class A {}");
-		CompositeTransformingVisitorSupport visitor = init(source);
+		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation.init(source);
 		visitor.visitModuleNode(source.getAST());
 		assertNotNull(visitor.getRoot().getRootObject());
 		CompilationUnitDeclaration decl = (CompilationUnitDeclaration) visitor
@@ -243,14 +249,39 @@ public class CompositeTransformingVisitorSupportTest {
 		// expression "0" with the
 		// ReturnInvocation instance.
 		SourceUnit src = fromCode("class A{ void run(){ return 0; }}");
-		CompositeTransformingVisitorSupport visitor = init(src);
+		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation.init(src);
 		visitor.visitModuleNode(src.getAST());
 		CompilationUnitDeclaration decl = (CompilationUnitDeclaration) visitor
 				.getRoot().getRootObject();
 		ControlFlow flow = decl.getDeclaredClasses().get(0)
 				.getDeclaredMethods().get(0).getControlFlow();
-		assertEquals(0, flow.getInvocations().get(0).getArguments().get(0)
-				.getConstant().get());
+		assertEquals(Integer.valueOf(0),
+				flow.getInvocations().get(0).getArguments().get(0)
+						.getConstant().get().getValue(Integer.class));
+	}
+
+	@Test
+	public void testWhileLoopTransform() throws Exception {
+		SourceUnit src = fromCode("class A{ void run(){while(1>3) { run(); }}}");
+		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation.init(src);
+		visitor.visitModuleNode(src.getAST());
+		System.out.println(visitor.getRoot().getRootObject());
+
+	}
+
+	void printBindings() {
+		for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
+			for (Scope s : scopeList) {
+
+				System.out.println("scope: " + s);
+
+				if (s instanceof CompilationUnitDeclaration) {
+					System.out.println(Scope2Code
+							.getCode((CompilationUnitDeclaration) s));
+					break;
+				}
+			}
+		}
 	}
 
 	static SourceUnit fromCode(String code) throws Exception {
@@ -259,51 +290,5 @@ public class CompositeTransformingVisitorSupportTest {
 		compUnit.addSource(sourceUnit);
 		compUnit.compile(Phases.CANONICALIZATION);
 		return sourceUnit;
-	}
-
-	static CompositeTransformingVisitorSupport init(SourceUnit sourceUnit)
-			throws Exception {
-		VisualCodeBuilder_Impl codeBuilder = new VisualCodeBuilder_Impl();
-		StateMachine stateMachine = new StateMachine();
-
-		codeBuilder.setIdRequest(new IdRequest() {
-
-			private IdGenerator generator = FlowFactory.newIdGenerator();
-
-			@Override
-			public String request() {
-				String result = generator.newId();
-				return result;
-			}
-		});
-
-		Reader in = sourceUnit.getSource().getReader();
-		CodeLineColumnMapper mapper = new CodeLineColumnMapper();
-		mapper.init(in);
-
-		return new CompositeTransformingVisitorSupport(
-				sourceUnit,
-				new BinaryExpressionPart(stateMachine, sourceUnit, codeBuilder,
-						mapper),
-				new BreakPart(stateMachine, sourceUnit, codeBuilder, mapper),
-				new ClassNodePart(stateMachine, sourceUnit, codeBuilder, mapper),
-				new ContinuePart(stateMachine, sourceUnit, codeBuilder, mapper),
-				new ConstantExpressionPart(stateMachine, sourceUnit,
-						codeBuilder, mapper),
-				new DeclarationExpressionPart(stateMachine, sourceUnit,
-						codeBuilder, mapper),
-				new FieldPart(stateMachine, sourceUnit, codeBuilder, mapper),
-				new ForLoopPart(stateMachine, sourceUnit, codeBuilder, mapper),
-				new IfStatementPart(stateMachine, sourceUnit, codeBuilder,
-						mapper),
-				new MethodNodePart(stateMachine, sourceUnit, codeBuilder,
-						mapper),
-				new ModuleNodePart(codeBuilder),
-				new PostFixExpressionPart(stateMachine, sourceUnit,
-						codeBuilder, mapper),
-				new ReturnStatementPart(stateMachine, sourceUnit, codeBuilder,
-						mapper),
-				new WhileLoopPart(stateMachine, sourceUnit, codeBuilder, mapper));
-
 	}
 }

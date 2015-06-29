@@ -5,18 +5,16 @@ import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
-import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
-import eu.mihosoft.vrl.lang.model.ControlFlowScope;
-import eu.mihosoft.vrl.lang.model.IArgument;
-import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.ConstantValue;
+import eu.mihosoft.vrl.lang.model.ConstantValueFactory;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
 public class ConstantExpressionPart
 		extends
-		AbstractCodeBuilderPart<ConstantExpression, IArgument, CodeEntity> {
+		AbstractCodeBuilderPart<ConstantExpression, ConstantValue, CodeEntity> {
 
 	public ConstantExpressionPart(StateMachine stateMachine,
 			SourceUnit sourceUnit, VisualCodeBuilder builder,
@@ -25,15 +23,11 @@ public class ConstantExpressionPart
 	}
 
 	@Override
-	public IArgument transform(ConstantExpression obj, CodeEntity parent,
+	public ConstantValue transform(ConstantExpression obj, CodeEntity parent,
 			TransformContext ctx) {
 
-		if (obj.isNullExpression()) {
-			return Argument.NULL;
-		} else {
-			return Argument.constArg(new Type(obj.getType().getName(),
-					true), obj.getValue());
-		}
+		ConstantValue value = ConstantValueFactory.createConstantValue(obj.getValue(), new Type(obj.getType().getName()));
+		return value;
 	}
 
 	@Override

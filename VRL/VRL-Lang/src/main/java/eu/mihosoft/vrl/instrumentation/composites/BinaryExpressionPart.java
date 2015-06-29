@@ -12,16 +12,19 @@ import com.google.common.base.Objects;
 import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Operator;
+import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
 public class BinaryExpressionPart extends
-		AbstractCodeBuilderPart<BinaryExpression, Invocation, ControlFlowScope> {
+		AbstractCodeBuilderPart<BinaryExpression, Invocation, CodeEntity> {
 
 	public BinaryExpressionPart(StateMachine stateMachine,
 			SourceUnit sourceUnit, VisualCodeBuilder builder,
@@ -31,7 +34,8 @@ public class BinaryExpressionPart extends
 
 	@Override
 	public Invocation transform(BinaryExpression s,
-			ControlFlowScope currentScope, TransformContext context) {
+			CodeEntity current, TransformContext context) {
+		Scope parent = getParentScope(current, Scope.class);
 		if (stateMachine.getBoolean("for-loop")
 				&& !stateMachine.getBoolean("for-loop:compareExpression")
 				&& !stateMachine.getBoolean("for-loop:incExpression")) {
@@ -46,10 +50,10 @@ public class BinaryExpressionPart extends
 			if (!stateMachine.getReturnVariables().containsKey(s)) {
 
 				Operator operator = convertOperator(s);
-				IArgument leftArg = context.resolve("leftArgument",
-						s.getLeftExpression(), IArgument.class);
-				IArgument rightArg = context.resolve("rightArgument",
-						s.getRightExpression(), IArgument.class);
+				IArgument leftArg = convertToArgument("BinaryExpression.leftArgument",
+						s.getLeftExpression(), context);
+				IArgument rightArg = convertToArgument("BinaryExpression.rightArgument",
+						s.getRightExpression(), context);
 
 				boolean emptyAssignment = (Objects.equal(Argument.NULL,
 						rightArg) && operator == Operator.ASSIGN);
@@ -57,7 +61,7 @@ public class BinaryExpressionPart extends
 				if (!emptyAssignment) {
 
 					Invocation invocation = builder.invokeOperator(
-							currentScope, leftArg, rightArg, operator);
+							parent, leftArg, rightArg, operator);
 
 					setCodeRange(invocation, s);
 
@@ -72,7 +76,8 @@ public class BinaryExpressionPart extends
 
 	@Override
 	public void postTransform(Invocation obj, BinaryExpression s,
-			ControlFlowScope currentScope, TransformContext context) {
+			CodeEntity current, TransformContext context) {
+		ControlFlowScope currentScope = getParentScope(current, ControlFlowScope.class);
 		if (stateMachine.getBoolean("for-loop")
 				&& !stateMachine.getBoolean("for-loop:compareExpression")
 				&& !stateMachine.getBoolean("for-loop:incExpression")) {
@@ -200,8 +205,8 @@ public class BinaryExpressionPart extends
 	}
 
 	@Override
-	public Class<ControlFlowScope> getParentType() {
-		return ControlFlowScope.class;
+	public Class<CodeEntity> getParentType() {
+		return CodeEntity.class;
 	}
 
 }

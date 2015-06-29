@@ -15,13 +15,13 @@ public final class Argument extends CodeEntityImpl implements IArgument {
 
     private final ArgumentType argType;
     private final Variable variable;
-    private final Object constant;
+    private final ConstantValue constant;
     private final Invocation invocation;
     private final IType constType;
 
     public static final IArgument NULL = new Argument(ArgumentType.NULL, null, null, null, null);
 
-    private Argument(ArgumentType argType, Variable variable, Object constant, IType constType, Invocation invocation) {
+    private Argument(ArgumentType argType, Variable variable, ConstantValue constant, IType constType, Invocation invocation) {
         this.argType = argType;
         this.variable = variable;
         this.constant = constant;
@@ -29,8 +29,8 @@ public final class Argument extends CodeEntityImpl implements IArgument {
         this.invocation = invocation;
     }
 
-    public static IArgument constArg(IType type, Object constant) {
-        IArgument result = new Argument(ArgumentType.CONSTANT, null, constant, type, null);
+    public static IArgument constArg(ConstantValue constant) {
+        IArgument result = new Argument(ArgumentType.CONSTANT, null, constant, null, null);
 
         return result;
     }
@@ -66,14 +66,14 @@ public final class Argument extends CodeEntityImpl implements IArgument {
     }
 
     @Override
-    public Optional<Object> getConstant() {
+    public Optional<ConstantValue> getConstant() {
         return Optional.ofNullable(constant);
     }
 
     @Override
     public IType getType() {
         if (getArgType() == ArgumentType.CONSTANT) {
-            return constType;
+            return getConstant().get().getType();
         } else if (getArgType() == ArgumentType.VARIABLE) {
             return getVariable().get().getType();
         } else if (getArgType() == ArgumentType.INVOCATION) {

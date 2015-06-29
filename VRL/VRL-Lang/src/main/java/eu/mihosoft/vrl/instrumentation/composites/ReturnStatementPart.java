@@ -1,5 +1,7 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
+import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.codehaus.groovy.control.SourceUnit;
 
@@ -23,7 +25,8 @@ public class ReturnStatementPart
 	@Override
 	public ReturnStatementInvocation transform(
 			ReturnStatement s, ControlFlowScope parent, TransformContext context) {
-		IArgument arg = context.resolve("returnExpression", s.getExpression(), IArgument.class);
+
+		IArgument arg = convertToArgument("ReturnStatement.returnValue", s.getExpression(), context);
 		ReturnStatementInvocation inv = builder.returnValue(parent, arg);
 		return inv;
 	}

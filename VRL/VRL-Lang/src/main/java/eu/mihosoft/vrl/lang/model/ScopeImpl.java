@@ -55,15 +55,20 @@ import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.ValueObject;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
+
+import com.sun.javafx.collections.ImmutableObservableList;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 
 /**
  *
@@ -215,6 +220,8 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
 				parentName = parent.getName();
 			}
 
+			// TODO proper handling of possibly undeclared variables (
+			return new DeclarationInvocationDummy(name).getDeclaredVariable();
 			// throw new IllegalArgumentException(
 			// "Variable '"
 			// + name
@@ -222,6 +229,63 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
 		}
 
 		return result;
+	}
+
+	private final static class DeclarationInvocationDummy extends
+			CodeEntityImpl implements DeclarationInvocation {
+		String name;
+		Variable var;
+
+		public DeclarationInvocationDummy(String name) {
+			this.name = name;
+			this.var = new VariableImpl(null, name, this);
+		}
+
+		@Override
+		public String getVariableName() {
+			return name;
+		}
+
+		@Override
+		public String getMethodName() {
+			return "dummy";
+		}
+
+		@Override
+		public IType getReturnType() {
+			return Type.ANY;
+		}
+
+		@Override
+		public ObservableList<IArgument> getArguments() {
+			return new ImmutableObservableList<IArgument>();
+		}
+
+		@Override
+		public boolean isConstructor() {
+			return false;
+		}
+
+		@Override
+		public boolean isVoid() {
+			return false;
+		}
+
+		@Override
+		public boolean isScope() {
+			return false;
+		}
+
+		@Override
+		public boolean isStatic() {
+			return true;
+		}
+
+		@Override
+		public Variable getDeclaredVariable() {
+			return this.var;
+		}
+
 	}
 
 	@Override
@@ -319,8 +383,11 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
 		var.setValue(constant);
 		var.setConstant(true);
 
-		return getControlFlow().assignConstant(id, varName,
-				Argument.constArg(Type.fromObject(constant, false), constant));
+		return getControlFlow().assignConstant(
+				id,
+				varName,
+				Argument.constArg(ConstantValueFactory.createConstantValue(
+						constant, Type.fromObject(constant, false))));
 	}
 
 	@Override

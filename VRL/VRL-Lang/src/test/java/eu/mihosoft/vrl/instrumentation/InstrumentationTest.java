@@ -106,7 +106,7 @@ public class InstrumentationTest {
 		Class cls = loader.parseClass(classX);
 
 		Object x = cls.newInstance();
-		cls.getMethod("bar").invoke(x);
+		cls.getMethod("foo").invoke(x);
 
 		CodeRange cr = new CodeRange(idx, idx + 1);
 		// checking whether code from new model is identical to new code

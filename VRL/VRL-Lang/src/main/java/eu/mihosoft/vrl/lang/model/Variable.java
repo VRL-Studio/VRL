@@ -56,7 +56,7 @@ import java.util.Optional;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface Variable {
+public interface Variable extends CodeEntity {
 
     public String getName();
 
@@ -86,7 +86,7 @@ public interface Variable {
     
 }
 
-class VariableImpl implements Variable {
+class VariableImpl extends CodeEntityImpl implements Variable {
 
     private final Scope scope;
     private final IType type;

@@ -49,6 +49,7 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
+import javafx.beans.InvalidationListener;
 import javafx.collections.ListChangeListener;
 
 /**
@@ -110,13 +111,14 @@ public class SimpleForDeclaration_Impl extends ScopeImpl implements SimpleForDec
     public void defineParameters(Invocation i) {
         i.getArguments().clear();
 
-        i.getArguments().addAll(Argument.constArg(Type.INT, 0),Argument.constArg(Type.INT, 0),Argument.constArg(Type.INT, 0));
+        ConstantValue zero = ConstantValueFactory.createConstantValue(0, Type.INT);
+        i.getArguments().addAll(Argument.constArg(zero),Argument.constArg(zero),Argument.constArg(zero));
 
         i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
             System.out.println("change: " + c);
-            i.getArguments().get(0).getConstant().ifPresent(constVal->metadata.setFrom((Integer)constVal));
-            i.getArguments().get(1).getConstant().ifPresent(constVal->metadata.setTo((Integer)constVal));
-            i.getArguments().get(2).getConstant().ifPresent(constVal->metadata.setInc((Integer)constVal));
+            i.getArguments().get(0).getConstant().ifPresent(constVal->metadata.setFrom(constVal.getValue(Integer.class)));
+            i.getArguments().get(1).getConstant().ifPresent(constVal->metadata.setTo(constVal.getValue(Integer.class)));
+            i.getArguments().get(2).getConstant().ifPresent(constVal->metadata.setInc(constVal.getValue(Integer.class)));
         });
     }
 
@@ -137,7 +139,7 @@ public class SimpleForDeclaration_Impl extends ScopeImpl implements SimpleForDec
     public void setFrom(int from) {
         metadata.setFrom(from);
         getInvocation().ifPresent(i -> i.getArguments().
-                set(0, Argument.constArg(Type.INT, getFrom())));
+                set(0, Argument.constArg( ConstantValueFactory.createConstantValue(getFrom(), Type.INT))));
     }
 
     /**
@@ -146,7 +148,7 @@ public class SimpleForDeclaration_Impl extends ScopeImpl implements SimpleForDec
     public void setTo(int to) {
         metadata.setTo(to);
         getInvocation().ifPresent(i -> i.getArguments().
-                set(1, Argument.constArg(Type.INT, getTo())));
+                set(1, Argument.constArg(ConstantValueFactory.createConstantValue(getTo(), Type.INT))));
     }
 
     /**
@@ -155,7 +157,7 @@ public class SimpleForDeclaration_Impl extends ScopeImpl implements SimpleForDec
     public void setInc(int inc) {
         metadata.setInc(inc);
         getInvocation().ifPresent(i -> i.getArguments().
-                set(2, Argument.constArg(Type.INT, getInc())));
+                set(2, Argument.constArg(ConstantValueFactory.createConstantValue(getInc(), Type.INT))));
     }
 
 }

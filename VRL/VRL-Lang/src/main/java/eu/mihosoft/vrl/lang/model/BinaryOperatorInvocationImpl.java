@@ -24,11 +24,11 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
         IType retType = Type.VOID;
 
         if (assignmentOperator(operator)) {
-            if (leftArg.getArgType() != ArgumentType.VARIABLE) {
-                throw new IllegalArgumentException("Left Argument must be a variable!");
-            } else {
-                retType = leftArg.getVariable().get().getType();
-            }
+            //if (leftArg.getArgType() != ArgumentType.VARIABLE) {
+            //    throw new IllegalArgumentException("Left Argument must be a variable!");
+            //} else {
+            //    retType = leftArg.getVariable().get().getType();
+            // }
         } else if (booleanOperator(operator)) {
 //            if (leftArg.getArgType() == ArgumentType.VARIABLE
 //                    && rightArg.getArgType() == ArgumentType.VARIABLE) {
@@ -72,7 +72,8 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
                 || operator == Operator.LESS
                 || operator == Operator.GREATER_EQUALS
                 || operator == Operator.OR
-                || operator == Operator.AND;
+                || operator == Operator.AND
+                || operator == Operator.GREATER;
     }
 
     private boolean basicArithmeticOperator(Operator operator) {
