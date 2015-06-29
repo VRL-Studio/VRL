@@ -93,9 +93,9 @@
         <echo message="Updating ${basedir}/${src.dir}/eu/mihosoft/vrl/system/BuildProperties.java"/>
         
         <replaceregexp file="${basedir}/${src.dir}/eu/mihosoft/vrl/system/BuildProperties.java"
-               match="/\*VRL_CONTENTUPDATE\*/.*/\*/VRL_CONTENTUPDATE\*/"
-               replace="/\*VRL_CONTENTUPDATE\*/${contentupdate.enabled}/\*/VRL_CONTENTUPDATE\*/"
-               byline="true"/>
+                       match="/\*\&lt;VRL_CONTENTUPDATE\&gt;\*/.*/\*\&lt;/VRL_CONTENTUPDATE\&gt;\*/"
+                       replace="/\*\&lt;VRL_CONTENTUPDATE\&gt;\*/${contentupdate.enabled}/\*\&lt;/VRL_CONTENTUPDATE\&gt;\*/"
+                       byline="true"/>
 
         
         <javac srcdir="${src.dir}/eu/mihosoft/vrl/lang"
@@ -106,12 +106,12 @@
         <taskdef name="timestamp"
                  classname="eu.mihosoft.vrl.lang.SetTimeStampTask"
                  classpath="${build.classes.dir}"
-                 />
+        />
         
         <taskdef name="create-changelog"
                  classname="eu.mihosoft.vrl.lang.CreateChangelogTask"
                  classpath="${build.classes.dir}"
-                 />
+        />
         
         <create-changelog
             location="${basedir}/${src.dir}"
@@ -130,7 +130,7 @@
         <taskdef name="timestamp"
                  classname="eu.mihosoft.vrl.lang.RemoveTimeStampTask"
                  classpath="${build.classes.dir}"
-                 />
+        />
         
         <timestamp location="${basedir}/${src.dir}">
             <fileset dir="${src.dir}" includes="**/*Constants.java"/>
@@ -139,18 +139,18 @@
     </target>
     
     
-<!--    <target name="create-single-jar" depends="jar">-->
+    <!--    <target name="create-single-jar" depends="jar">-->
     
     <target name="-post-jar" if="singleJar">
 
-<!-- Change the value of this property to be the name of your JAR,
-minus the .jar extension. It should not have spaces.
-<property name="store.jar.name" value="MyJarName"/>
--->
+        <!-- Change the value of this property to be the name of your JAR,
+        minus the .jar extension. It should not have spaces.
+        <property name="store.jar.name" value="MyJarName"/>
+        -->
         <property name="store.jar.name" value="${application.title}"/>
 
 
-<!-- don't edit below this line -->
+        <!-- don't edit below this line -->
 
         <property name="store.dir" value="dist-single"/>
         <property name="store.jar" value="${store.dir}/${store.jar.name}.jar"/>
@@ -177,7 +177,7 @@ minus the .jar extension. It should not have spaces.
 
         <delete file="${store.dir}/temp_final.jar"/>
 
-<!--Copy VRL.jar to dist and delete lib folder-->
+        <!--Copy VRL.jar to dist and delete lib folder-->
         <copy todir="dist">
             <fileset dir="dist-single" includes="**/*"/>
         </copy>

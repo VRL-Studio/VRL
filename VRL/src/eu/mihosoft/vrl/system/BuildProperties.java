@@ -61,6 +61,6 @@ public class BuildProperties {
      * Defines whether to update content of VRL plugin for every build(time consuming).
      * This property should be always enabled when compiling a release build. 
      */
-    public static boolean CONTENTUPDATE = /*VRL_CONTENTUPDATE*/false/*/VRL_CONTENTUPDATE*/;
+    public static boolean CONTENTUPDATE = /*<VRL_CONTENTUPDATE>*/true/*</VRL_CONTENTUPDATE>*/;
     
 }
