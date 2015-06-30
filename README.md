@@ -9,7 +9,7 @@ Join the [Developer Group](https://groups.google.com/forum/#!forum/vrl-developer
 
 # Dependencies
 
-- Java >= 1.6 (JDK)
+- Java >= 1.8 (JDK)
 - NetBeans >= 7.4
 
 # How To Build
@@ -39,5 +39,5 @@ Repository: https://oss.sonatype.org/content/repositories/snapshots
     <dependency>
       <groupId>eu.mihosoft.vrl</groupId>
       <artifactId>vrl</artifactId>
-      <version>0.4.2.8.5-SNAPSHOT</version>
+      <version>0.4.2.8.6-SNAPSHOT</version>
     </dependency>
