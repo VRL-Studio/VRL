@@ -145,6 +145,7 @@ public class InputCodeType extends TypeRepresentationBase {
     public void setViewValue(Object o) {
         emptyView();
         editor.getEditor().setText(o.toString());
+        editor.setPreferredSize(null);
         editor.getEditor().revalidate();
     }
 
