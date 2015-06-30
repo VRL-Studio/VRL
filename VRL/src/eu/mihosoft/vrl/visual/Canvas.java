@@ -1981,6 +1981,7 @@ public class Canvas extends JPanel
     public void setAutoScrollSensitiveBorderSize(int autoScrollSensitiveBorderSize) {
         this.autoScrollSensitiveBorderSize = autoScrollSensitiveBorderSize;
     }
+
 }
 
 /**

@@ -62,15 +62,13 @@ import eu.mihosoft.vrl.visual.VGraphicsUtil;
 import eu.mihosoft.vrl.visual.VSwingUtil;
 import groovy.lang.Script;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.media.j3d.Appearance;
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Group;
@@ -152,40 +150,39 @@ public class Shape3DArrayType extends TypeRepresentationBase {
 
             setInitialized(true);
 
-            VSwingUtil.invokeLater(() -> {
+//            VSwingUtil.invokeLater(() -> {
+            init3DView(c, uc);
 
-                init3DView(c, uc);
-
-                if (tmpViewValue != null) {
-                    try {
-                        setViewValue(tmpViewValue);
-                        tmpViewValue = null;
-                    } catch (Exception ex) {
-                        Logger.getLogger(Shape3DArrayType.class.getName()).
-                                log(Level.SEVERE, null, ex);
-                    }
-                }
-
-                if (canvasSizeScript != null) {
-                    setVCanvas3DSizeFromValueOptions(canvasSizeScript);
-                }
-
-                canvasSizeScript = null;
-
-                if (renderOptScript != null) {
-                    setRenderOptionsFromValueOptions(renderOptScript);
-                }
-
-                renderOptScript = null;
-
-                evaluateCustomParamData();
-            });
-
+//                if (tmpViewValue != null) {
+//                    try {
+//                        setViewValue(tmpViewValue);
+//                        tmpViewValue = null;
+//                    } catch (Exception ex) {
+//                        Logger.getLogger(Shape3DArrayType.class.getName()).
+//                                log(Level.SEVERE, null, ex);
+//                    }
+//                }
+//
+//                if (canvasSizeScript != null) {
+//                    setVCanvas3DSizeFromValueOptions(canvasSizeScript);
+//                }
+//
+//                canvasSizeScript = null;
+//
+//                if (renderOptScript != null) {
+//                    setRenderOptionsFromValueOptions(renderOptScript);
+//                }
+//
+//                renderOptScript = null;
+//
+//                evaluateCustomParamData();
+//            });
 //            }).start();
         } else {
             add(new JLabel("Java3D support disabled!"));
         }
     }
+    
 
     private void setInitialized(boolean b) {
         initializedLock.lock();
@@ -216,6 +213,7 @@ public class Shape3DArrayType extends TypeRepresentationBase {
         this.add(nameLabel);
 
         setHideConnector(true);
+
     }
 
     /**
@@ -226,7 +224,9 @@ public class Shape3DArrayType extends TypeRepresentationBase {
      */
     protected void init3DView(final VCanvas3D canvas, UniverseCreator universeCreator) {
 
-        System.out.println("canvas: " + canvas);
+//        System.out.println("canvas: " + canvas);
+        
+        canvas.setVisible(false);
 
         dispose3D(); // very important to prevent memory leaks of derived classes!
 
@@ -346,12 +346,12 @@ public class Shape3DArrayType extends TypeRepresentationBase {
             }
         });
         getCanvas().getMenu().add(item);
+        
+        canvas.setVisible(true);
     }
 
     @Override
     synchronized public void setViewValue(final Object o) {
-
-        System.out.println("SET-O: " + o);
 
         clearView();
 
@@ -360,11 +360,11 @@ public class Shape3DArrayType extends TypeRepresentationBase {
         }
 
         if (!isInitialized()) {
-            System.out.println(" -> not initialized");
+//            System.out.println(" -> not initialized");
             tmpViewValue = o;
             return;
         } else {
-            System.out.println(" -> initialized");
+//            System.out.println(" -> initialized");
         }
 
         final Shape3DArray shapes = (Shape3DArray) o;

@@ -66,6 +66,7 @@ import eu.mihosoft.vrl.visual.Disposable;
 import eu.mihosoft.vrl.visual.Style;
 import eu.mihosoft.vrl.visual.TransparentPanel;
 import eu.mihosoft.vrl.visual.VBoxLayout;
+import eu.mihosoft.vrl.visual.VSwingUtil;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -94,7 +95,6 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
 import java.awt.image.Kernel;
-import java.util.Locale;
 import javax.swing.Box;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -167,6 +167,8 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
      * @param typeRepresentation the type representation that uses this canvas
      */
     public VCanvas3D(TypeRepresentationBase typeRepresentation) {
+        
+        setVisible(false);
 
         setTypeRepresentation(typeRepresentation);
 
@@ -410,11 +412,11 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
         if (e.getButton() == MouseEvent.BUTTON3) {
             getMenu().show(this, e.getX(), e.getY());
         } else if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2) {
-            
-            if (getTypeRepresentation().getViewValueWithoutValidation()==null) {
+
+            if (getTypeRepresentation().getViewValueWithoutValidation() == null) {
                 return;
             }
-            
+
             Container parent = getParent();
 
             if (frame != null) {
@@ -424,7 +426,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
 
             frame = new JFrame("VRL 3D View");
             frame.setSize(400, 300);
-            
+
             JPanel p = new JPanel(new GridLayout());
             p.add(this);
             p.setBackground(getMainCanvas().getStyle().getBaseValues().
@@ -435,9 +437,14 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
                 @Override
                 public void windowClosing(WindowEvent e) {
                     VCanvas3D.this.disableRoundRectangle = false;
-                    parent.add(VCanvas3D.this);
-                    VCanvas3D.this.revalidate();
-                    VCanvas3D.this.repaint();
+                    VSwingUtil.invokeLater(() -> {
+                        VCanvas3D.this.setVisible(false);
+                        parent.add(VCanvas3D.this);
+                        VCanvas3D.this.setVisible(true);
+                        VCanvas3D.this.revalidate();
+                        VCanvas3D.this.repaint();
+                    });
+
                 }
 
                 @Override
@@ -674,6 +681,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
             frame = null;
         }
     }
+
 }
 
 /**
