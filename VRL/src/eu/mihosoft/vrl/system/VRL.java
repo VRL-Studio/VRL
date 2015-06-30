@@ -616,10 +616,10 @@ public class VRL {
                 String errorMsg
                         = " --> Error: cannot add plugin \""
                         + plugin.getIdentifier().toString()
-                        + "\" because initialization failed. Cause: <br>"
+                        + "\" because initialization failed.<br><br><b>Reason:</b><br><br>"
                         + tr.toString();
                 if (initPluginError != null) {
-                    initPluginError += "<br>" + errorMsg;
+                    initPluginError += "<br> -->" + errorMsg;
                 } else {
                     initPluginError = errorMsg;
                 }
@@ -1554,6 +1554,9 @@ public class VRL {
                         Logger.getLogger(VRL.class.getName()).
                                 log(Level.SEVERE, null, ex);
                     } catch (IllegalAccessException ex) {
+                        Logger.getLogger(VRL.class.getName()).
+                                log(Level.SEVERE, null, ex);
+                    }  catch (Exception ex) {
                         Logger.getLogger(VRL.class.getName()).
                                 log(Level.SEVERE, null, ex);
                     }
