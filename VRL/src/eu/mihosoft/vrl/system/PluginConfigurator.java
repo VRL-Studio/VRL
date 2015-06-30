@@ -53,6 +53,7 @@ package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 import java.awt.image.BufferedImage;
+import java.util.function.BooleanSupplier;
 
 /**
  * Configures VRL plugin packages and is responsible for register type
@@ -178,5 +179,27 @@ public interface PluginConfigurator {
      * <code>false</code> otherwise
      */
     public boolean isAutomaticallySelected();
+
+    /**
+     * Indicates whether the plugin initialization fails. This allows plugin
+     * developers to skip plugin initialization if additional requirements that
+     * are not specified via dependencies are not met.
+     *
+     * @param iApi
+     * @return failure object
+     */
+    public default InitFailure checkFailure(InitPluginAPI iApi) {
+        return InitFailure.success();
+    }
+
+    /**
+     * Fails Initialization if the specified condition is met. This allows
+     * plugin developers to skip plugin initialization if additional
+     * requirements that are not specified via dependencies are not met.
+     *
+     * @param condition fail condition
+     * @param message message/reason
+     */
+    public void failsInitIf(BooleanSupplier condition, String message);
 
 }

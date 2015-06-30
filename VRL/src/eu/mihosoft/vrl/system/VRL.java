@@ -571,6 +571,20 @@ public class VRL {
                                 + " since VRL-0.4.0.");
                     }
 
+                    try {
+                        InitFailure failureState = plugin.checkFailure(initAPI);
+
+                        if (failureState.failed()) {
+                            throw new PluginInitFailedException(
+                                    failureState.getReason());
+                        }
+                    } catch (AbstractMethodError ex) {
+                        System.err.println(
+                                "--> Error: plugin does not provide"
+                                + " fail(InitPluginAPI) method. This is deprecated"
+                                + " since VRL-0.4.3.");
+                    }
+
                     ((VPluginConfigurator) plugin).nativeInit(dataController);
                 }
 

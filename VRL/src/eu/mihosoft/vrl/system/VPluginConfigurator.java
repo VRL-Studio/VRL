@@ -55,6 +55,7 @@ import eu.mihosoft.vrl.lang.VLangUtils;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.function.BooleanSupplier;
 
 /**
  * Plugin classloader. This class should be used to create a VRL plugin.
@@ -152,6 +153,9 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
     private boolean relevantForPersistence = true;
     private boolean automaticallySelected = false;
 
+    private BooleanSupplier failureCondition = () -> false;
+    private String failureReason = "";
+
     public VPluginConfigurator() {
     }
 
@@ -244,6 +248,11 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
         return accessPolicy;
     }
 
+    /**
+     * Exports the specified package and all subpackages.
+     * 
+     * @param packageName package to export
+     */
     public final void exportPackage(String packageName) {
 
         if (!VLangUtils.isPackageNameValid(packageName)) {
@@ -254,7 +263,29 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
 
         accessPolicy.addPackage(packageName);
     }
+    
+    /**
+     * Exports the specified package and optionally all subpackages.
+     * 
+     * @param packageName package to export
+     * @param includeSubPackages defines whether to export subpackages
+     */
+    public final void exportPackage(String packageName, boolean includeSubPackages) {
 
+        if (!VLangUtils.isPackageNameValid(packageName)) {
+            throw new IllegalArgumentException(
+                    " The specified string is not a valid package name: "
+                    + packageName);
+        }
+
+        accessPolicy.addPackage(packageName, includeSubPackages);
+    }
+
+    /**
+     * Exports the specified class.
+     * 
+     * @param className class to export
+     */
     public final void exportClass(String className) {
 
         // if accepted nothing to do
@@ -288,10 +319,20 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
         accessPolicy.addClass(className);
     }
 
+    /**
+     * Adds a custom access policy.
+     * 
+     * @param policy policy to add
+     */
     public final void addAccessPolicy(AccessPolicy policy) {
         accessPolicy.addPolicy(policy);
     }
 
+    /**
+     * Disables/enables access control.
+     * 
+     * @param value defines whether access control shall be disabled
+     */
     public final void disableAccessControl(boolean value) {
         accessPolicy.setAllowAll(value);
     }
@@ -400,6 +441,8 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
     }
 
     /**
+     * Returns the preference pane of this plugin.
+     * 
      * @return the preferencePane
      */
     @Override
@@ -408,6 +451,8 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
     }
 
     /**
+     * Defines the preference pane of this plugin.
+     * 
      * @param preferencePane the preferencePane to set
      */
     public void setPreferencePane(PreferencePane preferencePane) {
@@ -434,9 +479,6 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
         //
     }
 
-    /**
-     * @return the relevantForPersistence
-     */
     @Override
     public boolean isRelevantForPersistence() {
         return relevantForPersistence;
@@ -470,22 +512,34 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
     public boolean isAutomaticallySelected() {
         return this.automaticallySelected;
     }
-    
+
     /**
      * Defines whether this plugin shall be automatically selected.
-     * 
-     * @param automaticallySelected  the state to set
+     *
+     * @param automaticallySelected the state to set
      */
     public void setAutomaticallySelected(boolean automaticallySelected) {
         this.automaticallySelected = automaticallySelected;
+    }
+
+    @Override
+    public InitFailure checkFailure(InitPluginAPI iApi) {
+        return failureCondition.getAsBoolean() ? InitFailure.
+                failure(failureReason) : InitFailure.success();
+    }
+
+    @Override
+    public void failsInitIf(BooleanSupplier condition, String message) {
+        failureCondition = condition;
+        failureReason = message;
     }
 }
 
 class AccessPolicyImpl implements AccessPolicy {
 
     private boolean allowAll = false;
-    private ArrayList<String> accessPatterns = new ArrayList<String>();
-    private ArrayList<String> classNames = new ArrayList<String>();
+    private final ArrayList<String> accessPatterns = new ArrayList<String>();
+    private final ArrayList<String> classNames = new ArrayList<String>();
     private ArrayList<AccessPolicy> customPolicies
             = new ArrayList<AccessPolicy>();
 
@@ -545,7 +599,16 @@ class AccessPolicyImpl implements AccessPolicy {
     }
 
     public void addPackage(String packageName) {
-        accessPatterns.add(packageName.replace(".", "\\.") + ".*");
+        addPackage(packageName, true);
+    }
+
+    public void addPackage(String packageName, boolean includeSubPackages) {
+
+        if (includeSubPackages) {
+            accessPatterns.add(packageName.replace(".", "\\.") + ".*");
+        } else {
+            accessPatterns.add(packageName.replace(".", "\\."));
+        }
     }
 
     /**
