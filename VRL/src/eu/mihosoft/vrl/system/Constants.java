@@ -96,7 +96,7 @@ public class Constants {
             new CompatibleFileVersionInfo(
             new FileVersionInfo(VERSION_BASE,
             "created by VRL version " + VERSION), // current version
-            new FileVersionInfo("0.4.3", ""), // min version
+            new FileVersionInfo("0.4.0", ""), // min version
             new FileVersionInfo(VERSION_MAJOR, ""));   // max version
     /**
      * VRL developers.
