@@ -152,6 +152,8 @@ public class VisualInvocationObject {
 
                     thread = null;
                     running = false;
+                    
+                    startObject.invocationStopped(canvas);
                 }
             }; // end VThread
             startObject.thread = thread;
