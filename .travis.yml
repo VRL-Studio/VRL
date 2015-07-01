@@ -28,8 +28,3 @@ script:
 #  global:
 #  - secure: "M9spQVc+qStizUyBkEs4eXS+eUAadsh5ZE46gihiw+jEchMfD70/VVvCnEJ2xDnv2ERuU22JJpnlnqkdCbJVkegbpN+uKS+v69Kg/ycBT7AXsT/nV0ugu+rNzhqaBbDN38Mx9o7KAzEUW9ibAca0mFvsXyzuAXgn8qsAflEeTxc="
 #  - secure: "ckjTIPKHj0wiuotc5L9gXuxf9EOpXE3oSioLH0S1AtSoZgotpTcXVHGmVjWrL9u24aRUsjv2ZCfnFpR6IwqGQB++kidf4R2tqJXxWDAupEjiNw9iPBaLQ0D2kv0Mk1gaVKnM61Ymiv+3qbN0cQyEaTDAAN6lV8KXjc38iZmo1aA="
-
-env:
-  global:
-    - JAVA_HOME=/usr/lib/jvm/java-8-oracle
-    - ${java.home}=$JAVA_HOME/jre
