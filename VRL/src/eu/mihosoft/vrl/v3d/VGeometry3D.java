@@ -178,7 +178,9 @@ public class VGeometry3D implements Serializable {
             );
         }
 
-        return Optional.of(getGeometry().getJFXTriangleMesh(vertexColoring, mat));
+//        return Optional.of(getGeometry().getJFXTriangleMesh(vertexColoring, mat));
+        
+        return null;
     }
 
     public Shape3DArray generateShape3DArray() {
