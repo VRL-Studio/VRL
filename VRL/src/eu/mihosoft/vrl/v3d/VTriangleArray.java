@@ -56,7 +56,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 import javafx.scene.shape.TriangleMesh;
-import javafx.scene.shape.VertexFormat;
 import javax.media.j3d.Geometry;
 import javax.media.j3d.Material;
 import javax.media.j3d.TriangleArray;
@@ -195,7 +194,7 @@ public class VTriangleArray extends ArrayList<Triangle> {
      */
     public JFXMeshContainer getJFXTriangleMesh(boolean vertexColoring) {
 
-        TriangleMesh mesh = new TriangleMesh(VertexFormat.POINT_TEXCOORD);
+        TriangleMesh mesh = new TriangleMesh();
 
         double minX = Double.POSITIVE_INFINITY;
         double minY = Double.POSITIVE_INFINITY;
