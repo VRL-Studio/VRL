@@ -49,32 +49,34 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.v3d;
 
 import eu.mihosoft.vrl.annotation.ObjectInfo;
 import eu.mihosoft.vrl.visual.VGraphicsUtil;
 import java.awt.Color;
 import java.io.Serializable;
-import javafx.scene.shape.TriangleMesh;
+import java.util.Optional;
+import javafx.scene.paint.PhongMaterial;
 import javax.media.j3d.Material;
 import javax.media.j3d.Shape3D;
 
 /**
  * Represents a 3D Geometry.
- * <p><b>Note:</b> the memory footprint of VGeometry3D based geometries is
- * significantly higher than using Shape3D. Therefore, do not use it for
- * highly complex geometries (#Triangles > 10^5). Furthermore, VGeometry3D is
- * very limited. It only supports triangles. Please consider an external
+ * <p>
+ * <b>Note:</b> the memory footprint of VGeometry3D based geometries is
+ * significantly higher than using Shape3D. Therefore, do not use it for highly
+ * complex geometries (#Triangles > 10^5). Furthermore, VGeometry3D is very
+ * limited. It only supports triangles. Please consider an external
  * visualization solution, such as VTK.</p>
- * <p>However, VGeometry3D is highly useful for
- * small visualizations, e.g., function plotters that are directly
- * implemented inside VRL projects.</p>
+ * <p>
+ * However, VGeometry3D is highly useful for small visualizations, e.g.,
+ * function plotters that are directly implemented inside VRL projects.</p>
+ *
  * @see: http://www.vtk.org/
- * 
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-@ObjectInfo(serializeParam=false)
+@ObjectInfo(serializeParam = false)
 public class VGeometry3D implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -134,7 +136,6 @@ public class VGeometry3D implements Serializable {
 
         this.geometry = geometry;
     }
-    
 
     public VGeometry3D(VTriangleArray geometry,
             VGeometry3DAppearance appearance) {
@@ -149,16 +150,42 @@ public class VGeometry3D implements Serializable {
     public VTriangleArray getGeometry() {
         return geometry;
     }
-    
-    public JFXMeshContainer generateJavaFXNode() {
+
+    public Optional<JFXMeshContainer> generateJavaFXNode() {
+
+        if (VGraphicsUtil.NO_3D) {
+            return Optional.empty();
+        }
+
+        boolean solid = getAppearance().getSolidColor() != null;
+        boolean wire = getAppearance().getWireColor() != null;
+        boolean vertexColoring = getAppearance().isVertexColoring();
+
+        javafx.scene.paint.Material mat;
         
+        
+
+        if (solid) {
+            javafx.scene.paint.PhongMaterial phongMat = new PhongMaterial();
+            Color solidCol = getAppearance().getSolidColor();
+            
+            phongMat.setDiffuseColor(
+                    javafx.scene.paint.Color.rgb(
+                            solidCol.getRed(),
+                            solidCol.getGreen(),
+                            solidCol.getBlue(),
+                            solidCol.getAlpha())
+            );
+        }
+
+        return Optional.of(getGeometry().getJFXTriangleMesh(vertexColoring, mat));
     }
 
     public Shape3DArray generateShape3DArray() {
         AppearanceGenerator aG = new AppearanceGenerator();
 
         Shape3DArray result = new Shape3DArray();
-        
+
         if (VGraphicsUtil.NO_3D) {
             return result;
         }
@@ -178,16 +205,16 @@ public class VGeometry3D implements Serializable {
             result.add(new Shape3D(getGeometry().getTriangleArray(
                     getAppearance().isVertexColoring()),
                     aG.getColoredAppearance(getAppearance().getSolidColor(),
-                    getAppearance().isVolumeRendering())));
+                            getAppearance().isVolumeRendering())));
         } else if (onlyWire) {
             result.add(new Shape3D(getGeometry().getTriangleArray(false),
                     aG.getLinedAppearance(getAppearance().getWireColor(),
-                    thickness, getAppearance().getLighting())));
+                            thickness, getAppearance().getLighting())));
         } else if (solidAndWire) {
             if (!getAppearance().isVertexColoring()) {
                 result.add(new Shape3D(getGeometry().getTriangleArray(false),
                         aG.getLinedAppearance(getAppearance().getWireColor(),
-                        thickness, getAppearance().getLighting())));
+                                thickness, getAppearance().getLighting())));
 
                 result.add(new Shape3D(getGeometry().getTriangleArray(
                         getAppearance().isVertexColoring()),
@@ -196,14 +223,14 @@ public class VGeometry3D implements Serializable {
                 result.add(new Shape3D(getGeometry().getTriangleArray(
                         getAppearance().isVertexColoring()),
                         aG.getColoredAppearance(getAppearance().getSolidColor(),
-                        getAppearance().isVolumeRendering())));
+                                getAppearance().isVolumeRendering())));
             }
         } else if (nothing) {
 
             if (!getAppearance().isVertexColoring()) {
                 result.add(new Shape3D(getGeometry().getTriangleArray(false),
                         aG.getLinedAppearance(Color.black,
-                        thickness, getAppearance().getLighting())));
+                                thickness, getAppearance().getLighting())));
 
                 result.add(new Shape3D(getGeometry().getTriangleArray(
                         getAppearance().isVertexColoring()),

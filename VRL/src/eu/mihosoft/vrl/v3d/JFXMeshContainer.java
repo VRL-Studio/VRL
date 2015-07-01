@@ -123,6 +123,7 @@ public class JFXMeshContainer {
             Material mat = materials.get(i);
 
             MeshView view = new MeshView(mesh);
+
             view.setMaterial(mat);
             view.setCullFace(CullFace.NONE);
 
