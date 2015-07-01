@@ -647,7 +647,7 @@ public class VSwingUtil {
     /**
      * Waits until proceed requested by the specified wait controller.
      *
-     * @param waitController
+     * @return new Waitcontroller instance
      */
     public static WaitController newWaitController() {
         return new WaitControllerImpl();
