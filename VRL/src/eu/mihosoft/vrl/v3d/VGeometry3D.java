@@ -56,6 +56,7 @@ import eu.mihosoft.vrl.annotation.ObjectInfo;
 import eu.mihosoft.vrl.visual.VGraphicsUtil;
 import java.awt.Color;
 import java.io.Serializable;
+import javafx.scene.shape.TriangleMesh;
 import javax.media.j3d.Material;
 import javax.media.j3d.Shape3D;
 
@@ -147,6 +148,10 @@ public class VGeometry3D implements Serializable {
 
     public VTriangleArray getGeometry() {
         return geometry;
+    }
+    
+    public JFXMeshContainer generateJavaFXNode() {
+        
     }
 
     public Shape3DArray generateShape3DArray() {

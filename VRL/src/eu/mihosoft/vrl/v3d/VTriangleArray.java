@@ -49,13 +49,14 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.v3d;
 
 import eu.mihosoft.vrl.annotation.ObjectInfo;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
+import javafx.scene.shape.TriangleMesh;
+import javafx.scene.shape.VertexFormat;
 import javax.media.j3d.Geometry;
 import javax.media.j3d.Material;
 import javax.media.j3d.TriangleArray;
@@ -65,21 +66,22 @@ import javax.vecmath.Vector3f;
 
 /**
  * A triangle array. For loading triangle arrays from file see
- * {@link TxT2Geometry}. A triangle array can be used to create Java 3D shapes 
+ * {@link TxT2Geometry}. A triangle array can be used to create Java 3D shapes
  * or VRL geometries.
- * 
- *<p><b>Note:</b> the memory footprint of VTriangleArray based geometries is
- * significantly higher than using Shape3D. Therefore, do not use it for
- * highly complex geometries (#Triangles > 10^5)</p>
+ *
+ * <p>
+ * <b>Note:</b> the memory footprint of VTriangleArray based geometries is
+ * significantly higher than using Shape3D. Therefore, do not use it for highly
+ * complex geometries (#Triangles > 10^5)</p>
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
- * 
+ *
  * @see eu.mihosoft.vrl.types.Shape3DType
  * @see eu.mihosoft.vrl.v3d.VGeometry3D
  * @see Shape3DArray
  *
  */
-@ObjectInfo(serializeParam=false)
+@ObjectInfo(serializeParam = false)
 public class VTriangleArray extends ArrayList<Triangle> {
 
     private static final long serialVersionUID = 1L;
@@ -90,7 +92,6 @@ public class VTriangleArray extends ArrayList<Triangle> {
 
     public VTriangleArray() {
     }
-    
 
     public VTriangleArray(TriangleArray triangleArray) {
         this.triangleArray = triangleArray;
@@ -99,8 +100,8 @@ public class VTriangleArray extends ArrayList<Triangle> {
 
         for (int i = 0; i < triangleArray.getVertexCount(); i++) {
 
-            int nodeIndex = i %3;
-            
+            int nodeIndex = i % 3;
+
             if (nodeIndex == 0) {
                 t = new Triangle();
             }
@@ -110,15 +111,16 @@ public class VTriangleArray extends ArrayList<Triangle> {
             triangleArray.getCoordinate(i, p3f);
 
             Color3f c = new Color3f();
-            
+
             triangleArray.getColor(i, c);
-            
+
             t.setNode(nodeIndex, new Node(p3f, c));
         }
     }
 
     /**
      * Returns a java 3d triangle array.
+     *
      * @return a java 3d triangle array
      */
     public TriangleArray getTriangleArray() {
@@ -127,6 +129,7 @@ public class VTriangleArray extends ArrayList<Triangle> {
 
     /**
      * Returns a java 3d triangle array.
+     *
      * @return a java 3d triangle array
      */
     public TriangleArray getTriangleArray(boolean vertexColoring) {
@@ -185,7 +188,134 @@ public class VTriangleArray extends ArrayList<Triangle> {
     }
 
     /**
+     * Returns a JavaFX3D triangle mesh.
+     *
+     * @param vertexColoring vertex coloring (currently not supported)
+     * @return a JavaFX3D triangle mesh inside a mesh container
+     */
+    public JFXMeshContainer getJFXTriangleMesh(boolean vertexColoring) {
+
+        TriangleMesh mesh = new TriangleMesh(VertexFormat.POINT_TEXCOORD);
+
+        double minX = Double.POSITIVE_INFINITY;
+        double minY = Double.POSITIVE_INFINITY;
+        double minZ = Double.POSITIVE_INFINITY;
+
+        double maxX = Double.NEGATIVE_INFINITY;
+        double maxY = Double.NEGATIVE_INFINITY;
+        double maxZ = Double.NEGATIVE_INFINITY;
+
+        int counter = 0;
+        for (Triangle p : this) {
+            Node firstVertex = p.getNodeOne();
+            Node secondVertex = p.getNodeTwo();
+            Node thirdVertex = p.getNodeThree();
+
+            if (firstVertex.getLocation().x < minX) {
+                minX = firstVertex.getLocation().x;
+            }
+            if (firstVertex.getLocation().y < minY) {
+                minY = firstVertex.getLocation().y;
+            }
+            if (firstVertex.getLocation().z < minZ) {
+                minZ = firstVertex.getLocation().z;
+            }
+
+            if (firstVertex.getLocation().x > maxX) {
+                maxX = firstVertex.getLocation().x;
+            }
+            if (firstVertex.getLocation().y > maxY) {
+                maxY = firstVertex.getLocation().y;
+            }
+            if (firstVertex.getLocation().z > maxZ) {
+                maxZ = firstVertex.getLocation().z;
+            }
+
+            mesh.getPoints().addAll(
+                    (float) firstVertex.getLocation().x,
+                    (float) firstVertex.getLocation().y,
+                    (float) firstVertex.getLocation().z);
+
+            mesh.getTexCoords().addAll(0); // texture (not covered)
+            mesh.getTexCoords().addAll(0);
+
+            if (secondVertex.getLocation().x < minX) {
+                minX = secondVertex.getLocation().x;
+            }
+            if (secondVertex.getLocation().y < minY) {
+                minY = secondVertex.getLocation().y;
+            }
+            if (secondVertex.getLocation().z < minZ) {
+                minZ = secondVertex.getLocation().z;
+            }
+
+            if (secondVertex.getLocation().x > maxX) {
+                maxX = firstVertex.getLocation().x;
+            }
+            if (secondVertex.getLocation().y > maxY) {
+                maxY = firstVertex.getLocation().y;
+            }
+            if (secondVertex.getLocation().z > maxZ) {
+                maxZ = firstVertex.getLocation().z;
+            }
+
+            mesh.getPoints().addAll(
+                    (float) secondVertex.getLocation().x,
+                    (float) secondVertex.getLocation().y,
+                    (float) secondVertex.getLocation().z);
+
+            mesh.getTexCoords().addAll(0); // texture (not covered)
+            mesh.getTexCoords().addAll(0);
+
+            mesh.getPoints().addAll(
+                    (float) thirdVertex.getLocation().x,
+                    (float) thirdVertex.getLocation().y,
+                    (float) thirdVertex.getLocation().z);
+
+            mesh.getTexCoords().addAll(0); // texture (not covered)
+            mesh.getTexCoords().addAll(0);
+
+            if (thirdVertex.getLocation().x < minX) {
+                minX = thirdVertex.getLocation().x;
+            }
+            if (thirdVertex.getLocation().y < minY) {
+                minY = thirdVertex.getLocation().y;
+            }
+            if (thirdVertex.getLocation().z < minZ) {
+                minZ = thirdVertex.getLocation().z;
+            }
+
+            if (thirdVertex.getLocation().x > maxX) {
+                maxX = firstVertex.getLocation().x;
+            }
+            if (thirdVertex.getLocation().y > maxY) {
+                maxY = firstVertex.getLocation().y;
+            }
+            if (thirdVertex.getLocation().z > maxZ) {
+                maxZ = firstVertex.getLocation().z;
+            }
+
+            mesh.getFaces().addAll(
+                    counter, // first vertex
+                    0, // texture (not covered)
+                    counter + 1, // second vertex
+                    0, // texture (not covered)
+                    counter + 2, // third vertex
+                    0 // texture (not covered)
+            );
+            
+            counter += 3;
+
+        } // end for triangle
+
+        return new JFXMeshContainer(
+                new Vector3d(minX, minY, minZ),
+                new Vector3d(maxX, maxY, maxZ), mesh);
+    }
+
+    /**
      * Adds a triangle to this array and triggers normal computation.
+     *
      * @param t the triangle to add
      */
     public void addTriangle(Triangle t) {
@@ -193,8 +323,8 @@ public class VTriangleArray extends ArrayList<Triangle> {
     }
 
     /**
-     * Generates triangle indices including node indices. Existing indices
-     * will be overwritten.
+     * Generates triangle indices including node indices. Existing indices will
+     * be overwritten.
      */
     public void generateIndices() {
         for (int i = 0; i < size(); i++) {
@@ -214,6 +344,7 @@ public class VTriangleArray extends ArrayList<Triangle> {
 
     /**
      * Returns this array as geometry list.
+     *
      * @return this array as geometry list
      */
     public GeometryList toGeometryList(boolean vertexColoring) {
@@ -230,6 +361,7 @@ public class VTriangleArray extends ArrayList<Triangle> {
 
     /**
      * Returns this array as geometry list.
+     *
      * @return this array as geometry list
      */
     public GeometryList toGeometryList() {
@@ -239,6 +371,7 @@ public class VTriangleArray extends ArrayList<Triangle> {
 
     /**
      * Returns this array as indexed geometry list.
+     *
      * @return this array as indexed geometry list
      */
     public IndexedGeometryList toIndexedGeometryList() {
@@ -248,6 +381,7 @@ public class VTriangleArray extends ArrayList<Triangle> {
 
     /**
      * Returns this array as indexed geometry list.
+     *
      * @return this array as indexed geometry list
      */
     public IndexedGeometryList toIndexedGeometryList(boolean vertexColoring) {
@@ -266,6 +400,7 @@ public class VTriangleArray extends ArrayList<Triangle> {
 
     /**
      * Returns triangle by index.
+     *
      * @param i the index of the triangle that is to be returned
      * @return the triangle or <code>null</code> if no such triangle exists
      */
@@ -292,17 +427,17 @@ public class VTriangleArray extends ArrayList<Triangle> {
         }
 
         nodes.centerNodes();
-        
+
         scaleFactor = nodes.getScaleFactor();
         offset = nodes.getOffset();
     }
-    
+
     public float getScaleFactor() {
-        
-        if (scaleFactor==0) {
+
+        if (scaleFactor == 0) {
             scaleFactor = 1.f;
         }
-        
+
         return scaleFactor;
     }
 
@@ -310,11 +445,11 @@ public class VTriangleArray extends ArrayList<Triangle> {
      * @return the offset
      */
     public Vector3f getOffset() {
-        
-        if (offset==null) {
+
+        if (offset == null) {
             offset = new Vector3f();
         }
-        
+
         return offset;
     }
 }
