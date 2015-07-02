@@ -14,7 +14,7 @@ apply from: 'version-info.gradle'
 //  }
 // }
 // 
-file("/media/realcrypt1/sonatype-linux.properties").withReader { reader ->
+file("/media/truecrypt1/sonatype-linux.properties").withReader { reader ->
  def userProps = new Properties()
  userProps.load(reader)
  userProps.each{
@@ -35,9 +35,9 @@ configurations{
 }
 
 artifacts {
-    allJars file: file('releases/v0.4.2.8.6/vrl.jar')
-	allJars classifier: 'javadoc', file: file('releases/v0.4.2.8.6/vrl-API-doc.jar')
-	allJars classifier: 'sources', file: file('releases/v0.4.2.8.6/vrl-src.jar')
+    allJars file: file('releases/v0.4.3.0.1/vrl.jar')
+	allJars classifier: 'javadoc', file: file('releases/v0.4.3.0.1/vrl-API-doc.jar')
+	allJars classifier: 'sources', file: file('releases/v0.4.3.0.1/vrl-src.jar')
 }
 
 signing {
