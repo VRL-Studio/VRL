@@ -452,7 +452,7 @@ public class VisualObject extends CanvasWindow {
         
         getPopup().addSeparator();
         
-        JMenuItem item = new JMenuItem("Experimental: Reconnect Controlflow of Selected Objects");
+        JMenuItem item = new JMenuItem("Reconnect Controlflow of Selected Objects");
         
         item.addActionListener(new ActionListener() {
 
@@ -464,7 +464,7 @@ public class VisualObject extends CanvasWindow {
         
         getPopup().add(item);
         
-        item = new JMenuItem("Experimental: Remove from ControlFlow");
+        item = new JMenuItem("Remove from ControlFlow");
         
         item.addActionListener(new ActionListener() {
 
