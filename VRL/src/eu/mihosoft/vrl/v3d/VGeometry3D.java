@@ -153,6 +153,11 @@ public class VGeometry3D implements Serializable {
 
     public Optional<JFXMeshContainer> generateJavaFXNode() {
 
+        //TODO 02.07.2015 fix implementation
+        if (true) {
+            throw new UnsupportedOperationException("Not implemented!");
+        }
+
         if (VGraphicsUtil.NO_3D) {
             return Optional.empty();
         }
@@ -162,13 +167,11 @@ public class VGeometry3D implements Serializable {
         boolean vertexColoring = getAppearance().isVertexColoring();
 
         javafx.scene.paint.Material mat;
-        
-        
 
         if (solid) {
             javafx.scene.paint.PhongMaterial phongMat = new PhongMaterial();
             Color solidCol = getAppearance().getSolidColor();
-            
+
             phongMat.setDiffuseColor(
                     javafx.scene.paint.Color.rgb(
                             solidCol.getRed(),
@@ -179,7 +182,6 @@ public class VGeometry3D implements Serializable {
         }
 
 //        return Optional.of(getGeometry().getJFXTriangleMesh(vertexColoring, mat));
-        
         return null;
     }
 
