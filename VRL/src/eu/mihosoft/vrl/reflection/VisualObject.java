@@ -449,41 +449,31 @@ public class VisualObject extends CanvasWindow {
     }
 
     private void initControlflowMenuActions() {
-        
+
         getPopup().addSeparator();
-        
+
         JMenuItem item = new JMenuItem("Reconnect Controlflow of Selected Objects");
-        
-        item.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createControlFlowByPositionOfSelectedObjects();
-            }
+        item.addActionListener((ActionEvent e) -> {
+            createControlFlowByPositionOfSelectedObjects();
         });
-        
+
         getPopup().add(item);
-        
-        item = new JMenuItem("Remove from ControlFlow");
-        
-        item.addActionListener(new ActionListener() {
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                closeControlFlowConnection();
-                
-                getMainCanvas().getControlFlowConnections().
-                        removeAllWith(VisualObject.this);
-                
-            }
+        item = new JMenuItem("Remove from ControlFlow");
+
+        item.addActionListener((ActionEvent e) -> {
+            closeControlFlowConnection();
+
+            getMainCanvas().getControlFlowConnections().
+                    removeAllWith(VisualObject.this);
         });
-        
+
         getPopup().add(item);
     }
-    
+
     private void createControlFlowByPositionOfSelectedObjects() {
-                List<VisualObject> selectedObjects = new ArrayList<VisualObject>();
+        List<VisualObject> selectedObjects = new ArrayList<VisualObject>();
 
         for (Selectable s : getMainCanvas().getClipBoard()) {
             if (s instanceof VisualObject) {
@@ -496,59 +486,59 @@ public class VisualObject extends CanvasWindow {
             return;
         }
 
-        Comparator<VisualObject> compareByDistance = new Comparator<VisualObject>() {
-
-            @Override
-            public int compare(VisualObject o1, VisualObject o2) {
-
-                Point o1Loc = o1.getLocation();
-                Point o2Loc = o2.getLocation();
-
-                int dist1Squared = o1Loc.x * o1Loc.x + o1Loc.y * o1Loc.y;
-                int dist2Squared = o2Loc.x * o2Loc.x + o2Loc.y * o2Loc.y;
-
-                if (dist1Squared < dist2Squared) {
-                    return -1;
-                }
-
-                if (dist1Squared > dist2Squared) {
-                    return 1;
-                }
-
-                if (o1Loc.x < o2Loc.x) {
-                    return -1;
-                }
-                if (o1Loc.x > o2Loc.x) {
-                    return +1;
-                }
-
-                if (o1Loc.y < o2Loc.y) {
-                    return -1;
-                }
-                if (o1Loc.y > o2Loc.y) {
-                    return +1;
-                }
-
-                return 0;
+        Comparator<VisualObject> compareByDistance = 
+                (VisualObject o1, VisualObject o2) -> {
+            Point o1Loc = o1.getLocation();
+            Point o2Loc = o2.getLocation();
+            
+            int dist1Squared = o1Loc.x * o1Loc.x + o1Loc.y * o1Loc.y;
+            int dist2Squared = o2Loc.x * o2Loc.x + o2Loc.y * o2Loc.y;
+            
+            if (dist1Squared < dist2Squared) {
+                return -1;
             }
+            
+            if (dist1Squared > dist2Squared) {
+                return 1;
+            }
+            
+            if (o1Loc.x < o2Loc.x) {
+                return -1;
+            }
+            if (o1Loc.x > o2Loc.x) {
+                return +1;
+            }
+            
+            if (o1Loc.y < o2Loc.y) {
+                return -1;
+            }
+            if (o1Loc.y > o2Loc.y) {
+                return +1;
+            }
+            
+            return 0;
         };
 
         Collections.sort(selectedObjects, compareByDistance);
 
         // remove previous connections
         for (int i = 0; i < selectedObjects.size(); i++) {
-            
-            ControlFlowConnector selectedIn = selectedObjects.get(i).getObjectRepresentation().getControlFlowInput();
-            ControlFlowConnector selectedOut = selectedObjects.get(i).getObjectRepresentation().getControlFlowOutput();
-            
+
+            ControlFlowConnector selectedIn = selectedObjects.get(i).
+                    getObjectRepresentation().getControlFlowInput();
+            ControlFlowConnector selectedOut = selectedObjects.get(i).
+                    getObjectRepresentation().getControlFlowOutput();
+
             if (i > 0) {
-                getMainCanvas().getControlFlowConnections().removeAllWith(selectedIn);
+                getMainCanvas().getControlFlowConnections().
+                        removeAllWith(selectedIn);
             }
-            
-            if (i < selectedObjects.size() -1) {
-                getMainCanvas().getControlFlowConnections().removeAllWith(selectedOut);
+
+            if (i < selectedObjects.size() - 1) {
+                getMainCanvas().getControlFlowConnections().
+                        removeAllWith(selectedOut);
             }
-            
+
         }
 
         VisualObject prev = null;
@@ -584,7 +574,6 @@ public class VisualObject extends CanvasWindow {
     /**
      * Adds a source icon to this visual object.
      *
-     * @param code the code that is to be associated with this visual object
      */
     public void addSourceIcon() {
 
@@ -617,7 +606,7 @@ public class VisualObject extends CanvasWindow {
                                 && ComponentUtil.isVisualSessionComponent(
                                         componentClass)) {
                             try {
-                                System.out.println(">> adding source icon: visual");
+//                                System.out.println(">> adding source icon: visual");
                                 vCanvas.getProjectController().open(className);
 
                             } catch (IOException ex) {
@@ -630,7 +619,7 @@ public class VisualObject extends CanvasWindow {
                                 && ComponentUtil.isCodeSessionComponent(
                                         componentClass)) {
                             try {
-                                System.out.println(">> adding source icon: code");
+//                                System.out.println(">> adding source icon: code");
                                 File codeFile
                                         = vCanvas.getProjectController().
                                         getProject().
