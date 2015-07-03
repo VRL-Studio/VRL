@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.animation.Animation;
@@ -68,6 +67,7 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Shape;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ConvolveOp;
@@ -78,6 +78,7 @@ import javax.swing.JPanel;
 /**
  * PulseIcon is an animated pulse emitter. Its purpose is to be used as GUI
  * effect. One example is error visualization at specific components.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
@@ -105,11 +106,11 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
     private float shapeThickness;
     /**
      * defines the distance between the top/left border of the Graphics object
-     * and the origin; this is necessary because the stroke thickness 
+     * and the origin; this is necessary because the stroke thickness
      */
     private int topLeftSpacing;
     /**
-     * defines the distance between the bottom/right border of the Graphics 
+     * defines the distance between the bottom/right border of the Graphics
      * object and the origin; this is necessary because the stroke thickness
      */
     private int bottomRightSpacing;
@@ -176,6 +177,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Constructor.
+     *
      * @param mainCanvas the main Canvas object
      * @param c the canvas child
      * @param type icon type of the message
@@ -205,6 +207,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Constructor.
+     *
      * @param mainCanvas the main Canvas object
      * @param type icon type of the message
      */
@@ -238,11 +241,17 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
         BufferedImage buffer = getImage();
 
+        VScale scale = TransformingParent.getScale(getMainCanvas());
+        if (!scale.isIdentity()) {
+            g2.setTransform(AffineTransform.getScaleInstance(scale.getScaleX(), scale.getScaleY()));
+        }
+
         g2.drawImage(buffer, 0, 0, getWidth(), getHeight(), null);
     }
 
     /**
      * Defines the size of the icon.
+     *
      * @param t scale value t in (0,1)
      */
     public void setScaleValue(double t) {
@@ -265,18 +274,20 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Sets alpha composite of the specified graphics object.
+     *
      * @param g2 the graphics object that is to be changed
      */
     public void setAlphaComposite(Graphics2D g2) {
         float value = (float) transparency;
-        AlphaComposite ac1 =
-                AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                value);
+        AlphaComposite ac1
+                = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                        value);
         g2.setComposite(ac1);
     }
 
     /**
      * Renders the ico shape.
+     *
      * @param g2 the Graphics object that is used for rendering
      */
     public void drawShape(Graphics2D g2) {
@@ -287,6 +298,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Effects that are to be applied after drawing the shape.
+     *
      * @param img the image the effect is to be applied to
      * @return the resulting image
      */
@@ -312,6 +324,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Returns an image containing the rendered icon.aa
+     *
      * @return the rendered image
      */
     BufferedImage getImage() {
@@ -319,7 +332,6 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
                 || img.getHeight() != getHeight()) {
             img = new BufferedImage(getWidth(), getHeight(),
                     BufferedImage.TYPE_INT_ARGB);
-
 
             shapeThickness = getWidth() / 8;
             topLeftSpacing = (int) shapeThickness;
@@ -350,6 +362,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Returns an image containing several animation frames of the icon.
+     *
      * @return the rendered image
      */
     public BufferedImage getStillImage() {
@@ -358,6 +371,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Returns an image containing several animation frames of the icon.
+     *
      * @return the rendered image
      */
     public BufferedImage getStillImage(int w, int h) {
@@ -398,7 +412,6 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
             setAlphaComposite(g2);
             drawShape(g2);
 
-
             g2.dispose();
 
             img = postProcessing(img);
@@ -409,6 +422,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Starts pulse animation at location of CanvasChild c.
+     *
      * @param c the CanvasChild used to define the location of the animation
      */
     public void pulse(CanvasChild c) {
@@ -421,6 +435,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Starts pulse animation at location of CanvasChild c.
+     *
      * @param c the CanvasChild used to define the location of the animation
      * @param transparency the initial transparency of the animation
      */
@@ -434,6 +449,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Starts pulse animation at location of CanvasChild c.
+     *
      * @param c the CanvasChild used to define the location of the animation
      * @param transparency the initial transparency of the animation
      * @param duration the duration of the animation
@@ -454,6 +470,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Starts pulse animation at location of CanvasChild c.
+     *
      * @param repeats number of repeats
      */
     public void pulse(int repeats) {
@@ -462,6 +479,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Starts pulse animation at location of CanvasChild c.
+     *
      * @param transparency the initial transparency of the animation
      * @param duration the duration of the animation
      * @param repeats number of repeats
@@ -475,6 +493,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Defines the location of the animation.
+     *
      * @param c the CanvasChild used to define the location of the animation
      */
     public void setLocation(CanvasChild c) {
@@ -498,6 +517,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Defines the location of the icon center.
+     *
      * @param p the location to set
      */
     public void setCenterLocation(Point p) {
@@ -507,6 +527,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Defines the location of the icon center.
+     *
      * @param x the x value to set
      * @param y the y value to set
      */
@@ -516,8 +537,8 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
     }
 
     /**
-     * Updates the location of the animation if the location of the 
-     * corresponding CanvasChild object has changed. 
+     * Updates the location of the animation if the location of the
+     * corresponding CanvasChild object has changed.
      */
     public void updateLocation() {
         if (getCanvasChild() != null) {
@@ -527,6 +548,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Starts pulse animation.
+     *
      * @param offset the offset of the animation
      * @param duration the duration of the animation
      * @param repeats number of repeats
@@ -537,6 +559,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Starts pulse animation.
+     *
      * @param transparency the initial transparency of the animation
      * @param offset the offset of the animation
      * @param duration the duration of the animation
@@ -606,6 +629,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Returns the transparency of the icon
+     *
      * @param transparency the transparency of the icon
      */
     public void setTransparency(double transparency) {
@@ -614,6 +638,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Returns the color of the icon.
+     *
      * @return the color of the icon
      */
     public Color getColor() {
@@ -622,6 +647,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Defines the color of the icon.
+     *
      * @param color the color that is to be defined as icon color
      */
     public void setColor(Color color) {
@@ -630,6 +656,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Defines the message type of the icon
+     *
      * @param type the messagetype
      */
     public void setMessageType(MessageType type) {
@@ -680,9 +707,10 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 //        super.finalize();
 //    }
     /**
-     * Returns the CanvasChild object that is used to define the location of the 
+     * Returns the CanvasChild object that is used to define the location of the
      * pulse animation.
-     * @return the CanvasChild object that is used to define the location of the 
+     *
+     * @return the CanvasChild object that is used to define the location of the
      * pulse animation
      */
     public CanvasChild getCanvasChild() {
@@ -700,7 +728,8 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Returns the message type of the icon.
-     * @return the  message type of the icon
+     *
+     * @return the message type of the icon
      */
     public MessageType getMessageType() {
         return messageType;
@@ -708,8 +737,9 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Returns the current animation.
+     *
      * @return the current animation if such an animation exists;
-     *         <code>null</code> otherwise
+     * <code>null</code> otherwise
      */
     public Animation getCurrentAnimation() {
         return currentAnimation;
@@ -717,6 +747,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
     /**
      * Defines the current animation.
+     *
      * @param currentAnimation the animation to set
      */
     private void setCurrentAnimation(Animation currentAnimation) {
@@ -733,6 +764,7 @@ public class PulseIcon extends JPanel implements CanvasChild, BufferedPainter {
 
 /**
  * PulseIconAnimation defines the animation used by PulseIcon.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 class PulseIconAnimation extends Animation implements FrameListener {
@@ -748,6 +780,7 @@ class PulseIconAnimation extends Animation implements FrameListener {
 
     /**
      * Constructor.
+     *
      * @param icon the PulseIcon object that is to be animated
      * @param transparency the transparency of the pulse icon
      */
@@ -761,15 +794,15 @@ class PulseIconAnimation extends Animation implements FrameListener {
     @Override
     public void frameStarted(double time) {
         double value = getInterpolators().get(0).getValue();
-        
+
         try {
-        icon.updateLocation();
-        icon.setScaleValue(value);
-        icon.setTransparency((1.0 - value) * transparency);
-        icon.contentChanged();
-        icon.revalidate();
-        icon.repaint();
-        } catch(Exception ex) {
+            icon.updateLocation();
+            icon.setScaleValue(value);
+            icon.setTransparency((1.0 - value) * transparency);
+            icon.contentChanged();
+            icon.revalidate();
+            icon.repaint();
+        } catch (Exception ex) {
             // visual bugs only
         }
     }

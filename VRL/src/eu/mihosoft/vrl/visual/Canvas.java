@@ -716,7 +716,7 @@ public class Canvas extends JPanel
 //    }
     @Override
     public void paint(Graphics g) {
-
+        
         if (effectPane != null) {
             effectPane.componentResized(null);
         }

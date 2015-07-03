@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.animation.Animation;
@@ -93,10 +92,13 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 /**
- * <p> An effect pane is used to draw effects on top of all canvas children.
- * Drawing on the effect pane ensures that everythis is drawn after canvas
- * drawing requests. </p> <p> Elements and effects that are includded by default
- * are: <ul> <li>dock</li> <li>message box</li> <li>pulse effects</li>
+ * <p>
+ * An effect pane is used to draw effects on top of all canvas children. Drawing
+ * on the effect pane ensures that everythis is drawn after canvas drawing
+ * requests. </p>
+ * <p>
+ * Elements and effects that are includded by default are: <ul> <li>dock</li>
+ * <li>message box</li> <li>pulse effects</li>
  * <li>colorize effect</li> <li>spinning wheel</li> </ul> </p>
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
@@ -110,8 +112,8 @@ public class EffectPane extends JComponent
     private Dock dock;
     private Wheel wheel;
     private boolean pulseEffect = true;
-    private Map<MessageType, Boolean> pulseEffects =
-            new EnumMap<MessageType, Boolean>(MessageType.class);
+    private Map<MessageType, Boolean> pulseEffects
+            = new EnumMap<MessageType, Boolean>(MessageType.class);
     private JComponent fullScreenComponent;
     private Container fullScreenParent;
     private FullScreenCloseIcon fullScreenCloseIcon;
@@ -442,10 +444,10 @@ public class EffectPane extends JComponent
             Color[] colors = {
                 VSwingUtil.TRANSPARENT_COLOR, getBackground()};
 
-            RadialGradientPaint paint =
-                    new RadialGradientPaint(
-                    new Point2D.Double(x + w / 2, y + h / 2),
-                    radius, dist, colors);
+            RadialGradientPaint paint
+                    = new RadialGradientPaint(
+                            new Point2D.Double(x + w / 2, y + h / 2),
+                            radius, dist, colors);
 
             g2.setPaint(paint);
 
@@ -457,6 +459,15 @@ public class EffectPane extends JComponent
 
     @Override
     public void paint(Graphics g) {
+
+        Graphics2D g2 = (Graphics2D) g;
+
+        VScale scale = TransformingParent.getScale(mainCanvas);
+        
+        if (!scale.isIdentity()) {
+            g2.setTransform(AffineTransform.getScaleInstance(scale.getScaleX(), scale.getScaleY()));
+        }
+
         super.paint(g);
 
         locationIndicator.paint(g, getMainCanvas().getStyle(), getSize());
@@ -476,8 +487,8 @@ public class EffectPane extends JComponent
     public void colorize(Color c, double offset, double duration,
             AnimationTask t) {
 
-        BackgroundAnimation a =
-                new BackgroundAnimation(this, getBackground(), c);
+        BackgroundAnimation a
+                = new BackgroundAnimation(this, getBackground(), c);
         a.setDuration(duration);
         a.setOffset(offset);
 
@@ -542,18 +553,18 @@ public class EffectPane extends JComponent
      * @param duration the duration of the animation
      */
     public void flash(Color color, double offset, double duration) {
-        BackgroundAnimation a1 =
-                new BackgroundAnimation(this,
-                mainCanvas.getEffectPane().getBackground(), color);
-        BackgroundAnimation a2 =
-                new BackgroundAnimation(this,
-                color, mainCanvas.getEffectPane().getBackground());
+        BackgroundAnimation a1
+                = new BackgroundAnimation(this,
+                        mainCanvas.getEffectPane().getBackground(), color);
+        BackgroundAnimation a2
+                = new BackgroundAnimation(this,
+                        color, mainCanvas.getEffectPane().getBackground());
 
         a1.setDuration(1);
         a2.setDuration(1);
 
-        AnimationGroup group =
-                new AnimationGroup(mainCanvas.getAnimationManager());
+        AnimationGroup group
+                = new AnimationGroup(mainCanvas.getAnimationManager());
         group.add(a1);
         group.append(a2);
         group.setDuration(1);
@@ -729,7 +740,7 @@ public class EffectPane extends JComponent
             if (fullComp != null) {
                 fullComp.enterFullScreenMode(
                         new Dimension(getVisibleRect().width,
-                        getVisibleRect().height));
+                                getVisibleRect().height));
             }
 
             consumeMouseEvents(true);
@@ -864,8 +875,8 @@ class LocationIndicator implements Painter {
 
         Composite original = g2.getComposite();
 
-        AlphaComposite ac1 =
-                AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);
+        AlphaComposite ac1
+                = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f);
         g2.setComposite(ac1);
 
         Area a1 = new Area(new Rectangle2D.Double(
@@ -889,7 +900,6 @@ class LocationIndicator implements Painter {
         g2.setStroke(new BasicStroke(2f));
         g2.draw(a2);
 
-
         float width = 60.f;
         float height = 80.f;
 
@@ -908,7 +918,6 @@ class LocationIndicator implements Painter {
 
         mouseX = Math.max(30, mouseX);
         mouseY = Math.max(30, mouseY);
-
 
         Shape mouse = new RoundRectangle2D.Double(
                 mouseX, mouseY, width, height, 20, 20);
@@ -1086,7 +1095,7 @@ class LocationIndicator implements Painter {
             if (isEnabled()) {
                 setLocation(
                         SwingUtilities.convertPoint((Component) m.getSource(),
-                        m.getPoint(), mainCanvas));
+                                m.getPoint(), mainCanvas));
             } else {
                 // set location but don't update graphics
                 location = SwingUtilities.convertPoint((Component) m.getSource(),

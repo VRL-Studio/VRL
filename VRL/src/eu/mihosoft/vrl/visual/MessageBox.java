@@ -77,6 +77,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -576,6 +577,10 @@ public class MessageBox extends VComponent implements
                 g2 = buffer.createGraphics();
             } else {
                 g2 = (Graphics2D) g;
+                VScale scale = TransformingParent.getScale(getMainCanvas());
+                if (!scale.isIdentity()) {
+                    g2.setTransform(AffineTransform.getScaleInstance(scale.getScaleX(), scale.getScaleY()));
+                }
             }
 
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,

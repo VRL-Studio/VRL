@@ -100,23 +100,13 @@ public class AttributionDisplay implements GlobalForegroundPainter {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
-        double scaleX = 1.0;
-        double scaleY = 1.0;
+        VScale scale = TransformingParent.getScale(canvas);
 
-        TransformingParent tp
-                = (TransformingParent) VSwingUtil.
-                getParent(canvas, TransformingParent.class);
+        int visibleRectX = (int) (canvas.getVisibleRect().getX() * scale.getScaleX());
+        int visibleRectY = (int) (canvas.getVisibleRect().getY() * scale.getScaleY());
 
-        if (tp != null && scaleX > 1e-6 && scaleY > 1e-6) {
-            scaleX = 1.0 / tp.getScaleX();
-            scaleY = 1.0 / tp.getScaleY();
-        }
-
-        int visibleRectX = (int) (canvas.getVisibleRect().getX()*scaleX);
-        int visibleRectY = (int) (canvas.getVisibleRect().getY()*scaleY);
-
-        int visibleRectWidth = (int) (canvas.getVisibleRect().getWidth()*scaleX);
-        int visibleRectHeight = (int) (canvas.getVisibleRect().getHeight()*scaleY);
+        int visibleRectWidth = (int) (canvas.getVisibleRect().getWidth() * scale.getScaleX());
+        int visibleRectHeight = (int) (canvas.getVisibleRect().getHeight() * scale.getScaleY());
 
         Composite original = g2.getComposite();
 
