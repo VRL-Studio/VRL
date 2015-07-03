@@ -309,6 +309,7 @@ public class Canvas extends JPanel
     private boolean autoScrollEnabled = true;
     private int autoScrollSensitiveBorderSize = 50;
     
+    
 //    private JTextArea backgroundLogView;
 //    private LoggingController loggingController;
 

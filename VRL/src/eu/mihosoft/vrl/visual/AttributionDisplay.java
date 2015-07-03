@@ -49,19 +49,21 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.reflection.ComponentTree;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Composite;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.image.BufferedImage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ImageIcon;
 
 /**
@@ -72,8 +74,7 @@ public class AttributionDisplay implements GlobalForegroundPainter {
 
     private Canvas canvas;
     private Image vrlImage;
-    // AffineTransform transform = new AffineTransform();
-    
+
     private boolean positionChanged = true;
 
     public AttributionDisplay(Canvas canvas) {
@@ -82,7 +83,7 @@ public class AttributionDisplay implements GlobalForegroundPainter {
         try {
             vrlImage = new ImageIcon(
                     ComponentTree.class.getResource(
-                    "/eu/mihosoft/vrl/resources/images/vrl-logo-dark-bg.png")).getImage();
+                            "/eu/mihosoft/vrl/resources/images/vrl-logo-dark-bg.png")).getImage();
 
             vrlImage = ImageUtils.convert(vrlImage, BufferedImage.TYPE_INT_ARGB, 140, 36, true);
 
@@ -99,11 +100,23 @@ public class AttributionDisplay implements GlobalForegroundPainter {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int visibleRectX = (int) canvas.getVisibleRect().getX();
-        int visibleRectY = (int) canvas.getVisibleRect().getY();
+        double scaleX = 1.0;
+        double scaleY = 1.0;
 
-        int visibleRectWidth = (int) canvas.getVisibleRect().getWidth();
-        int visibleRectHeight = (int) canvas.getVisibleRect().getHeight();
+        TransformingParent tp
+                = (TransformingParent) VSwingUtil.
+                getParent(canvas, TransformingParent.class);
+
+        if (tp != null && scaleX > 1e-6 && scaleY > 1e-6) {
+            scaleX = 1.0 / tp.getScaleX();
+            scaleY = 1.0 / tp.getScaleY();
+        }
+
+        int visibleRectX = (int) (canvas.getVisibleRect().getX()*scaleX);
+        int visibleRectY = (int) (canvas.getVisibleRect().getY()*scaleY);
+
+        int visibleRectWidth = (int) (canvas.getVisibleRect().getWidth()*scaleX);
+        int visibleRectHeight = (int) (canvas.getVisibleRect().getHeight()*scaleY);
 
         Composite original = g2.getComposite();
 
@@ -114,14 +127,14 @@ public class AttributionDisplay implements GlobalForegroundPainter {
 
         g2.setColor(canvas.getStyle().getBaseValues().
                 getColor(MessageBox.BOX_COLOR_KEY));
-        
+
         int rectX = visibleRectX + visibleRectWidth - 160 - 10;
         int rectY = visibleRectY + visibleRectHeight - 70;
-        
+
         int imgX = visibleRectX + visibleRectWidth - 160;
         int imgY = visibleRectY + visibleRectHeight - 60 + 2;
-        
-        if (canvas.getMessageBox().isOpened() 
+
+        if (canvas.getMessageBox().isOpened()
                 || canvas.getMessageBox().isOpening()) {
             rectY = 10;
             imgY = 20 + 2;
@@ -134,15 +147,15 @@ public class AttributionDisplay implements GlobalForegroundPainter {
         g2.setColor(canvas.getStyle().getBaseValues().
                 getColor(MessageBox.BOX_COLOR_KEY));
         g2.drawRoundRect(rectX, rectY, 160, 60, 18, 18);
-        
+
         ac1 = AlphaComposite.getInstance(
                 AlphaComposite.SRC_OVER, 0.75f);
 
         g2.setComposite(ac1);
-        
+
         g2.drawImage(vrlImage, imgX, imgY, null);
 
-         ac1 = AlphaComposite.getInstance(
+        ac1 = AlphaComposite.getInstance(
                 AlphaComposite.SRC_OVER, 0.85f);
 
         g2.setComposite(ac1);
@@ -153,7 +166,7 @@ public class AttributionDisplay implements GlobalForegroundPainter {
         g2.drawRoundRect(rectX, rectY, 160, 60, 18, 18);
 
         g2.setComposite(original);
-        
+
         if (positionChanged) {
             canvas.repaint();
             positionChanged = false;

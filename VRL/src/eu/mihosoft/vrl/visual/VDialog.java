@@ -53,17 +53,13 @@
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.system.VParamUtil;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.image.ImageObserver;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 import java.util.Stack;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JComponent;
@@ -85,9 +81,22 @@ public class VDialog {
     private static final Stack<VDialogWindow> unconfirmedDialogs =
             new Stack<VDialogWindow>();
     private static boolean cancelDialogs = false;
+    
+    public static final String ACTION_DIALOG_CREATE = "VDialog:create";
+    
+    private static final List<ActionListener> dialogActionListeners =
+            new ArrayList<>();
 
     public static boolean showsDialog() {
         return !unconfirmedDialogs.isEmpty();
+    }
+    
+    public static void addDialogActionListener(ActionListener l) {
+        dialogActionListeners.add(l);
+    }
+    
+    public static boolean removeDialogActionListener(ActionListener l) {
+        return dialogActionListeners.remove(l);
     }
 
     private static final class DialogPanel extends TransparentPanel {
@@ -131,6 +140,8 @@ public class VDialog {
     public static synchronized VDialogWindow showDialogWindow(
             Canvas canvas, String title, JComponent component,
             String buttonText, boolean modal) {
+        
+        notifyActionListeners(ACTION_DIALOG_CREATE);
 
         VParamUtil.throwIfNull(canvas, title, component, buttonText);
 
@@ -155,6 +166,8 @@ public class VDialog {
     public static synchronized VDialogWindow showDialogWindow(
             Canvas canvas, String title, DialogContent content,
             String[] options) {
+        
+        notifyActionListeners(ACTION_DIALOG_CREATE);
 
         VParamUtil.throwIfNull(canvas, title, content);
 
@@ -173,6 +186,12 @@ public class VDialog {
 
         return dialog;
     }
+    
+    private static void notifyActionListeners(String a) {
+        for(ActionListener l : dialogActionListeners) {
+            l.actionPerformed(new ActionEvent(VDialog.class, 0, a));
+        }
+    }
 
     public static synchronized int showConfirmDialog(
             Canvas canvas, String title, JComponent component,
@@ -184,6 +203,8 @@ public class VDialog {
             Canvas canvas, String title, JComponent component,
             DialogAnswerListener answerListener,
             String... options) {
+        
+        notifyActionListeners(ACTION_DIALOG_CREATE);
 
         VParamUtil.throwIfNull(canvas, title, component);
 
@@ -211,6 +232,8 @@ public class VDialog {
     public static synchronized int showConfirmDialog(
             Canvas canvas, String title, String message,
             String[] options) {
+        
+        notifyActionListeners(ACTION_DIALOG_CREATE);
 
         VParamUtil.throwIfNull(canvas, title, message);
 
@@ -240,6 +263,8 @@ public class VDialog {
     public static synchronized void showMessageDialog(
             Canvas canvas, String title, String message, MessageType mType,
             boolean modal) {
+        
+        notifyActionListeners(ACTION_DIALOG_CREATE);
 
         VParamUtil.throwIfNull(canvas, title, message, mType);
 
@@ -270,6 +295,8 @@ public class VDialog {
     public static synchronized AnswerType showConfirmDialog(
             Canvas canvas, String title, String message, DialogType dType) {
 
+        notifyActionListeners(ACTION_DIALOG_CREATE);
+        
         VParamUtil.throwIfNull(canvas, title, message, dType);
 
         if (dType == DialogType.CUSTOM) {
@@ -303,6 +330,8 @@ public class VDialog {
     private static synchronized void showDialog(
             final Canvas canvas, final VDialogWindow dialog, boolean modal) {
 
+        notifyActionListeners(ACTION_DIALOG_CREATE);
+        
         cancelDialogs = false;
 
         if (!VSwingUtil.isWindowChild(canvas)) {
