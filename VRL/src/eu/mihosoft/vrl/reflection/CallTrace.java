@@ -58,7 +58,7 @@ import java.util.ArrayList;
  * CallTrace can be used to generate a trace of method calls. It's purpose is to
  * prevent circular method calls. Therefore <code>isInTrace()</code> can be
  * used.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class CallTrace {
 

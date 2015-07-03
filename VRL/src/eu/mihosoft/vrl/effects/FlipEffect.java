@@ -68,7 +68,7 @@ import java.awt.image.BufferedImage;
 /**
  * Implementation of a blur effect. As it is CPU intensive it is not recommended
  * to use it for big components.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class FlipEffect implements Effect {
 
@@ -255,7 +255,7 @@ public class FlipEffect implements Effect {
 
 /**
  * Animation for the flip effect.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class FlipAnimation extends Animation implements FrameListener {
 

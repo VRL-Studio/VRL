@@ -58,7 +58,7 @@ import java.util.Collection;
 /**
  * Node representing a plugin with corresponding dependencies. Dependencies are
  * implemented as edges of the dependency graph.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class PluginNode {
     private PluginConfigurator plugin;

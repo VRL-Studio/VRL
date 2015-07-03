@@ -77,7 +77,7 @@ import org.codehaus.groovy.control.SourceUnit;
  * The purpose of this class is to provide an easy way for compiling Groovy
  * code. It supports VRL message generation to show error messages etc.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class GroovyCompiler implements eu.mihosoft.vrl.lang.VCompiler {
 

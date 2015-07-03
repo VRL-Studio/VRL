@@ -65,7 +65,7 @@ import java.util.logging.Logger;
 /**
  * mIndicates whether the specified word is a reserved language keyword
    (currently only java and groovy are supported).
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class Keywords {
 

@@ -57,7 +57,7 @@ import java.util.ArrayList;
 
 /**
  * Double vector.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class DVector extends ArrayList<Double>{
     private static final long serialVersionUID = -4094945702959940907L;

@@ -57,7 +57,7 @@ import java.awt.Color;
 
 /**
  * Animates the color of a connection.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ColorAnimation extends Animation implements FrameListener {
     private static final long serialVersionUID = -4282621197358751577L;

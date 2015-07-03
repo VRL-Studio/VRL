@@ -61,7 +61,7 @@ import java.net.URL;
 
 /**
  * IO model interface.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface IOModel {
     

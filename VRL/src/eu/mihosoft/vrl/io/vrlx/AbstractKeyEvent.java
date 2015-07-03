@@ -59,7 +59,7 @@ import java.awt.event.KeyEvent;
 
 /**
  * An abstract key event, used for XML serialization.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractKeyEvent extends AbstractEvent{
 //    private Component source;

@@ -68,7 +68,7 @@ import javax.swing.JComponent;
  * {@link java.awt.LayoutManager#layoutContainer(java.awt.Container) }
  * method.
  * @see java.awt.LayoutManager
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AnimatedLayout implements LayoutManager2 {
 //    private ArrayList<Dimension> sizesBefore = new ArrayList<Dimension>();

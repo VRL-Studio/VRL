@@ -57,7 +57,7 @@ import javax.swing.SwingUtilities;
 /**
  * The prepaint thread is a seperate thread that triggers the animation manager.
  * 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 //TODO think of replacing thread with timer?
 public class RepaintThread implements Runnable {

@@ -64,7 +64,7 @@ import java.util.logging.Logger;
  * href="http://iharder.net/base64">http://iharder.net/base64</a> for more
  * information on the original code. </p>
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 //http://iharder.net/base64
 public class Base64 {

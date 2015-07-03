@@ -58,7 +58,7 @@ import javax.swing.JComponent;
 /**
  * Animates the size of a Swing component.
  * FIX use animated layout instead!
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ResizeAnimation extends Animation implements FrameListener {
     private static final long serialVersionUID = -4229327397470167486L;

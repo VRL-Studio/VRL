@@ -59,7 +59,7 @@ import java.awt.Graphics;
  * Components that want to use an effect manager for post processing their
  * <code>paint()</code> method have to implement this interface.
  * 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface EffectPainter extends BufferedPainter{
     /**

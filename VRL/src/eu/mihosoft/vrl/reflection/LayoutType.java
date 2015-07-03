@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.reflection;
 
 /**
  * Defines the layout type for input components of type representations.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public enum LayoutType {
     /**

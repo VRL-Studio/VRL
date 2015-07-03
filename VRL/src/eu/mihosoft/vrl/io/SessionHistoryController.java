@@ -58,7 +58,7 @@ import javax.swing.JMenuItem;
 
 /**
  * History controller to navigate through session history.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface SessionHistoryController {
 

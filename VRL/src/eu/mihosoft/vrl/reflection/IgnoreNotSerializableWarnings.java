@@ -55,7 +55,7 @@ package eu.mihosoft.vrl.reflection;
 /**
  * If non serializable objects implement this interface no warning message
  * will be shown when saving the session.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface IgnoreNotSerializableWarnings {
 

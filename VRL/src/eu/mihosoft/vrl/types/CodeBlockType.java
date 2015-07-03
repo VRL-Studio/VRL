@@ -59,7 +59,7 @@ import eu.mihosoft.vrl.reflection.VisualCanvas;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.reflection.CodeBlock</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=CodeBlock.class, input = true, output = true, style="default")
 public class CodeBlockType extends TypeTemplate {

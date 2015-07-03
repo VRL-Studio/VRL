@@ -66,7 +66,7 @@ import javax.swing.tree.TreePath;
 /**
  * Transferhandler for the object tree.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ObjectTransferHandler extends TransferHandler {
 

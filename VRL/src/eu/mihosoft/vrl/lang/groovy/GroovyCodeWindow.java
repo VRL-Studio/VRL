@@ -85,7 +85,7 @@ import javax.swing.border.EmptyBorder;
 
 /**
  * Defines a code window for editing and compiling groovy code.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class GroovyCodeWindow extends CanvasWindow {
 

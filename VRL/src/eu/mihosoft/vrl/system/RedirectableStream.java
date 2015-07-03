@@ -65,7 +65,7 @@ import javax.swing.text.StyleConstants;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class RedirectableStream extends PrintStream {
 

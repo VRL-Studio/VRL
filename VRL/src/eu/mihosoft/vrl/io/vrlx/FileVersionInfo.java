@@ -57,7 +57,7 @@ import eu.mihosoft.vrl.io.VersionInfo;
 
 /**
  * Defines a VRL file version.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class FileVersionInfo implements AbstractVersionInfo {
 

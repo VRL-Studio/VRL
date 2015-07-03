@@ -104,7 +104,7 @@ import javax.swing.text.Document;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "Groovy Code", category = "VRL/Language",
 description = "Groovy Code Editor")

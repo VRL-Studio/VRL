@@ -82,7 +82,7 @@ import java.util.logging.Logger;
  * representation. Adding objects and invoking methods will have an effect on
  * the visual representation.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VisualObjectInspector extends ObjectInspector {
 

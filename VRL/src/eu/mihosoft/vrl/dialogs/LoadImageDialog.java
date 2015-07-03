@@ -60,7 +60,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * A dialog for loading images.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class LoadImageDialog {
 

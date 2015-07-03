@@ -115,7 +115,7 @@ import javax.swing.border.EmptyBorder;
 /**
  * A method representation is a Swing based visualization of a method.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class DefaultMethodRepresentation extends VComponent
         implements Selectable, OrderedLayoutConstraint {

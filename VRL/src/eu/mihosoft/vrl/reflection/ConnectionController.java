@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.reflection;
 
 /**
  * This class doesn't have the right to be documented!
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ConnectionController {
     // maybe this will become a controller class (MVC patterns)

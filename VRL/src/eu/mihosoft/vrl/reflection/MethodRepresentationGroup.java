@@ -56,7 +56,7 @@ import eu.mihosoft.vrl.visual.VSwingUtil;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 
 

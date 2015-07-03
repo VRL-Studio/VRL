@@ -55,7 +55,7 @@ package eu.mihosoft.vrl.system;
 /**
  * License information. A license information contains the name of the
  * license and the license text.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface LicenseInfo {
     /**

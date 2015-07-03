@@ -59,7 +59,7 @@ import javax.media.j3d.Geometry;
 
 /**
  * TypeRepresentation for <code>javax.media.j3d.Geometry</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Geometry.class, input = true, output = true, style="default")
 public class GeometryType extends TypeTemplate{

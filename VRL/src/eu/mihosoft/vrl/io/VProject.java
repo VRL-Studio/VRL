@@ -89,7 +89,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 /**
  * VRL Project object
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VProject {
 

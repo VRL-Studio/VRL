@@ -74,7 +74,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ComponentManagementPanel extends TransparentPanel {
 

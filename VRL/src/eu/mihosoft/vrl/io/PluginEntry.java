@@ -64,7 +64,7 @@ import java.util.logging.Logger;
 
 /**
  * A plugin entry that consists of a jar file represented by
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @Deprecated
 public class PluginEntry {

@@ -72,7 +72,7 @@ import javax.swing.JMenuItem;
 
 /**
  * Component menue items can be used to add components to the VRL popup menu.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ComponentMenuItem extends JMenuItem {
 

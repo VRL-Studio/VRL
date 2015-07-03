@@ -72,7 +72,7 @@ import java.util.jar.JarFile;
  * and
  * {@link http://loracular.blogspot.com/2009/12/dynamic-class-loader-with.html}
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VURLClassLoader extends URLClassLoader {
 

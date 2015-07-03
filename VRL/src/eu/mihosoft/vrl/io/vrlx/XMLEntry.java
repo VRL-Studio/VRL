@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.io.vrlx;
 
 /**
  * Entry file for XML based session files.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class XMLEntry implements SessionEntry, SessionEntryFile {
     private String name;

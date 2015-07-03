@@ -69,7 +69,7 @@ package eu.mihosoft.vrl.animation;
  * animation has been started which is equivalent to <code>t=1.0</code>.
  * </li>
  * </ul>
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface AnimationTask extends FrameListener {
 

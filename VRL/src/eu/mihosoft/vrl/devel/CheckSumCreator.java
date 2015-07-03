@@ -60,7 +60,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "Checksum Creator", category = "VRL/Development",
 description = "Creates checksums (MD5, SHA1, ...)")

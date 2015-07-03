@@ -75,7 +75,7 @@ import javax.naming.spi.DirStateFactory.Result;
  * it possible to work with the object's properties throught it's methods, i.e.
  * through method descriptions it is possible to invoke methods of the object.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ObjectInspector {
 

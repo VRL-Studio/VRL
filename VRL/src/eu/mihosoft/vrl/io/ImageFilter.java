@@ -57,7 +57,7 @@ import javax.swing.filechooser.*;
 
 /**
  * File extension filter for image files.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ImageFilter extends FileFilter {
 

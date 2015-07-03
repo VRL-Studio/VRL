@@ -23,7 +23,7 @@
 //
 ///**
 // *
-// * @author Michael Hoffer <info@michaelhoffer.de>
+// * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
 // */
 //@ComponentInfo(name = "Plugin Content Creator", category = "VRL/Development",
 //description = "Creates content files that can be added to a VRL-Plugin")

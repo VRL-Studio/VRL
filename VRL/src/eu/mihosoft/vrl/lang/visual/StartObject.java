@@ -63,7 +63,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "Start", category = "VRL/Control", allowRemoval = false,
         description = "Start Controlflow")

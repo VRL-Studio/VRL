@@ -70,7 +70,7 @@ import javax.swing.JMenuItem;
  * A Controller for recently opened VRL Sessions and other files. This class can
  * be used to create "Recently opened Files" like menus.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class RecentFilesManager {
 

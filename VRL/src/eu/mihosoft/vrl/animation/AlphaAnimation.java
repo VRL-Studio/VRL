@@ -59,7 +59,7 @@ import java.awt.image.BufferedImage;
 
 /**
  * Alpha animation.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AlphaAnimation extends Animation implements FrameListener {
     private static final long serialVersionUID = -7840929640339176807L;

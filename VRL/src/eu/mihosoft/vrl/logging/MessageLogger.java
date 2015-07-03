@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.logging;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 
 
@@ -76,7 +76,7 @@ import javax.swing.SwingUtilities;
  * a valid VRL plugin only. The VRL plugin system is aware of this problem
  * and handles it correctly.
  * </p>
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class MessageLogger {
     /**

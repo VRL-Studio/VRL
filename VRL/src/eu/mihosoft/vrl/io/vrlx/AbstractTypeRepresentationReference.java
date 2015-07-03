@@ -61,7 +61,7 @@ import eu.mihosoft.vrl.reflection.VisualCanvas;
 /**
  * Abstract type representation references are used to define abstract ui
  * dependencies.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractTypeRepresentationReference {
 

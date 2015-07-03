@@ -76,7 +76,7 @@ import javax.swing.event.ChangeListener;
  *
  * <p>Sample:</p> <br/> <img src="doc-files/color-chooser-01.png"/> <br/>
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type = Color.class, input = true, output = false, style = "color-chooser")
 public class ColorInputType extends ColorType {

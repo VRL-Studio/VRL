@@ -58,7 +58,7 @@ import eu.mihosoft.vrl.lang.visual.VRLRequestType;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=ObjectRequest.class, input = true, output = false, style="default")
 public class GetObjectRepresentation extends TypeTemplate implements VRLRequestType {

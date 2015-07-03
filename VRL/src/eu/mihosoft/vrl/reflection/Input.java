@@ -59,7 +59,7 @@ import eu.mihosoft.vrl.visual.ConnectorType;
  * The Input class behaves exactly like its super class. The only exception is
  * that the Input class has a different color set. It's purpose is to define an
  * input connector which can only have one connection. 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  * @see Connector
  */
 public class Input extends VConnector

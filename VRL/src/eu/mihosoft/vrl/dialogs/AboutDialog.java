@@ -56,7 +56,7 @@ import javax.swing.JFrame;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AboutDialog extends javax.swing.JFrame {
 

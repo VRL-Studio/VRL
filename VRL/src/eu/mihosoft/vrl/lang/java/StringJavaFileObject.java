@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.lang.java;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 import java.net.*;
 import javax.tools.*;

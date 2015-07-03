@@ -59,7 +59,7 @@ import eu.mihosoft.vrl.visual.VFilter;
 /**
  * Plugin API for registering plugins with VisualCanvas instances.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface VPluginAPI extends PluginAPI {
 

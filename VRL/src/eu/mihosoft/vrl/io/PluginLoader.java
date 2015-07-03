@@ -58,7 +58,7 @@ import java.io.IOException;
 
 /**
  * Loads a plugin (jar file).
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @Deprecated
 public class PluginLoader implements FileLoader {

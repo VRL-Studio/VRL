@@ -56,7 +56,7 @@ package eu.mihosoft.vrl.io;
  * Defines a VRL version information. This class specifies how to compare
  * versions. This is used to check file format compatibility or plugin version
  * etc.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface AbstractVersionInfo {
 

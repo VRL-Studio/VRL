@@ -58,7 +58,7 @@ import eu.mihosoft.vrl.v3d.GeometryList;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.v3d.GeometryList</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=GeometryList.class, input = true, output = true, style="default")
 public class GeometryListType extends TypeTemplate{

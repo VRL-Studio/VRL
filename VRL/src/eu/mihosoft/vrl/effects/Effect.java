@@ -68,7 +68,7 @@ import java.io.Serializable;
  * The purpose of this class is to provide an easy to use way to post process
  * the visual appearance of Swing components.
  * </p>
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface Effect extends BufferedPainter{
     /**

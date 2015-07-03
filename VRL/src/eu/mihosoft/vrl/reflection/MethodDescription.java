@@ -63,7 +63,7 @@ import java.lang.annotation.Annotation;
  * Describes a method with all informations accessible from the Java Reflection
  * API, except annotations.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class MethodDescription {
 

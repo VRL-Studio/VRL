@@ -3,7 +3,7 @@
 // *
 // * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 // *
-// * Copyright (C) 2009 Michael Hoffer <info@michaelhoffer.de>
+// * Copyright (C) 2009 Michael Hoffer &lt;info@michaelhoffer.de&gt;
 // *
 // * Supported by the Goethe Center for Scientific Computing of Prof. Wittum
 // * (http://gcsc.uni-frankfurt.de)
@@ -64,7 +64,7 @@
 //
 ///**
 // * A frame for tutorial sessions.
-// * @author Michael Hoffer <info@michaelhoffer.de>
+// * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
 // */
 //public class TutorialWindow extends JFrame {
 //    private static final long serialVersionUID = 7962639621189219483L;

@@ -57,7 +57,7 @@ import java.util.regex.Pattern;
 /**
  * Regular expression patterns for analysing Java/Groovy sourcecode.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class Patterns {
 

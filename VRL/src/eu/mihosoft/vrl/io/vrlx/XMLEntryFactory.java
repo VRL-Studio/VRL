@@ -69,7 +69,7 @@ import java.util.Collection;
 
 /**
  * Entry factory for XML based session files.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class XMLEntryFactory implements SessionEntryFactory {
 

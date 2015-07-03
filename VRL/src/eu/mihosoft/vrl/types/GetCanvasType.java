@@ -60,7 +60,7 @@ import eu.mihosoft.vrl.reflection.VisualCanvas;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=CanvasRequest.class, input = true, output = false, style="default")
 public class GetCanvasType extends TypeTemplate implements VRLRequestType{

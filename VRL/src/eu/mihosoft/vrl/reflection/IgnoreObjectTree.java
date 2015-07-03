@@ -55,7 +55,7 @@ package eu.mihosoft.vrl.reflection;
 /**
  * Objects that implement this interface won't be added to the object tree
  * when deleted from VRL canvas.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface IgnoreObjectTree {
 

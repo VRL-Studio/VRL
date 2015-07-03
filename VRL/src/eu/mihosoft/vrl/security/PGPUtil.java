@@ -23,7 +23,7 @@ import org.bouncycastle.openpgp.PGPException;
  * These methods use the PGP implementation from http://www.bouncycastle.org/ .
  * </p>
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class PGPUtil {
 

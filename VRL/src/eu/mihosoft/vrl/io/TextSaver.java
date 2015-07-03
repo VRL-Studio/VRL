@@ -61,7 +61,7 @@ import java.io.OutputStreamWriter;
 /**
  * Saves content of a String object to file.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class TextSaver implements FileSaver {
 

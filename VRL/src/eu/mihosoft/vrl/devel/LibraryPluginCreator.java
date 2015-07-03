@@ -80,7 +80,7 @@ import org.codehaus.groovy.control.CompilerConfiguration;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "Library Plugin Creator", category = "VRL/Development",
         description="Creates a VRL Plugin for external Libraries")

@@ -75,7 +75,7 @@ import java.io.Serializable;
  * sin(sqrt(x*x))
  * </code>
  * </p>
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class GroovyFunction1D implements Serializable, Function1D {
 

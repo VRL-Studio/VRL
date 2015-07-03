@@ -57,7 +57,7 @@ import javax.swing.JComponent;
 
 /**
  * Animates the foreground color of a Swing component.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ForegroundAnimation extends Animation implements FrameListener {
 

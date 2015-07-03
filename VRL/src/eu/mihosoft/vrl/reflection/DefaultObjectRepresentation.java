@@ -97,7 +97,7 @@ import javax.swing.border.EmptyBorder;
 /**
  * An object representation is a Swing based visualization of a Java object.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class DefaultObjectRepresentation extends JPanel
         implements CanvasChild, IDObject {

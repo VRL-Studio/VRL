@@ -102,7 +102,7 @@ import javax.swing.border.EmptyBorder;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type = Object[].class, style = "array")
 public class ArrayBaseType extends TypeRepresentationBase {

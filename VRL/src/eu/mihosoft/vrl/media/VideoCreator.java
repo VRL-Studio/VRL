@@ -77,7 +77,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Creates uncompressed video files (mov) from image files.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "Video Creator", category = "VRL/Media",
 description = "Video Creator (converts images (jpg, png) to mov-video)")

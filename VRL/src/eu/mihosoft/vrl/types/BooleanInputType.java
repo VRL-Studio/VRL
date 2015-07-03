@@ -70,7 +70,7 @@ import javax.swing.event.ChangeListener;
  * TypeRepresentation for
  * <code>Java.lang.Boolean</code>.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type = Boolean.class, input = true, output = false, style="default")
 public class BooleanInputType extends TypeRepresentationBase {

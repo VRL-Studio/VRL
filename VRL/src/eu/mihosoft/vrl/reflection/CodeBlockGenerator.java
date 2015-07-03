@@ -62,7 +62,7 @@ import java.util.ArrayList;
 
 /**
  * Generates a code block from methods that are selected in a VRL session.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class CodeBlockGenerator {
 

@@ -59,7 +59,7 @@ import javax.media.j3d.Appearance;
 
 /**
  * TypeRepresentation for <code>javax.media.j3d.Appearance</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Appearance.class)
 public class AppearanceType extends TypeTemplate {

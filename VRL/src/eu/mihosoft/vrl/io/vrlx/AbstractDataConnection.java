@@ -69,7 +69,7 @@ import java.util.logging.Logger;
  * Defines a connection between two type representations. Abstract connections
  * are only used for XML serialization.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractDataConnection {
 

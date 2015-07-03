@@ -60,7 +60,7 @@ import eu.mihosoft.vrl.reflection.VisualCanvas;
  * session before the session objects are added to the canvas. This is useful
  * if it is necessary to add custom type representations that were not part of
  * the session.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface LoadSessionListener {
     /**

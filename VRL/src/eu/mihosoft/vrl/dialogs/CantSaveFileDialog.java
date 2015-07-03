@@ -57,7 +57,7 @@ import javax.swing.JOptionPane;
 
 /**
  * Dialog that indicates file save errors.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class CantSaveFileDialog {
 

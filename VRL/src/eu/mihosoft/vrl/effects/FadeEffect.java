@@ -70,7 +70,7 @@ import java.util.List;
 
 /**
  * Effect for fading components in and out.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class FadeEffect implements Effect {
 
@@ -261,7 +261,7 @@ public class FadeEffect implements Effect {
 
 /**
  * Animation used to animate fade effects.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class FadeAnimation extends Animation implements FrameListener {
 

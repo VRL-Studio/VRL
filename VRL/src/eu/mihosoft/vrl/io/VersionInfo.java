@@ -63,7 +63,7 @@ import java.util.ArrayList;
  * defining plugin dependencies. </p> <p> Examples: 0.3.8.10, 1.3, 4.30.100,
  * 3.x, 1.2, x </p>
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class VersionInfo implements Comparable, AbstractVersionInfo {
 

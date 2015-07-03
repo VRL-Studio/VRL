@@ -61,7 +61,7 @@ import java.util.Deque;
  * AnimationManager manages animations. It is also responsible for repainting
  * the MainCanvas object if necessary.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AnimationManager implements Serializable {
 

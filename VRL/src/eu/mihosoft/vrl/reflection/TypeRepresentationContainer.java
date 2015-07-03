@@ -78,7 +78,7 @@ import eu.mihosoft.vrl.visual.ValueObject;
  * A type representation container is a swing container that not only contains a
  * type representation but also a connector.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class TypeRepresentationContainer extends JPanel implements IDObject, ValueObject {
 

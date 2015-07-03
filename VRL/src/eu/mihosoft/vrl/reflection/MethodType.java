@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.reflection;
 
 /**
  * Internal method type class that allows to use special method invokation.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 enum MethodType {
     /**

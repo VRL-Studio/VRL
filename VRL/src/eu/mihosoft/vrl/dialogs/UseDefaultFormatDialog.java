@@ -57,7 +57,7 @@ import javax.swing.JOptionPane;
 
 /**
  * A question dialog asking whether to use the default file extension.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class UseDefaultFormatDialog {
 

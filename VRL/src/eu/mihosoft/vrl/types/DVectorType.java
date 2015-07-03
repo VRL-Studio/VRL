@@ -64,7 +64,7 @@ import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.types.DVector</code>.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=DVector.class, input = true, output = true, style="default")
 public class DVectorType extends TypeTemplate{

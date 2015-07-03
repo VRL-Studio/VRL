@@ -87,7 +87,7 @@ import java.util.HashSet;
  * 
  * <b>Note:</b> By providing custom implementations of {@link ParameterValidator} this
  * framework can be easily extended.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VParamUtil {
 

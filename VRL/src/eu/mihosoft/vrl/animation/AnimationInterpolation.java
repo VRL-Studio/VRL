@@ -58,7 +58,7 @@ import java.io.Serializable;
  * Defines the interface for animation interpolation. An animation interpolation
  * represents a function that controls a specific value, e.g., component size,
  * color etc.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface AnimationInterpolation extends Serializable{
 

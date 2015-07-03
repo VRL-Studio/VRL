@@ -55,7 +55,7 @@ package eu.mihosoft.vrl.effects;
 /**
  * This interface is just a marker. It can be used to define effects as
  * disappearance effects.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface DisappearanceEffect extends Effect{
 

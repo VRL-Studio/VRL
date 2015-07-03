@@ -61,7 +61,7 @@ import javax.swing.filechooser.FileSystemView;
  * directory. It is designed to be used in conjuction with {@link javax.swing.JFileChooser}.
  * Its main purpose to restrict file dialogs to vrl project files.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class RestrictedFileSystemView extends FileSystemView {
 

@@ -57,7 +57,7 @@ import java.io.Serializable;
 /**
  * A code block groups method calls. It is mainly used to group methods that are
  * selected in a VRL session.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface CodeBlock extends Serializable{
     /**

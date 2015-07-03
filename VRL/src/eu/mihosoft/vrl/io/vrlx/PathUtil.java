@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.io.vrlx;
 
 /**
  * Provides utility methods for path handling.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class PathUtil {
 

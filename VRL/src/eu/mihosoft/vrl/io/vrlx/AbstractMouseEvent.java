@@ -59,7 +59,7 @@ import java.awt.event.MouseEvent;
 
 /**
  * An abstract mouse event, used for XML serialization
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractMouseEvent extends AbstractEvent {
 

@@ -57,7 +57,7 @@ import eu.mihosoft.vrl.visual.Task;
 /**
  * A call option task contains a task name and an invoke task. Its purpose is to
  * specify names for invoke tasks.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class CallOptionTask{
     private String name;

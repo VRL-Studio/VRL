@@ -72,7 +72,7 @@ import java.util.List;
 
 /**
  * Effect for fading out components.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class FadeOutEffect implements DisappearanceEffect {
 
@@ -223,7 +223,7 @@ public class FadeOutEffect implements DisappearanceEffect {
 
 /**
  * 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class FadeOutAnimation extends Animation implements FrameListener {
 

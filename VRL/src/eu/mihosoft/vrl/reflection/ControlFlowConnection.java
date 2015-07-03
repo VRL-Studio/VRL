@@ -67,7 +67,7 @@ import java.awt.geom.GeneralPath;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ControlFlowConnection extends Connection {
 

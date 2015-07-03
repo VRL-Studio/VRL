@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.io.vrlx;
 
 /**
  * Session entry file.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface SessionEntryFile extends SessionEntry{
     /**

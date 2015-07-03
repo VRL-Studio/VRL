@@ -66,7 +66,7 @@ import java.io.Serializable;
  * evaluator should be used instead
  * (the java compiler api is an interesting alternative).
  * </p>
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "User Function", category = "VRL/Math",
         description="Evaluates expressions (e.g. x*x+y*y)")

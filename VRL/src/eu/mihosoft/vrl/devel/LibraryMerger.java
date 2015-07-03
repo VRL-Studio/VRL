@@ -72,7 +72,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "Library Merger", category = "VRL/Development",
         description="Merges multiple Jar-Files into one")

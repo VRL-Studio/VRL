@@ -65,7 +65,7 @@ import java.util.logging.Logger;
 /**
  * XML session saver. This is the recommended way to save VRL sessions. It
  * is well supported and replaces the binary session management.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class CanvasXMLSessionSaver implements FileSaver {
 

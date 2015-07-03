@@ -57,7 +57,7 @@ import eu.mihosoft.vrl.lang.java.ClassFileObject;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 
 

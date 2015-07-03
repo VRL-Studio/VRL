@@ -59,7 +59,7 @@ import eu.mihosoft.vrl.visual.Canvas;
 
 /**
  * This class is used as label to display type representation names.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class TypeRepresentationLabel extends JLabel {
     private static final long serialVersionUID = -5744777997243143196L;

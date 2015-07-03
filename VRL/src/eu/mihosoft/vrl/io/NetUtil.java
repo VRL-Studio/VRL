@@ -13,7 +13,7 @@ import java.net.UnknownHostException;
 /**
  * Network utility class. This class provides methods for checking for host
  * reachability, downloads etc.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class NetUtil {
     

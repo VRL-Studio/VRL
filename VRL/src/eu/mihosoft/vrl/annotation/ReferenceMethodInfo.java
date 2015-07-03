@@ -60,7 +60,7 @@ import java.lang.annotation.Target;
 /**
  * Use this annotation to define a method as reference method. Only methods that
  * return a value and provide exactly one input are allowed.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

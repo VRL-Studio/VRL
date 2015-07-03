@@ -64,7 +64,7 @@ import java.io.UnsupportedEncodingException;
  * Reads a textfile line by line. This is done to ensure that each line ends
  * with <code>\n</code>. Use a custom reader with custom buffer size if high
  * io performance is important.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class TextLoader implements FileLoader {
 

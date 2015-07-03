@@ -72,7 +72,7 @@ import java.util.List;
 
 /**
  * Utility methods that enable the analysis of the session control-flow.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class ControlFlowUtils {
 

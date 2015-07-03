@@ -105,7 +105,7 @@ import javax.swing.border.EmptyBorder;
 import org.eclipse.jgit.revwalk.RevCommit;
 
 /**
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  * @author Christian Poliwoda <christian.poliwoda@gcsc.uni-frankfurt.de>
  */
 public class VersionManagement {
@@ -234,7 +234,7 @@ public class VersionManagement {
     }
 
     /**
-     * @author Michael Hoffer <info@michaelhoffer.de>
+     * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
      * @author Christian Poliwoda <christian.poliwoda@gcsc.uni-frankfurt.de>
      */
     static class VersionManagementPanel extends VComponent {

@@ -56,7 +56,7 @@ import java.io.Serializable;
 
 /**
  * Interface for functions with one dimensional input.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface Function1D extends Serializable{
     /**

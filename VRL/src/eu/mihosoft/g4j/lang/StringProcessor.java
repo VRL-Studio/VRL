@@ -55,7 +55,7 @@ package eu.mihosoft.g4j.lang;
 /**
  * A string processor.
  * @see {@link FilterComments}, {@link FilterStrings}, {@link FilterChars}
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface StringProcessor extends IDEntry {
     /**

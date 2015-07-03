@@ -79,7 +79,7 @@ import javax.swing.JPanel;
 
 /**
  * TypeRepresentation for <code>java.awt.image.BufferedImage</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=BufferedImage.class, input = true, output = true, style="default")
 public class BufferedImageType extends TypeRepresentationBase

@@ -66,7 +66,7 @@ import javax.swing.JPanel;
  * components. One possible use case is fading out a group of Swing components.
  * 
  * 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class EffectPanel extends JPanel implements CanvasChild, EffectPainter,
     Disposable{

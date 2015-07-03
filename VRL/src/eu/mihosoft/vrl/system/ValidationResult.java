@@ -55,7 +55,7 @@ package eu.mihosoft.vrl.system;
 /**
  * Validation result.
  * @see VParamUtil
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ValidationResult {
     private String message;

@@ -61,7 +61,7 @@ import eu.mihosoft.vrl.reflection.VisualCanvas;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=MethodRequest.class, input = true, output = false, style="default")
 public class GetMethodRepresentationType extends TypeTemplate implements VRLRequestType{

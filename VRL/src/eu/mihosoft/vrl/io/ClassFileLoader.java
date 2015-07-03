@@ -70,7 +70,7 @@ import java.util.logging.Logger;
 /**
  * Loads Java class files and source files. If the source file hasn't been
  * compiled this will be automatically be done.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ClassFileLoader implements FileLoader {
 

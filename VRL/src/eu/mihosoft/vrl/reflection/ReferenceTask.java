@@ -55,7 +55,7 @@ package eu.mihosoft.vrl.reflection;
 /**
  * Reference tasks are used by AbstractWindow to define references and
  * resolutions to type representations.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface ReferenceTask {
     /**

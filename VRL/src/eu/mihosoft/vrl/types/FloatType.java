@@ -57,7 +57,7 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 /**
  * TypeRepresentation for <code>Java.lang.Float</code>.
  * <p><b>Supported value options:</b> see {@link NumberBasedTypeRepresentation}</p>
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Float.class)
 public class FloatType extends NumberBasedTypeRepresentation {

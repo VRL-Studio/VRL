@@ -71,7 +71,7 @@ import javax.swing.Icon;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class InitPluginAPIImpl implements InitPluginAPI {
 

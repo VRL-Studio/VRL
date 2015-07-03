@@ -60,7 +60,7 @@ import eu.mihosoft.vrl.types.ObjectSilentType;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.types.Function2D</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Function2D.class, input = true, output = true, style="default")
 public class Function2DType extends TypeTemplate {

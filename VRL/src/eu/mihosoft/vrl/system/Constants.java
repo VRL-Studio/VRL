@@ -59,7 +59,7 @@ import eu.mihosoft.vrl.visual.Message;
 /**
  * System and Version Constants.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class Constants {
 
@@ -83,7 +83,7 @@ public class Constants {
      * Copyright statement.
      */
     public static final String COPYRIGHT =
-            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2015"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer <info@michaelhoffer.de>";
+            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2015"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer &lt;info@michaelhoffer.de&gt;";
     /**
      * Simple copyright statement (usefull for windows titles etc.)
      */

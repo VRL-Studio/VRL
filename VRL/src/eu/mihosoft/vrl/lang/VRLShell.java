@@ -103,7 +103,7 @@ import org.codehaus.groovy.runtime.InvokerInvocationException;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VRLShell {
 

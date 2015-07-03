@@ -66,7 +66,7 @@ import java.util.logging.Logger;
 
 /**
  * Class loader that constructs classes from byte arrays.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ByteArrayClassLoader extends ClassLoader {
 

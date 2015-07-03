@@ -56,7 +56,7 @@ package eu.mihosoft.vrl.lang;
  * Throw this exception to interrupt the current workflow and show a simplified,
  * i.e., user friendly error message (no exception type will be shown).
  * 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VWorkflowException extends RuntimeException{
     private String title;

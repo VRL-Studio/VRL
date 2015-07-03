@@ -59,7 +59,7 @@ import java.util.Collection;
 
 /**
  * Session file object for XML based session files.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class XMLFile implements SessionFile {
 

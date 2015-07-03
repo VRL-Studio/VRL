@@ -56,7 +56,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class InputValue implements Serializable{
     private static final long serialVersionUID = 1L;

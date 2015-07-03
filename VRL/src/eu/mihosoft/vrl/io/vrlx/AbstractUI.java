@@ -80,7 +80,7 @@ import javax.swing.JButton;
 /**
  * An abstract ui is a content provider for UIWindow objects. It is also used
  * for XML serialization.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractUI extends ArrayList<AbstractTypeRepresentationReference>
         implements WindowContentProvider {

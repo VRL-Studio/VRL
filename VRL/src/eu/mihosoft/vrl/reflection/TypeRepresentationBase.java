@@ -176,7 +176,7 @@ import javax.swing.text.Document;
  * <li>invokeOnChange (defines whether to invoke the method this type
  * representation belongs to on input change)</li> </ul>
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  * @see BufferedImageType
  * @see ParamInfo
  */

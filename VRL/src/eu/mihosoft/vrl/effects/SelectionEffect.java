@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.effects;
 
 /**
  * Selection effect visualizes GUI component selection.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class SelectionEffect extends ColorizeEffect {
 

@@ -57,7 +57,7 @@ import java.io.File;
 /**
  * Archive format used for VersionedFile. Possible implementations are ZIP,
  * TAR, etc.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface ArchiveFormat {
 

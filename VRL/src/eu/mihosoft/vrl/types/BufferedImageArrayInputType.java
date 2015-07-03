@@ -57,7 +57,7 @@ import java.awt.image.BufferedImage;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=BufferedImage[].class, input = true, output = false, style="array")
 public class BufferedImageArrayInputType extends ArrayBaseType {

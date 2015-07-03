@@ -61,7 +61,7 @@ import java.util.function.BooleanSupplier;
  *
  * @see VisualCanvas
  * @see eu.mihosoft.vrl.reflection.TypeRepresentationFactory
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface PluginConfigurator {
 

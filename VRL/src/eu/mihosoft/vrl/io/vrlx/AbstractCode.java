@@ -98,7 +98,7 @@ import java.util.logging.Logger;
  * representations should always provide a component info. Otherwise they cannot
  * be accessed anymore and will not be saved.
  * </p>
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractCode {
 

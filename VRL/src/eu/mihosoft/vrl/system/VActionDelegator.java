@@ -61,7 +61,7 @@ import eu.mihosoft.vrl.visual.VSeparator;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class VActionDelegator implements ActionDelegator {
 

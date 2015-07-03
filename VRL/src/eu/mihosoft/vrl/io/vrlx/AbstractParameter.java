@@ -70,7 +70,7 @@ import java.io.Serializable;
 /**
  * Abstract representation of a input parameter or return value. This class is
  * only used for XML serialization.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractParameter {
 
@@ -224,7 +224,7 @@ public class AbstractParameter {
 }
 /**
  * Encodes value objects to either XML string or compressed base64 strings
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class ValueEncoder implements ExceptionListener {
 
@@ -309,7 +309,7 @@ class ValueEncoder implements ExceptionListener {
 
 /**
  * Decodes value objects from either XML string or compressed base64 strings
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class ValueDecoder implements ExceptionListener {
 

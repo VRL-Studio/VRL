@@ -59,7 +59,7 @@ import java.lang.annotation.Target;
 /**
  * Use this annotation to define component information.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

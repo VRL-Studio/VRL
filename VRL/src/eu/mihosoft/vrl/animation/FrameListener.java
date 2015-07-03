@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.animation;
 
 /**
  * Defines a frame listener.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface FrameListener {
     /**

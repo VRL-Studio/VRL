@@ -62,7 +62,7 @@ import eu.mihosoft.vrl.system.PluginInfo;
 
 /**
  * Shows a dialog that allows to specify plugin information.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class PluginConfiguratorDialog {
 

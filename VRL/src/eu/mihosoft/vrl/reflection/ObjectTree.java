@@ -61,7 +61,7 @@ import javax.swing.tree.TreeSelectionModel;
 /**
  * JTree based object tree.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ObjectTree extends JTree {
 

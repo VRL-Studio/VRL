@@ -56,7 +56,7 @@ import java.util.ArrayList;
 
 /**
  * An array of abstract events, used for XML serialization
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractEventArray extends ArrayList<AbstractEvent>{
 

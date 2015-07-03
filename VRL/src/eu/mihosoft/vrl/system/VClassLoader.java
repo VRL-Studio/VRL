@@ -65,7 +65,7 @@ import java.util.logging.Logger;
  * Classloader used to load classes from sourcecode that is provided by
  * <code>.vrlx</code> files.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VClassLoader extends ClassLoader {
 

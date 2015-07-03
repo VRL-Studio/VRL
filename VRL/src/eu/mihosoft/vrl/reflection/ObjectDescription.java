@@ -59,7 +59,7 @@ import java.util.ArrayList;
 /**
  * Describes an object with all informations accessible from the Java Reflection 
  * API, except annotations.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class ObjectDescription implements Serializable {
 

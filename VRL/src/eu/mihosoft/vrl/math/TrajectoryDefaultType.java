@@ -57,7 +57,7 @@ import eu.mihosoft.vrl.reflection.TypeTemplate;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Trajectory.class, input = true, output = true, style="default")
 public class TrajectoryDefaultType extends TypeTemplate{

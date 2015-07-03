@@ -60,7 +60,7 @@ import java.util.logging.Logger;
 
 /**
  * A list of abstract codes.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractCodes extends ArrayList<AbstractCode> {
 

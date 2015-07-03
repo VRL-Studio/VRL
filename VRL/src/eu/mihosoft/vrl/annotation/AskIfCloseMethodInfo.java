@@ -63,7 +63,7 @@ import java.lang.annotation.Target;
  * the user closes the object visualization.
  * Only methods that
  * return a value and provide no input are allowed.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

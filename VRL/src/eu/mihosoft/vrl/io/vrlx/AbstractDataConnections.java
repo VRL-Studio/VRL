@@ -63,7 +63,7 @@ import java.util.logging.Logger;
 /**
  * A list containing the abstract codes of a canvas session. This class is only
  * used for XML serialization.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractDataConnections extends ArrayList<AbstractDataConnection> {
 

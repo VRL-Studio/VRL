@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.io;
 
 /**
  * Evaluates command line arguments.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VArgUtil {
 

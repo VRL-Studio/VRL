@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.animation;
 
 /**
  * Defines a linear target function.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class LinearInterpolation implements AnimationInterpolation {
     private static final long serialVersionUID = 5459287124339780394L;

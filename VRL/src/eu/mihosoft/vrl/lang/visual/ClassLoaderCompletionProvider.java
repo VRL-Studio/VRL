@@ -66,7 +66,7 @@ import org.fife.ui.autocomplete.DefaultCompletionProvider;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ClassLoaderCompletionProvider extends DefaultCompletionProvider {
 

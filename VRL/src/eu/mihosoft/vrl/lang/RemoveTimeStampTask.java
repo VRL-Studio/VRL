@@ -67,7 +67,7 @@ import org.apache.tools.ant.types.FileSet;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class RemoveTimeStampTask extends Task {
 

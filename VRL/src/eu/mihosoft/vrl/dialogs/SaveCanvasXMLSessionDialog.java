@@ -61,7 +61,7 @@ import java.io.File;
  * A dialog for saving XML canvas sessions. This is the recommended way
  * to load VRL sessions. It is well supported and replaces the binary session
  * management.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class SaveCanvasXMLSessionDialog {
 

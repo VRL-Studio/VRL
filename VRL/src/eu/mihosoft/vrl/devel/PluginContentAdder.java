@@ -77,7 +77,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "Plugin Content Adder", category = "VRL/Development",
 description = "Adds content to VRL-Plugin")

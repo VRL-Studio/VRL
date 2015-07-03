@@ -69,7 +69,7 @@ import javax.swing.JButton;
 
 /**
  * TypeRepresentation for <code>java.io.File</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=File.class, input = true, output = true, style="default")
 public class FileType extends TypeRepresentationBase {

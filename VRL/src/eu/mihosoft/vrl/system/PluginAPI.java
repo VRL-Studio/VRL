@@ -61,7 +61,7 @@ import eu.mihosoft.vrl.visual.Style;
 
 /**
  * Plugin API that can be used for registering a plugin with a canvas.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface PluginAPI {
 //    public JMenuBar getMenuBar();

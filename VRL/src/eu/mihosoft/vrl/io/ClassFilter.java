@@ -58,7 +58,7 @@ import javax.swing.filechooser.*;
 /**
  * Filter for <code>.java</code> and <code>.class</code> files. It is used by
  * the <code>eu.mihosoft.vrl.io.ClassFileLoader</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ClassFilter extends FileFilter {    
     @Override

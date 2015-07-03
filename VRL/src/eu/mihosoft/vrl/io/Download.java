@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  * Downloads a file from the specified url. This class can be observed (for
  * progress and download state).
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  *
  * Implementation based on
  * {@linkplain http://www.java-tips.org/java-se-tips/javax.swing/how-to-create-a-download-manager-in-java.html}

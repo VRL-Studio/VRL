@@ -59,7 +59,7 @@ import java.awt.Component;
 
 /**
  * A dialog for loading java classes from file.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class LoadClassDialog {
 

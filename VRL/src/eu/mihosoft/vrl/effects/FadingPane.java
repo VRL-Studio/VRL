@@ -57,7 +57,7 @@ import javax.swing.JPanel;
 /**
  * Currently this class does nothing.
  * TODO can this class be removed?
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class FadingPane extends JPanel {
     private static final long serialVersionUID = -5742579037077207476L;

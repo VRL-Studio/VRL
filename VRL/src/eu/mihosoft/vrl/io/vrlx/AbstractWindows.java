@@ -66,7 +66,7 @@ import java.util.logging.Logger;
  * A list containing the abstract representation of objects and windows of a
  * canvas session. This class is only used for XML serialization.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractWindows extends ArrayList<AbstractWindow> {
 

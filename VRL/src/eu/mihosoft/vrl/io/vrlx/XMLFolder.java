@@ -57,7 +57,7 @@ import java.util.Collection;
 
 /**
  * Entry folder for XML based session files.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class XMLFolder implements SessionEntry, SessionEntryFolder{
 

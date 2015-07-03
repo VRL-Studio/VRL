@@ -61,7 +61,7 @@ import javax.swing.JOptionPane;
 
 /**
  * A "file not found" dialog
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class FileNotFoundDialog {
 

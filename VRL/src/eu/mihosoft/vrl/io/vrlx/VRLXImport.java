@@ -62,7 +62,7 @@ import java.util.Collection;
 
 /**
  * Format definition for the VRL reflection package.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class VRLXImport {
 

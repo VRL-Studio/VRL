@@ -58,7 +58,7 @@ import javax.swing.SwingUtilities;
 
 /**
  * Spinning wheel effect visualizes GUI component wait state.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class SpinningWheelEffect extends ColorizeEffect {
 

@@ -56,7 +56,7 @@ import java.util.ArrayList;
 
 /**
  * A list of abstract type representations.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AbstractTypeRepresentationReferences
         extends ArrayList<AbstractTypeRepresentationReference> {

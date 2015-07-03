@@ -87,7 +87,7 @@ import eu.mihosoft.vrl.visual.CanvasChild;
  * not one control instance managing different components but one effect manager
  * per effect painter (component).
  * </p>
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class EffectManager implements CanvasChild, Serializable, BufferedPainter {
 

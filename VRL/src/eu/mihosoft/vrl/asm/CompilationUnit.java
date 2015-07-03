@@ -59,7 +59,7 @@ import java.util.Collection;
  * A compilation unit is the binary equivalent of a source file. Even though
  * inner classes are defined in separated class files they are included in the
  * compilation unit.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface CompilationUnit {
 

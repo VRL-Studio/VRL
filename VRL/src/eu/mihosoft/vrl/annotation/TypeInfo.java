@@ -59,7 +59,7 @@ import java.lang.annotation.Target;
 
 /**
  * Use this annotation to define the style and type of typerepresentations.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

@@ -144,7 +144,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
  * </pre>
  * </code>
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class VersionedFile implements VersionController {
 

@@ -59,7 +59,7 @@ import javax.swing.filechooser.*;
 
 /**
  * File extension filter for files.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VFileFilter extends FileFilter implements Serializable {
 

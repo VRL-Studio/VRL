@@ -57,7 +57,7 @@ import java.util.ArrayList;
 /**
  * A simple code builder class. Its purpose is to allow easy code generation and
  * adjustable indentation depth.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class CodeBuilder {
 

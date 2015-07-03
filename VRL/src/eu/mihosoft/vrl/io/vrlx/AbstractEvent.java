@@ -57,7 +57,7 @@ import java.awt.event.InputEvent;
 
 /**
  * This class is an abstract input event, used for XML serialization.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public abstract class AbstractEvent {
 

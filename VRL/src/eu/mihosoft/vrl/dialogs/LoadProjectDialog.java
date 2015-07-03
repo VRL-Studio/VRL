@@ -64,7 +64,7 @@ import javax.swing.JComponent;
 /**
  * A dialog for loading project sessions. This is the recommended way
  * to load VRL projects.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class LoadProjectDialog {
 

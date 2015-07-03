@@ -57,7 +57,7 @@ import java.io.Serializable;
 
 /**
  * This class defines an object entry, consisting of an object an it's ID.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ObjectEntry implements IDObject, Serializable {
     private static final long serialVersionUID = 2468715489039036660L;

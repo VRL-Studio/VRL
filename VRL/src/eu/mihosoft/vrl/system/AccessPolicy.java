@@ -53,8 +53,8 @@
 package eu.mihosoft.vrl.system;
 
 /**
- *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * 
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface AccessPolicy {
     public boolean accept(String className);

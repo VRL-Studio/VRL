@@ -57,7 +57,7 @@ import javax.swing.JComponent;
 
 /**
  * Animates the bounds (size and location) of a Swing component.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ComponentBoundsAnimation extends Animation implements FrameListener {
 

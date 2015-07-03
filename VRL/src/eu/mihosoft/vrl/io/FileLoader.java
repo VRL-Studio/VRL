@@ -59,7 +59,7 @@ import java.io.IOException;
 /**
  * Interface for VRL file loaders. Implementing this interface makes the file
  * loader compatible to VRL file dialogs.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface FileLoader {
     /**

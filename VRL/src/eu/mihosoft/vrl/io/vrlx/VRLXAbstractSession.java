@@ -81,7 +81,7 @@ import org.apache.tools.ant.taskdefs.Jar;
 
 /**
  * Format definition for the VRL reflection package.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class VRLXAbstractSession {
 

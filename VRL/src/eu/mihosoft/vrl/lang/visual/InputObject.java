@@ -61,7 +61,7 @@ import java.util.Collection;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "Input", category = "VRL/Control", allowRemoval = false, 
         description="Visual Parameter Input")

@@ -62,7 +62,7 @@ import javax.swing.Box;
  * This class provides custom interface functionality. It is a special
  * canvas window that is able to group selected type representations from
  * different objects in one window.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class UIWindow extends CanvasWindow {
 

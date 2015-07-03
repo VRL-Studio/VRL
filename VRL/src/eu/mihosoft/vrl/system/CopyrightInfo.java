@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.system;
 
 /**
  * Copyright information. Contains copyright statement and license information.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface CopyrightInfo {
     /**

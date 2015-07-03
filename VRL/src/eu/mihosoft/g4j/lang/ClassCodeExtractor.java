@@ -54,7 +54,7 @@ package eu.mihosoft.g4j.lang;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ClassCodeExtractor implements StringProcessor {
 

@@ -72,7 +72,7 @@ import org.codehaus.groovy.control.CompilePhase;
  * Language utils provides several code related methods to analyze and verify
  * source code.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VLangUtils {
 

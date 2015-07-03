@@ -56,7 +56,7 @@ import org.fife.ui.autocomplete.Completion;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 
 

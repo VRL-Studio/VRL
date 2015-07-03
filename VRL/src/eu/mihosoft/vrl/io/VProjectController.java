@@ -92,7 +92,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
  * Creating/deleting session entries, compiling a project and loading/saving it
  * are some of the key features.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VProjectController {
 
@@ -3080,7 +3080,7 @@ public class VProjectController {
 /**
  * Default implementation of the session history controller interface.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class SessionHistoryImpl implements SessionHistoryController {
 
@@ -3411,7 +3411,7 @@ class SessionHistoryImpl implements SessionHistoryController {
 /**
  * Default classfile dependency implementation.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class ClassFileDependencyImpl implements ClassFileDependency {
 
@@ -3444,7 +3444,7 @@ class ClassFileDependencyImpl implements ClassFileDependency {
 /**
  * Default compilation unit implementation.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class CompilationUnitImpl implements CompilationUnit {
 

@@ -56,7 +56,7 @@ import eu.mihosoft.vrl.reflection.VisualCanvas;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class CanvasRequest {
     private VisualCanvas canvas;

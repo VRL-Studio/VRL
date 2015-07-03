@@ -56,7 +56,7 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 
 /**
  * TypeRepresentation for <code>UnsupportedClass</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Object.class, input = true, output = true, style="default")
 public class UnsupportedType extends TypeTemplate {

@@ -82,7 +82,7 @@ import java.util.logging.Logger;
  * path! That is not the case, it is possible to connect incompatible generic
  * type representations. </p>
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 final class DefaultTypeRepresentationFactory implements
         CanvasChild, TypeRepresentationFactory {

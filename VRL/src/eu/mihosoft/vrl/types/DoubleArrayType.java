@@ -56,7 +56,7 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Double[].class, input = true, output = true, style="array")
 public class DoubleArrayType extends ArrayBaseType {

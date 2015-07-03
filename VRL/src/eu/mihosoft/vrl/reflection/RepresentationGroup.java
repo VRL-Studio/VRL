@@ -89,7 +89,7 @@ import javax.swing.border.EmptyBorder;
  *
  * (TypeRepresentationContainer/DefaultMethodRepresentation).
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class RepresentationGroup extends JPanel {
 

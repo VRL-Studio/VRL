@@ -57,7 +57,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 
 

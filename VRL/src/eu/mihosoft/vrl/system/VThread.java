@@ -68,7 +68,7 @@ import java.util.Set;
  * makes it easy to identify and control workflow related tasks.
  * </p>
  * 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VThread extends Thread {
 

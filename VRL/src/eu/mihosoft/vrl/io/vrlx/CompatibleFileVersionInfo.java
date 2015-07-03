@@ -62,7 +62,7 @@ import java.util.logging.Logger;
 /**
  * This class can be used to define a range of compatible file versions. It
  * provides functionality for version verification etc.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class CompatibleFileVersionInfo {
 

@@ -56,7 +56,7 @@ import eu.mihosoft.vrl.reflection.VisualCanvas;
 
 /**
  * Configures a canvas before/after loading.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface CanvasConfigurator {
     public void configurePreLoad(VisualCanvas canvas);

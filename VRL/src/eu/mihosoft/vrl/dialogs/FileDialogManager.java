@@ -75,7 +75,7 @@ import javax.swing.filechooser.FileFilter;
  * files and calling the corresponding file loader/saver. It also takes care of
  * already existing files and file extensions.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class FileDialogManager {
 

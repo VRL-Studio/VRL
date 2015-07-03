@@ -59,7 +59,7 @@ import eu.mihosoft.vrl.visual.ConnectorType;
  * The Output class behaves exactly like its super class. The only exception is
  * that the Output class has a different color set. It's purpose is to define an
  * output connector which can have any number of connections. 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  * @see Connector
  */
 public class Output extends VConnector

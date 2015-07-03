@@ -57,7 +57,7 @@ import java.awt.Color;
 
 /**
  * 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Color[].class, input = true, output = true, style="array")
 public class ColorArrayType extends ArrayBaseType{

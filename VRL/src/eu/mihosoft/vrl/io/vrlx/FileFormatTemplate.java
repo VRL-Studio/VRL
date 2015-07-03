@@ -62,7 +62,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 final class FileFormatTemplate implements DynamicFileFormat {
 

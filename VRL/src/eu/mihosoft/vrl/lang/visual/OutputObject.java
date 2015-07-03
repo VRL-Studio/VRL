@@ -60,7 +60,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "Output", category = "VRL/Control", allowRemoval = false,
         description="Visual Parameter Output")

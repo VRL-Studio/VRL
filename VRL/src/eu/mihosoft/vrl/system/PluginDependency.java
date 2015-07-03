@@ -56,7 +56,7 @@ import eu.mihosoft.vrl.io.VersionInfo;
 /**
  * This class represents a plugin dependency.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class PluginDependency {
 

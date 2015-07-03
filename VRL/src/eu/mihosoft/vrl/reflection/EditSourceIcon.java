@@ -75,7 +75,7 @@ import javax.swing.UIManager;
 
 /**
  * A window icon that indicates that the source of an object can be edited.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class EditSourceIcon extends VComponent
         implements MouseListener, MouseMotionListener {

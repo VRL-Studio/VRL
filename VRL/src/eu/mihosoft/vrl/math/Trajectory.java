@@ -59,7 +59,7 @@ import java.util.ArrayList;
 /**
  * Trajectory class.
  * 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ObjectInfo(serializeParam=false)
 public class Trajectory extends ArrayList<double[]> implements Serializable {

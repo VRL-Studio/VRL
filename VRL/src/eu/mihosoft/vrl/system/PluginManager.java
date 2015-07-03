@@ -61,7 +61,7 @@ import java.util.Map;
 /**
  * Manages plugins and their dependencies.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class PluginManager {
 

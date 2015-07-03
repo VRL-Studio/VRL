@@ -60,7 +60,7 @@ import java.lang.annotation.Annotation;
 
 /**
  * Default param info.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 final public class DefaultParamInfo implements ParamInfo, Serializable {
 

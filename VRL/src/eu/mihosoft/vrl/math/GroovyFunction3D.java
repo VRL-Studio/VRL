@@ -70,7 +70,7 @@ import java.util.HashMap;
  * </code> sin(sqrt(x*x+y*y+z*z))
  * </code> </p>
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class GroovyFunction3D implements Serializable, Function3D {
 

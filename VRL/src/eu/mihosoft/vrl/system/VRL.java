@@ -77,7 +77,7 @@ import javax.swing.JFrame;
  * VRL class for managing initialization of the VRL run-time. This includes
  * plugin management.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VRL {
 
@@ -2631,7 +2631,7 @@ public class VRL {
  * create a classloader that has access to all individual classloaders of
  * selected plugins.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class PluginClassLoader extends ClassLoader {
 
@@ -2683,7 +2683,7 @@ class PluginClassLoader extends ClassLoader {
  * A classloader that allows to specifiy access policies. This is used to
  * prevent plugins from accessing plugin classes that have not be exported.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class PolicyClassLoader extends ClassLoader {
 
@@ -2713,7 +2713,7 @@ class PolicyClassLoader extends ClassLoader {
 /**
  * Action that allows to react if plugin has been loaded.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 interface PluginLoadAction {
 

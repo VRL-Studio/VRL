@@ -58,7 +58,7 @@ import java.lang.annotation.Annotation;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 final class DefaultMethodInfo implements MethodInfo, Serializable{
 

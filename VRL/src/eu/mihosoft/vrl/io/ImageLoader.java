@@ -58,7 +58,7 @@ import javax.imageio.ImageIO;
 
 /**
  * Loads images from file.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ImageLoader implements FileLoader{
 

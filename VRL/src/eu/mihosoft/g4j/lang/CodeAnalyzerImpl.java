@@ -59,7 +59,7 @@ import java.util.regex.Matcher;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class CodeAnalyzerImpl implements CodeAnalyzer {
     private static final String id = "ClassExtractor";

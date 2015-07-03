@@ -135,7 +135,7 @@ import java.util.function.BooleanSupplier;
  * }
  * </code></pre>
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public abstract class VPluginConfigurator implements PluginConfigurator {
 

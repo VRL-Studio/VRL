@@ -64,7 +64,7 @@ package eu.mihosoft.vrl.reflection;
  * for GUI generation. It is easier to use and much more powerful. In newer
  * version proxy object suport may be removed.
  * </p>
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public abstract class ProxyObject {
     private ObjectDescription objectDescription;

@@ -58,7 +58,7 @@ import java.io.OutputStream;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface SessionSaver {
         public boolean saveSession(Canvas canvas, File f);

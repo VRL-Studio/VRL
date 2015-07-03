@@ -107,7 +107,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * transferable of this package to add this functionality to the d&d source.
  * </p>
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ObjectInfo(showInheritedMethods = true)
 public final class VisualCanvas extends Canvas {

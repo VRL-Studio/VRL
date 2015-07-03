@@ -59,7 +59,7 @@ import eu.mihosoft.vrl.annotation.ParamInfo;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "For-Begin", category = "VRL/Control", allowRemoval=false)
 @ObjectInfo(multipleViews = false, name = "For-Begin")

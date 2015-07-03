@@ -63,7 +63,7 @@ import java.util.logging.Logger;
 
 /**
  * Format definition for the VRL visual package.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class VRLXVisual {
 

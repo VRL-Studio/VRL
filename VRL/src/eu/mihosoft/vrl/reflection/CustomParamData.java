@@ -57,7 +57,7 @@ import java.util.HashMap;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class CustomParamData extends  HashMap<String,Object> {
 

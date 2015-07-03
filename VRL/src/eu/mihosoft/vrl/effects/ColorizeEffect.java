@@ -57,7 +57,7 @@ package eu.mihosoft.vrl.effects;
  *
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (C) 2009 Michael Hoffer <info@michaelhoffer.de>
+ * Copyright (C) 2009 Michael Hoffer &lt;info@michaelhoffer.de&gt;
  *
  * Supported by the Goethe Center for Scientific Computing of Prof. Wittum
  * (http://gcsc.uni-frankfurt.de)
@@ -112,7 +112,7 @@ import java.util.ArrayList;
 
 /**
  * Colorize effect for GUI components.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class ColorizeEffect implements Effect {
 
@@ -422,7 +422,7 @@ public class ColorizeEffect implements Effect {
 
 /**
  * Colorize animation for selection effects.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class ColorizeAnimation extends Animation implements FrameListener {
 

@@ -67,7 +67,7 @@ import javax.swing.Box;
  * <code>java.awt.Color</code>. <p>Sample:</p> <br/> <img
  * src="doc-files/color-default-01.png"/> <br/>
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type = Color.class, input = true, output = true, style = "default")
 public class ColorType extends TypeRepresentationBase {

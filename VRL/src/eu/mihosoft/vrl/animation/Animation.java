@@ -57,7 +57,7 @@ import java.util.ArrayList;
 
 /**
  * Animation is an implementation of AnimationBase used by AnimationManager.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class Animation implements AnimationBase {
 

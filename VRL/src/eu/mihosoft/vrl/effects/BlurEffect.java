@@ -71,7 +71,7 @@ import java.awt.image.VolatileImage;
 /**
  * Implementation of a blur effect. As it is CPU intensive it is not recommended
  * to use it for big components.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class BlurEffect implements Effect {
 
@@ -288,7 +288,7 @@ public class BlurEffect implements Effect {
 
 /**
  * Blur animation for the blur effect.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 class BlurAnimation extends Animation implements FrameListener {
 

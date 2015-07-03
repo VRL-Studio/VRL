@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.reflection;
 
 /**
  * Invoke tasks define automated method calls.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface InvokeTask {
     /**

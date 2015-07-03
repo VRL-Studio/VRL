@@ -68,7 +68,7 @@ import eu.mihosoft.vrl.visual.VTextField;
 
 /**
  * TypeRepresentation for <code>Java.lang.Boolean</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Boolean.class, input = false, output = true, style="default")
 public class BooleanOutputType extends TypeRepresentationBase {

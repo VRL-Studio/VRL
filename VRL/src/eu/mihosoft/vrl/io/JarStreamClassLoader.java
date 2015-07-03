@@ -71,7 +71,7 @@ import java.util.logging.Logger;
  * This class loader can be used to load all classes of a jar input stream. This
  * is useful to search a jar file for specific classes or classes that implement
  * a specific interface.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class JarStreamClassLoader extends ByteArrayClassLoader {
 

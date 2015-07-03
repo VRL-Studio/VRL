@@ -59,14 +59,14 @@ import java.util.Collection;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 
 
 /**
  * Info object for storing versioned-file information in an XML serializable
  * form. The interface of this class must be JavaBean-compliant.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  * @see VersionedFile
  */
 public class ProjectFileInfo {

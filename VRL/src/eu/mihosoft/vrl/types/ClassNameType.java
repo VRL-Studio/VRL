@@ -59,7 +59,7 @@ import eu.mihosoft.vrl.visual.MessageType;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=String.class, input = true, output = false, style="class-name")
 public class ClassNameType extends StringType{

@@ -61,7 +61,7 @@ import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.types.Function</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Function.class, input = true, output = true, style="default")
 public class FunctionType extends TypeRepresentationBase

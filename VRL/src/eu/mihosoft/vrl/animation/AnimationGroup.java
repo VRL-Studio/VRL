@@ -61,7 +61,7 @@ import java.util.ArrayList;
  * any animation, i.e., the animation manager does not distinguish between
  * regular animations and animation groups.
  * 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class AnimationGroup implements AnimationBase {
 

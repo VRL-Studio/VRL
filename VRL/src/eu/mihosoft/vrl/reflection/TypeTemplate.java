@@ -60,7 +60,7 @@ import java.awt.GridLayout;
 /**
  * Template type representation. It can be derived to easily write custom
  * type representations.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Object.class, input = true, output = true, style="default")
 public class TypeTemplate extends TypeRepresentationBase{

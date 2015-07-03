@@ -57,7 +57,7 @@ import java.util.ArrayList;
 
 /**
  * Defines the interface for animation objects used by AnimationManager.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface AnimationBase extends Serializable {
 

@@ -62,7 +62,7 @@ import java.util.StringTokenizer;
 
 /**
  * Evaluates call options and runs the specified invoke tasks.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class CallOptionsEvaluator {
 

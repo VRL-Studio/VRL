@@ -56,7 +56,7 @@ import eu.mihosoft.vrl.visual.Canvas;
 
 /**
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface SessionTask {
     public boolean load(Canvas canvas, SessionEntry entry);

@@ -55,7 +55,7 @@ package eu.mihosoft.vrl.animation;
 /**
  * This animation defines an event. It can be used to perform tasks at a given
  * time.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class TaskAnimation extends Animation implements FrameListener {
     private static final long serialVersionUID = 8213964337666968598L;

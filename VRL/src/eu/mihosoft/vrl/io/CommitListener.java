@@ -54,7 +54,7 @@ package eu.mihosoft.vrl.io;
 
 /**
  * A commit listener which allows to define custom commit messages.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface CommitListener {
     /**

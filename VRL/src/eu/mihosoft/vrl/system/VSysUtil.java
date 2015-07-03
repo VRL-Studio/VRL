@@ -81,7 +81,7 @@ import java.util.logging.Logger;
  * compatibility information and other system functionality such as access to
  * the system clipboard or loading native libraries.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VSysUtil {
 

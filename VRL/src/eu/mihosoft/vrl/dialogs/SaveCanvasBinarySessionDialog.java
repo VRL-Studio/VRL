@@ -62,7 +62,7 @@ import java.awt.Component;
  * <b>Warning:</b> VRL concentrates on XML session management. The binary
  * session management may be broken and is known to be unreliably on Mac OS X!
  * </p>
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class SaveCanvasBinarySessionDialog {
 

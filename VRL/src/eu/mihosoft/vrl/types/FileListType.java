@@ -58,7 +58,7 @@ import eu.mihosoft.vrl.io.FileList;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.io.FileList</code>.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=FileList.class, input = true, output = true, style="default")
 public class FileListType extends TypeTemplate{

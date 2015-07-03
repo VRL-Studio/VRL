@@ -52,7 +52,6 @@
 
 package eu.mihosoft.vrl.reflection;
 
-import eu.mihosoft.vrl.annotation.ComponentInfo;
 import eu.mihosoft.vrl.io.SessionHistoryController;
 import eu.mihosoft.vrl.lang.groovy.GroovyCodeEditorComponent;
 import eu.mihosoft.vrl.visual.CanvasCapabilities;
@@ -61,7 +60,8 @@ import eu.mihosoft.vrl.visual.CanvasWindow;
 import eu.mihosoft.vrl.visual.CapabilityChangedListener;
 import eu.mihosoft.vrl.visual.CapabilityManager;
 import eu.mihosoft.vrl.visual.Style;
-import java.awt.Component;
+import eu.mihosoft.vrl.visual.TransformingParent;
+import eu.mihosoft.vrl.visual.VScale;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -69,7 +69,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JMenu;
@@ -80,7 +79,7 @@ import javax.swing.SwingUtilities;
 /**
  * Popup menu for visual canvas. It contains items for adding code, code samples
  * and for component management.
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class VCanvasPopupMenu extends JPopupMenu/* implements ComponentController*/ {
 
@@ -122,8 +121,12 @@ public final class VCanvasPopupMenu extends JPopupMenu/* implements ComponentCon
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON3) {
+                    
+                    VScale scale = TransformingParent.getScale(canvas);
+                    
                     VCanvasPopupMenu.this.show(e.getComponent(),
-                            e.getX(), e.getY());
+                            (int)(e.getX()/scale.getScaleX()),
+                            (int)(e.getY()/scale.getScaleY()));
                     setCurrentLocation(e.getPoint());
                 }
             }

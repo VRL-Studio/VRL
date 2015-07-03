@@ -96,7 +96,7 @@ import org.apache.tools.ant.Task;
  * This approach has several disadvantages. Don't use it for production.
  * This class is still in development.
  * 
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class CreatePluginInfoTask extends Task {
 
