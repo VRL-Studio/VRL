@@ -636,9 +636,20 @@ class GroovyEditorConfiguration implements EditorConfiguration {
         ac.addReplacementRule(new AddImportReplacementRule());
         ac.setChoicesWindowSize(600, 250);
         ac.install(editor);
+        
+        int downMask;
+        
+        // OS X treats ALT key differently. Therefore, we use the shift
+        // key as modifier on OS X.
+        if (VSysUtil.isMacOSX()) {
+            downMask = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
+        } else {
+            downMask = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
+        }
+        
         ac.setTriggerKey(KeyStroke.getKeyStroke(
                 KeyEvent.VK_SPACE,
-                KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK));
+                downMask));
 
         canvas.addDisposable(new Disposable() {
 
