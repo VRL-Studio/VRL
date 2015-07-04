@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import java.awt.AlphaComposite;
@@ -57,11 +56,11 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Composite;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -74,7 +73,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 
 /**
@@ -108,7 +106,7 @@ public class CanvasWindowTitleBar extends VComponent
 
         VBoxLayout leftLayout = new VBoxLayout(
                 leftContainer, VBoxLayout.LINE_AXIS);
-        
+
         leftContainer.setLayout(leftLayout);
         leftContainer.setBorder(new EmptyBorder(0, 7, 0, 0));
 
@@ -117,7 +115,7 @@ public class CanvasWindowTitleBar extends VComponent
         VBoxLayout rightLayout = new VBoxLayout(
                 rightContainer, VBoxLayout.LINE_AXIS);
 
-        rightContainer.setLayout(rightLayout); 
+        rightContainer.setLayout(rightLayout);
         rightContainer.setBorder(new EmptyBorder(0, 0, 0, 5));
 
         setMainCanvas(parentWindow.getMainCanvas());
@@ -127,13 +125,11 @@ public class CanvasWindowTitleBar extends VComponent
         title = new CanvasLabel(this, "Title");
         title.setHorizontalAlignment(SwingConstants.CENTER);
 
-
-
         title.setForeground(getStyle().getBaseValues().getColor(
                 Canvas.TEXT_COLOR_KEY));
 
-        horizontalInsetComponent =
-                Box.createHorizontalStrut(iconBox.getIconBoxWidth());
+        horizontalInsetComponent
+                = Box.createHorizontalStrut(iconBox.getIconBoxWidth());
 
         add(Box.createGlue());
         add(horizontalInsetComponent);
@@ -148,8 +144,6 @@ public class CanvasWindowTitleBar extends VComponent
         add(iconBox);
 
         setPainterKey(CanvasWindow.TITLEBAR_PAINTER_KEY);
-
-
 
 //            CloseIcon closeIcon = new CloseIcon(mainCanvas);
 //            closeIcon.setActionListener(new CanvasActionListener() {
@@ -166,8 +160,6 @@ public class CanvasWindowTitleBar extends VComponent
 //            closeIcon.setMaximumSize(new Dimension(iconSize, iconSize));
 //
 //            iconBox.addIcon(closeIcon);
-
-
         getParentWindow().setPopup(new JPopupMenu());
 
         /**
@@ -178,7 +170,23 @@ public class CanvasWindowTitleBar extends VComponent
             @Override
             public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == 3 && getParentWindow().isMenuEnabled()) {
-                    getParentWindow().getPopup().show(e.getComponent(), e.getX(), e.getY());
+
+                    VScale scale = TransformingParent.getScale(getMainCanvas());
+
+                    if (scale.isIdentity()) {
+                        getParentWindow().getPopup().show(
+                                e.getComponent(), e.getX(), e.getY());
+                    } else {
+                        Point absPos = VSwingUtil.getAbsPos(parentWindow);
+                        absPos.x /= scale.getScaleX();
+                        absPos.y /= scale.getScaleY();
+
+                        getParentWindow().getPopup().show(
+                                getMainCanvas(),
+                                absPos.x + (int) (e.getX() / scale.getScaleX()),
+                                absPos.y + (int) (e.getY() / scale.getScaleY()));
+                    }
+
                     getParentWindow().getMainCanvas().getWindows().setAllInactive();
 
                     getParentWindow().setActive(true);
@@ -196,7 +204,6 @@ public class CanvasWindowTitleBar extends VComponent
         setOpaque(false);
 
 //        setPainter(new BackgroundPainter());
-
 //        setPainter(new Painter() {
 //
 //            @Override
@@ -213,7 +220,6 @@ public class CanvasWindowTitleBar extends VComponent
 //                g2.setColor(new Color(80,80,80,120));
 //            }
 //        });
-
         add(rightContainer);
     }
 
@@ -229,6 +235,7 @@ public class CanvasWindowTitleBar extends VComponent
 
     /**
      * Returns the title label of the window.
+     *
      * @return the title label of the window
      */
     JLabel getTitleLabel() {
@@ -237,6 +244,7 @@ public class CanvasWindowTitleBar extends VComponent
 
     /**
      * Defines the title of this window.
+     *
      * @param t the title to set
      */
     public void setTitle(String t) {
@@ -259,6 +267,7 @@ public class CanvasWindowTitleBar extends VComponent
 
     /**
      * Adds an icon to this title bar.
+     *
      * @param c the icon to add
      */
     public void addIcon(Component c) {
@@ -267,6 +276,7 @@ public class CanvasWindowTitleBar extends VComponent
 
     /**
      * Removes an icon from the title bar.
+     *
      * @param c the icon to remove
      */
     public void removeIcon(Component c) {
@@ -344,10 +354,10 @@ class TitleBarPainter implements Painter, BufferedPainter {
 
             Composite original = g2.getComposite();
 
-            AlphaComposite ac1 =
-                    AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                    style.getBaseValues().getFloat(
-                    CanvasWindow.TITLE_TRANSPARENCY_KEY));
+            AlphaComposite ac1
+                    = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                            style.getBaseValues().getFloat(
+                                    CanvasWindow.TITLE_TRANSPARENCY_KEY));
             g2.setComposite(ac1);
 
             Color upperColor = style.getBaseValues().getColor(
@@ -385,7 +395,6 @@ class TitleBarPainter implements Painter, BufferedPainter {
 
             g2.draw(new RoundRectangle2D.Double(0, 0, d.width - 1.0,
                     d.height - 0.5, 19.5, 19.5));
-
 
             g2.dispose();
         }

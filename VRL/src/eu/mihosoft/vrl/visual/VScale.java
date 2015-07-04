@@ -12,6 +12,8 @@ package eu.mihosoft.vrl.visual;
 public final class VScale {
     private double scaleX;
     private double scaleY;
+    
+    public static final VScale UNITY = new VScale(1, 1);
 
     public VScale(double scaleX, double scaleY) {
         this.scaleX = scaleX;
