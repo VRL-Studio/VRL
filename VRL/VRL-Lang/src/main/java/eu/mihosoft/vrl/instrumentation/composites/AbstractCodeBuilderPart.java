@@ -15,6 +15,7 @@ import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
+import org.codehaus.groovy.ast.expr.EmptyExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.NotExpression;
@@ -703,6 +704,9 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 			Variable v = context.resolve(key,
 					((SpreadExpression) expr).getExpression(), Variable.class);
 			arg = Argument.varArg(v);
+		} else if (expr instanceof EmptyExpression)
+		{
+			return Argument.NULL;
 		} else {
 			throw new UnsupportedOperationException(
 					"Unsupported expression type for argument encountered (key '"

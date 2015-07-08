@@ -40,8 +40,8 @@ public class DeclarationExpressionPart
 			DeclarationInvocation declInv = builder.declareVariable(
 					currentScope, new Type(s.getVariableExpression().getType()
 							.getName(), true), s.getVariableExpression()
-							.getName());
-
+							.getName(), convertToArgument("initVal", s.getRightExpression(), context));
+			
 			setCodeRange(declInv, s);
 
 			stateMachine.setBoolean("variable-declaration", false);

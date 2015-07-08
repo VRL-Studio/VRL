@@ -108,6 +108,7 @@ public interface Scope extends CodeEntity {
 //    public VFlow getFlow();
 
     public DeclarationInvocation declareVariable(String id, IType type, String varName);
+    public DeclarationInvocation declareVariable(String id, IType type, String varName, IArgument initVal);
     
     public Optional<ScopeInvocation> getInvocation();
     

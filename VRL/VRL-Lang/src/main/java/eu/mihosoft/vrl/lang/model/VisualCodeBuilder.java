@@ -66,6 +66,7 @@ public interface VisualCodeBuilder {
     Invocation createInstance(Scope scope, IType type, IArgument... args);
 
     DeclarationInvocation declareVariable(Scope scope, IType type, String varName);
+    DeclarationInvocation declareVariable(Scope scope, IType type, String varName, IArgument initVal);
 
     SimpleForDeclaration invokeForLoop(ControlFlowScope scope, String varName, int from, int to, int inc);
 

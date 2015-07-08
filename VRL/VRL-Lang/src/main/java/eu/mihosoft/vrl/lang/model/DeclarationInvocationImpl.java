@@ -25,4 +25,10 @@ public class DeclarationInvocationImpl extends InvocationImpl implements Declara
     public Variable getDeclaredVariable() {
         return this.declaredVariable;
     }
+    
+    public IArgument getInitValue() 
+    {
+    	if (getArguments().size()==0) return Argument.NULL;
+    	return getArguments().get(0);
+    }
 }

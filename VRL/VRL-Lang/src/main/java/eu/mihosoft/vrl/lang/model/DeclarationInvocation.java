@@ -13,5 +13,6 @@ package eu.mihosoft.vrl.lang.model;
 public interface DeclarationInvocation extends Invocation, CodeEntity{
 
     Variable getDeclaredVariable();
+    IArgument getInitValue();
     
 }

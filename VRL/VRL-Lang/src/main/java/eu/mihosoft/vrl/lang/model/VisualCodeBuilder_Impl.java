@@ -58,267 +58,320 @@ import eu.mihosoft.vrl.workflow.IdGenerator;
  */
 public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 
-//    private final Stack<String> variables = new Stack<>();
-    private IdRequest idRequest = new IdRequest() {
-
-        private IdGenerator generator = FlowFactory.newIdGenerator();
-
-        @Override
-        public String request() {
-            return generator.newId();
-        }
-    };
-
-//    String popVariable() {
-//        return variables.pop();
-//    }
-    @Deprecated
-    public Scope createScope(Scope parent, ScopeType type, String name, Object... args) {
-        if (parent != null) {
-            return parent.createScope(idRequest.request(), type, name, args);
-        } else {
-            return new ScopeImpl(idRequest.request(), null, type, name, args);
-        }
-    }
-
-    @Override
-    public CompilationUnitDeclaration declareCompilationUnit(String name, String packageName) {
-//        IType type = new Type(name); // TODO validation
-
-        return new CompilationUnitDeclaration_Impl(idRequest.request(), null, name, packageName, UIBinding.getRootFlow());
-
-//        return createScope(null, ScopeType.COMPILATION_UNIT, name, new Object[0]);
-    }
-
-    @Override
-    public DeclarationInvocation declareVariable(Scope scope, IType type, String varName) {
-        return scope.declareVariable(idRequest.request(), type, varName);
-    }
-
-//    @Deprecated
-//    public Variable createVariable(Scope scope, IType type) {
-//        
-//        Variable result = scope.createVariable(type);
-//
-////        variables.push(result.getName());
-//
-//        return result;
-//    }
-    @Override
-    public MethodDeclaration declareMethod(ClassDeclaration scope,
-            IModifiers modifiers, IType returnType, String methodName, IParameters params) {
-        return scope.declareMethod(idRequest.request(), modifiers, returnType, methodName, params);
-    }
+	// private final Stack<String> variables = new Stack<>();
+	private IdRequest idRequest = new IdRequest() {
+
+		private IdGenerator generator = FlowFactory.newIdGenerator();
+
+		@Override
+		public String request() {
+			return generator.newId();
+		}
+	};
+
+	// String popVariable() {
+	// return variables.pop();
+	// }
+	@Deprecated
+	public Scope createScope(Scope parent, ScopeType type, String name,
+			Object... args) {
+		if (parent != null) {
+			return parent.createScope(idRequest.request(), type, name, args);
+		} else {
+			return new ScopeImpl(idRequest.request(), null, type, name, args);
+		}
+	}
+
+	@Override
+	public CompilationUnitDeclaration declareCompilationUnit(String name,
+			String packageName) {
+		// IType type = new Type(name); // TODO validation
+
+		return new CompilationUnitDeclaration_Impl(idRequest.request(), null,
+				name, packageName, UIBinding.getRootFlow());
+
+		// return createScope(null, ScopeType.COMPILATION_UNIT, name, new
+		// Object[0]);
+	}
+
+	@Override
+	public DeclarationInvocation declareVariable(Scope scope, IType type,
+			String varName) {
+		return scope.declareVariable(idRequest.request(), type, varName);
+	}
+
+	@Override
+	public DeclarationInvocation declareVariable(Scope scope, IType type,
+			String varName, IArgument initVal) {
+		return scope.declareVariable(idRequest.request(), type, varName, initVal);
+	}
+
+	// @Deprecated
+	// public Variable createVariable(Scope scope, IType type) {
+	//
+	// Variable result = scope.createVariable(type);
+	//
+	// // variables.push(result.getName());
+	//
+	// return result;
+	// }
+	@Override
+	public MethodDeclaration declareMethod(ClassDeclaration scope,
+			IModifiers modifiers, IType returnType, String methodName,
+			IParameters params) {
+		return scope.declareMethod(idRequest.request(), modifiers, returnType,
+				methodName, params);
+	}
+
+	@Override
+	public SimpleForDeclaration invokeForLoop(ControlFlowScope scope,
+			String varName, int from, int to, int inc) {
+
+		if (scope.getType() == ScopeType.CLASS
+				|| scope.getType() == ScopeType.INTERFACE) {
+			throw new UnsupportedOperationException(
+					"Unsupported parent scope specified." + " Class "
+							+ ScopeType.CLASS + " or " + ScopeType.INTERFACE
+							+ " based implementations are not supported!");
+		}
+
+		SimpleForDeclaration result = new SimpleForDeclaration_Impl(
+				idRequest.request(), scope, varName, from, to, inc);
+
+		return result;
+	}
+
+	@Override
+	public WhileDeclaration invokeWhileLoop(ControlFlowScope scope,
+			IArgument check) {
+
+		if (scope.getType() == ScopeType.CLASS
+				|| scope.getType() == ScopeType.INTERFACE) {
+			throw new UnsupportedOperationException(
+					"Unsupported parent scope specified." + " Class "
+							+ ScopeType.CLASS + " or " + ScopeType.INTERFACE
+							+ " based implementations are not supported!");
+		}
+
+		WhileDeclaration result = new WhileDeclaration_Impl(
+				idRequest.request(), scope, check);
+
+		return result;
+	}
+
+	@Override
+	public Invocation createInstance(Scope scope, IType type, IArgument... args) {
 
-    @Override
-    public SimpleForDeclaration invokeForLoop(ControlFlowScope scope, String varName, int from, int to, int inc) {
+		String id = idRequest.request();
 
-        if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
-            throw new UnsupportedOperationException("Unsupported parent scope specified."
-                    + " Class " + ScopeType.CLASS + " or " + ScopeType.INTERFACE
-                    + " based implementations are not supported!");
-        }
+		return scope.getControlFlow().createInstance(id, type, args);
+	}
 
-        SimpleForDeclaration result = new SimpleForDeclaration_Impl(
-                idRequest.request(), scope, varName, from, to, inc);
+	@Override
+	public Invocation invokeMethod(ControlFlowScope scope, String varName,
+			String mName, IType returnType, IArgument... args) {
+		String id = idRequest.request();
 
-        return result;
-    }
+		Invocation result = scope.getControlFlow().callMethod(id, varName,
+				mName, returnType, args);
 
-    @Override
-    public WhileDeclaration invokeWhileLoop(ControlFlowScope scope, IArgument check) {
+		return result;
+	}
 
-        if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
-            throw new UnsupportedOperationException("Unsupported parent scope specified."
-                    + " Class " + ScopeType.CLASS + " or " + ScopeType.INTERFACE
-                    + " based implementations are not supported!");
-        }
+	@Override
+	public Invocation invokeStaticMethod(ControlFlowScope scope, IType type,
+			String mName, IType returnType, IArgument... args) {
+		String id = idRequest.request();
 
-        WhileDeclaration result = new WhileDeclaration_Impl(
-                idRequest.request(), scope, check);
+		Invocation result = scope.getControlFlow().callStaticMethod(id, type,
+				mName, returnType, args);
 
-        return result;
-    }
+		return result;
+	}
 
-    @Override
-    public Invocation createInstance(Scope scope, IType type, IArgument... args) {
+	@Override
+	public BinaryOperatorInvocation assignVariable(Scope scope,
+			String varNameDest, String varNameSrc) {
+		return scope.assignVariable(varNameDest, varNameSrc);
+	}
 
-        String id = idRequest.request();
+	@Override
+	public BinaryOperatorInvocation assignConstant(Scope scope, String varName,
+			Object constant) {
+		return scope.assignConstant(varName, constant);
+	}
 
-        return scope.getControlFlow().createInstance(id, type, args);
-    }
+	@Override
+	public BinaryOperatorInvocation assignInvocationResult(Scope scope,
+			String varName, Invocation invocation) {
+		return scope.assignInvocationResult(varName, invocation);
+	}
 
-    @Override
-    public Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, IArgument... args) {
-        String id = idRequest.request();
+	public void setIdRequest(IdRequest idRequest) {
+		this.idRequest = idRequest;
+	}
 
-        Invocation result = scope.getControlFlow().callMethod(id, varName, mName, returnType, args);
+	@Override
+	public ClassDeclaration declareClass(CompilationUnitDeclaration scope,
+			IType type, IModifiers modifiers, IExtends extendz,
+			IExtends implementz) {
+		String id = idRequest.request();
 
-        return result;
-    }
+		ClassDeclaration result = new ClassDeclaration_Impl(id, scope, type,
+				modifiers, extendz, implementz);
 
-    @Override
-    public Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, IArgument... args) {
-        String id = idRequest.request();
+		return result;
+	}
 
-        Invocation result = scope.getControlFlow().callStaticMethod(id, type, mName, returnType, args);
+	@Override
+	public Invocation invokeMethod(ControlFlowScope scope, String varName,
+			MethodDeclaration mDec, IArgument... args) {
+		String id = idRequest.request();
 
-        return result;
-    }
+		Invocation result = scope.getControlFlow().callMethod(id, varName,
+				mDec, args);
 
-    @Override
-    public BinaryOperatorInvocation assignVariable(Scope scope, String varNameDest, String varNameSrc) {
-        return scope.assignVariable(varNameDest, varNameSrc);
-    }
+		return result;
+	}
 
-    @Override
-    public BinaryOperatorInvocation assignConstant(Scope scope, String varName, Object constant) {
-        return scope.assignConstant(varName, constant);
-    }
+	@Override
+	public BinaryOperatorInvocation invokeOperator(Scope scope,
+			IArgument leftArg, IArgument rightArg, Operator operator) {
+		String id = idRequest.request();
 
-    @Override
-    public BinaryOperatorInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation) {
-        return scope.assignInvocationResult(varName, invocation);
-    }
+		BinaryOperatorInvocation result = scope.getControlFlow()
+				.invokeOperator(id, leftArg, rightArg, operator);
 
-    public void setIdRequest(IdRequest idRequest) {
-        this.idRequest = idRequest;
-    }
-
-    @Override
-    public ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type, IModifiers modifiers, IExtends extendz, IExtends implementz) {
-        String id = idRequest.request();
-
-        ClassDeclaration result = new ClassDeclaration_Impl(id, scope, type, modifiers, extendz, implementz);
-
-        return result;
-    }
-
-    @Override
-    public Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, IArgument... args) {
-        String id = idRequest.request();
-
-        Invocation result = scope.getControlFlow().callMethod(id, varName, mDec, args);
-
-        return result;
-    }
-
-    @Override
-    public BinaryOperatorInvocation invokeOperator(Scope scope, IArgument leftArg, IArgument rightArg, Operator operator) {
-        String id = idRequest.request();
-
-        BinaryOperatorInvocation result = scope.getControlFlow().invokeOperator(id, leftArg, rightArg, operator);
-
-        return result;
-    }
-
-    @Override
-    public ReturnStatementInvocation returnValue(ControlFlowScope scope, IArgument arg) {
-        String id = idRequest.request();
-
-        ReturnStatementInvocation result = scope.getControlFlow().returnValue(id, arg);
-
-        return result;
-    }
-
-    @Override
-    public BreakInvocation invokeBreak(ControlFlowScope scope) {
-        String id = idRequest.request();
-
-        BreakInvocation result = scope.getControlFlow().invokeBreak(id);
-
-        return result;
-    }
-
-    @Override
-    public ContinueInvocation invokeContinue(ControlFlowScope scope) {
-        String id = idRequest.request();
-
-        ContinueInvocation result = scope.getControlFlow().invokeContinue(id);
-
-        return result;
-    }
-
-    @Override
-    public NotInvocation invokeNot(ControlFlowScope scope, IArgument arg) {
-        String id = idRequest.request();
-
-        NotInvocation result = scope.getControlFlow().invokeNot(id, arg);
-
-        return result;
-    }
-
-    @Override
-    public IfDeclaration invokeIf(ControlFlowScope scope, IArgument check) {
-
-        if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
-            throw new UnsupportedOperationException("Unsupported parent scope specified."
-                    + " Class " + ScopeType.CLASS + " or " + ScopeType.INTERFACE
-                    + " based implementations are not supported!");
-        }
-
-        IfDeclaration result = new IfDeclarationImpl(
-                idRequest.request(), scope, check);
-
-        return result;
-    }
-
-    public Scope invokeElse(ControlFlowScope scope) {
-        if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
-            throw new UnsupportedOperationException("Unsupported parent scope specified."
-                    + " Class " + ScopeType.CLASS + " or " + ScopeType.INTERFACE
-                    + " based implementations are not supported!");
-        }
-
-        ElseDeclaration result = new ElseDeclarationImpl(
-                idRequest.request(), scope);
-
-        return result;
-    }
-
-    @Override
-    public ElseIfDeclaration invokeElseIf(ControlFlowScope scope, IArgument check) {
-
-        if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
-            throw new UnsupportedOperationException("Unsupported parent scope specified."
-                    + " Class " + ScopeType.CLASS + " or " + ScopeType.INTERFACE
-                    + " based implementations are not supported!");
-        }
-
-        ElseIfDeclaration result = new ElseIfDeclarationImpl(
-                idRequest.request(), scope, check);
-
-        return result;
-    }
-
-    @Override
-    public BinaryOperatorInvocation assign(Scope scope, String varName, IArgument arg) {
-        if (arg.getArgType() == ArgumentType.CONSTANT) {
-            return assignConstant(scope, varName, arg.getConstant().get());
-        } else if (arg.getArgType() == ArgumentType.VARIABLE) {
-            return assignVariable(scope, varName, arg.getVariable().get().getName());
-        }
-        if (arg.getArgType() == ArgumentType.INVOCATION) {
-            return assignInvocationResult(scope, varName, arg.getInvocation().get());
-        }
-
-        throw new UnsupportedOperationException("Unsupported argument specified: "
-                + arg + ". Supported assignment args are 'CONSTANT', 'VARIABLE' and 'INVOCATION'.");
-    }
-
-    @Override
-    public ClassDeclaration declareClass(CompilationUnitDeclaration scope, IType type) {
-        return declareClass(scope, type, new Modifiers(Modifier.PUBLIC), new Extends(), new Extends());
-    }
-
-    @Override
-    public MethodDeclaration declareMethod(ClassDeclaration scope, IType returnType, String methodName, IParameters params) {
-        return declareMethod(scope, new Modifiers(), returnType, methodName, params);
-    }
-
-    @Override
-    public MethodDeclaration declareMethod(ClassDeclaration scope, IType returnType, String methodName) {
-        return declareMethod(scope, new Modifiers(), returnType, methodName, new Parameters());
-    }
+		return result;
+	}
+
+	@Override
+	public ReturnStatementInvocation returnValue(ControlFlowScope scope,
+			IArgument arg) {
+		String id = idRequest.request();
+
+		ReturnStatementInvocation result = scope.getControlFlow().returnValue(
+				id, arg);
+
+		return result;
+	}
+
+	@Override
+	public BreakInvocation invokeBreak(ControlFlowScope scope) {
+		String id = idRequest.request();
+
+		BreakInvocation result = scope.getControlFlow().invokeBreak(id);
+
+		return result;
+	}
+
+	@Override
+	public ContinueInvocation invokeContinue(ControlFlowScope scope) {
+		String id = idRequest.request();
+
+		ContinueInvocation result = scope.getControlFlow().invokeContinue(id);
+
+		return result;
+	}
+
+	@Override
+	public NotInvocation invokeNot(ControlFlowScope scope, IArgument arg) {
+		String id = idRequest.request();
+
+		NotInvocation result = scope.getControlFlow().invokeNot(id, arg);
+
+		return result;
+	}
+
+	@Override
+	public IfDeclaration invokeIf(ControlFlowScope scope, IArgument check) {
+
+		if (scope.getType() == ScopeType.CLASS
+				|| scope.getType() == ScopeType.INTERFACE) {
+			throw new UnsupportedOperationException(
+					"Unsupported parent scope specified." + " Class "
+							+ ScopeType.CLASS + " or " + ScopeType.INTERFACE
+							+ " based implementations are not supported!");
+		}
+
+		IfDeclaration result = new IfDeclarationImpl(idRequest.request(),
+				scope, check);
+
+		return result;
+	}
+
+	public Scope invokeElse(ControlFlowScope scope) {
+		if (scope.getType() == ScopeType.CLASS
+				|| scope.getType() == ScopeType.INTERFACE) {
+			throw new UnsupportedOperationException(
+					"Unsupported parent scope specified." + " Class "
+							+ ScopeType.CLASS + " or " + ScopeType.INTERFACE
+							+ " based implementations are not supported!");
+		}
+
+		ElseDeclaration result = new ElseDeclarationImpl(idRequest.request(),
+				scope);
+
+		return result;
+	}
+
+	@Override
+	public ElseIfDeclaration invokeElseIf(ControlFlowScope scope,
+			IArgument check) {
+
+		if (scope.getType() == ScopeType.CLASS
+				|| scope.getType() == ScopeType.INTERFACE) {
+			throw new UnsupportedOperationException(
+					"Unsupported parent scope specified." + " Class "
+							+ ScopeType.CLASS + " or " + ScopeType.INTERFACE
+							+ " based implementations are not supported!");
+		}
+
+		ElseIfDeclaration result = new ElseIfDeclarationImpl(
+				idRequest.request(), scope, check);
+
+		return result;
+	}
+
+	@Override
+	public BinaryOperatorInvocation assign(Scope scope, String varName,
+			IArgument arg) {
+		if (arg.getArgType() == ArgumentType.CONSTANT) {
+			return assignConstant(scope, varName, arg.getConstant().get());
+		} else if (arg.getArgType() == ArgumentType.VARIABLE) {
+			return assignVariable(scope, varName, arg.getVariable().get()
+					.getName());
+		}
+		if (arg.getArgType() == ArgumentType.INVOCATION) {
+			return assignInvocationResult(scope, varName, arg.getInvocation()
+					.get());
+		}
+
+		throw new UnsupportedOperationException(
+				"Unsupported argument specified: "
+						+ arg
+						+ ". Supported assignment args are 'CONSTANT', 'VARIABLE' and 'INVOCATION'.");
+	}
+
+	@Override
+	public ClassDeclaration declareClass(CompilationUnitDeclaration scope,
+			IType type) {
+		return declareClass(scope, type, new Modifiers(Modifier.PUBLIC),
+				new Extends(), new Extends());
+	}
+
+	@Override
+	public MethodDeclaration declareMethod(ClassDeclaration scope,
+			IType returnType, String methodName, IParameters params) {
+		return declareMethod(scope, new Modifiers(), returnType, methodName,
+				params);
+	}
+
+	@Override
+	public MethodDeclaration declareMethod(ClassDeclaration scope,
+			IType returnType, String methodName) {
+		return declareMethod(scope, new Modifiers(), returnType, methodName,
+				new Parameters());
+	}
 
 }

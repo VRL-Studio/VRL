@@ -286,6 +286,11 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
 			return this.var;
 		}
 
+		@Override
+		public IArgument getInitValue() {
+			return Argument.NULL;
+		}
+
 	}
 
 	@Override
@@ -571,7 +576,14 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
 			String varName) {
 		return getControlFlow().declareVariable(id, type, varName);
 	}
+	
+	@Override
+	public DeclarationInvocation declareVariable(String id, IType type,
+			String varName, IArgument initVal) {
+		return getControlFlow().declareVariable(id, type, varName, initVal);
+	}
 
+	
 	/**
 	 * @return the invocation
 	 */

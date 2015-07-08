@@ -53,8 +53,10 @@ import eu.mihosoft.vrl.workflow.Connection;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -331,10 +333,17 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public DeclarationInvocation declareVariable(String id, IType type, String varName) {
-        VariableImpl var = (VariableImpl) ((ScopeImpl) parent)._createVariable(type, varName);
+        return declareVariable(id, type, varName, null);
+    }
+    
+    @Override
+    public DeclarationInvocation declareVariable(String id, IType type,
+    		String varName, IArgument initVal) {
+    	VariableImpl var = (VariableImpl) ((ScopeImpl) parent)._createVariable(type, varName);
 
         DeclarationInvocationImpl invocation = new DeclarationInvocationImpl(parent, var);
-
+        if (initVal!=null)
+        	invocation.getArguments().add(initVal);
         var.setDeclaration(invocation);
 
         getInvocations().add(invocation);

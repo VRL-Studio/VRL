@@ -42,7 +42,8 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
             if (leftArg.getArgType() != ArgumentType.VARIABLE) {
                 throw new IllegalArgumentException("Left Argument must be a variable!");
             } else {
-                retType = leftArg.getVariable().get().getType();
+            	retType = Type.ANY;
+                //TODO: retType = leftArg.getVariable().get().getType();
             }
         }
 

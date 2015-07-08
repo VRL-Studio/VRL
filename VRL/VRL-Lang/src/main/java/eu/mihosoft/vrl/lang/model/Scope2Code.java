@@ -291,6 +291,11 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             DeclarationInvocation decl = (DeclarationInvocation) i;
             cb.append(decl.getDeclaredVariable().getType().getClassNameAsCode()).append(" ").
                     append(decl.getDeclaredVariable().getName());
+            if (decl.getInitValue()!=null)
+            {
+            	cb.append(" = ");
+            	renderArgument(decl.getInitValue(), cb);
+            }
         } else if (i instanceof BinaryOperatorInvocation) {
             BinaryOperatorInvocation operatorInvocation = (BinaryOperatorInvocation) i;
 
