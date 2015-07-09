@@ -62,8 +62,6 @@ if [[ $OS == *Darwin* ]]
 then
   # ugly hack to enable vtk on osx
   export DYLD_LIBRARY_PATH="$PROPERTY_FOLDER/plugins/VRL-VTK/natives/osx/:$DYLD_LIBRARY_PATH"
-  # force java 6 on mac os
-  JAVAEXE=/System/Library/Frameworks/JavaVM.framework/Versions/1.6/Home/bin/java
 fi
   
 # optimized for jre 7 (19.04.2012)
