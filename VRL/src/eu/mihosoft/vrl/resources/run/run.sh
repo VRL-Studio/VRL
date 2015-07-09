@@ -64,5 +64,5 @@ then
   export DYLD_LIBRARY_PATH="$PROPERTY_FOLDER/plugins/VRL-VTK/natives/osx/:$DYLD_LIBRARY_PATH"
 fi
   
-# optimized for jre 7 (19.04.2012)
-$JAVAEXE -Xms64m -Xmx1024m -XX:MaxPermSize=256m -Djava.library.path="$LIBDIR" -jar "$PROJECT_FILE" $CONF
+# optimized for jre 8 (09.07.2015)
+$JAVAEXE -Xms256m -Xmx4096m -Djava.library.path="$LIBDIR" -jar "$PROJECT_FILE" $CONF --console-app-args $@

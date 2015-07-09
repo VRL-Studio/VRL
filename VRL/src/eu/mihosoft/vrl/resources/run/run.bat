@@ -15,7 +15,7 @@ if defined ProgramW6432 (
   @echo detected 64-bit OS
   set LIBDIR=%LIBDIR64%
   set JAVAEXE=jre/x64/bin/java
-  set MAXHEAP=1024
+  set MAXHEAP=4096
 
 ) else (
   @echo detected 32-bit OS
@@ -27,10 +27,8 @@ if defined ProgramW6432 (
 REM if no integrated jre can be found try using the system version
 if not exist %JAVAEXE% set JAVAEXE=java
 
-REM version of 2011
-REM start /min /realtime %JAVAEXE% -Xms64m -Xmx512m -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+CMSPermGenSweepingEnabled -XX:MaxPermSize=256m -splash:resources\studio-resources\splashscreen.png -Djava.library.path="%LIBDIR%" -jar VRL-Studio.jar %CONF%
 
-REM optimized for jre 7 (19.04.2012)
-cmd /k %JAVAEXE% -Xms64m -Xmx%MAXHEAP%m -XX:MaxPermSize=256m -Djava.library.path="%LIBDIR%" -jar "%PROJECT_FILE%" %CONF%
+REM optimized for jre 8 (09.07.2015)
+cmd /k %JAVAEXE% -Xms256m -Xmx%MAXHEAP%m -Djava.library.path="%LIBDIR%" -jar "%PROJECT_FILE%" %CONF% --console-app-args %*
 
 exit

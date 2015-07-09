@@ -186,17 +186,47 @@ public class VSessionRunner {
         System.out.println("--------------------------------------------------------------------------------");
     }
 
+    /**
+     * Filter console app arguments. E.g.: 
+     * [arg1,arg2,arg3,--console-app-args,csapparg1,csapparg2,csapparg3] -&gt; [csapparg1,csapparg2,csapparg3]
+     * @param args arguments to filter
+     * @return console app arguments 
+     */
+    private String[] filterConsoleAppArgs(String[] args) {
+        int consoleAppArgsIndex = -1;
+        for (int i = 0; i < args.length; i++) {
+            if ("--console-app-args".equals(args[i])) {
+                consoleAppArgsIndex = i;
+                break;
+            }
+        }
+
+        if (consoleAppArgsIndex >= 0) {
+            String[] result = new String[args.length - (consoleAppArgsIndex+1) ];
+
+            for (int i = 0; i < result.length; i++) {
+                result[i] = args[consoleAppArgsIndex+i+1];
+            }
+            
+            return result;
+        } else {
+            return args;
+        }
+    }
+
     private void runMain(Object m, String[] args) {
 
         // search for run method
         Method run = null;
+
+        String[] consoleAppArgs = filterConsoleAppArgs(args);
 
         // 1.) try with string array
         try {
             run = m.getClass().getMethod("run", String[].class);
             System.out.println(
                     VTerminalUtil.green(">> invoking Main.run(String[])\n"));
-            run.invoke(m, (Object) args);
+            run.invoke(m, (Object) consoleAppArgs);
         } catch (NoSuchMethodException ex) {
             //
         } catch (SecurityException ex) {
