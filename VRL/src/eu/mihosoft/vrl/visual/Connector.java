@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import java.util.*;
@@ -60,8 +59,8 @@ import java.awt.geom.*;
 
 /**
  * The Connector class represents a small drag/drop area where a Transferable
- * object can be dragged from or dropped to. 
- * 
+ * object can be dragged from or dropped to.
+ *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public abstract class Connector extends VComponent
@@ -73,17 +72,17 @@ public abstract class Connector extends VComponent
      */
     private Connections connections;
     /**
-     * Each Connector object has a dragging object that can be dragged on to 
+     * Each Connector object has a dragging object that can be dragged on to
      * another Connector object to establish a connection between them.
      */
     private Transferable draggingObj;
     /**
-     * defines whether the object is selected or not, i.e. whether it
-     * receives a "mouse entered" event or not
+     * defines whether the object is selected or not, i.e. whether it receives a
+     * "mouse entered" event or not
      */
     private boolean selected;
     /**
-     * Defines the objects active color. An Connector object is defined as 
+     * Defines the objects active color. An Connector object is defined as
      * active whenever it receives a "mouse entered" event.
      */
     private Color activeColor;
@@ -97,7 +96,7 @@ public abstract class Connector extends VComponent
      */
     private int ID;
     /**
-     * 
+     *
      */
     private String stringId;
     /**
@@ -118,7 +117,7 @@ public abstract class Connector extends VComponent
      */
     private ConnectorType type;
     /**
-     * 
+     *
      */
     public static String ACTIVE_COLOR_ERROR_KEY = "Connector[active]:errorColor";
     public static String ACTIVE_COLOR_VALID_KEY = "Connector[active]:validColor";
@@ -135,16 +134,18 @@ public abstract class Connector extends VComponent
     /**
      * list of action listeners
      */
-    private ArrayList<CanvasActionListener> actionListeners =
-            new ArrayList<CanvasActionListener>();
+    private ArrayList<CanvasActionListener> actionListeners
+            = new ArrayList<CanvasActionListener>();
     /**
      * Defines the identifier for connector receive action
      *
      */
     public static final String RECEIVE_ACTION = "receive-data";
+    private final static Point ZERO = new Point(0, 0);
 
     /**
      * Creates a new instance of Connector.
+     *
      * @param mainCanvas the main canvas object
      */
     public Connector(Canvas mainCanvas, Connections connections) {
@@ -175,6 +176,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Fires an action.
+     *
      * @param event the event
      */
     protected void fireAction(ActionEvent event) {
@@ -185,6 +187,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Adds a change listener to this window.
+     *
      * @param l the listener to add
      * @return <code>true</code> (as specified by {@link Collection#add})
      */
@@ -194,6 +197,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Removes a change listener from this window.
+     *
      * @param l the listener to remove
      * @return <code>true</code> (as specified by {@link Collection#remove})
      */
@@ -203,6 +207,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Defines the size of this connector and sets min/max size correct.
+     *
      * @param size the conector size
      */
     public final void setConnectorSize(Integer size) {
@@ -217,6 +222,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Returns the size of this connector.
+     *
      * @return the connector size
      */
     public Integer getConnectorSize() {
@@ -225,9 +231,10 @@ public abstract class Connector extends VComponent
 
     /**
      * Sets the size of the connector. It does not set min/max size.
+     *
      * @param x the width, valid range: [0,MAX_INT]
      * @param y theheight, valid range: [0,MAX_INT]
-     * @see #setConnectorSize(java.lang.Integer) 
+     * @see #setConnectorSize(java.lang.Integer)
      */
     @Override
     public void setSize(int x, int y) {
@@ -248,7 +255,6 @@ public abstract class Connector extends VComponent
 
         // update style color
         // TODO: find a more efficient solution for updating style color
-
         if (isValidConnector()) {
             setActiveColor(
                     (Color) style.getBaseValues().get(ACTIVE_COLOR_VALID_KEY));
@@ -265,21 +271,20 @@ public abstract class Connector extends VComponent
             setConnectorSize((Integer) style.getBaseValues().get(SIZE_KEY));
         }
 
-
         // we want to instantly update background color
         updateBackgroundColor();
 
         Composite original = g2.getComposite();
 
-        AlphaComposite ac1 =
-                AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
-                style.getBaseValues().getFloat(TRANSPARENCY_KEY));
+        AlphaComposite ac1
+                = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+                        style.getBaseValues().getFloat(TRANSPARENCY_KEY));
         g2.setComposite(ac1);
 
         Stroke oldStroke = g2.getStroke();
 
-        float thickness =
-                (Float) style.getBaseValues().get(BORDER_THICKNESS_KEY);
+        float thickness
+                = (Float) style.getBaseValues().get(BORDER_THICKNESS_KEY);
 
         if (thickness > getConnectorSize() / 2.f) {
             thickness = getConnectorSize() / 2.f;
@@ -298,7 +303,6 @@ public abstract class Connector extends VComponent
         g2.setColor(this.getBackground());
 
 //        g2.fillOval(0, 0, getWidth(), getHeight());
-
         g2.fill(new Ellipse2D.Float(
                 0 + topLeftSpacingFill,
                 0 + topLeftSpacingFill,
@@ -334,7 +338,7 @@ public abstract class Connector extends VComponent
     }
 
     @Override
-    public void mouseReleased(MouseEvent mouseEvent) {        
+    public void mouseReleased(MouseEvent mouseEvent) {
     }
 
     @Override
@@ -359,14 +363,15 @@ public abstract class Connector extends VComponent
 //        {
 //            this.getParentObject().unselectConnectors();
 //        }
-        
+
         this.setSelected(false);
     }
 
     /**
      * Checks if the Connector object is selected (via MouseOver event)
-     * @return <code>true</code> if the object is selected; 
-     * <code>false</code> otherwise
+     *
+     * @return <code>true</code> if the object is selected; <code>false</code>
+     * otherwise
      */
     public boolean isSelected() {
         return selected;
@@ -374,6 +379,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Defines whether the object is selected or not.
+     *
      * @param selected the selection state; valid range [true,false]
      */
     public final void setSelected(boolean selected) {
@@ -406,6 +412,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Returns the Transferable object.
+     *
      * @return the Transferable object
      */
     public Transferable getTransferable() {
@@ -414,6 +421,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Sets the transferable object.
+     *
      * @param dragginObj the Transferable object
      */
     public final void setTransferable(Transferable dragginObj) {
@@ -428,10 +436,16 @@ public abstract class Connector extends VComponent
 
     /**
      * Returns position relative to main canvas's upper left corner.
+     *
      * @return connector's position
      */
     public Point getAbsPos() {
         Component c = this.getParent();
+
+        if (c == null) {
+            return ZERO;
+        }
+
         Point location = this.getLocation();
 
         while (!(c instanceof Canvas)) {
@@ -446,12 +460,11 @@ public abstract class Connector extends VComponent
             }
         }
 
-
         // if the corresponding canvas window is minimized we have to change
         // the location because we then want the connection to start/stop at 
         // the title bar
-        CanvasWindow object =
-                (CanvasWindow) getValueObject().getParentWindow();
+        CanvasWindow object
+                = (CanvasWindow) getValueObject().getParentWindow();
 
         if (object.isResizing()) {
             int diffY = object.getY() + object.getInsets().top + getHeight() - location.y;
@@ -476,12 +489,12 @@ public abstract class Connector extends VComponent
             location = new Point(location.x, y);
         }
 
-
         return location;
     }
 
     /**
      * Returns the active color.
+     *
      * @return the color
      */
     public Color getActiveColor() {
@@ -490,6 +503,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Defines the active color.
+     *
      * @param activeColor the color
      */
     public final void setActiveColor(Color activeColor) {
@@ -498,6 +512,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Returns the ID value.
+     *
      * @return the ID value, valid range [0,MAX_INT]
      */
     @Override
@@ -507,6 +522,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Sets the ID value.
+     *
      * @param ID the ID value, valid range [0,MAX_INT]
      */
     @Override
@@ -516,6 +532,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Returns the inactive color.
+     *
      * @return the inactive color
      */
     public Color getInactiveColor() {
@@ -524,6 +541,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Defines the inactive color.
+     *
      * @param inactiveColor
      */
     public final void setInactiveColor(Color inactiveColor) {
@@ -532,8 +550,9 @@ public abstract class Connector extends VComponent
 
     /**
      * Indicates whether the connector is an input connector.
+     *
      * @return <code>true</code> if the connector is an input connector;
-     *         <code>false</code> otherwise
+     * <code>false</code> otherwise
      */
     public boolean isInput() {
         return getType() == ConnectorType.INPUT;
@@ -541,8 +560,9 @@ public abstract class Connector extends VComponent
 
     /**
      * Indicates whether the connector is an output connector.
+     *
      * @return <code>true</code> if the connector is an output connector;
-     *         <code>false</code> otherwise
+     * <code>false</code> otherwise
      */
     public boolean isOutput() {
         return getType() == ConnectorType.OUTPUT;
@@ -550,8 +570,9 @@ public abstract class Connector extends VComponent
 
     /**
      * Indicates whether this connector is valid.
-     * @return <code>true</code> if this connector is valid;
-     *         <code>false</code> otherwise
+     *
+     * @return <code>true</code> if this connector is valid; <code>false</code>
+     * otherwise
      */
     public boolean isValidConnector() {
         return validConnector;
@@ -559,6 +580,7 @@ public abstract class Connector extends VComponent
 
     /**
      * Defines
+     *
      * @param validConnector the value to set
      */
     public void setValidConnector(boolean validConnector) {
