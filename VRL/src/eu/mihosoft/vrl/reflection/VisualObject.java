@@ -59,6 +59,8 @@ import eu.mihosoft.vrl.io.vrlx.AbstractObjectRepresentation;
 import eu.mihosoft.vrl.lang.InstanceCreator;
 import eu.mihosoft.vrl.lang.groovy.GroovyCodeEditorComponent;
 import eu.mihosoft.vrl.lang.groovy.GroovyCodeWindow;
+import eu.mihosoft.vrl.lang.visual.InputObject;
+import eu.mihosoft.vrl.lang.visual.OutputObject;
 import eu.mihosoft.vrl.visual.*;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -476,7 +478,9 @@ public class VisualObject extends CanvasWindow {
         List<VisualObject> selectedObjects = new ArrayList<VisualObject>();
 
         for (Selectable s : getMainCanvas().getClipBoard()) {
-            if (s instanceof VisualObject) {
+            if ((s instanceof VisualObject)
+                    && !(s instanceof InputObject)
+                    && !(s instanceof OutputObject)) {
                 selectedObjects.add((VisualObject) s);
             }
         }
@@ -486,38 +490,38 @@ public class VisualObject extends CanvasWindow {
             return;
         }
 
-        Comparator<VisualObject> compareByDistance = 
-                (VisualObject o1, VisualObject o2) -> {
-            Point o1Loc = o1.getLocation();
-            Point o2Loc = o2.getLocation();
-            
-            int dist1Squared = o1Loc.x * o1Loc.x + o1Loc.y * o1Loc.y;
-            int dist2Squared = o2Loc.x * o2Loc.x + o2Loc.y * o2Loc.y;
-            
-            if (dist1Squared < dist2Squared) {
-                return -1;
-            }
-            
-            if (dist1Squared > dist2Squared) {
-                return 1;
-            }
-            
-            if (o1Loc.x < o2Loc.x) {
-                return -1;
-            }
-            if (o1Loc.x > o2Loc.x) {
-                return +1;
-            }
-            
-            if (o1Loc.y < o2Loc.y) {
-                return -1;
-            }
-            if (o1Loc.y > o2Loc.y) {
-                return +1;
-            }
-            
-            return 0;
-        };
+        Comparator<VisualObject> compareByDistance
+                = (VisualObject o1, VisualObject o2) -> {
+                    Point o1Loc = o1.getLocation();
+                    Point o2Loc = o2.getLocation();
+
+                    int dist1Squared = o1Loc.x * o1Loc.x + o1Loc.y * o1Loc.y;
+                    int dist2Squared = o2Loc.x * o2Loc.x + o2Loc.y * o2Loc.y;
+
+                    if (dist1Squared < dist2Squared) {
+                        return -1;
+                    }
+
+                    if (dist1Squared > dist2Squared) {
+                        return 1;
+                    }
+
+                    if (o1Loc.x < o2Loc.x) {
+                        return -1;
+                    }
+                    if (o1Loc.x > o2Loc.x) {
+                        return +1;
+                    }
+
+                    if (o1Loc.y < o2Loc.y) {
+                        return -1;
+                    }
+                    if (o1Loc.y > o2Loc.y) {
+                        return +1;
+                    }
+
+                    return 0;
+                };
 
         Collections.sort(selectedObjects, compareByDistance);
 
