@@ -1,7 +1,5 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import java.util.Stack;
-
 import org.codehaus.groovy.ast.stmt.ContinueStatement;
 import org.codehaus.groovy.control.SourceUnit;
 

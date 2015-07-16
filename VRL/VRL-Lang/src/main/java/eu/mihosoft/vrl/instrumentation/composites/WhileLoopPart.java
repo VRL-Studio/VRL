@@ -108,6 +108,8 @@ public class WhileLoopPart
 
 		setCodeRange(inv, s);
 		addCommentsToScope(inv, comments);
+		
+		
 
 		stateMachine.pop();
 
@@ -117,7 +119,7 @@ public class WhileLoopPart
 	@Override
 	public void postTransform(WhileDeclaration obj, WhileStatement in,
 			ControlFlowScope parent, TransformContext context) {
-		//obj.getControlFlow().getInvocations().remove(0);
+		
 	}
 	
 	@Override

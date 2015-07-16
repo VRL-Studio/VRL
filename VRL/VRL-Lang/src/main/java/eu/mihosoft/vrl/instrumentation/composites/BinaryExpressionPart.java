@@ -1,7 +1,5 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import java.util.Stack;
-
 import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
@@ -12,6 +10,8 @@ import com.google.common.base.Objects;
 import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
@@ -19,7 +19,6 @@ import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
@@ -59,9 +58,9 @@ public class BinaryExpressionPart extends
 						rightArg) && operator == Operator.ASSIGN);
 
 				if (!emptyAssignment) {
-
-					Invocation invocation = builder.invokeOperator(
-							parent, leftArg, rightArg, operator);
+   
+					Invocation invocation = new BinaryOperatorInvocationImpl(parent,
+					                leftArg, rightArg, operator);
 
 					setCodeRange(invocation, s);
 

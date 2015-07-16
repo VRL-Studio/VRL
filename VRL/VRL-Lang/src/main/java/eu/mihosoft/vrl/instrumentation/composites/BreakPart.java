@@ -1,16 +1,12 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import java.util.Stack;
-
 import org.codehaus.groovy.ast.stmt.BreakStatement;
-import org.codehaus.groovy.ast.stmt.ContinueStatement;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.BreakInvocation;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
-import eu.mihosoft.vrl.lang.model.ContinueInvocation;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 

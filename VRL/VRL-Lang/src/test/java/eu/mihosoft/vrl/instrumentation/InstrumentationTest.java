@@ -5,27 +5,21 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
-import static org.junit.Assert.*;
-
-import java.io.PrintWriter;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-
+import static org.junit.Assert.assertEquals;
 import eu.mihosoft.vrl.lang.model.CodeRange;
-import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.Variable;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
-import groovy.util.GroovyScriptEngine;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
-import org.codehaus.groovy.transform.GroovyASTTransformationClass;
 import org.junit.Test;
 
 /**

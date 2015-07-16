@@ -2,10 +2,7 @@ package eu.mihosoft.vrl.instrumentation.composites;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Stack;
 
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
@@ -23,8 +20,6 @@ import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.SpreadExpression;
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
-import org.codehaus.groovy.ast.stmt.IfStatement;
-import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
 import org.codehaus.groovy.syntax.Token;
@@ -46,7 +41,6 @@ import eu.mihosoft.vrl.lang.model.CommentImpl;
 import eu.mihosoft.vrl.lang.model.ConstantValue;
 import eu.mihosoft.vrl.lang.model.ConstantValueFactory;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
-import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.Extends;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
