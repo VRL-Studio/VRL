@@ -40,7 +40,7 @@ public class DeclarationExpressionPart
 			DeclarationInvocation declInv = builder.declareVariable(
 					currentScope, new Type(s.getVariableExpression().getType()
 							.getName(), true), s.getVariableExpression()
-							.getName(), convertToArgument("initVal", s.getRightExpression(), context));
+							.getName(), convertToArgument("DeclarationExpression.initVal", s.getRightExpression(), context));
 			
 			setCodeRange(declInv, s);
 

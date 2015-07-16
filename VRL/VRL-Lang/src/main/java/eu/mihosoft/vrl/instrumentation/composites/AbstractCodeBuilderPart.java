@@ -165,6 +165,17 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 				astNode.getLastColumnNumber() - 1, mapper);
 	}
 
+	protected static Operator convertPostfixOperator(String op) {
+		switch (op) {
+		case "++":
+			return Operator.INC_ONE;
+		case "--":
+			return Operator.DEC_ONE;
+		default:
+			throw new UnsupportedOperationException("Unknown operator " + op);
+		}
+	}
+
 	protected static Operator convertOperator(BinaryExpression be) {
 		switch (be.getOperation().getType()) {
 		case org.codehaus.groovy.syntax.Types.PLUS:
@@ -704,8 +715,7 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 			Variable v = context.resolve(key,
 					((SpreadExpression) expr).getExpression(), Variable.class);
 			arg = Argument.varArg(v);
-		} else if (expr instanceof EmptyExpression)
-		{
+		} else if (expr instanceof EmptyExpression) {
 			return Argument.NULL;
 		} else {
 			throw new UnsupportedOperationException(

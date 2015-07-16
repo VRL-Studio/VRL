@@ -16,4 +16,5 @@ public interface BinaryOperatorInvocation extends Invocation{
     Operator getOperator();
     
     boolean isArrayAccessOperator();
+    boolean isUnaryOperator();
 }

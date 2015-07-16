@@ -7,15 +7,19 @@ import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
+import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
+import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
 public class PostFixExpressionPart
 		extends
-		AbstractCodeBuilderPart<PostfixExpression, CodeEntity, SimpleForDeclaration> {
+		AbstractCodeBuilderPart<PostfixExpression, CodeEntity, ControlFlowScope> {
 
 	public PostFixExpressionPart(StateMachine stateMachine,
 			SourceUnit sourceUnit, VisualCodeBuilder builder,
@@ -24,15 +28,22 @@ public class PostFixExpressionPart
 	}
 
 	@Override
-	public CodeEntity transform(PostfixExpression obj,
-			SimpleForDeclaration parent, TransformContext context) {
+	public CodeEntity transform(PostfixExpression obj, ControlFlowScope parent,
+			TransformContext context) {
 
-		return null;
+		BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent,
+				convertToArgument("PostfixExpression.argument",
+						obj.getExpression(), context), Argument.NULL,
+						convertPostfixOperator(obj.getOperation().getText()));
+		
+		return invocation;
 	}
 
 	@Override
 	public void postTransform(CodeEntity out, PostfixExpression obj,
-			SimpleForDeclaration parent, TransformContext context) {
+			ControlFlowScope parent, TransformContext context) {
+		if (!(parent instanceof SimpleForDeclaration_Impl))
+			return;
 		SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) parent;
 
 		stateMachine.setBoolean("for-loop:incExpression", true);
@@ -75,7 +86,7 @@ public class PostFixExpressionPart
 	}
 
 	@Override
-	public Class<SimpleForDeclaration> getParentType() {
-		return SimpleForDeclaration.class;
+	public Class<ControlFlowScope> getParentType() {
+		return ControlFlowScope.class;
 	}
 }

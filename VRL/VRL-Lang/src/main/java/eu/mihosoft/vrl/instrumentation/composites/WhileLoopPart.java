@@ -10,7 +10,6 @@ import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
-import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
@@ -115,6 +114,12 @@ public class WhileLoopPart
 		return inv;
 	}
 
+	@Override
+	public void postTransform(WhileDeclaration obj, WhileStatement in,
+			ControlFlowScope parent, TransformContext context) {
+		//obj.getControlFlow().getInvocations().remove(0);
+	}
+	
 	@Override
 	public Class<WhileStatement> getAcceptedType() {
 		return WhileStatement.class;

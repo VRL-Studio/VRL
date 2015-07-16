@@ -152,4 +152,9 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
         return arrayElementOperator(operator);
     }
 
+	@Override
+	public boolean isUnaryOperator() {
+		return operator==Operator.DEC_ONE || operator==Operator.INC_ONE;
+	}
+
 }
