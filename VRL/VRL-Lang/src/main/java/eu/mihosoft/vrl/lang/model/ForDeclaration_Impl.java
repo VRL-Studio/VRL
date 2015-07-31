@@ -49,50 +49,33 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
-import javafx.collections.ListChangeListener;
-
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class SimpleForDeclaration_Impl extends ScopeImpl implements SimpleForDeclaration {
+public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
 
-    private final SimpleForDeclarationMetaData metadata;
+    private final ForDeclarationMetaData metadata;
 
-    public SimpleForDeclaration_Impl(String id, Scope parent, String varName, int from, int to, int inc) {
-        super(id, parent, ScopeType.FOR, ScopeType.FOR.name(), new SimpleForDeclarationMetaData(varName, from, to, inc));
+    public ForDeclaration_Impl(String id, Scope parent, Invocation from, Invocation to, Invocation inc) {
+        super(id, parent, ScopeType.FOR, ScopeType.FOR.name(), new ForDeclarationMetaData(from, to, inc));
 
-        boolean forceIncrement = from < to;
-        boolean equal = from == to;
-
-        if (forceIncrement && !equal && inc <= 0) {
-            throw new IllegalArgumentException("For loop cannot have negative or zero increment!");
-        } else if (!forceIncrement && !equal && inc >= 0) {
-            throw new IllegalArgumentException("For loop cannot have positive or zero increment!");
-        }
-
-        metadata = (SimpleForDeclarationMetaData) getScopeArgs()[0];
-
-        setVarName(varName, null);
+        metadata = (ForDeclarationMetaData) getScopeArgs()[0];
     }
 
-    @Override
-    public String getVarName() {
-        return metadata.getVarName();
-    }
 
     @Override
-    public int getFrom() {
+    public Invocation getFrom() {
         return metadata.getFrom();
     }
 
     @Override
-    public int getTo() {
+    public Invocation getTo() {
         return metadata.getTo();
     }
 
     @Override
-    public int getInc() {
+    public Invocation getInc() {
         return metadata.getInc();
     }
 
@@ -110,123 +93,98 @@ public class SimpleForDeclaration_Impl extends ScopeImpl implements SimpleForDec
     public void defineParameters(Invocation i) {
         i.getArguments().clear();
 
-        i.getArguments().addAll(Argument.constArg(Type.INT, 0),Argument.constArg(Type.INT, 0),Argument.constArg(Type.INT, 0));
+        i.getArguments().addAll(Argument.invArg(getFrom()),Argument.invArg(getTo()),Argument.invArg(getInc()));
 
-        i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
-            System.out.println("change: " + c);
-            i.getArguments().get(0).getConstant().ifPresent(constVal->metadata.setFrom((Integer)constVal));
-            i.getArguments().get(1).getConstant().ifPresent(constVal->metadata.setTo((Integer)constVal));
-            i.getArguments().get(2).getConstant().ifPresent(constVal->metadata.setInc((Integer)constVal));
-        });
+//        i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
+//            System.out.println("change: " + c);
+//            i.getArguments().get(0).getConstant().ifPresent(constVal->metadata.setFrom(constVal));
+//            i.getArguments().get(1).getConstant().ifPresent(constVal->metadata.setTo(constVal));
+//            i.getArguments().get(2).getConstant().ifPresent(constVal->metadata.setInc(constVal));
+//        });
     }
 
-    public final void setVarName(String varName, ICodeRange codeRange) {
-        metadata.setVarName(varName);
-        if (varName != null && !varName.isEmpty()) {
-            DeclarationInvocationImpl inv
-                    = (DeclarationInvocationImpl) getControlFlow().
-                    declareVariable(getId(), Type.INT, varName);
-            inv.setTextRenderingEnabled(false);
-            inv.setRange(codeRange);
-        }
-    }
+
 
     /**
      * @param from the from to set
      */
-    public void setFrom(int from) {
+    public void setFrom(Invocation from) {
         metadata.setFrom(from);
         getInvocation().ifPresent(i -> i.getArguments().
-                set(0, Argument.constArg(Type.INT, getFrom())));
+                set(0, Argument.invArg(getFrom())));
     }
 
     /**
      * @param to the to to set
      */
-    public void setTo(int to) {
+    public void setTo(Invocation to) {
         metadata.setTo(to);
         getInvocation().ifPresent(i -> i.getArguments().
-                set(1, Argument.constArg(Type.INT, getTo())));
+                set(1, Argument.invArg( getTo())));
     }
 
     /**
      * @param inc the inc to set
      */
-    public void setInc(int inc) {
+    public void setInc(Invocation inc) {
         metadata.setInc(inc);
         getInvocation().ifPresent(i -> i.getArguments().
-                set(2, Argument.constArg(Type.INT, getInc())));
+                set(2, Argument.invArg(getInc())));
     }
 
 }
 
-class SimpleForDeclarationMetaData {
+class ForDeclarationMetaData {
 
-    private String varName;
-    private int from;
-    private int to;
-    private int inc;
+    private Invocation from;
+    private Invocation to;
+    private Invocation inc;
 
-    public SimpleForDeclarationMetaData(String varName, int from, int to, int inc) {
-        this.varName = varName;
+    public ForDeclarationMetaData(Invocation from, Invocation to, Invocation inc) {
         this.from = from;
         this.to = to;
         this.inc = inc;
     }
 
     /**
-     * @return the varName
-     */
-    public String getVarName() {
-        return varName;
-    }
-
-    /**
      * @return the from
      */
-    public int getFrom() {
+    public Invocation getFrom() {
         return from;
     }
 
     /**
      * @return the to
      */
-    public int getTo() {
+    public Invocation getTo() {
         return to;
     }
 
     /**
      * @return the inc
      */
-    public int getInc() {
+    public Invocation getInc() {
         return inc;
-    }
-
-    /**
-     * @param varName the varName to set
-     */
-    public void setVarName(String varName) {
-        this.varName = varName;
     }
 
     /**
      * @param from the from to set
      */
-    public void setFrom(int from) {
+    public void setFrom(Invocation from) {
         this.from = from;
     }
 
     /**
      * @param to the to to set
      */
-    public void setTo(int to) {
+    public void setTo(Invocation to) {
         this.to = to;
     }
 
     /**
      * @param inc the inc to set
      */
-    public void setInc(int inc) {
+    public void setInc(Invocation inc) {
         this.inc = inc;
     }
 
