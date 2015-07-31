@@ -1,0 +1,310 @@
+package my.testpackage;
+public class MainWithFor {
+
+    
+    public static void main() {
+        Integer a;
+        String s;
+        s = (a.toString());
+        a = (2 + (3 * 4));
+        for(int i = 0; i <= 5; i++) {
+            println("Hello " + i);
+        }
+    }
+}
+// <editor-fold defaultstate="collapsed" desc="VRL-Data">
+/*<!VRL!><Type:VRL-Layout>
+<map>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:op ASSIGN</string>
+    <layout>
+      <x>756.4614023733061</x>
+      <y>114.59829437851931</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:declare i</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:toString:0</string>
+    <layout>
+      <x>335.09964727296415</x>
+      <y>273.43658638229635</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:op ASSIGN:1</string>
+    <layout>
+      <x>756.4614023733061</x>
+      <y>114.59829437851931</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:declare a</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:op ASSIGN:2</string>
+    <layout>
+      <x>1517.461402373306</x>
+      <y>117.21320268509066</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i</string>
+    <layout>
+      <x>1097.264672009073</x>
+      <y>373.5934169402745</y>
+      <width>1037.3087717154997</width>
+      <height>504.1693897338366</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:println:0</string>
+    <layout>
+      <x>633.5809646423365</x>
+      <y>149.76066457982265</y>
+      <width>308.0338463569452</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:op ASSIGN:0</string>
+    <layout>
+      <x>1517.461402373306</x>
+      <y>117.21320268509066</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:toString</string>
+    <layout>
+      <x>335.09964727296415</x>
+      <y>273.43658638229635</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>1016.5</width>
+      <height>439.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:declare s:0</string>
+    <layout>
+      <x>1.0</x>
+      <y>188.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main</string>
+    <layout>
+      <x>244.71058585523957</x>
+      <y>36.18288818093036</y>
+      <width>573.7120083183288</width>
+      <height>281.1641977845921</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:inv:declare this</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>215.8607280023523</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:op PLUS:0</string>
+    <layout>
+      <x>1277.723520716024</x>
+      <y>116.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:scope</string>
+    <layout>
+      <x>1097.264672009073</x>
+      <y>373.5934169402745</y>
+      <width>1037.3087717154997</width>
+      <height>504.1693897338366</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>1107.0</width>
+      <height>556.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:declare a:0</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:op TIMES:0</string>
+    <layout>
+      <x>1022.564826925791</x>
+      <y>112.85664941171376</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:op PLUS:0</string>
+    <layout>
+      <x>370.3688133172181</x>
+      <y>67.23255528369882</y>
+      <width>200.0</width>
+      <height>234.90370274982044</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:op TIMES</string>
+    <layout>
+      <x>1022.564826925791</x>
+      <y>112.85664941171376</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:0</string>
+    <layout>
+      <x>244.71058585523957</x>
+      <y>36.18288818093036</y>
+      <width>573.7120083183288</width>
+      <height>281.1641977845921</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:declare s</string>
+    <layout>
+      <x>1.0</x>
+      <y>188.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:declare i:0</string>
+    <layout>
+      <x>0.0</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:op PLUS</string>
+    <layout>
+      <x>370.3688133172181</x>
+      <y>67.23255528369882</y>
+      <width>200.0</width>
+      <height>234.90370274982044</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:println</string>
+    <layout>
+      <x>633.5809646423365</x>
+      <y>149.76066457982265</y>
+      <width>308.0338463569452</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:inv:scope:0</string>
+    <layout>
+      <x>1097.264672009073</x>
+      <y>373.5934169402745</y>
+      <width>1037.3087717154997</width>
+      <height>504.1693897338366</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:inv:op PLUS</string>
+    <layout>
+      <x>1277.723520716024</x>
+      <y>116.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainWithFor:main:for:var=i:0</string>
+    <layout>
+      <x>1097.264672009073</x>
+      <y>373.5934169402745</y>
+      <width>1037.3087717154997</width>
+      <height>504.1693897338366</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+</map>
+*/
+// </editor-fold>
