@@ -114,6 +114,7 @@ import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
 import org.codehaus.groovy.ast.expr.DeclarationExpression;
+import org.codehaus.groovy.ast.expr.EmptyExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.NotExpression;
@@ -773,10 +774,15 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     @Override
     public void visitMethodCallExpression(MethodCallExpression s) {
+        
+        System.err.println("m-call: " + s.getText());
 
         if (returnVariables.containsKey(s)) {
+            System.err.println(" -> no ret-key");
             return;
         }
+        
+        System.err.println(" -> ret-key");
 
         super.visitMethodCallExpression(s);
 
@@ -803,6 +809,13 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                     vIdStack.push(arg.toString());
                 }
             }
+        } else if (s.getObjectExpression() instanceof MethodCallExpression) {
+            MethodCallExpression me = (MethodCallExpression) s.getObjectExpression();
+            objectName = me.getMethod().getText();
+            
+            
+        } else {
+            System.err.println("UNSUPPORTED OBJ EXPRESSION: " + s.getObjectExpression() + " in " + s.getText() + ", line: " + s.getLineNumber());
         }
 
         String returnValueName = "void";
@@ -1378,6 +1391,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //            System.out.println("ARG: " + stateMachine.getBoolean("convert-argument"));
             visitNotExpression((NotExpression) e);
             result = Argument.invArg(returnVariables.get((NotExpression) e));
+        } else // if nothing worked so far, we assumen null arg
+        if (e instanceof EmptyExpression) {
+            EmptyExpression empty = (EmptyExpression) e;
+            System.err.println(" -> EMPTY-ARG: " + e + " : " + e.getLineNumber());
+            result = Argument.NULL;
         } else // if nothing worked so far, we assumen null arg
         if (result == null) {
             System.err.println(" -> UNSUPPORTED-ARG: " + e);
