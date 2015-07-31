@@ -11,6 +11,7 @@ import eu.mihosoft.vrl.lang.model.CodeEvent;
 import eu.mihosoft.vrl.lang.model.CodeEventType;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
@@ -22,10 +23,13 @@ import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -51,6 +55,12 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
     @Override
     protected Node createView() {
+        
+        ComboBox<MethodDeclaration> box = new ComboBox<>();
+        
+        VBox parent = new VBox(box);
+        
+        parent.setAlignment(Pos.CENTER);
 
         Object value = getModel().getValueObject().getValue();
 
@@ -86,16 +96,17 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                                     == inputs.getChildren().size());
                         }
                     });
-            return hbox;
+            parent.getChildren().add(hbox);
         }
 
-        return null;
+        return parent;
     }
 
     private void setFieldListener(int argIndex, TextField field, Invocation invocation, IArgument a) {
         field.textProperty().addListener((ov, oldV, newV) -> {
             try {
                 Integer intValue = Integer.parseInt(newV);
+
                 invocation.getArguments().set(argIndex,
                         Argument.constArg(Type.INT, intValue));
                 invocation.getParent().fireEvent(new CodeEvent(
@@ -161,7 +172,6 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                 a.getConstant().ifPresent(o -> {
 
                     if (!field.getText().equals(o.toString())) {
-                        System.out.println("o: " + o + ", f: " + field.getText() + " , u: " + update);
                         field.setText(o.toString());
                     }
                 });
