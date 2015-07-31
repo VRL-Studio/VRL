@@ -35,6 +35,8 @@ import javafx.scene.paint.Color;
  */
 public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
+    private boolean updating;
+
     public VariableFlowNodeSkin(FXSkinFactory skinFactory, VNode model, VFlow controller) {
         super(skinFactory, model, controller);
     }
@@ -76,12 +78,14 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
             createArgView(invocation, inputs, false);
 
-//            invocation.getArguments().addListener(
-//                    (ListChangeListener.Change<? extends IArgument> c) -> {
-//
-//                        createArgView(invocation, inputs, invocation.getArguments().size() == inputs.getChildren().size());
-//                    });
-
+            invocation.getArguments().addListener(
+                    (ListChangeListener.Change<? extends IArgument> c) -> {
+                        if (!updating) {
+                            createArgView(invocation, inputs,
+                                    invocation.getArguments().size()
+                                    == inputs.getChildren().size());
+                        }
+                    });
             return hbox;
         }
 
@@ -90,7 +94,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
     private void setFieldListener(int argIndex, TextField field, Invocation invocation, IArgument a) {
         field.textProperty().addListener((ov, oldV, newV) -> {
-                try {
+            try {
                 Integer intValue = Integer.parseInt(newV);
                 invocation.getArguments().set(argIndex,
                         Argument.constArg(Type.INT, intValue));
@@ -100,12 +104,11 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                 if (invocation instanceof ScopeInvocation) {
                     ScopeInvocation scopeInv = (ScopeInvocation) invocation;
                     Scope scope = scopeInv.getScope();
-                    
-                    System.out.println("SCOPE: " + scope.getName() + ", scopeInv-#args:" + scopeInv.getArguments().size());
+
                 }
-                } catch(Exception ex) {
-                    
-                }
+            } catch (Exception ex) {
+
+            }
         });
 //        EventStream<Change<String>> textEvents
 //                = EventStreams.changesOf(field.textProperty());
@@ -127,6 +130,8 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
     }
 
     private void createArgView(Invocation invocation, VBox inputs, boolean update) {
+
+        updating = true;
 
         if (!update) {
             inputs.getChildren().clear();
@@ -154,7 +159,9 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                 }
 
                 a.getConstant().ifPresent(o -> {
+
                     if (!field.getText().equals(o.toString())) {
+                        System.out.println("o: " + o + ", f: " + field.getText() + " , u: " + update);
                         field.setText(o.toString());
                     }
                 });
@@ -180,6 +187,8 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             }
 
             argIndex++;
-        }
+        } // end for
+
+        updating = false;
     }
 }
