@@ -811,9 +811,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             }
         } else if (s.getObjectExpression() instanceof MethodCallExpression) {
             MethodCallExpression me = (MethodCallExpression) s.getObjectExpression();
-            objectName = me.getMethod().getText();
-            
-            
+            objectName = "";
+
         } else {
             System.err.println("UNSUPPORTED OBJ EXPRESSION: " + s.getObjectExpression() + " in " + s.getText() + ", line: " + s.getLineNumber());
         }

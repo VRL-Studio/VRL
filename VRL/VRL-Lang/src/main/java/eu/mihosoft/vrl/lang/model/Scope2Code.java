@@ -364,7 +364,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         } else if (!i.isScope()) {
 
             if (!i.getVariableName().equals("this")
-                    &&!ScopeUtils.callingObjectIsEnclosingClass(i)) {
+                    && !ScopeUtils.callingObjectIsEnclosingClass(i)) {
                 cb.
                         append(i.getVariableName()).
                         append(".");
@@ -513,12 +513,31 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
         }
 
-        if (!inParam && !i.isScope()) {
-            cb.append(";");
+        // look ahead
+        int indexOfCurrentInvocation = i.getParent().getControlFlow().
+                getInvocations().indexOf(i);
+
+        boolean hasNextInvocation = i.getParent().getControlFlow().
+                getInvocations().size() - 1 > indexOfCurrentInvocation;
+        boolean currentInvIsChainedWithNext = false;
+
+        if (hasNextInvocation) {
+            Invocation nextI = i.getParent().getControlFlow().
+                    getInvocations().get(indexOfCurrentInvocation + 1);
+            // TODO 01.08.2015 improve check (objName/varName is not sufficient)
+            currentInvIsChainedWithNext
+                    = nextI.getVariableName() != null
+                    && nextI.getVariableName().isEmpty();
         }
 
-        if (newLine) {
-            cb.newLine();
+        if (!currentInvIsChainedWithNext) {
+            if (!inParam && !i.isScope()) {
+                cb.append(";");
+            }
+
+            if (newLine) {
+                cb.newLine();
+            }
         }
     }
 

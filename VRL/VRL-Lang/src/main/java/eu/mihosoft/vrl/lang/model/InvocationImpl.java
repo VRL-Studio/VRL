@@ -103,23 +103,24 @@ class InvocationImpl implements Invocation {
 //        } else {
 //            returnValue = parent.createVariable(this);
 //        }
-        Variable var = null;
+        if (varName != null && !varName.isEmpty()) {
+            Variable var = null;
+            try {
+                var = parent.getVariable(varName);
+            } catch (IllegalArgumentException ex) {
+                // will be checked later (see if below)
+            }
 
-        try {
-            var = parent.getVariable(varName);
-        } catch (IllegalArgumentException ex) {
-            // will be checked later (see if below)
-        }
+            if (!isStatic && !isScope() && var == null) {
 
-        if (!isStatic && !isScope() && var == null) {
-
-            throw new IllegalArgumentException(
-                    "Variable '"
-                    + varName
-                    + "' does not exist in scope '" + parent.getName() + "'!");
-        } else if (varName != null) {
-            // check whether varName is a valid type
-            Type type = new Type(varName);
+                throw new IllegalArgumentException(
+                        "Variable '"
+                        + varName
+                        + "' does not exist in scope '" + parent.getName() + "'!");
+            } else if (varName != null) {
+                // check whether varName is a valid type
+                Type type = new Type(varName);
+            }
         }
 
         if (isScope()) {
@@ -132,17 +133,17 @@ class InvocationImpl implements Invocation {
                     node.addInput(WorkflowUtil.CONTROL_FLOW));
 
             controlflowInput.getVisualizationRequest().set(
-                            VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
-            
+                    VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
+
             controlflowInput.setMaxNumberOfConnections(1);
 
             Connector controlflowOutput = node.setMainOutput(
                     node.addOutput(WorkflowUtil.CONTROL_FLOW));
-            
+
             controlflowOutput.
                     getVisualizationRequest().set(
                             VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
-            
+
             controlflowOutput.setMaxNumberOfConnections(1);
 
             int argIndex = 0;
@@ -335,7 +336,7 @@ class InvocationImpl implements Invocation {
      * @param returnType the returnType to set
      */
     protected void setReturnType(IType returnType) {
-        
+
         this.Void = Type.VOID.equals(returnType);
 
         List<Connector> connectorsToRemove
