@@ -80,6 +80,8 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 //                }
 //            }
             Invocation invocation = (Invocation) value;
+            
+            box.setVisible(!invocation.getArguments().isEmpty());
 
             VBox inputs = new VBox();
             VBox outputs = new VBox();
@@ -90,6 +92,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
             invocation.getArguments().addListener(
                     (ListChangeListener.Change<? extends IArgument> c) -> {
+                        box.setVisible(!invocation.getArguments().isEmpty());
                         if (!updating) {
                             createArgView(invocation, inputs,
                                     invocation.getArguments().size()
