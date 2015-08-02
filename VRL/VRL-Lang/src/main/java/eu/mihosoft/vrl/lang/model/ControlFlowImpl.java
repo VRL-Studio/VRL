@@ -169,16 +169,14 @@ class ControlFlowImpl implements ControlFlow {
         currentlyUpdatingInvocations = false;
 
         // fire code changed event if invocations differ
-        boolean changed = false;
+        boolean changed = invocations.size() != prevInvocations.size();
 
-        if (invocations.size() != prevInvocations.size()) {
-            return;
-        }
-
-        for (int i = 0; i < prevInvocations.size(); i++) {
-            if (!invocations.get(i).equals(prevInvocations.get(i))) {
-                changed = true;
-                break;
+        if (!changed) {
+            for (int i = 0; i < prevInvocations.size(); i++) {
+                if (!invocations.get(i).equals(prevInvocations.get(i))) {
+                    changed = true;
+                    break;
+                }
             }
         }
 
