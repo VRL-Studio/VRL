@@ -63,6 +63,7 @@ public class CompilationUnitDeclaration_Impl extends ScopeImpl implements Compil
     
     private CompilationUnitMetaData metadata;
 
+
     public CompilationUnitDeclaration_Impl(String id, Scope parent, String name, String packageName, VFlow rootFlow) {
         super(id, parent, ScopeType.COMPILATION_UNIT, name, rootFlow, new Object[0]);
         
