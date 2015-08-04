@@ -8,10 +8,9 @@ package my.testpackage;
 @eu.mihosoft.vrl.instrumentation.VRLVisualization
 public class MyFileClass {
     
-    public MyFileClass() {
-    }
-    
-    public MyFileClass(int param1, int param2) {
+    private MyFileClass m(int a) {
+        println("m: " + a);
+        return this;
     }
     
     public static void main(String[] args) {
@@ -19,10 +18,12 @@ public class MyFileClass {
         int a = 2+3*2;
         int b = 5-a;
         
-        //MyFileClass mfc = new MyFileClass(a,b+1);
-        
-        if (a<b) {
-            println("a<b: " + (a < b));
+        if (b<a) {
+            println("a<b: " + (b < a));
         }
+        
+        MyFileClass mfc = new MyFileClass();
+        
+        mfc.m(a).m(b)
     }
 }
