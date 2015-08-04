@@ -1,16 +1,23 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import java.util.Stack;
-
+import org.codehaus.groovy.ast.expr.BinaryExpression;
+import org.codehaus.groovy.ast.expr.ClosureListExpression;
+import org.codehaus.groovy.ast.expr.ConstantExpression;
+import org.codehaus.groovy.ast.expr.DeclarationExpression;
+import org.codehaus.groovy.ast.expr.Expression;
+import org.codehaus.groovy.ast.expr.PostfixExpression;
+import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.ForStatement;
 import org.codehaus.groovy.control.SourceUnit;
+
+import com.google.common.base.Objects;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
-import eu.mihosoft.vrl.lang.model.ControlFlowStatement;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
+import eu.mihosoft.vrl.lang.model.SimpleForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
 public class ForLoopPart
@@ -23,42 +30,193 @@ public class ForLoopPart
 	}
 
 	@Override
-	public SimpleForDeclaration transform(
-			ForStatement s, 
+	public SimpleForDeclaration transform(ForStatement s,
 			ControlFlowScope currentScope, TransformContext context) {
 		System.out.println(" --> FOR-LOOP: " + s.getVariable());
 
 		// predeclaration, ranges will be defined later
-		SimpleForDeclaration decl = builder.invokeForLoop(
-				currentScope, null, 0, 0, 0);
+		SimpleForDeclaration decl = builder.invokeForLoop(currentScope, null,
+				0, 0, 0);
+
 		setCodeRange(currentScope, s);
 		addCommentsToScope(currentScope, comments);
-		stateMachine.push("for-loop", true);
 		return decl;
 	}
-	
+
 	@Override
-	public void postTransform(SimpleForDeclaration obj, ForStatement s, ControlFlowScope scope, TransformContext context) {
-		
-		if (!stateMachine.getBoolean("for-loop:declaration")) {
-			throwErrorMessage("For loop must contain a variable declaration "
-					+ "such as 'int i=0'!", s.getVariable());
+	public void postTransform(SimpleForDeclaration obj, ForStatement s,
+			ControlFlowScope scope, TransformContext context) {
+
+		SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) obj;
+		ClosureListExpression expr = (ClosureListExpression) s
+				.getCollectionExpression();
+
+		checkDeclaration(obj, expr.getExpression(0));
+		checkLoopCondition(obj, expr.getExpression(1));
+		checkLoopExpression(obj, expr.getExpression(2));
+	}
+
+	private void checkLoopExpression(SimpleForDeclaration decl,
+			Expression expression) {
+
+		SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) decl;
+		if (expression instanceof PostfixExpression) {
+			PostfixExpression obj = (PostfixExpression) expression;
+
+			if ("++".equals(obj.getOperation().getText())) {
+				forD.setInc(1);
+			} else if ("--".equals(obj.getOperation().getText())) {
+				forD.setInc(-1);
+			}
+
+			if (forD.getInc() > 0 && ">=".equals(obj.getOperation())) {
+				// throw new IllegalStateException("In for-loop: infinite loops"
+				// + " are not supported! Change '>=' to '<=' to prevent that."
+				// );
+				throwErrorMessage(
+						"In for-loop: infinite loops"
+								+ " are not supported! Change '>=' to '<=' to prevent that.",
+						obj);
+			}
+
+			if (forD.getInc() < 0 && "<=".equals(obj.getOperation())) {
+				// throw new IllegalStateException("In for-loop: infinite loops"
+				// + " are not supported! Change '<=' to '>=' to prevent that."
+				// );
+				throwErrorMessage(
+						"In for-loop: infinite loops"
+								+ " are not supported! Change '<=' to '>=' to prevent that.",
+						obj);
+			}
+		} else if (expression instanceof BinaryExpression) {
+			BinaryExpression s = (BinaryExpression) expression;
+			if (!"+=".equals(s.getOperation().getText())
+					&& !"-=".equals(s.getOperation().getText())) {
+				throw new IllegalStateException(
+						"In for-loop: inc/dec '"
+								+ s.getOperation().getText()
+								+ "' not spupported! Must be '+=' or '-=' or '++' or '--'!");
+			}
+
+			if (!(s.getRightExpression() instanceof ConstantExpression)) {
+				throwErrorMessage("In for-loop: variable '" + forD.getVarName()
+						+ "' must be initialized with an integer constant!", s);
+			}
+
+			ConstantExpression ce = (ConstantExpression) s.getRightExpression();
+
+			if (!(ce.getValue() instanceof Integer)) {
+				throwErrorMessage(
+						"In for-loop: inc/dec must be an integer constant!", s);
+			}
+
+			if ("+=".equals(s.getOperation().getText())) {
+				forD.setInc((int) ce.getValue());
+			} else if ("-=".equals(s.getOperation().getText())) {
+				forD.setInc(-(int) ce.getValue());
+			}
+
+			if (forD.getInc() > 0 && ">=".equals(s.getOperation())) {
+				throwErrorMessage(
+						"In for-loop: infinite loops"
+								+ " are not supported! Change '>=' to '<=' to prevent that.",
+						s);
+			}
+
+			if (forD.getInc() < 0 && "<=".equals(s.getOperation())) {
+				throwErrorMessage(
+						"In for-loop: infinite loops"
+								+ " are not supported! Change '<=' to '>=' to prevent that.",
+						s);
+			}
 		}
 
-		if (!stateMachine.getBoolean("for-loop:compareExpression")) {
-			throwErrorMessage(
-					"for-loop: must contain binary"
-							+ " expressions of the form 'a <= b'/'a >= b' with a, b being"
-							+ " constant integers!", s);
+	}
+
+	private void checkLoopCondition(SimpleForDeclaration obj,
+			Expression expression) {
+		if (expression instanceof BinaryExpression) {
+			BinaryExpression expr = (BinaryExpression) expression;
+			if (!(expr.getLeftExpression() instanceof VariableExpression)) {
+				throwErrorMessage(
+						"In for-loop: only binary"
+								+ " expressions of the form 'a <= b'/'a >= b' with a, b being"
+								+ " constant integers are supported!",
+						expr.getLeftExpression());
+			}
+
+			int adjust = 0;
+			switch (expr.getOperation().getText()) {
+			case "<=":
+			case ">=":
+			case "==":
+				break;
+			case ">":
+				adjust = +1;
+				break;
+			case "<":
+				adjust = -1;
+				break;
+			default:
+				throwErrorMessage(
+						"In for-loop: only binary"
+								+ " expressions of the form 'a <= b' or 'a >= b' with a, b being"
+								+ " constant integers are supported!", expr);
+			}
+
+			if (!(expr.getRightExpression() instanceof ConstantExpression)) {
+				throwErrorMessage(
+						"In for-loop: only binary"
+								+ " expressions of the form 'a <= b' or 'a >= b' with a, b being"
+								+ " constant integers are supported!",
+						expr.getRightExpression());
+			}
+
+			ConstantExpression ce = (ConstantExpression) expr
+					.getRightExpression();
+			((SimpleForDeclaration_Impl) obj).setTo(((int) ce.getValue())
+					+ adjust); // TODO
+		} else {
+			// TODO
+		}
+	}
+
+	private void checkDeclaration(SimpleForDeclaration forD,
+			Expression expression) {
+		if (expression instanceof DeclarationExpression) {
+			DeclarationExpression s = (DeclarationExpression) expression;
+			String varType = s.getVariableExpression().getType()
+					.getNameWithoutPackage();
+			String varName = s.getVariableExpression().getAccessedVariable()
+					.getName();
+
+			if (!(Objects.equal(varType, "int") || Objects.equal(varType,
+					"Integer"))) {
+				throwErrorMessage("In for-loop: variable '" + varName
+						+ "' must be of type integer!",
+						s.getVariableExpression());
+			}
+
+			((SimpleForDeclaration_Impl) forD).setVarName(s
+					.getVariableExpression().getName(), setCodeRange(s));
+
+			if (!(s.getRightExpression() instanceof ConstantExpression)) {
+				throwErrorMessage("In for-loop: variable '" + forD.getVarName()
+						+ "' must be initialized with an integer constant!", s);
+			}
+
+			ConstantExpression ce = (ConstantExpression) s.getRightExpression();
+
+			if (!(ce.getValue() instanceof Integer)) {
+				throwErrorMessage("In for-loop: variable '" + forD.getVarName()
+						+ "' must be initialized with an integer constant!", s);
+			}
+
+			((SimpleForDeclaration_Impl) forD).setFrom((Integer) ce.getValue());
+		} else {
+			// TODO
 		}
 
-		if (!stateMachine.getBoolean("for-loop:incExpression")) {
-			throwErrorMessage("for-loop: must contain binary"
-					+ " expressions of the form 'i+=a'/'i-=a' with i being"
-					+ " an integer variable and a being a constant integer!", s);
-		}
-
-		stateMachine.pop();
 	}
 
 	@Override

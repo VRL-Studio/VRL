@@ -30,12 +30,6 @@ public class DeclarationExpressionPart
 	@Override
 	public DeclarationInvocation transform(DeclarationExpression s,
 			ControlFlowScope currentScope, TransformContext context) {
-		if (currentScope instanceof SimpleForDeclaration_Impl
-				&& !stateMachine.getBoolean("for-loop:declaration")) {
-
-		} else {
-
-			stateMachine.setBoolean("variable-declaration", true);
 
 			DeclarationInvocation declInv = builder.declareVariable(
 					currentScope, new Type(s.getVariableExpression().getType()
@@ -44,65 +38,14 @@ public class DeclarationExpressionPart
 			
 			setCodeRange(declInv, s);
 
-			stateMachine.setBoolean("variable-declaration", false);
-
 			return declInv;
-		}
-		return null;
 	}
 
 	@Override
 	public void postTransform(DeclarationInvocation obj,
 			DeclarationExpression s, ControlFlowScope currentScope,
 			TransformContext context) {
-		if (currentScope instanceof SimpleForDeclaration_Impl
-				&& !stateMachine.getBoolean("for-loop:declaration")) {
-
-			// TODO hmm, returns null in this case, but an DeclarationInvocation
-			// else...
-			SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) currentScope;
-
-			if (!stateMachine.getBoolean("for-loop:declaration")) {
-
-				String varType = s.getVariableExpression().getType()
-						.getNameWithoutPackage();
-				String varName = s.getVariableExpression()
-						.getAccessedVariable().getName();
-
-				if (!(Objects.equal(varType, "int") || Objects.equal(varType,
-						"Integer"))) {
-					throwErrorMessage("In for-loop: variable '" + varName
-							+ "' must be of type integer!",
-							s.getVariableExpression());
-				}
-
-				forD.setVarName(s.getVariableExpression().getName(),
-						setCodeRange(s));
-
-				if (!(s.getRightExpression() instanceof ConstantExpression)) {
-					throwErrorMessage(
-							"In for-loop: variable '"
-									+ forD.getVarName()
-									+ "' must be initialized with an integer constant!",
-							s);
-				}
-
-				ConstantExpression ce = (ConstantExpression) s
-						.getRightExpression();
-
-				if (!(ce.getValue() instanceof Integer)) {
-					throwErrorMessage(
-							"In for-loop: variable '"
-									+ forD.getVarName()
-									+ "' must be initialized with an integer constant!",
-							s);
-				}
-
-				forD.setFrom((Integer) ce.getValue());
-
-				stateMachine.setBoolean("for-loop:declaration", true);
-			}
-		}
+		
 	}
 
 	@Override

@@ -56,180 +56,220 @@ import javafx.collections.ListChangeListener;
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class SimpleForDeclaration_Impl extends ScopeImpl implements SimpleForDeclaration {
+public class SimpleForDeclaration_Impl extends ScopeImpl implements
+		SimpleForDeclaration {
 
-    private final ForDeclarationMetaData metadata;
+	private final ForDeclarationMetaData metadata;
 
-    public SimpleForDeclaration_Impl(String id, Scope parent, String varName, int from, int to, int inc) {
-        super(id, parent, ScopeType.FOR, ScopeType.FOR.name(), new ForDeclarationMetaData(varName, from, to, inc));
+	public SimpleForDeclaration_Impl(String id, Scope parent, String varName,
+			int from, int to, int inc) {
+		super(id, parent, ScopeType.FOR, ScopeType.FOR.name(),
+				new ForDeclarationMetaData(varName, from, to, inc));
 
-        boolean forceIncrement = from < to;
-        boolean equal = from == to;
+		boolean forceIncrement = from < to;
+		boolean equal = from == to;
 
-        if (forceIncrement && !equal && inc <= 0) {
-            throw new IllegalArgumentException("For loop cannot have negative or zero increment!");
-        } else if (!forceIncrement && !equal && inc >= 0) {
-            throw new IllegalArgumentException("For loop cannot have positive or zero increment!");
-        }
+		if (forceIncrement && !equal && inc <= 0) {
+			throw new IllegalArgumentException(
+					"For loop cannot have negative or zero increment!");
+		} else if (!forceIncrement && !equal && inc >= 0) {
+			throw new IllegalArgumentException(
+					"For loop cannot have positive or zero increment!");
+		}
 
-        metadata = (ForDeclarationMetaData) getScopeArgs()[0];
+		metadata = (ForDeclarationMetaData) getScopeArgs()[0];
 
-        setVarName(varName, null);
-    }
+		setVarName(varName, null);
+	}
 
-    @Override
-    public String getVarName() {
-        return metadata.getVarName();
-    }
+	@Override
+	public String getVarName() {
+		return metadata.getVarName();
+	}
 
-    @Override
-    public int getFrom() {
-        return metadata.getFrom();
-    }
+	@Override
+	public int getFrom() {
+		return metadata.getFrom();
+	}
 
-    @Override
-    public int getTo() {
-        return metadata.getTo();
-    }
+	@Override
+	public int getTo() {
+		return metadata.getTo();
+	}
 
-    @Override
-    public int getInc() {
-        return metadata.getInc();
-    }
+	@Override
+	public int getInc() {
+		return metadata.getInc();
+	}
 
-//    /**
-//     * @param varName the varName to set (creates var if not null or empty)
-//     */
-//    public final void setVarName(String varName) {
-//        metadata.setVarName(varName);
-//        if (varName != null && !varName.isEmpty()) {
-////            Variable v = _createVariable(Type.INT, varName);
-//            createParamVariable(Type.INT, varName);
-//        }
-//    }
-    @Override
-    public void defineParameters(Invocation i) {
-        i.getArguments().clear();
+	// /**
+	// * @param varName the varName to set (creates var if not null or empty)
+	// */
+	// public final void setVarName(String varName) {
+	// metadata.setVarName(varName);
+	// if (varName != null && !varName.isEmpty()) {
+	// // Variable v = _createVariable(Type.INT, varName);
+	// createParamVariable(Type.INT, varName);
+	// }
+	// }
+	@Override
+	public void defineParameters(Invocation i) {
+		i.getArguments().clear();
 
-        ConstantValue zero = ConstantValueFactory.createConstantValue(0, Type.INT);
-        i.getArguments().addAll(Argument.constArg(zero),Argument.constArg(zero),Argument.constArg(zero));
+		ConstantValue zero = ConstantValueFactory.createConstantValue(0,
+				Type.INT);
+		i.getArguments().addAll(Argument.constArg(zero),
+				Argument.constArg(zero), Argument.constArg(zero));
 
-        i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
-            System.out.println("change: " + c);
-            i.getArguments().get(0).getConstant().ifPresent(constVal->metadata.setFrom(constVal.getValue(Integer.class)));
-            i.getArguments().get(1).getConstant().ifPresent(constVal->metadata.setTo(constVal.getValue(Integer.class)));
-            i.getArguments().get(2).getConstant().ifPresent(constVal->metadata.setInc(constVal.getValue(Integer.class)));
-        });
-    }
+		i.getArguments().addListener(
+				(ListChangeListener.Change<? extends IArgument> c) -> {
+					System.out.println("change: " + c);
+					i.getArguments()
+							.get(0)
+							.getConstant()
+							.ifPresent(
+									constVal -> metadata.setFrom(constVal
+											.getValue(Integer.class)));
+					i.getArguments()
+							.get(1)
+							.getConstant()
+							.ifPresent(
+									constVal -> metadata.setTo(constVal
+											.getValue(Integer.class)));
+					i.getArguments()
+							.get(2)
+							.getConstant()
+							.ifPresent(
+									constVal -> metadata.setInc(constVal
+											.getValue(Integer.class)));
+				});
+	}
 
-    public final void setVarName(String varName, ICodeRange codeRange) {
-        metadata.setVarName(varName);
-        if (varName != null && !varName.isEmpty()) {
-            DeclarationInvocationImpl inv
-                    = (DeclarationInvocationImpl) getControlFlow().
-                    declareVariable(getId(), Type.INT, varName);
-            inv.setTextRenderingEnabled(false);
-            inv.setRange(codeRange);
-        }
-    }
+	public final void setVarName(String varName, ICodeRange codeRange) {
+		metadata.setVarName(varName);
+		if (varName != null
+				&& !varName.isEmpty()
+				&& getControlFlow().getParent().getVariable(varName).getScope()==null) {
+			DeclarationInvocationImpl inv = (DeclarationInvocationImpl) getControlFlow()
+					.declareVariable(getId(), Type.INT, varName);
+			inv.setTextRenderingEnabled(false);
+			inv.setRange(codeRange);
+		}
+	}
 
-    /**
-     * @param from the from to set
-     */
-    public void setFrom(int from) {
-        metadata.setFrom(from);
-        getInvocation().ifPresent(i -> i.getArguments().
-                set(0, Argument.constArg( ConstantValueFactory.createConstantValue(getFrom(), Type.INT))));
-    }
+	/**
+	 * @param from
+	 *            the from to set
+	 */
+	public void setFrom(int from) {
+		metadata.setFrom(from);
+		getInvocation().ifPresent(
+				i -> i.getArguments().set(
+						0,
+						Argument.constArg(ConstantValueFactory
+								.createConstantValue(getFrom(), Type.INT))));
+	}
 
-    /**
-     * @param to the to to set
-     */
-    public void setTo(int to) {
-        metadata.setTo(to);
-        getInvocation().ifPresent(i -> i.getArguments().
-                set(1, Argument.constArg(ConstantValueFactory.createConstantValue(getTo(), Type.INT))));
-    }
+	/**
+	 * @param to
+	 *            the to to set
+	 */
+	public void setTo(int to) {
+		metadata.setTo(to);
+		getInvocation().ifPresent(
+				i -> i.getArguments().set(
+						1,
+						Argument.constArg(ConstantValueFactory
+								.createConstantValue(getTo(), Type.INT))));
+	}
 
-    /**
-     * @param inc the inc to set
-     */
-    public void setInc(int inc) {
-        metadata.setInc(inc);
-        getInvocation().ifPresent(i -> i.getArguments().
-                set(2, Argument.constArg(ConstantValueFactory.createConstantValue(getInc(), Type.INT))));
-    }
+	/**
+	 * @param inc
+	 *            the inc to set
+	 */
+	public void setInc(int inc) {
+		metadata.setInc(inc);
+		getInvocation().ifPresent(
+				i -> i.getArguments().set(
+						2,
+						Argument.constArg(ConstantValueFactory
+								.createConstantValue(getInc(), Type.INT))));
+	}
 
 }
 
 class ForDeclarationMetaData {
 
-    private String varName;
-    private int from;
-    private int to;
-    private int inc;
+	private String varName;
+	private int from;
+	private int to;
+	private int inc;
 
-    public ForDeclarationMetaData(String varName, int from, int to, int inc) {
-        this.varName = varName;
-        this.from = from;
-        this.to = to;
-        this.inc = inc;
-    }
+	public ForDeclarationMetaData(String varName, int from, int to, int inc) {
+		this.varName = varName;
+		this.from = from;
+		this.to = to;
+		this.inc = inc;
+	}
 
-    /**
-     * @return the varName
-     */
-    public String getVarName() {
-        return varName;
-    }
+	/**
+	 * @return the varName
+	 */
+	public String getVarName() {
+		return varName;
+	}
 
-    /**
-     * @return the from
-     */
-    public int getFrom() {
-        return from;
-    }
+	/**
+	 * @return the from
+	 */
+	public int getFrom() {
+		return from;
+	}
 
-    /**
-     * @return the to
-     */
-    public int getTo() {
-        return to;
-    }
+	/**
+	 * @return the to
+	 */
+	public int getTo() {
+		return to;
+	}
 
-    /**
-     * @return the inc
-     */
-    public int getInc() {
-        return inc;
-    }
+	/**
+	 * @return the inc
+	 */
+	public int getInc() {
+		return inc;
+	}
 
-    /**
-     * @param varName the varName to set
-     */
-    public void setVarName(String varName) {
-        this.varName = varName;
-    }
+	/**
+	 * @param varName
+	 *            the varName to set
+	 */
+	public void setVarName(String varName) {
+		this.varName = varName;
+	}
 
-    /**
-     * @param from the from to set
-     */
-    public void setFrom(int from) {
-        this.from = from;
-    }
+	/**
+	 * @param from
+	 *            the from to set
+	 */
+	public void setFrom(int from) {
+		this.from = from;
+	}
 
-    /**
-     * @param to the to to set
-     */
-    public void setTo(int to) {
-        this.to = to;
-    }
+	/**
+	 * @param to
+	 *            the to to set
+	 */
+	public void setTo(int to) {
+		this.to = to;
+	}
 
-    /**
-     * @param inc the inc to set
-     */
-    public void setInc(int inc) {
-        this.inc = inc;
-    }
+	/**
+	 * @param inc
+	 *            the inc to set
+	 */
+	public void setInc(int inc) {
+		this.inc = inc;
+	}
 
 }

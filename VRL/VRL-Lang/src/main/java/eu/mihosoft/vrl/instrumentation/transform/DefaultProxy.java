@@ -32,7 +32,7 @@ public class DefaultProxy<T> implements InvocationHandler {
 			throw new IllegalArgumentException(
 					"Wrong type of proxied instance for key '" + key
 							+ "', expected " + proxiedClass.getName()
-							+ ", but got: " + proxied.getClass()
+							+ ", but got: " + (proxied!=null?proxied.getClass():null)
 							+ ", source obj is " + source);
 		this.proxied = proxied;
 		this.resolved = true;

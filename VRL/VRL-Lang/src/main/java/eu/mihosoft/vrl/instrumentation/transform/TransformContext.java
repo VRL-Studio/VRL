@@ -8,5 +8,4 @@ public interface TransformContext {
 	
 	Stack<Object> getInputPath();
 	Stack<Object> getOutputPath();
-
 }

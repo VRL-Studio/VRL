@@ -10,7 +10,6 @@ import com.google.common.base.Objects;
 import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.Argument;
-import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
@@ -32,51 +31,39 @@ public class BinaryExpressionPart extends
 	}
 
 	@Override
-	public Invocation transform(BinaryExpression s,
-			CodeEntity current, TransformContext context) {
+	public Invocation transform(BinaryExpression s, CodeEntity current,
+			TransformContext context) {
 		Scope parent = getParentScope(current, Scope.class);
-		if (stateMachine.getBoolean("for-loop")
-				&& !stateMachine.getBoolean("for-loop:compareExpression")
-				&& !stateMachine.getBoolean("for-loop:incExpression")) {
 
-		} else if (stateMachine.getBoolean("for-loop")
-				&& stateMachine.getBoolean("for-loop:declaration")
-				&& stateMachine.getBoolean("for-loop:compareExpression")
-				&& !stateMachine.getBoolean("for-loop:incExpression")) {
+		Operator operator = convertOperator(s);
+		IArgument leftArg = convertToArgument("BinaryExpression.leftArgument",
+				s.getLeftExpression(), context);
+		IArgument rightArg = convertToArgument(
+				"BinaryExpression.rightArgument", s.getRightExpression(),
+				context);
 
-		} else {
+		boolean emptyAssignment = (Objects.equal(Argument.NULL, rightArg) && operator == Operator.ASSIGN);
 
-			if (!stateMachine.getReturnVariables().containsKey(s)) {
+		if (!emptyAssignment) {
 
-				Operator operator = convertOperator(s);
-				IArgument leftArg = convertToArgument("BinaryExpression.leftArgument",
-						s.getLeftExpression(), context);
-				IArgument rightArg = convertToArgument("BinaryExpression.rightArgument",
-						s.getRightExpression(), context);
+			Invocation invocation = new BinaryOperatorInvocationImpl(parent,
+					leftArg, rightArg, operator);
 
-				boolean emptyAssignment = (Objects.equal(Argument.NULL,
-						rightArg) && operator == Operator.ASSIGN);
+			setCodeRange(invocation, s);
 
-				if (!emptyAssignment) {
-   
-					Invocation invocation = new BinaryOperatorInvocationImpl(parent,
-					                leftArg, rightArg, operator);
+			stateMachine.getReturnVariables().put(s, invocation);
 
-					setCodeRange(invocation, s);
-
-					stateMachine.getReturnVariables().put(s, invocation);
-
-					return invocation;
-				}
-			}
+			return invocation;
 		}
+
 		return null;
 	}
 
 	@Override
 	public void postTransform(Invocation obj, BinaryExpression s,
 			CodeEntity current, TransformContext context) {
-		ControlFlowScope currentScope = getParentScope(current, ControlFlowScope.class);
+		ControlFlowScope currentScope = getParentScope(current,
+				ControlFlowScope.class);
 		if (stateMachine.getBoolean("for-loop")
 				&& !stateMachine.getBoolean("for-loop:compareExpression")
 				&& !stateMachine.getBoolean("for-loop:incExpression")) {

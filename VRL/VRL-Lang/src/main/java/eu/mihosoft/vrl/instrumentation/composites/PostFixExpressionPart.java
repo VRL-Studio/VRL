@@ -42,41 +42,7 @@ public class PostFixExpressionPart
 	@Override
 	public void postTransform(CodeEntity out, PostfixExpression obj,
 			ControlFlowScope parent, TransformContext context) {
-		if (!(parent instanceof SimpleForDeclaration_Impl))
-			return;
-		SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) parent;
-
-		stateMachine.setBoolean("for-loop:incExpression", true);
-
-		if ("++".equals(obj.getOperation().getText())) {
-			forD.setInc(1);
-		} else if ("--".equals(obj.getOperation().getText())) {
-			forD.setInc(-1);
-		}
-
-		if (forD.getInc() > 0
-				&& ">=".equals(stateMachine
-						.getString("for-loop:compareOperation"))) {
-			// throw new IllegalStateException("In for-loop: infinite loops"
-			// + " are not supported! Change '>=' to '<=' to prevent that."
-			// );
-			throwErrorMessage(
-					"In for-loop: infinite loops"
-							+ " are not supported! Change '>=' to '<=' to prevent that.",
-					obj);
-		}
-
-		if (forD.getInc() < 0
-				&& "<=".equals(stateMachine
-						.getString("for-loop:compareOperation"))) {
-			// throw new IllegalStateException("In for-loop: infinite loops"
-			// + " are not supported! Change '<=' to '>=' to prevent that."
-			// );
-			throwErrorMessage(
-					"In for-loop: infinite loops"
-							+ " are not supported! Change '<=' to '>=' to prevent that.",
-					obj);
-		}
+		
 	}
 
 	@Override

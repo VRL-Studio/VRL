@@ -284,7 +284,7 @@ public class CompositeTransformingVisitorSupportTest {
 		}
 	}
 
-	static SourceUnit fromCode(String code) throws Exception {
+	public static SourceUnit fromCode(String code) throws Exception {
 		SourceUnit sourceUnit = SourceUnit.create("Test.groovy", code);
 		CompilationUnit compUnit = new CompilationUnit();
 		compUnit.addSource(sourceUnit);

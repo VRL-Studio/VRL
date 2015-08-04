@@ -118,8 +118,8 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
 		this.dataFlow = new DataFlowImpl();
 
 		if (parent != null) {
-			if (this.parent instanceof ScopeImpl) {
-				((ScopeImpl) this.parent).addScope(this);
+			if (this.parent instanceof Scope) {
+				parent.addScope(this);
 			} else {
 				throw new UnsupportedOperationException(
 						"Unsupported parent scope specified." + " Only "
@@ -546,7 +546,7 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
 		return null;
 	}
 
-	void addScope(Scope s) {
+	public void addScope(Scope s) {
 		scopes.add(s);
 	}
 

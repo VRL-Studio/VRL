@@ -7,11 +7,11 @@ import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
 import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
-public class VariableExpressionPart
-		extends
+public class VariableExpressionPart extends
 		AbstractCodeBuilderPart<VariableExpression, Variable, Invocation> {
 
 	public VariableExpressionPart(StateMachine stateMachine,
@@ -24,7 +24,7 @@ public class VariableExpressionPart
 	public Variable transform(VariableExpression obj, Invocation parent,
 			TransformContext ctx) {
 		Variable v = parent.getParent().getVariable(obj.getName());
-		setCodeRange(v,obj);
+		setCodeRange(v, obj);
 		return v;
 	}
 
