@@ -77,15 +77,9 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
             String varName = newVarName();
 
-//            cf.declareVariable("", Type.STRING, varName+"_pre_arg");
-//                    Variable rightArgVariable = ce.getVariable(varName+"_pre_arg");
-//                    Invocation preArgInv = cf.invokeOperator("",
-//                            Argument.constArg(Type.STRING, "pre-m-call: " + inv.getMethodName() + ", args: "),
-//                            Argument.varArg(result.getVariable(varName)), Operator.PLUS);
-//                    cf.assignVariable("", rightArgVariable.getName(), Argument.invArg(preArgInv));
             Invocation preEventInv
                     = cf.callMethod("", "this", "println", Type.VOID, Argument.constArg(
-                                    Type.STRING, "pre-m-call: " + inv.getMethodName()));
+                                    Type.STRING, "pre-m-call: " + inv.getMethodName() + ", id: " + inv.getId()));
 
             boolean lastInvocation = i == invocations.size() - 1;
 

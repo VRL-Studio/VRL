@@ -22,6 +22,13 @@ public class MyFileClass {
             println("a<b: " + (b < a));
         }
         
+        int i = 0;
+        
+        while(i<a) {
+//            println("i: " + i);
+            i++;
+        }
+        
         MyFileClass mfc = new MyFileClass();
         
         mfc.m(a).m(b)

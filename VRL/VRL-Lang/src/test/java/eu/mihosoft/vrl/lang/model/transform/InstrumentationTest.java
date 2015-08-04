@@ -5,21 +5,13 @@
  */
 package eu.mihosoft.vrl.lang.model.transform;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.Registration;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.serializers.FieldSerializer;
 import eu.mihosoft.vrl.base.IOUtil;
 import eu.mihosoft.vrl.lang.model.CommentTest;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
-import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.LangModelTest;
-import static eu.mihosoft.vrl.lang.model.LangModelTest.getResourceAsString;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.UIBinding;
-import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
-import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
 import groovy.lang.GroovyClassLoader;
 import java.io.InputStream;
 import java.io.Reader;
@@ -28,12 +20,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import junit.framework.Assert;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.junit.Test;
-import org.objenesis.instantiator.ObjectInstantiator;
 
 /**
  *
