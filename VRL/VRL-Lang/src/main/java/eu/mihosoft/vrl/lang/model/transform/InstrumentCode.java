@@ -74,17 +74,15 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
             Invocation inv = invocations.get(i);
 
             System.out.println("i : " + inv);
-            
+
             String varName = newVarName();
-            
+
 //            cf.declareVariable("", Type.STRING, varName+"_pre_arg");
 //                    Variable rightArgVariable = ce.getVariable(varName+"_pre_arg");
 //                    Invocation preArgInv = cf.invokeOperator("",
 //                            Argument.constArg(Type.STRING, "pre-m-call: " + inv.getMethodName() + ", args: "),
 //                            Argument.varArg(result.getVariable(varName)), Operator.PLUS);
 //                    cf.assignVariable("", rightArgVariable.getName(), Argument.invArg(preArgInv));
-            
-
             Invocation preEventInv
                     = cf.callMethod("", "this", "println", Type.VOID, Argument.constArg(
                                     Type.STRING, "pre-m-call: " + inv.getMethodName()));
@@ -100,29 +98,39 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
                         filter(a -> Objects.equals(a.getInvocation().orElse(null), inv)).
                         findAny().isPresent();
 
-                if (iIsArgOfNextI) {
-                    
+                // TODO 04.08.2015 chained method check buggy, needs to be modeled too
+                boolean retValIsObjectOfNextI
+                        = nextI.getVariableName() != null
+                        && nextI.getVariableName().isEmpty();
+
+                if (iIsArgOfNextI || retValIsObjectOfNextI) {
+
                     cf.declareVariable("", inv.getReturnType(), varName);
                     cf.assignVariable("", varName, Argument.invArg(inv));
 
-                    int[] argumentsToReplace = nextI.getArguments().stream().
-                            filter(a -> Objects.equals(a.getInvocation().orElse(null), inv)).
-                            mapToInt(a -> nextI.getArguments().indexOf(a)).toArray();
+                    if (iIsArgOfNextI) {
+                        int[] argumentsToReplace = nextI.getArguments().stream().
+                                filter(a -> Objects.equals(a.getInvocation().orElse(null), inv)).
+                                mapToInt(a -> nextI.getArguments().indexOf(a)).toArray();
 
-                    for (int aIndex : argumentsToReplace) {
-                        nextI.getArguments().set(aIndex,
-                                Argument.varArg(result.getVariable(varName)));
+                        for (int aIndex : argumentsToReplace) {
+                            nextI.getArguments().set(aIndex,
+                                    Argument.varArg(result.getVariable(varName)));
+                        }
+                    } else {
+                        nextI.setVariableName(varName);
                     }
-                    
-                    cf.declareVariable("", Type.STRING, varName+"_post_arg");
-                    Variable rightArgVariable = ce.getVariable(varName+"_post_arg");
+
+                    cf.declareVariable("", Type.STRING, varName + "_post_arg");
+                    Variable rightArgVariable = ce.getVariable(varName + "_post_arg");
                     Invocation retValPostArgInv = cf.invokeOperator("",
                             Argument.constArg(Type.STRING, "post-m-call: " + inv.getMethodName() + ", retVal: "),
                             Argument.varArg(result.getVariable(varName)), Operator.PLUS);
                     cf.assignVariable("", rightArgVariable.getName(), Argument.invArg(retValPostArgInv));
-                    
+
                     retValArg = Argument.varArg(rightArgVariable);
                 }
+
             }
 
             cf.getInvocations().add(inv);

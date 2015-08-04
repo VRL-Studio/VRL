@@ -59,6 +59,7 @@ import javafx.collections.ObservableList;
 public interface Invocation extends CodeEntity {
 
     public String getVariableName();
+    public void setVariableName(String variableName);
 
     public String getMethodName();
 

@@ -53,7 +53,9 @@ import eu.mihosoft.vrl.workflow.Connector;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import javafx.collections.FXCollections;
@@ -66,7 +68,7 @@ import javafx.collections.ObservableList;
 class InvocationImpl implements Invocation {
 
     private String id;
-    private final String varName;
+    private String varName;
     private final String methodName;
     private final ObservableList<IArgument> arguments = FXCollections.observableArrayList();
     private final boolean constructor;
@@ -103,6 +105,12 @@ class InvocationImpl implements Invocation {
 //        } else {
 //            returnValue = parent.createVariable(this);
 //        }
+        init(varName);
+
+    }
+
+    private void init(String varName) {
+
         if (varName != null && !varName.isEmpty()) {
             Variable var = null;
             try {
@@ -111,7 +119,7 @@ class InvocationImpl implements Invocation {
                 // will be checked later (see if below)
             }
 
-            if (!isStatic && !isScope() && var == null) {
+            if (!isStatic() && !isScope() && var == null) {
 
                 throw new IllegalArgumentException(
                         "Variable '"
@@ -126,7 +134,16 @@ class InvocationImpl implements Invocation {
         if (isScope()) {
             // nothing (see ScopeInvocationImpl)
         } else {
-            node = parent.getFlow().newNode();
+            if (node == null) {
+                node = parent.getFlow().newNode();
+            } else {
+                List<Connector> delList = new ArrayList<>();
+                delList.addAll(node.getConnectors());
+                for (Connector c : delList) {
+                    node.removeConnector(c);
+                }
+            }
+
             node.getValueObject().setValue(this);
 
             Connector controlflowInput = node.setMainInput(
@@ -147,7 +164,7 @@ class InvocationImpl implements Invocation {
             controlflowOutput.setMaxNumberOfConnections(1);
 
             int argIndex = 0;
-            for (IArgument arg : args) {
+            for (IArgument arg : arguments) {
                 node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().
                         setValue(new ArgumentValue(argIndex, arg));
                 argIndex++;
@@ -162,7 +179,6 @@ class InvocationImpl implements Invocation {
             node.setTitle(varName + "." + methodName + "()");
 
         }
-
     }
 
     @Override
@@ -388,6 +404,7 @@ class InvocationImpl implements Invocation {
     /**
      * @return the textRenderingEnabled
      */
+    @Override
     public boolean isTextRenderingEnabled() {
         return textRenderingEnabled;
     }
@@ -397,6 +414,12 @@ class InvocationImpl implements Invocation {
      */
     public void setTextRenderingEnabled(boolean textRenderingEnabled) {
         this.textRenderingEnabled = textRenderingEnabled;
+    }
+
+    @Override
+    public void setVariableName(String variableName) {
+        this.varName = variableName;
+        init(varName);
     }
 
 }
