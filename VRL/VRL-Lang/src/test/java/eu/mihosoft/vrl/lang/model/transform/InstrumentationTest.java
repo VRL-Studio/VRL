@@ -24,12 +24,14 @@ import groovy.lang.GroovyClassLoader;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import junit.framework.Assert;
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.junit.Test;
 import org.objenesis.instantiator.ObjectInstantiator;
 
@@ -54,11 +56,10 @@ public class InstrumentationTest {
         return tmpCode;
     }
 
-
     @Test
     public void instrumentationTest() {
         
-        String fileName = "IfCode01.groovy";
+        String fileName = "Instrumentation01.groovy";
         
         String code = getResourceAsString(fileName);
 
@@ -97,6 +98,19 @@ public class InstrumentationTest {
         
         CompilationUnitDeclaration newCu = instrumentCode.transform(cu);
         
-        System.out.println(Scope2Code.getCode(newCu));
+        String instrumentedCode = Scope2Code.getCode(newCu);
+        
+        System.out.println(instrumentedCode);
+        
+        
+        try {
+            GroovyClassLoader gcl = new GroovyClassLoader();
+            Class<?> instrumentedCodeClass = gcl.parseClass(instrumentedCode);
+            instrumentedCodeClass.getMethod("main", String[].class).
+                    invoke(instrumentedCodeClass, (Object)new String[0]);
+
+        } catch (CompilationFailedException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }
