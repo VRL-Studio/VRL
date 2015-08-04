@@ -48,7 +48,9 @@ public class InstrumentationTest {
     @Test
     public void instrumentationTest() {
         
-        String fileName = "Instrumentation01.groovy";
+        UIBinding.scopes.clear();
+        
+        String fileName = "Instrumentation02.groovy";
         
         String code = getResourceAsString(fileName);
 
@@ -90,7 +92,6 @@ public class InstrumentationTest {
         String instrumentedCode = Scope2Code.getCode(newCu);
         
         System.out.println(instrumentedCode);
-        
         
         try {
             GroovyClassLoader gcl = new GroovyClassLoader();
