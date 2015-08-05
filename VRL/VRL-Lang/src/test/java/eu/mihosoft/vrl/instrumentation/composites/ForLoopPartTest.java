@@ -13,16 +13,19 @@ import org.junit.Test;
 
 import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupportTest;
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.transform.DefaultProxy;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
+import eu.mihosoft.vrl.lang.model.DeclarationInvocationImpl;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.IdRequest;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.ScopeType;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
 import eu.mihosoft.vrl.lang.model.Variable;
+import eu.mihosoft.vrl.lang.model.VariableFactory;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
@@ -38,7 +41,6 @@ public class ForLoopPartTest {
 	@Test
 	public void testSimpleForLoop() throws Exception {
 		createHarness("for (int i=0; i<10; i++){System.out.println(i);}");
-		scope = fixture();
 		SimpleForDeclaration decl = part.transform(statement, scope, context);
 		part.postTransform(decl, statement, scope, context);
 		assertEquals(0, decl.getFrom());
@@ -80,6 +82,12 @@ public class ForLoopPartTest {
 		Reader in = sourceUnit.getSource().getReader();
 		CodeLineColumnMapper mapper = new CodeLineColumnMapper();
 		mapper.init(in);
+		scope = fixture();
+		context = createProxy(new DynaProxy() {
+			public <T> T _resolve(String key, Object obj, Class<T> cls) {
+				return cls.cast(new DeclarationInvocationImpl());
+			}
+		}, TransformContext.class);
 		part = new ForLoopPart(stateMachine, sourceUnit, builder, mapper);
 	}
 

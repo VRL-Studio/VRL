@@ -541,7 +541,7 @@ public class CompositeTransformingVisitorSupport extends
 		super.visitProperty(node);
 		pop(used);
 	}
-	
+
 	@Override
 	public void visitPropertyExpression(PropertyExpression expression) {
 		TransformPart used = dispatch(expression);
@@ -591,7 +591,7 @@ public class CompositeTransformingVisitorSupport extends
 		super.visitTryCatchFinally(statement);
 		pop(used);
 	}
-	
+
 	@Override
 	public void visitVariableExpression(VariableExpression expression) {
 		@SuppressWarnings("rawtypes")
@@ -645,18 +645,21 @@ public class CompositeTransformingVisitorSupport extends
 
 		@Override
 		public <T> T resolve(String key, Object input, Class<T> outputType) {
+			if (proxies.containsKey(input))
+				return outputType.cast(proxies.get(input).getProxied());
 			unresolved.add(input);
 			DefaultProxy<T> proxy = new DefaultProxy<T>(key, input, outputType);
-			T proxied = outputType.cast(Proxy.newProxyInstance(outputType.getClassLoader(), new Class[]{outputType}, proxy));
+			T proxied = outputType.cast(Proxy.newProxyInstance(
+					outputType.getClassLoader(), new Class[] { outputType },
+					proxy));
 			proxies.put(input, proxy);
 			return proxied;
 		}
-		
-		public void update(Object in, Object result)
-		{
-			if (unresolved.contains(in))
-			{
+
+		public void update(Object in, Object result) {
+			if (unresolved.contains(in)) {
 				proxies.get(in).setProxied(result);
+				unresolved.remove(in);
 			}
 		}
 	}

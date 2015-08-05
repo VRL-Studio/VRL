@@ -9,6 +9,12 @@ public class DeclarationInvocationImpl extends InvocationImpl implements Declara
 
     private final Variable declaredVariable;
     
+    public DeclarationInvocationImpl()
+    {
+    	super();
+    	declaredVariable = null;
+    }
+    
     public DeclarationInvocationImpl(Scope parent, IType type, String varName) {
         super(parent, "", null, "declare " + varName, type, false, true, new IArgument[0]);
         this.declaredVariable = parent.createVariable(type, varName);

@@ -1,5 +1,7 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
+import java.lang.reflect.Proxy;
+
 import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.ClosureListExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
@@ -13,9 +15,12 @@ import org.codehaus.groovy.control.SourceUnit;
 import com.google.common.base.Objects;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
+import eu.mihosoft.vrl.instrumentation.transform.DefaultProxy;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
+import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
+import eu.mihosoft.vrl.lang.model.DeclarationInvocationImpl;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
@@ -23,6 +28,8 @@ import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 public class ForLoopPart
 		extends
 		AbstractCodeBuilderPart<ForStatement, SimpleForDeclaration, ControlFlowScope> {
+
+	private static final String KEY_SIMPLE_FOR_DECLARATION = "SimpleForDeclaration.declaration";
 
 	public ForLoopPart(StateMachine stateMachine, SourceUnit sourceUnit,
 			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
@@ -38,6 +45,11 @@ public class ForLoopPart
 		SimpleForDeclaration decl = builder.invokeForLoop(currentScope, null,
 				0, 0, 0);
 
+		ClosureListExpression expr = (ClosureListExpression) s
+				.getCollectionExpression();
+		context.resolve(KEY_SIMPLE_FOR_DECLARATION,
+				expr.getExpression(0), DeclarationInvocation.class);
+
 		setCodeRange(currentScope, s);
 		addCommentsToScope(currentScope, comments);
 		return decl;
@@ -52,6 +64,15 @@ public class ForLoopPart
 				.getCollectionExpression();
 
 		checkDeclaration(obj, expr.getExpression(0));
+
+		// TODO this is quite hacky
+		DeclarationInvocation declaration = context.resolve(
+				KEY_SIMPLE_FOR_DECLARATION, expr.getExpression(0),
+				DeclarationInvocation.class);
+		
+		DeclarationInvocationImpl impl = (DeclarationInvocationImpl) declaration;
+		impl.setTextRenderingEnabled(false);
+
 		checkLoopCondition(obj, expr.getExpression(1));
 		checkLoopExpression(obj, expr.getExpression(2));
 	}

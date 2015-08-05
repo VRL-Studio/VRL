@@ -65,338 +65,351 @@ import javafx.collections.ObservableList;
  */
 class InvocationImpl implements Invocation {
 
-    private String id;
-    private final String varName;
-    private final String methodName;
-    private final ObservableList<IArgument> arguments = FXCollections.observableArrayList();
-    private final boolean constructor;
-    private boolean Void;
-//    private String code;
-    private final Scope parent;
-    private boolean Static;
-    private ICodeRange location;
-    private IType returnType;
-//    private final Variable returnValue;
-    private VNode node;
-    private ObservableCodeImpl observableCode;
-    private boolean textRenderingEnabled = true;
+	private String id;
+	private final String varName;
+	private final String methodName;
+	private final ObservableList<IArgument> arguments = FXCollections
+			.observableArrayList();
+	private final boolean constructor;
+	private boolean Void;
+	// private String code;
+	private final Scope parent;
+	private boolean Static;
+	private ICodeRange location;
+	private IType returnType;
+	// private final Variable returnValue;
+	private VNode node;
+	private ObservableCodeImpl observableCode;
+	private boolean textRenderingEnabled = true;
 
-    public InvocationImpl(
-            Scope parent,
-            String id,
-            String varName, String methodName, IType returnType,
-            boolean constructor, boolean isStatic, IArgument... args) {
-        this.parent = parent;
-        this.id = id;
-        this.varName = varName;
-        this.methodName = methodName;
-        this.constructor = constructor;
-        this.Void = Type.VOID.equals(returnType);
+	public InvocationImpl() {
+		varName = null;
+		methodName = null;
+		constructor = false;
+		parent = null;
+	}
 
-        this.Static = isStatic;
-        this.returnType = returnType;
+	public InvocationImpl(Scope parent, String id, String varName,
+			String methodName, IType returnType, boolean constructor,
+			boolean isStatic, IArgument... args) {
+		this.parent = parent;
+		this.id = id;
+		this.varName = varName;
+		this.methodName = methodName;
+		this.constructor = constructor;
+		this.Void = Type.VOID.equals(returnType);
 
-        if (args != null)
-        arguments.addAll(Arrays.asList(args));
+		this.Static = isStatic;
+		this.returnType = returnType;
 
-//        if (isVoid) {
-//            returnValue = null;
-//        } else {
-//            returnValue = parent.createVariable(this);
-//        }
-        Variable var = null;
+		if (args != null)
+			arguments.addAll(Arrays.asList(args));
 
-        try {
-            var = parent.getVariable(varName);
-        } catch (IllegalArgumentException ex) {
-            // will be checked later (see if below)
-        }
+		// if (isVoid) {
+		// returnValue = null;
+		// } else {
+		// returnValue = parent.createVariable(this);
+		// }
+		Variable var = null;
 
-        if (!isStatic && !isScope() && var == null) {
+		try {
+			var = parent.getVariable(varName);
+		} catch (IllegalArgumentException ex) {
+			// will be checked later (see if below)
+		}
 
-            throw new IllegalArgumentException(
-                    "Variable '"
-                    + varName
-                    + "' does not exist in scope '" + parent.getName() + "'!");
-        } else if (varName != null) {
-            // check whether varName is a valid type
-            Type type = new Type(varName);
-        }
+		if (!isStatic && !isScope() && var == null) {
 
-        if (isScope()) {
-            // nothing (see ScopeInvocationImpl)
-        } else {
-            node = parent.getFlow().newNode();
-            node.getValueObject().setValue(this);
+			throw new IllegalArgumentException("Variable '" + varName
+					+ "' does not exist in scope '" + parent.getName() + "'!");
+		} else if (varName != null) {
+			// check whether varName is a valid type
+			Type type = new Type(varName);
+		}
 
-            Connector controlflowInput = node.setMainInput(
-                    node.addInput(WorkflowUtil.CONTROL_FLOW));
+		if (isScope()) {
+			// nothing (see ScopeInvocationImpl)
+		} else {
+			node = parent.getFlow().newNode();
+			node.getValueObject().setValue(this);
 
-            controlflowInput.getVisualizationRequest().set(
-                            VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
-            
-            controlflowInput.setMaxNumberOfConnections(1);
+			Connector controlflowInput = node.setMainInput(node
+					.addInput(WorkflowUtil.CONTROL_FLOW));
 
-            Connector controlflowOutput = node.setMainOutput(
-                    node.addOutput(WorkflowUtil.CONTROL_FLOW));
-            
-            controlflowOutput.
-                    getVisualizationRequest().set(
-                            VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
-            
-            controlflowOutput.setMaxNumberOfConnections(1);
+			controlflowInput.getVisualizationRequest().set(
+					VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
 
-            int argIndex = 0;
-            for (IArgument arg : args) {
-                node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().
-                        setValue(new ArgumentValue(argIndex, arg));
-                argIndex++;
-            }
+			controlflowInput.setMaxNumberOfConnections(1);
 
-            if (!Objects.equals(returnType, Type.VOID)) {
-                Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
-                output.getValueObject().setValue(returnType);
-                node.setMainOutput(output);
-            }
+			Connector controlflowOutput = node.setMainOutput(node
+					.addOutput(WorkflowUtil.CONTROL_FLOW));
 
-            node.setTitle(varName + "." + methodName + "()");
+			controlflowOutput.getVisualizationRequest().set(
+					VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
 
-        }
+			controlflowOutput.setMaxNumberOfConnections(1);
 
-    }
+			int argIndex = 0;
+			for (IArgument arg : args) {
+				node.addInput(WorkflowUtil.DATA_FLOW).getValueObject()
+						.setValue(new ArgumentValue(argIndex, arg));
+				argIndex++;
+			}
 
-    @Override
-    public String getVariableName() {
-        return varName;
-    }
+			if (!Objects.equals(returnType, Type.VOID)) {
+				Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
+				output.getValueObject().setValue(returnType);
+				node.setMainOutput(output);
+			}
 
-    @Override
-    public String getMethodName() {
-        return methodName;
-    }
+			node.setTitle(varName + "." + methodName + "()");
 
-    @Override
-    public ObservableList<IArgument> getArguments() {
-        return arguments;
-    }
+		}
 
-    @Override
-    public boolean isConstructor() {
-        return constructor;
-    }
+	}
 
-    @Override
-    public boolean isVoid() {
-        return Void;
-    }
+	@Override
+	public String getVariableName() {
+		return varName;
+	}
 
-    @Override
-    public String toString() {
+	@Override
+	public String getMethodName() {
+		return methodName;
+	}
 
-        String result = "[ ";
+	@Override
+	public ObservableList<IArgument> getArguments() {
+		return arguments;
+	}
 
-        if (this instanceof ScopeInvocationImpl) {
-            ScopeInvocationImpl scopeInvocation = (ScopeInvocationImpl) this;
-            result += "scopeType: " + scopeInvocation.getScope().getType() + ", ";
-        }
+	@Override
+	public boolean isConstructor() {
+		return constructor;
+	}
 
-        result += "constructor=" + constructor + ", var=" + varName + ", mName=" + methodName /*+ ", retVal=" + returnValue*/ + ", args=[";
+	@Override
+	public boolean isVoid() {
+		return Void;
+	}
 
-        for (IArgument a : arguments) {
-            result += a + ", ";
-        }
+	@Override
+	public String toString() {
 
-        result += "] ]";
+		String result = "[ ";
 
-        return result;
-    }
+		if (this instanceof ScopeInvocationImpl) {
+			ScopeInvocationImpl scopeInvocation = (ScopeInvocationImpl) this;
+			result += "scopeType: " + scopeInvocation.getScope().getType()
+					+ ", ";
+		}
 
-    /**
-     * @return the id
-     */
-    @Override
-    public String getId() {
-        return id;
-    }
+		result += "constructor=" + constructor + ", var=" + varName
+				+ ", mName=" + methodName /* + ", retVal=" + returnValue */
+				+ ", args=[";
 
-    /**
-     * @param id the id to set
-     */
-    @Override
-    public void setId(String id) {
-        this.id = id;
-    }
+		for (IArgument a : arguments) {
+			result += a + ", ";
+		}
 
-    @Override
-    public boolean isScope() {
-        return false;
-    }
+		result += "] ]";
 
-//    /**
-//     * @return the code
-//     */
-//    @Override
-//    public String getCode() {
-//        return code;
-//    }
-//
-//    /**
-//     * @param code the code to set
-//     */
-//    @Override
-//    public void setCode(String code) {
-//        this.code = code;
-//    }
-    /**
-     * @return the Static
-     */
-    @Override
-    public boolean isStatic() {
-        return Static;
-    }
+		return result;
+	}
 
-    /**
-     * @param Static the Static to set
-     */
-    public void setStatic(boolean Static) {
-        this.Static = Static;
-    }
+	/**
+	 * @return the id
+	 */
+	@Override
+	public String getId() {
+		return id;
+	}
 
-    /**
-     * @return the location
-     */
-    @Override
-    public ICodeRange getRange() {
-        return this.location;
-    }
+	/**
+	 * @param id
+	 *            the id to set
+	 */
+	@Override
+	public void setId(String id) {
+		this.id = id;
+	}
 
-    /**
-     * @param location the location to set
-     */
-    @Override
-    public void setRange(ICodeRange location) {
-        this.location = location;
-    }
+	@Override
+	public boolean isScope() {
+		return false;
+	}
 
-    /**
-     * @return the parent
-     */
-    @Override
-    public Scope getParent() {
-        return this.parent;
-    }
+	// /**
+	// * @return the code
+	// */
+	// @Override
+	// public String getCode() {
+	// return code;
+	// }
+	//
+	// /**
+	// * @param code the code to set
+	// */
+	// @Override
+	// public void setCode(String code) {
+	// this.code = code;
+	// }
+	/**
+	 * @return the Static
+	 */
+	@Override
+	public boolean isStatic() {
+		return Static;
+	}
 
-//    @Override
-//    public Optional<Variable> getReturnValue() {
-//        return Optional.ofNullable(returnValue);
-//    }
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final InvocationImpl other = (InvocationImpl) obj;
-        if (!Objects.equals(this.id, other.id)) {
-            return false;
-        }
-        if (!Objects.equals(this.varName, other.varName)) {
-            return false;
-        }
-        if (!Objects.equals(this.methodName, other.methodName)) {
-            return false;
-        }
-        if (!Objects.equals(this.arguments, other.arguments)) {
-            return false;
-        }
-        return true;
-    }
+	/**
+	 * @param Static
+	 *            the Static to set
+	 */
+	public void setStatic(boolean Static) {
+		this.Static = Static;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 23 * hash + Objects.hashCode(this.id);
-        hash = 23 * hash + Objects.hashCode(this.varName);
-        hash = 23 * hash + Objects.hashCode(this.methodName);
-        hash = 23 * hash + Objects.hashCode(this.arguments);
-        return hash;
-    }
+	/**
+	 * @return the location
+	 */
+	@Override
+	public ICodeRange getRange() {
+		return this.location;
+	}
 
-    /**
-     * @return the returnType
-     */
-    @Override
-    public IType getReturnType() {
-        return returnType;
-    }
+	/**
+	 * @param location
+	 *            the location to set
+	 */
+	@Override
+	public void setRange(ICodeRange location) {
+		this.location = location;
+	}
 
-    /**
-     * @param returnType the returnType to set
-     */
-    protected void setReturnType(IType returnType) {
-        
-        this.Void = Type.VOID.equals(returnType);
+	/**
+	 * @return the parent
+	 */
+	@Override
+	public Scope getParent() {
+		return this.parent;
+	}
 
-        List<Connector> connectorsToRemove
-                = node.getOutputs().filtered(o -> o.getType().equals(WorkflowUtil.DATA_FLOW));
+	// @Override
+	// public Optional<Variable> getReturnValue() {
+	// return Optional.ofNullable(returnValue);
+	// }
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final InvocationImpl other = (InvocationImpl) obj;
+		if (!Objects.equals(this.id, other.id)) {
+			return false;
+		}
+		if (!Objects.equals(this.varName, other.varName)) {
+			return false;
+		}
+		if (!Objects.equals(this.methodName, other.methodName)) {
+			return false;
+		}
+		if (!Objects.equals(this.arguments, other.arguments)) {
+			return false;
+		}
+		return true;
+	}
 
-        node.getOutputs().removeAll(connectorsToRemove);
+	@Override
+	public int hashCode() {
+		int hash = 5;
+		hash = 23 * hash + Objects.hashCode(this.id);
+		hash = 23 * hash + Objects.hashCode(this.varName);
+		hash = 23 * hash + Objects.hashCode(this.methodName);
+		hash = 23 * hash + Objects.hashCode(this.arguments);
+		return hash;
+	}
 
-        if (!Objects.equals(returnType, Type.VOID)) {
-            Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
-            output.getValueObject().setValue(returnType);
-            node.setMainOutput(output);
-        }
+	/**
+	 * @return the returnType
+	 */
+	@Override
+	public IType getReturnType() {
+		return returnType;
+	}
 
-        this.returnType = returnType;
-    }
+	/**
+	 * @param returnType
+	 *            the returnType to set
+	 */
+	protected void setReturnType(IType returnType) {
 
-    @Override
-    public VNode getNode() {
-        return this.node;
-    }
+		this.Void = Type.VOID.equals(returnType);
 
-    private ObservableCodeImpl getObservable() {
-        if (observableCode == null) {
-            observableCode = new ObservableCodeImpl();
-        }
+		List<Connector> connectorsToRemove = node.getOutputs().filtered(
+				o -> o.getType().equals(WorkflowUtil.DATA_FLOW));
 
-        return observableCode;
-    }
+		node.getOutputs().removeAll(connectorsToRemove);
 
-    @Override
-    public void addEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
-        getObservable().addEventHandler(type, eventHandler);
-    }
+		if (!Objects.equals(returnType, Type.VOID)) {
+			Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
+			output.getValueObject().setValue(returnType);
+			node.setMainOutput(output);
+		}
 
-    @Override
-    public void removeEventHandler(ICodeEventType type, CodeEventHandler eventHandler) {
-        getObservable().removeEventHandler(type, eventHandler);
-    }
+		this.returnType = returnType;
+	}
 
-    @Override
-    public void fireEvent(CodeEvent evt) {
-        getObservable().fireEvent(evt);
+	@Override
+	public VNode getNode() {
+		return this.node;
+	}
 
-        if (!evt.isCaptured() && getParent() != null) {
-            getParent().fireEvent(evt);
-        }
-    }
+	private ObservableCodeImpl getObservable() {
+		if (observableCode == null) {
+			observableCode = new ObservableCodeImpl();
+		}
 
-    /**
-     * @return the textRenderingEnabled
-     */
-    public boolean isTextRenderingEnabled() {
-        return textRenderingEnabled;
-    }
+		return observableCode;
+	}
 
-    /**
-     * @param textRenderingEnabled the textRenderingEnabled to set
-     */
-    public void setTextRenderingEnabled(boolean textRenderingEnabled) {
-        this.textRenderingEnabled = textRenderingEnabled;
-    }
+	@Override
+	public void addEventHandler(ICodeEventType type,
+			CodeEventHandler eventHandler) {
+		getObservable().addEventHandler(type, eventHandler);
+	}
+
+	@Override
+	public void removeEventHandler(ICodeEventType type,
+			CodeEventHandler eventHandler) {
+		getObservable().removeEventHandler(type, eventHandler);
+	}
+
+	@Override
+	public void fireEvent(CodeEvent evt) {
+		getObservable().fireEvent(evt);
+
+		if (!evt.isCaptured() && getParent() != null) {
+			getParent().fireEvent(evt);
+		}
+	}
+
+	/**
+	 * @return the textRenderingEnabled
+	 */
+	public boolean isTextRenderingEnabled() {
+		return textRenderingEnabled;
+	}
+
+	/**
+	 * @param textRenderingEnabled
+	 *            the textRenderingEnabled to set
+	 */
+	public void setTextRenderingEnabled(boolean textRenderingEnabled) {
+		this.textRenderingEnabled = textRenderingEnabled;
+	}
 
 }

@@ -21,7 +21,11 @@ public class DefaultProxy<T> implements InvocationHandler {
 			throws Throwable {
 		if (!resolved || proxied == null)
 			throw new IllegalStateException(
-					"Call to proxy instance created for source type '"+ source.getClass().getSimpleName() + "' with key '" + key + "' failed: object transformation has been requested, but never has been performed: "
+					"Call to proxy instance created for source type '"
+							+ source.getClass().getSimpleName()
+							+ "' with key '"
+							+ key
+							+ "' failed: object transformation has been requested, but never has been performed: "
 							+ source);
 		return method.invoke(proxied, args);
 
@@ -32,7 +36,8 @@ public class DefaultProxy<T> implements InvocationHandler {
 			throw new IllegalArgumentException(
 					"Wrong type of proxied instance for key '" + key
 							+ "', expected " + proxiedClass.getName()
-							+ ", but got: " + (proxied!=null?proxied.getClass():null)
+							+ ", but got: "
+							+ (proxied != null ? proxied.getClass() : null)
 							+ ", source obj is " + source);
 		this.proxied = proxied;
 		this.resolved = true;
@@ -40,5 +45,10 @@ public class DefaultProxy<T> implements InvocationHandler {
 
 	public T getProxied() {
 		return proxied;
+	}
+
+	public String toString() {
+		return "Proxy: key=" + key + ", resolved=" + resolved + ", type="
+				+ proxiedClass.getSimpleName() + ", source=" + source;
 	}
 }

@@ -37,10 +37,7 @@ public class DeclarationExpressionPart
 					currentScope, new Type(s.getVariableExpression().getType()
 							.getName(), true), s.getVariableExpression()
 							.getName(), convertToArgument("DeclarationExpression.initVal", s.getRightExpression(), context));
-			if (currentScope instanceof SimpleForDeclaration)
-			{
-				((DeclarationInvocationImpl)declInv).setTextRenderingEnabled(false);
-			}
+			
 			setCodeRange(declInv, s);
 
 			return declInv;
