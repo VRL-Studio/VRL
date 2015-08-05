@@ -45,7 +45,7 @@ public class ForLoopPartTest {
 		assertEquals(9, decl.getTo());
 		assertEquals(1, decl.getInc());
 	}
-	
+
 	@Test
 	public void testSimpleForLoopWithGE() throws Exception {
 		createHarness("for (int i=0; i<=10; i++){System.out.println(i);}");
@@ -85,21 +85,16 @@ public class ForLoopPartTest {
 
 	@Test
 	public void testProxy() throws Exception {
-		ControlFlowScope scope = fix(new DynaProxy() {
+		ControlFlowScope scope = createProxy(new DynaProxy() {
 			public String _getName() {
 				return "Test";
 			}
-		});
+		}, ControlFlowScope.class);
 		assertEquals("Test", scope.getName());
 	}
 
-	private ControlFlowScope fix(DynaProxy handler) {
-		return createProxy(handler, ControlFlowScope.class,
-				ControlFlowScope.class);
-	}
-
 	private ControlFlowScope fixture() {
-		return fix(new DynaProxy() {
+		return createProxy(new DynaProxy() {
 			public ScopeType _getType() {
 				return ScopeType.METHOD;
 			}
@@ -109,7 +104,7 @@ public class ForLoopPartTest {
 			}
 
 			public void _addScope(Scope s) {
-				;
+
 			}
 
 			public void _setRange(ICodeRange r) {
@@ -117,9 +112,7 @@ public class ForLoopPartTest {
 			}
 
 			public Variable _getVariable(String varName) {
-				return createProxy(new DynaProxy() {
-
-				}, Variable.class, Variable.class);
+				return createProxy(Variable.class);
 			}
 
 			public ControlFlow _getControlFlow() {
@@ -128,9 +121,9 @@ public class ForLoopPartTest {
 
 					}
 
-				}, ControlFlow.class, ControlFlow.class);
+				}, ControlFlow.class);
 			}
-		});
+		}, ControlFlowScope.class);
 	}
 
 	private <T> T createProxy(DynaProxy handler, Class<T> t, Class<?>... cls) {
@@ -138,16 +131,27 @@ public class ForLoopPartTest {
 				cls, handler));
 	}
 
-	abstract class DynaProxy implements InvocationHandler {
+	private <T> T createProxy(DynaProxy handler, Class<T> t) {
+		return createProxy(handler, t, t);
+	}
+
+	private <T> T createProxy(Class<T> t) {
+		return createProxy(new DynaProxy() {
+		}, t, t);
+	}
+
+	abstract static class DynaProxy implements InvocationHandler {
 
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args)
 				throws Throwable {
-			return this
-					.getClass()
-					.getMethod("_" + method.getName(),
-							method.getParameterTypes()).invoke(this, args);
+			try {
+				Method m = this.getClass().getMethod("_" + method.getName(),
+						method.getParameterTypes());
+				return m.invoke(this, args);
+			} catch (NoSuchMethodException e) {
+				return null;
+			}
 		}
-
 	}
 }

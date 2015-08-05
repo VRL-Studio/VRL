@@ -13,7 +13,7 @@ public class ReturnStatementInvocationImpl extends InvocationImpl implements Ret
 
     public ReturnStatementInvocationImpl(Scope parent, IArgument arg ) {
 
-        super(parent, "", null, "return", Type.ANY, false, true, arg);
+        super(parent, "return " + parent.getId(), null, "return", Type.ANY, false, true, arg);
 
         getNode().setTitle("return ");
     }

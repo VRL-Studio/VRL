@@ -175,7 +175,7 @@ public class ForLoopPart
 			ConstantExpression ce = (ConstantExpression) expr
 					.getRightExpression();
 			((SimpleForDeclaration_Impl) obj).setTo(((int) ce.getValue())
-					+ adjust); // TODO
+					+ adjust);
 		} else {
 			// TODO
 		}

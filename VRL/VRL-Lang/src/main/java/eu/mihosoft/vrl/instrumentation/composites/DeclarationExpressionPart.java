@@ -13,6 +13,8 @@ import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
+import eu.mihosoft.vrl.lang.model.DeclarationInvocationImpl;
+import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
@@ -35,7 +37,10 @@ public class DeclarationExpressionPart
 					currentScope, new Type(s.getVariableExpression().getType()
 							.getName(), true), s.getVariableExpression()
 							.getName(), convertToArgument("DeclarationExpression.initVal", s.getRightExpression(), context));
-			
+			if (currentScope instanceof SimpleForDeclaration)
+			{
+				((DeclarationInvocationImpl)declInv).setTextRenderingEnabled(false);
+			}
 			setCodeRange(declInv, s);
 
 			return declInv;

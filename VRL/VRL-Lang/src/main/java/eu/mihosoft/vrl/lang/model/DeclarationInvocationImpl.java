@@ -16,7 +16,7 @@ public class DeclarationInvocationImpl extends InvocationImpl implements Declara
     }
     
     public DeclarationInvocationImpl(Scope parent, Variable declaredVariable) {
-        super(parent, "", null, "declare " + declaredVariable.getName(), declaredVariable.getType(), false, true, new IArgument[0]);
+        super(parent, "declare" + declaredVariable.getId(), declaredVariable.getName(), "declare " + declaredVariable.getName(), declaredVariable.getType(), false, true, new IArgument[0]);
         this.declaredVariable = declaredVariable;
         getNode().setTitle("declare " + declaredVariable.getName());
     }
