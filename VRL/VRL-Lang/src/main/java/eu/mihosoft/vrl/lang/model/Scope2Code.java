@@ -227,6 +227,12 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             case ASSIGN:
                 cb.append("=");
                 break;
+            case INC_ONE:
+                cb.append("++");
+                break;
+            case DEC_ONE:
+                cb.append("--");
+                break;
             case PLUS_ASSIGN:
                 cb.append("+=");
                 break;
