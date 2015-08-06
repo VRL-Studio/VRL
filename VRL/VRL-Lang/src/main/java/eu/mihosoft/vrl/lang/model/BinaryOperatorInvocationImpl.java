@@ -33,7 +33,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
 //            if (leftArg.getArgType() == ArgumentType.VARIABLE
 //                    && rightArg.getArgType() == ArgumentType.VARIABLE) {
 
-                // TODO: check that leftArg and rightArg == const or var
+                // TODO: check that leftArg and rightArg == const or var or invocation
             retType = Type.BOOLEAN;
 //            }
         } else if (basicArithmeticOperator(operator)) {
