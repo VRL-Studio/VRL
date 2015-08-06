@@ -55,6 +55,8 @@ import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -81,20 +83,25 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     private void initListeners() {
-        invocations.addListener((ListChangeListener.Change<? extends Invocation> c) -> {
-//            while(c.next()) {
-//                if (c.wasAdded()) {
-//                    //
-//                }
-//                ... TODO
-//
-//            }
-
+        invocations.addListener((Observable observable) -> {
             if (!currentlyUpdatingInvocations) {
                 updateConnections();
+                // update invocation parent;
+                for (Invocation invocation : invocations) {
+                    ((InvocationImpl) invocation).setParent(getParent());
+                }
             }
-
         });
+//        invocations.addListener((ListChangeListener.Change<? extends Invocation> c) -> {
+//            while (c.next()) {
+//                if (c.wasAdded()) {
+//                    c.getAddedSubList().stream().forEach((inv) -> {
+//                        System.out.println("inv-add: " + inv);
+//                        ((InvocationImpl) inv).setParent(getParent());
+//                    });
+//                }
+//            }
+//        });
 
         flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().addListener(
                 new ListChangeListener<Connection>() {
@@ -124,7 +131,6 @@ class ControlFlowImpl implements ControlFlow {
         flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().clear();
         Invocation prevInvocation = null;
         for (Invocation invocation : invocations) {
-
             if (prevInvocation != null) {
                 flow.connect(prevInvocation.getNode(), invocation.getNode(),
                         WorkflowUtil.CONTROL_FLOW);
@@ -254,6 +260,12 @@ class ControlFlowImpl implements ControlFlow {
     @Override
     public boolean isUsedAsInput(Invocation invocation) {
 
+        return returnInvTargetIfPresent(invocation).isPresent();
+    }
+
+    @Override
+    public Optional<Invocation> returnInvTargetIfPresent(Invocation invocation) {
+
         for (Invocation inv : invocations) {
 
             if (inv instanceof ScopeInvocation) {
@@ -261,7 +273,7 @@ class ControlFlowImpl implements ControlFlow {
                 if (sInv.getScope() instanceof WhileDeclaration) {
                     WhileDeclaration whileD = (WhileDeclaration) sInv.getScope();
                     if (invocation == whileD.getCheck()) {
-                        return true;
+                        return Optional.of(inv);
                     }
                 }
             }
@@ -270,13 +282,13 @@ class ControlFlowImpl implements ControlFlow {
 
                 if (arg.getArgType() == ArgumentType.INVOCATION) {
                     if (arg.getInvocation().get().equals(invocation)) {
-                        return true;
+                        return Optional.of(inv);
                     }
                 }
             }
         }
 
-        return false;
+        return Optional.empty();
     }
 
     @Override

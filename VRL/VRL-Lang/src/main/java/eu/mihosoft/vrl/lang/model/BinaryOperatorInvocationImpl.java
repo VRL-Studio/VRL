@@ -69,6 +69,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
                 || operator == Operator.NOT_EQUALS
                 || operator == Operator.LESS_EQUALS
                 || operator == Operator.GREATER_EQUALS
+                || operator == Operator.GREATER
                 || operator == Operator.LESS
                 || operator == Operator.GREATER_EQUALS
                 || operator == Operator.OR

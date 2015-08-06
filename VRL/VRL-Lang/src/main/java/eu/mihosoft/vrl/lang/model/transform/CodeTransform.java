@@ -13,5 +13,5 @@ import eu.mihosoft.vrl.lang.model.CodeEntity;
  */
 @FunctionalInterface
 public interface CodeTransform<T extends CodeEntity> {
-    public T transform(T ce);
+    public T transform(T ce, String indent);
 }
