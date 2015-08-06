@@ -287,6 +287,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
     /**
      * Instruments the specified invocation (loops are not supported).
+     *
      * @param cf controlflow to instrument
      * @param i invocation index
      * @param invocations list of all invocations
@@ -367,6 +368,13 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         }
     }
 
+    /**
+     * Indicates whether the return value of the current invocation is the 
+     * invocation object of the next invocation. 
+     * @param nextI next invocation
+     * @return {@code true} if the return value if this invocation is the 
+     * invocation object of the next invocation; {@code false} otherwise
+     */
     private boolean isRetValObjectOfNextInv(Invocation nextI) {
         // TODO 04.08.2015 chained method check buggy, needs to be modeled too
         boolean retValIsObjectOfNextI
@@ -375,10 +383,28 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         return retValIsObjectOfNextI;
     }
 
+    /**
+     * Indicates whether the specified invocation is used as argument inside the
+     * specified controflow. Returns the target invocation if the target exists.
+     *
+     * @param inv invocation to check
+     * @param cf controlflow
+     * @return target invocation or an empty optional if the target does not
+     * exist
+     */
     private Optional<Invocation> isInvArg(Invocation inv, ControlFlow cf) {
         return cf.returnInvTargetIfPresent(inv);
     }
 
+    /**
+     * Instruments the specified while-loop invocation.
+     *
+     * @param cf controlfow
+     * @param condInvs condition invocations
+     * @param whileLoopInv while-loop invocation to instrument
+     * @param resultInvs instrumented invocations
+     * @param indent TODO remove me!!!
+     */
     private void instrumentWhileLoop(
             ControlFlow cf,
             List<Invocation> condInvs,
