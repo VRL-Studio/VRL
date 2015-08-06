@@ -72,7 +72,8 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
      * @return unique variable name
      */
     private String newVarName() {
-        return "__vrl_reserved_intermediate_var_" + varNameCounter++;
+        String varName = "__vrl_reserved_intermediate_var_" + varNameCounter++;
+        return varName;
     }
 
     /**
@@ -301,7 +302,6 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
         Scope result = cf.getParent();
 
-        String varName = newVarName();
         Invocation preEventInv
                 = cf.callMethod("", "this", "println", Type.VOID,
                         Argument.constArg(Type.STRING,
@@ -323,6 +323,8 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         Optional<Invocation> invocationTarget = isInvArg(inv, cf);
 
         if (invocationTarget.isPresent() || retValIsObjectOfNextI) {
+            
+            String varName = newVarName();
 
             resultInvs.add(cf.declareVariable("", inv.getReturnType(), varName));
             resultInvs.add(cf.assignVariable("", varName, Argument.invArg(inv)));
@@ -351,7 +353,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
                     Argument.invArg(retValPostArgInv)));
 
             retValArg = Argument.varArg(rightArgVariable);
-        }
+        } // end if 
 
         cf.getInvocations().add(inv);
         resultInvs.add(inv);
@@ -421,7 +423,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
                                 + ", id: " + whileLoopInv.getId()));
         resultInvs.add(preWhileEventInv);
 
-        // introduce condition vriable that is used to simulate the original
+        // introduce condition variable that is used to simulate the original
         // while-loop behavior
         String varName = newVarName();
         resultInvs.add(cf.declareVariable("", Type.BOOLEAN, varName));
