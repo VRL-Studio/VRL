@@ -51,11 +51,11 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
         getNode().setTitle("op " + operator);
     }
 
-    private boolean pureAssignmentOperator(Operator operator) {
+    public static boolean pureAssignmentOperator(Operator operator) {
         return operator == Operator.ASSIGN;
     }
 
-    private boolean assignmentOperator(Operator operator) {
+    public static boolean assignmentOperator(Operator operator) {
         return operator == Operator.ASSIGN
                 || operator == Operator.PLUS_ASSIGN
                 || operator == Operator.MINUS_ASSIGN

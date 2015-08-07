@@ -6,10 +6,12 @@
 package eu.mihosoft.vrl.lang.model.transform;
 
 import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
+import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IfDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
@@ -64,7 +66,9 @@ public class InstrumentCode implements CodeTransform<CompilationUnitDeclaration>
  */
 class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
-    int varNameCounter = 0;
+    private int varNameCounter = 0;
+    private String currentVarName = "";
+    private String prevVarName = "";
 
     /**
      * Returns a unique variable name.
@@ -72,8 +76,17 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
      * @return unique variable name
      */
     private String newVarName() {
-        String varName = "__vrl_reserved_intermediate_var_" + varNameCounter++;
-        return varName;
+        prevVarName = currentVarName;
+        currentVarName = "__vrl_reserved_intermediate_var_" + varNameCounter++;
+        return currentVarName;
+    }
+
+    private String previousVarName() {
+        return prevVarName;
+    }
+
+    private String currentVarName() {
+        return currentVarName;
     }
 
     /**
@@ -130,6 +143,28 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         }
 
         return result;
+    }
+
+    private boolean invNeedsTmpVar(Invocation inv) {
+
+        if (inv.getReturnType() == Type.VOID) {
+            return false;
+        }
+
+        if (inv instanceof DeclarationInvocation) {
+            return false;
+        }
+
+        if (!(inv instanceof BinaryOperatorInvocationImpl)) {
+            return false;
+        }
+
+        BinaryOperatorInvocationImpl boi = (BinaryOperatorInvocationImpl) inv;
+
+        return !BinaryOperatorInvocationImpl.
+                assignmentOperator(boi.getOperator())
+                && !BinaryOperatorInvocationImpl.
+                pureAssignmentOperator(boi.getOperator());
     }
 
     /**
@@ -302,16 +337,19 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
         Scope result = cf.getParent();
 
+        // add the pre-event invocation
         Invocation preEventInv
                 = cf.callMethod("", "this", "println", Type.VOID,
                         Argument.constArg(Type.STRING,
                                 "pre-m-call: " + inv.getMethodName()
                                 + ", id: " + inv.getId()));
-
         resultInvs.add(preEventInv);
 
+        // if the current invocation is not the last invocation then
+        // nextInvocation will be defined (for lookups) and it will be checked
+        // whether the return value of the current invocation is the invocation
+        // object of the next invocation
         boolean lastInvocation = i == invocations.size() - 1;
-
         IArgument retValArg = Argument.NULL;
         Invocation nextI = null;
         boolean retValIsObjectOfNextI = false;
@@ -320,29 +358,40 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
             retValIsObjectOfNextI = isRetValObjectOfNextInv(nextI);
         }
 
+        // searches invocation target (other invocation that uses the current
+        // invocation as input) 
         Optional<Invocation> invocationTarget = isInvArg(inv, cf);
 
-        if (invocationTarget.isPresent() || retValIsObjectOfNextI) {
-            
-            String varName = newVarName();
+        // if the current method is non-void we need to introduce tmp variables
+        if (invNeedsTmpVar(inv)) {
 
+            // creates and assigns tmp variable
+            String varName = newVarName();
             resultInvs.add(cf.declareVariable("", inv.getReturnType(), varName));
             resultInvs.add(cf.assignVariable("", varName, Argument.invArg(inv)));
 
+            // if this invocation is an input of another invocation then we
+            // need to replace the argument with the previously defined tmp
+            // variable
             if (invocationTarget.isPresent()) {
+                // search argument indices
                 int[] argumentsToReplace = invocationTarget.get().getArguments().stream().
                         filter(a -> Objects.equals(a.getInvocation().orElse(null), inv)).
                         mapToInt(a -> invocationTarget.get().getArguments().indexOf(a)).toArray();
-
+                // replace args
                 for (int aIndex : argumentsToReplace) {
                     invocationTarget.get().getArguments().set(aIndex,
                             Argument.varArg(cf.getParent().getVariable(varName)));
                 }
             } else if (nextI != null) {
-                // retValIsObjectOfNextI
+                // if the result of the current invocation is used as
+                // invocation object then we need to call the next invocation
+                // on the previously defined tmp variable that stores the return
+                // value of the current invocation
                 nextI.setVariableName(varName);
             }
 
+            //
             resultInvs.add(cf.declareVariable("", Type.STRING, varName + "_post_arg"));
             Variable rightArgVariable = result.getVariable(varName + "_post_arg");
             Invocation retValPostArgInv = cf.invokeOperator("",
@@ -371,10 +420,11 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
     }
 
     /**
-     * Indicates whether the return value of the current invocation is the 
-     * invocation object of the next invocation. 
+     * Indicates whether the return value of the current invocation is the
+     * invocation object of the next invocation.
+     *
      * @param nextI next invocation
-     * @return {@code true} if the return value if this invocation is the 
+     * @return {@code true} if the return value if this invocation is the
      * invocation object of the next invocation; {@code false} otherwise
      */
     private boolean isRetValObjectOfNextInv(Invocation nextI) {
@@ -459,7 +509,8 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         // negate the condition/check and assign it to the previously declared
         // condition variable
         Invocation notInv = whileCf.invokeNot("",
-                Argument.invArg(condInvs.get(condInvs.size() - 1)));
+                Argument.varArg(whileCf.getParent().getVariable(
+                                currentVarName())));
         instrumentedCondInvs.add(notInv);
         instrumentedCondInvs.add(whileCf.assignVariable("",
                 varName, Argument.invArg(notInv)));
@@ -468,9 +519,12 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         // the original while-loop behavior
         VisualCodeBuilder builder = new VisualCodeBuilder_Impl();
         IfDeclaration ifDecl = builder.invokeIf(
-                whileScope, Argument.varArg(cf.getParent().getVariable(varName)));
-        Invocation conditionIfInv = whileScope.getControlFlow().getInvocations().get(
-                whileScope.getControlFlow().getInvocations().size() - 1);
+                whileScope, Argument.varArg(cf.getParent().
+                        getVariable(varName)));
+        Invocation conditionIfInv = whileScope.getControlFlow().
+                getInvocations().get(
+                        whileScope.getControlFlow().getInvocations().
+                        size() - 1);
         ifDecl.getControlFlow().invokeBreak("");
 
         // instrument original while invocations, i.e. the content
