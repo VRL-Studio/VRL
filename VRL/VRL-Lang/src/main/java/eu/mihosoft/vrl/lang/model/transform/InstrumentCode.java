@@ -17,6 +17,7 @@ import eu.mihosoft.vrl.lang.model.IfDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Operator;
+import eu.mihosoft.vrl.lang.model.ReturnStatementInvocation;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
@@ -164,9 +165,13 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         if (inv instanceof DeclarationInvocation) {
             return false;
         }
+        
+        if (inv instanceof ReturnStatementInvocation) {
+            return false;
+        }
 
         if (!(inv instanceof BinaryOperatorInvocationImpl)) {
-            return false;
+            return true;
         }
 
         BinaryOperatorInvocationImpl boi = (BinaryOperatorInvocationImpl) inv;
