@@ -145,6 +145,16 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         return result;
     }
 
+    /**
+     * Indicates whether the specified invocation needs a tmp variable. This
+     * method should be used instead of {@link Invocation#getReturnType()} since
+     * some invocations have a non-void return type (e.g. assignments and
+     * declarations) but they must not be used as argument of other invocations.
+     *
+     * @param inv invocation
+     * @return {@code true} if the invocation needs a tmp variable;
+     * {@code false} otherwise
+     */
     private boolean invNeedsTmpVar(Invocation inv) {
 
         if (inv.getReturnType() == Type.VOID) {
