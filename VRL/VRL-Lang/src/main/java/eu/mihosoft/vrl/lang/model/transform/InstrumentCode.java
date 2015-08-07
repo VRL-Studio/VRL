@@ -5,6 +5,7 @@
  */
 package eu.mihosoft.vrl.lang.model.transform;
 
+import eu.mihosoft.vrl.instrumentation.VRLInstrumentationUtil;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.BreakInvocation;
@@ -167,15 +168,15 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         if (inv instanceof DeclarationInvocation) {
             return false;
         }
-        
+
         if (inv instanceof ReturnStatementInvocation) {
             return false;
         }
-        
+
         if (inv instanceof BreakInvocation) {
             return false;
         }
-        
+
         if (inv instanceof ContinueInvocation) {
             return false;
         }
@@ -297,7 +298,6 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         for (int i = 0; i < invocations.size(); i++) {
 
             Invocation inv = invocations.get(i);
-            System.out.println(indent + " inv: " + inv);
 
             // while loop instrumented separately
             if (isWhileLoop(inv)) {
@@ -364,10 +364,8 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
         // add the pre-event invocation
         Invocation preEventInv
-                = cf.callMethod("", "this", "println", Type.VOID,
-                        Argument.constArg(Type.STRING,
-                                "pre-m-call: " + inv.getMethodName()
-                                + ", id: " + inv.getId()));
+                = VRLInstrumentationUtil.generatePreEvent(cf, inv);
+
         resultInvs.add(preEventInv);
 
         // if the current invocation is not the last invocation then
@@ -416,26 +414,16 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
                 nextI.setVariableName(varName);
             }
 
-            //
-            resultInvs.add(cf.declareVariable("", Type.STRING, varName + "_post_arg"));
-            Variable rightArgVariable = result.getVariable(varName + "_post_arg");
-            Invocation retValPostArgInv = cf.invokeOperator("",
-                    Argument.constArg(Type.STRING, "post-m-call: " + inv.getMethodName() + ", retVal: "),
-                    Argument.varArg(result.getVariable(varName)), Operator.PLUS);
-            resultInvs.add(retValPostArgInv);
-            resultInvs.add(cf.assignVariable("", rightArgVariable.getName(),
-                    Argument.invArg(retValPostArgInv)));
-
-            retValArg = Argument.varArg(rightArgVariable);
+            retValArg = Argument.varArg(result.getVariable(varName));
         } // end if 
 
         cf.getInvocations().add(inv);
         resultInvs.add(inv);
         if (Objects.equals(retValArg, Argument.NULL)) {
-            resultInvs.add(cf.callMethod("", "this", "println", Type.VOID, Argument.constArg(
-                    Type.STRING, "post-m-call: " + inv.getMethodName())));
+            resultInvs.add(VRLInstrumentationUtil.generatePostEvent(cf, inv));
         } else {
-            resultInvs.add(cf.callMethod("", "this", "println", Type.VOID, retValArg));
+            resultInvs.add(VRLInstrumentationUtil.generatePostEvent(
+                    cf, inv, retValArg));
         }
 
         if (inv instanceof ScopeInvocation) {
@@ -574,8 +562,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         whileCf.getInvocations().addAll(instrumentedWhileInvocations);
 
         // add a postEvent call to the parent controlflow of this while-loop
-        resultInvs.add(cf.callMethod("", "this", "println", Type.VOID, Argument.constArg(
-                Type.STRING, "post-m-call: " + whileLoopInv.getMethodName())));
+        resultInvs.add(VRLInstrumentationUtil.generatePostEvent(cf, whileLoopInv));
     }
 
 }
