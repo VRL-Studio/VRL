@@ -478,12 +478,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
         // pre-event call for the while-loop invocation
         Invocation preWhileEventInv
-                = cf.callMethod("", "this", "println", Type.VOID,
-                        Argument.constArg(
-                                Type.STRING,
-                                "pre-m-call: "
-                                + whileLoopInv.getMethodName()
-                                + ", id: " + whileLoopInv.getId()));
+                = VRLInstrumentationUtil.generatePreEvent(cf, whileLoopInv);
         resultInvs.add(preWhileEventInv);
 
         // introduce condition variable that is used to simulate the original

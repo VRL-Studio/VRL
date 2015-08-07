@@ -9,11 +9,13 @@ import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
+import eu.mihosoft.vrl.lang.model.WhileDeclaration;
 
 /**
  * Instrumentation utility class for model based instrumentation.
- * 
+ *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VRLInstrumentationUtil {
@@ -26,14 +28,25 @@ public class VRLInstrumentationUtil {
      * @return the generated pre event invocation
      */
     public static Invocation generatePreEvent(ControlFlow cf, Invocation inv) {
+        IArgument[] args;
+        // for while-loops we don't add the arguments to the event invocation
+        // since they are unknown before we enter the loop body
+        if (inv instanceof ScopeInvocation
+                && ((ScopeInvocation) inv).getScope() instanceof WhileDeclaration) {
+            args = new IArgument[2];
+            args[0] = Argument.constArg(Type.STRING, inv.getId());
+            args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
+        } else {
+            // ... for all other invocations we add all arguments since they
+            // are known at event invocation time
+            args = new IArgument[inv.getArguments().size() + 2];
 
-        IArgument[] args = new IArgument[inv.getArguments().size() + 2];
+            args[0] = Argument.constArg(Type.STRING, inv.getId());
+            args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
 
-        args[0] = Argument.constArg(Type.STRING, inv.getId());
-        args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
-
-        for (int i = 0; i < inv.getArguments().size(); i++) {
-            args[i + 2] = inv.getArguments().get(i);
+            for (int i = 0; i < inv.getArguments().size(); i++) {
+                args[i + 2] = inv.getArguments().get(i);
+            }
         }
 
         return cf.callStaticMethod(
@@ -103,7 +116,8 @@ public class VRLInstrumentationUtil {
             argsStr[i] = "'" + s + "'";
         }
 
-        System.out.println("pre-event: " + invName + ", id: " + id + ", args: [ " + String.join(", ", argsStr) + " ]");
+        System.out.println("pre-event: " + invName + ", id: " + id
+                + ", args: [ " + String.join(", ", argsStr) + " ]");
     }
 
     /**
@@ -119,7 +133,8 @@ public class VRLInstrumentationUtil {
     public static void __postEvent(String id, String invName, Object retVal) {
         String retValStr = "'" + retVal != null ? retVal.toString() : "null" + "'";
 
-        System.out.println("post-event: '" + invName + "', id: '" + id + "', ret: [ '" + retValStr + "' ]");
+        System.out.println("post-event: '" + invName + "', id: '" + id
+                + "', ret: [ '" + retValStr + "' ]");
     }
 
     /**
@@ -133,6 +148,7 @@ public class VRLInstrumentationUtil {
     @Deprecated()
     public static void __postEvent(String id, String invName) {
 
-        System.out.println("post-event: '" + invName + "', id: '" + id + "', ret: [ void ]");
+        System.out.println("post-event: '" + invName + "', id: '" + id
+                + "', ret: [ void ]");
     }
 }
