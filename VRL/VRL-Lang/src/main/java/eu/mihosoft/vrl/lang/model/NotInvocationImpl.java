@@ -12,9 +12,9 @@ package eu.mihosoft.vrl.lang.model;
  */
 public class NotInvocationImpl extends InvocationImpl implements NotInvocation {
 
-        public NotInvocationImpl(Scope parent, IArgument arg) {
+        public NotInvocationImpl(String id, Scope parent, IArgument arg) {
 
-        super(parent, "", null, "not", Type.BOOLEAN, false, true, arg);
+        super(parent, id, null, "not", Type.BOOLEAN, false, true, arg);
     }
     
     @Override

@@ -50,7 +50,7 @@ public class VRLInstrumentationUtil {
         }
 
         return cf.callStaticMethod(
-                "id",
+                "",
                 Type.fromClass(VRLInstrumentationUtil.class),
                 "__preEvent", Type.VOID, args);
     }
@@ -116,8 +116,8 @@ public class VRLInstrumentationUtil {
             argsStr[i] = "'" + s + "'";
         }
 
-        System.out.println("pre-event: " + invName + ", id: " + id
-                + ", args: [ " + String.join(", ", argsStr) + " ]");
+        System.out.println("pre-event: " + invName + ", id: '" + id
+                + "', args: [ " + String.join(", ", argsStr) + " ]");
     }
 
     /**

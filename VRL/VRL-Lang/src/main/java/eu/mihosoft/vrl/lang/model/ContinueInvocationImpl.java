@@ -11,9 +11,9 @@ package eu.mihosoft.vrl.lang.model;
  */
 public class ContinueInvocationImpl extends InvocationImpl implements ContinueInvocation {
 
-    public ContinueInvocationImpl(Scope parent) {
+    public ContinueInvocationImpl(String id, Scope parent) {
 
-        super(parent, "", null, "continue", Type.VOID, false, true);
+        super(parent, id, null, "continue", Type.VOID, false, true);
 
         getNode().setTitle("continue");
     }

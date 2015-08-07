@@ -11,9 +11,9 @@ package eu.mihosoft.vrl.lang.model;
  */
 public class BreakInvocationImpl extends InvocationImpl implements BreakInvocation {
 
-    public BreakInvocationImpl(Scope parent) {
+    public BreakInvocationImpl(String id, Scope parent) {
 
-        super(parent, "", null, "break", Type.VOID, false, true);
+        super(parent, id, null, "break", Type.VOID, false, true);
 
         getNode().setTitle("break");
     }

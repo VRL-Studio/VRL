@@ -299,7 +299,7 @@ class ScopeImpl implements Scope {
 //        return variable;
 //    }
     @Override
-    public BinaryOperatorInvocation assignConstant(String varName, Object constant) {
+    public BinaryOperatorInvocation assignConstant(String id, String varName, Object constant) {
         Variable var = getVariable(varName);
 
         if (var == null) {
@@ -313,7 +313,7 @@ class ScopeImpl implements Scope {
     }
 
     @Override
-    public BinaryOperatorInvocation assignVariable(String varNameDest, String varNameSrc) {
+    public BinaryOperatorInvocation assignVariable(String id, String varNameDest, String varNameSrc) {
         Variable varDest = getVariable(varNameDest);
         Variable varSrc = getVariable(varNameSrc);
 
@@ -332,7 +332,7 @@ class ScopeImpl implements Scope {
     }
 
     @Override
-    public BinaryOperatorInvocation assignInvocationResult(String varName, Invocation invocation) {
+    public BinaryOperatorInvocation assignInvocationResult(String id, String varName, Invocation invocation) {
         Variable varDest = getVariable(varName);
 
         if (varDest == null) {

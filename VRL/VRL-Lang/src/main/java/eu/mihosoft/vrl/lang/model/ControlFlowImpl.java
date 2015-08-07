@@ -299,7 +299,7 @@ class ControlFlowImpl implements ControlFlow {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent,
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(id,parent,
                 Argument.varArg(var), arg, Operator.ASSIGN);
 
         getInvocations().add(invocation);
@@ -315,7 +315,7 @@ class ControlFlowImpl implements ControlFlow {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent,
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(id,parent,
                 Argument.varArg(var), arg, Operator.ASSIGN);
 
         getInvocations().add(invocation);
@@ -331,7 +331,7 @@ class ControlFlowImpl implements ControlFlow {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-        BinaryOperatorInvocation result = new BinaryOperatorInvocationImpl(parent,
+        BinaryOperatorInvocation result = new BinaryOperatorInvocationImpl(id,parent,
                 Argument.varArg(var), Argument.invArg(invocation), Operator.ASSIGN);
 
         getInvocations().add(result);
@@ -343,7 +343,7 @@ class ControlFlowImpl implements ControlFlow {
     public DeclarationInvocation declareVariable(String id, IType type, String varName) {
         VariableImpl var = (VariableImpl) ((ScopeImpl) parent)._createVariable(type, varName);
 
-        DeclarationInvocationImpl invocation = new DeclarationInvocationImpl(parent, var);
+        DeclarationInvocationImpl invocation = new DeclarationInvocationImpl(id, parent, var);
 
         var.setDeclaration(invocation);
 
@@ -367,7 +367,7 @@ class ControlFlowImpl implements ControlFlow {
     @Override
     public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg,
             IArgument rightArg, Operator operator) {
-        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(parent,
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(id,parent,
                 leftArg, rightArg, operator);
 
         getInvocations().add(invocation);
@@ -382,7 +382,8 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public ReturnStatementInvocation returnValue(String id, IArgument arg) {
-        ReturnStatementInvocation invocation = new ReturnStatementInvocationImpl(parent, arg);
+        ReturnStatementInvocation invocation = 
+                new ReturnStatementInvocationImpl(id,parent, arg);
 
         getInvocations().add(invocation);
 
@@ -391,7 +392,7 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public BreakInvocation invokeBreak(String id) {
-        BreakInvocation invocation = new BreakInvocationImpl(parent);
+        BreakInvocation invocation = new BreakInvocationImpl(id,parent);
 
         getInvocations().add(invocation);
 
@@ -400,7 +401,7 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public ContinueInvocation invokeContinue(String id) {
-        ContinueInvocation invocation = new ContinueInvocationImpl(parent);
+        ContinueInvocation invocation = new ContinueInvocationImpl(id,parent);
 
         getInvocations().add(invocation);
 
@@ -409,7 +410,7 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public NotInvocation invokeNot(String id, IArgument arg) {
-        NotInvocation invocation = new NotInvocationImpl(parent, arg);
+        NotInvocation invocation = new NotInvocationImpl(id,parent, arg);
 
         getInvocations().add(invocation);
 
