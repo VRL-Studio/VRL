@@ -95,11 +95,11 @@ public class InstrumentationTest {
 
         VRLInstrumentationUtil.addEventHandler(InstrumentationEventType.PRE_INVOCATION,
                 (evt) -> {
-                    System.out.println(" !!pre-evt: " + evt.toString());
+                    System.out.println("pre-evt:\t" + evt.toString());
                 });
         VRLInstrumentationUtil.addEventHandler(InstrumentationEventType.POST_INVOCATION,
                 (evt) -> {
-                    System.out.println("!!post-evt: " + evt.toString());
+                    System.out.println("post-evt:\t" + evt.toString());
                 });
 
         System.out.println(instrumentedCode);
