@@ -26,7 +26,7 @@ class InstrumentationEventImpl implements InstrumentationEvent{
         this.type = type;
         this.source = source;
         this.timeStamp = System.nanoTime();
-        this.date = new Date(timeStamp);
+        this.date = new Date();
     }
 
     /**
@@ -71,6 +71,6 @@ class InstrumentationEventImpl implements InstrumentationEvent{
         }
             
             
-        return "[ type: " + evtType + ", src: " + getSource() + ", time-stamp: " + date.toString() + "]";
+        return "[ time-stamp: " + date.toString() + ", type: " + evtType + ", src: " + getSource() + " ]";
     }
 }
