@@ -790,6 +790,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         IArgument[] arguments = convertArguments(args);
 
         String objectName = null;
+        
+        if (s.getText().startsWith("this.")) {
+            objectName = "this";
+        }
 
         boolean isIdCall = false;
         boolean isStatic = false;
