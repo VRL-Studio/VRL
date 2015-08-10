@@ -89,7 +89,7 @@ public class InstrumentationTest {
 
         InstrumentCode instrumentCode = new InstrumentCode();
 
-        CompilationUnitDeclaration newCu = instrumentCode.transform(cu, "--|");
+        CompilationUnitDeclaration newCu = instrumentCode.transform(cu);
 
         String instrumentedCode = Scope2Code.getCode(newCu);
 

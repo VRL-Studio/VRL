@@ -43,7 +43,7 @@ public class InstrumentCode implements CodeTransform<CompilationUnitDeclaration>
 
     @Override
     public CompilationUnitDeclaration transform(
-            CompilationUnitDeclaration cu, String indent) {
+            CompilationUnitDeclaration cu) {
 
         // TODO 01.08.2015 add clone()
         CompilationUnitDeclaration result = cu;
@@ -53,7 +53,7 @@ public class InstrumentCode implements CodeTransform<CompilationUnitDeclaration>
         for (ClassDeclaration cd : result.getDeclaredClasses()) {
             List<MethodDeclaration> methods = new ArrayList<>();
             for (MethodDeclaration md : cd.getDeclaredMethods()) {
-                methods.add((MethodDeclaration) im.transform(md, indent));
+                methods.add((MethodDeclaration) im.transform(md));
             }
             cd.getDeclaredMethods().clear();
             cd.getDeclaredMethods().addAll(methods);
@@ -277,7 +277,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
     }
 
     @Override
-    public ControlFlowScope transform(ControlFlowScope ce, String indent) {
+    public ControlFlowScope transform(ControlFlowScope ce) {
         // TODO 01.08.2015 add clone()
         ControlFlowScope result = ce;
 
@@ -285,7 +285,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         List<Invocation> invocations
                 = new ArrayList<>(ce.getControlFlow().getInvocations());
         ControlFlow cf = result.getControlFlow();
-        addInstrumentation(cf, invocations, indent);
+        addInstrumentation(cf, invocations);
 
         return result;
     }
@@ -297,10 +297,9 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
      *
      * @param cf controlflow
      * @param invocations incovations to instrument
-     * @param indent TODO remove me!!!
      */
     private void addInstrumentation(
-            ControlFlow cf, List<Invocation> invocations, String indent) {
+            ControlFlow cf, List<Invocation> invocations) {
 
         // instrumented invocations: original invocations with additional
         // pre-/post event invocations
@@ -341,14 +340,14 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
                 instrumentWhileLoop(cf, wLLookAhead.getCondInvocations(),
                         wLLookAhead.getWhileInv(),
-                        instrumentedInvocations, indent);
+                        instrumentedInvocations);
 
                 // move forward to next invocation after the loop
                 i += wLLookAhead.getCondInvocations().size();
 
             } else {
                 instrumentNonLoopInvocation(cf, i, invocations,
-                        instrumentedInvocations, indent);
+                        instrumentedInvocations);
             }
         } // end for i
 
@@ -365,11 +364,9 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
      * @param i invocation index
      * @param invocations list of all invocations
      * @param resultInvs list of instrumented invocations
-     * @param indent TODO remove me!!
      */
     private void instrumentNonLoopInvocation(ControlFlow cf, int i,
-            List<Invocation> invocations, List<Invocation> resultInvs,
-            String indent) {
+            List<Invocation> invocations, List<Invocation> resultInvs) {
         Invocation inv = invocations.get(i);
 
         Scope result = cf.getParent();
@@ -440,7 +437,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
         if (inv instanceof ScopeInvocation) {
             ScopeInvocation si = (ScopeInvocation) inv;
-            transform((ControlFlowScope) si.getScope(), indent + "--|");
+            transform((ControlFlowScope) si.getScope());
         }
     }
 
@@ -479,14 +476,12 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
      * @param cf controlfow
      * @param condInvs condition invocations
      * @param whileLoopInv while-loop invocation to instrument
-     * @param resultInvs instrumented invocations
-     * @param indent TODO remove me!!!
      */
     private void instrumentWhileLoop(
             ControlFlow cf,
             List<Invocation> condInvs,
             ScopeInvocation whileLoopInv,
-            List<Invocation> resultInvs, String indent) {
+            List<Invocation> resultInvs) {
 
         // pre-event call for the while-loop invocation
         Invocation preWhileEventInv
@@ -521,7 +516,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         // body and instrument them. the while-loop body controlflow will be
         // cleared afterwards
         whileCf.getInvocations().addAll(condInvs);
-        addInstrumentation(whileCf, condInvs, indent + "while-cond--|");
+        addInstrumentation(whileCf, condInvs);
         List<Invocation> instrumentedCondInvs
                 = new ArrayList<>(whileCf.getInvocations());
         whileCf.getInvocations().clear();
@@ -551,7 +546,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         // of the while-loop body
         whileCf.getInvocations().clear();
         whileCf.getInvocations().addAll(whileInvocations);
-        transform(whileScope, indent + "while--|");
+        transform(whileScope);
         List<Invocation> instrumentedWhileInvocations
                 = new ArrayList<>(whileCf.getInvocations());
         whileCf.getInvocations().clear();

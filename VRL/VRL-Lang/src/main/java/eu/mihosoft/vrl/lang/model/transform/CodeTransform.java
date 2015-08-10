@@ -10,8 +10,14 @@ import eu.mihosoft.vrl.lang.model.CodeEntity;
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
+ * @param <T>
  */
 @FunctionalInterface
 public interface CodeTransform<T extends CodeEntity> {
-    public T transform(T ce, String indent);
+    /**
+     * 
+     * @param ce
+     * @return 
+     */
+    public T transform(T ce);
 }
