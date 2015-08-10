@@ -7,6 +7,8 @@ package eu.mihosoft.vrl.instrumentation;
 
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.ICodeEventType;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
@@ -16,6 +18,7 @@ class InstrumentationEventImpl implements InstrumentationEvent{
     private final InstrumentationEventType type;
     private final InstrumentationSource source;
     private final long timeStamp;
+    private final Date date;
 
     InstrumentationEventImpl(
             InstrumentationEventType type,
@@ -23,6 +26,7 @@ class InstrumentationEventImpl implements InstrumentationEvent{
         this.type = type;
         this.source = source;
         this.timeStamp = System.nanoTime();
+        this.date = new Date(timeStamp);
     }
 
     /**
@@ -50,5 +54,23 @@ class InstrumentationEventImpl implements InstrumentationEvent{
     @Override
     public long getTimeStamp() {
         return this.timeStamp;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public String toString() {
+        String evtType = "ANY";
+        
+        if(getType()==InstrumentationEventType.PRE_INVOCATION) {
+            evtType = "PRE_INV";
+        } else if (getType()==InstrumentationEventType.POST_INVOCATION) {
+            evtType = "POST_INV";
+        }
+            
+            
+        return "[ type: " + evtType + ", src: " + getSource() + ", time-stamp: " + date.toString() + "]";
     }
 }

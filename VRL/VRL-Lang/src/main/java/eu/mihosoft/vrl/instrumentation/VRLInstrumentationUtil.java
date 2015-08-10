@@ -112,15 +112,6 @@ public class VRLInstrumentationUtil {
      */
     @Deprecated()
     public static void __preEvent(String id, String invName, Object... args) {
-        String[] argsStr = new String[args.length];
-        
-        for (int i = 0; i < argsStr.length; i++) {
-            String s = args[i] != null ? args[i].toString() : "null";
-            argsStr[i] = "'" + s + "'";
-        }
-        
-        System.out.println("pre-event: " + invName + ", id: '" + id
-                + "', args: [ " + String.join(", ", argsStr) + " ]");
         
         InstrumentationEvent evt = new InstrumentationEventImpl(
                 InstrumentationEventType.PRE_INVOCATION,
@@ -140,10 +131,6 @@ public class VRLInstrumentationUtil {
      */
     @Deprecated()
     public static void __postEvent(String id, String invName, Object retVal) {
-        String retValStr = "'" + retVal != null ? retVal.toString() : "null" + "'";
-        
-        System.out.println("post-event: '" + invName + "', id: '" + id
-                + "', ret: [ '" + retValStr + "' ]");
         
         InstrumentationEvent evt = new InstrumentationEventImpl(
                 InstrumentationEventType.POST_INVOCATION,
@@ -162,9 +149,6 @@ public class VRLInstrumentationUtil {
      */
     @Deprecated()
     public static void __postEvent(String id, String invName) {
-        
-        System.out.println("post-event: '" + invName + "', id: '" + id
-                + "', ret: [ void ]");
         
         InstrumentationEvent evt = new InstrumentationEventImpl(
                 InstrumentationEventType.POST_INVOCATION,
