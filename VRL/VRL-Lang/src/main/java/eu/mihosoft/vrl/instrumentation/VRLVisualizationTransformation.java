@@ -50,6 +50,7 @@
 package eu.mihosoft.vrl.instrumentation;
 
 import eu.mihosoft.vrl.instrumentation.composites.BinaryExpressionPart;
+import eu.mihosoft.vrl.instrumentation.composites.BooleanExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.BreakPart;
 import eu.mihosoft.vrl.instrumentation.composites.ClassNodePart;
 import eu.mihosoft.vrl.instrumentation.composites.ConstantExpressionPart;
@@ -160,30 +161,30 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 			mapper.init(in);
 
 			return new CompositeTransformingVisitorSupport(sourceUnit,
-					new BinaryExpressionPart(stateMachine, sourceUnit,
-							builder, mapper), new BreakPart(stateMachine,
-							sourceUnit, builder, mapper),
-					new ClassNodePart(stateMachine, sourceUnit, builder,
-							mapper), new ContinuePart(stateMachine, sourceUnit,
-							builder, mapper),
+					new BinaryExpressionPart(stateMachine, sourceUnit, builder,
+							mapper), new BreakPart(stateMachine, sourceUnit,
+							builder, mapper), new ClassNodePart(stateMachine,
+							sourceUnit, builder, mapper), new ContinuePart(
+							stateMachine, sourceUnit, builder, mapper),
 					new DeclarationExpressionPart(stateMachine, sourceUnit,
 							builder, mapper), new FieldPart(stateMachine,
 							sourceUnit, builder, mapper), new ForLoopPart(
 							stateMachine, sourceUnit, builder, mapper),
 					new IfStatementPart(stateMachine, sourceUnit, builder,
 							mapper), new MethodNodePart(stateMachine,
-							sourceUnit, builder, mapper),
-					new ModuleNodePart(builder, mapper),
-					new PostFixExpressionPart(stateMachine, sourceUnit,
-							builder, mapper), new ReturnStatementPart(
+							sourceUnit, builder, mapper), new ModuleNodePart(
+							builder, mapper), new PostFixExpressionPart(
 							stateMachine, sourceUnit, builder, mapper),
-					new WhileLoopPart(stateMachine, sourceUnit, builder,
-							mapper), new ConstantExpressionPart(stateMachine,
+					new ReturnStatementPart(stateMachine, sourceUnit, builder,
+							mapper), new WhileLoopPart(stateMachine,
 							sourceUnit, builder, mapper),
-					new VariableExpressionPart(stateMachine, sourceUnit,
-							builder, mapper), new MethodCallExpressionPart(
+					new ConstantExpressionPart(stateMachine, sourceUnit,
+							builder, mapper), new VariableExpressionPart(
 							stateMachine, sourceUnit, builder, mapper),
-					new PropertyExpressionPart(stateMachine, sourceUnit,
+					new MethodCallExpressionPart(stateMachine, sourceUnit,
+							builder, mapper), new PropertyExpressionPart(
+							stateMachine, sourceUnit, builder, mapper),
+					new BooleanExpressionPart(stateMachine, sourceUnit,
 							builder, mapper));
 
 		} catch (IOException ex) {

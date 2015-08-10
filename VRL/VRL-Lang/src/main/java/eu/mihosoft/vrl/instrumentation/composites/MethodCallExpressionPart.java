@@ -69,14 +69,6 @@ public class MethodCallExpressionPart extends
 						objectName, s.getMethod().getText(), returnType,
 						arguments);
 
-				if (stateMachine.getBoolean("variable-declaration")) {
-
-					stateMachine.addToList(
-							"variable-declaration:assignment-invocations",
-							invocation);
-
-				}
-
 				setCodeRange(invocation, s);
 				addCommentsToScope(parent, comments);
 				return invocation;

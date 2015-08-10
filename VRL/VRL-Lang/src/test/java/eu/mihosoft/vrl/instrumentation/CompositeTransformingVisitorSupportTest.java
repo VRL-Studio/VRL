@@ -1,7 +1,6 @@
 package eu.mihosoft.vrl.instrumentation;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.io.Reader;
 import java.lang.reflect.Proxy;
@@ -46,13 +45,16 @@ import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IdRequest;
+import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
+import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
+import eu.mihosoft.vrl.lang.model.WhileDeclaration;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
 import groovy.lang.GroovyShell;
@@ -235,7 +237,8 @@ public class CompositeTransformingVisitorSupportTest {
 	public void testModuleNodePart() throws Exception {
 
 		SourceUnit source = fromCode("class A {}");
-		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation.init(source);
+		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
+				.init(source);
 		visitor.visitModuleNode(source.getAST());
 		assertNotNull(visitor.getRoot().getRootObject());
 		CompilationUnitDeclaration decl = (CompilationUnitDeclaration) visitor
@@ -249,7 +252,8 @@ public class CompositeTransformingVisitorSupportTest {
 		// expression "0" with the
 		// ReturnInvocation instance.
 		SourceUnit src = fromCode("class A{ void run(){ return 0; }}");
-		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation.init(src);
+		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
+				.init(src);
 		visitor.visitModuleNode(src.getAST());
 		CompilationUnitDeclaration decl = (CompilationUnitDeclaration) visitor
 				.getRoot().getRootObject();
@@ -263,10 +267,25 @@ public class CompositeTransformingVisitorSupportTest {
 	@Test
 	public void testWhileLoopTransform() throws Exception {
 		SourceUnit src = fromCode("class A{ void run(){while(1>3) { run(); }}}");
-		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation.init(src);
+		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
+				.init(src);
 		visitor.visitModuleNode(src.getAST());
-		System.out.println(visitor.getRoot().getRootObject());
+		CompilationUnitDeclaration decl = (CompilationUnitDeclaration) visitor
+				.getRoot().getRootObject();
+		ScopeInvocation inv = (ScopeInvocation) decl
+				.getDeclaredClasses().get(0).getDeclaredMethods().get(0)
+				.getControlFlow().getInvocations().get(0);
+		assertTrue(inv.getScope() instanceof WhileDeclaration);
+	}
 
+	@Test
+	public void testNestedResolution() throws Exception {
+		SourceUnit src = fromCode("class A{ void run(){ if (2>1) { run(); } else if (2<1) { run(); } else { run(); } }}");
+		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
+				.init(src);
+		visitor.visitModuleNode(src.getAST());
+		String code = Scope2Code.getCode((CompilationUnitDeclaration) visitor.getRoot().getRootObject());
+		assertEquals("", code);
 	}
 
 	void printBindings() {

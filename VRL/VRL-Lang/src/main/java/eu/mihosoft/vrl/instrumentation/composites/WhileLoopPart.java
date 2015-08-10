@@ -33,8 +33,6 @@ public class WhileLoopPart
 	public WhileDeclaration transform(WhileStatement s,
 			ControlFlowScope parent, TransformContext context) {
 
-		stateMachine.push("while-loop", true);
-
 		BooleanExpression expression = s.getBooleanExpression();
 
 		if (expression == null || expression.getExpression() == null) {
@@ -108,10 +106,6 @@ public class WhileLoopPart
 
 		setCodeRange(inv, s);
 		addCommentsToScope(inv, comments);
-		
-		
-
-		stateMachine.pop();
 
 		return inv;
 	}
