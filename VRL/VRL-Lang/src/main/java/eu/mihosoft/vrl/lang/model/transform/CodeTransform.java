@@ -16,8 +16,8 @@ import eu.mihosoft.vrl.lang.model.CodeEntity;
 public interface CodeTransform<T extends CodeEntity> {
     /**
      * 
-     * @param ce
-     * @return 
+     * @param ce conde entity to transform
+     * @return transformed copy of the cpecified code entity
      */
     public T transform(T ce);
 }

@@ -67,10 +67,10 @@ class WhileDeclaration_Impl extends ScopeImpl implements WhileDeclaration {
     @Override
     public IArgument getCheck() {
 
-        return getMetaData().getCheck();
+        return getWhileMetaData().getCheck();
     }
     
-    private WhileDeclarationMetaData getMetaData() {
+    private WhileDeclarationMetaData getWhileMetaData() {
           if (metadata == null) {
             metadata = (WhileDeclarationMetaData) getScopeArgs()[0];
         }
@@ -85,9 +85,9 @@ class WhileDeclaration_Impl extends ScopeImpl implements WhileDeclaration {
         i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
             while (c.next()) {
                 if (i.getArguments().isEmpty()) {
-                    getMetaData().setCheck(Argument.NULL);
+                    getWhileMetaData().setCheck(Argument.NULL);
                 } else {
-                    getMetaData().setCheck(i.getArguments().get(0));
+                    getWhileMetaData().setCheck(i.getArguments().get(0));
                 }
             }
         });

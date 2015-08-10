@@ -64,6 +64,7 @@ import java.util.function.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 /**
  *
@@ -88,6 +89,8 @@ class ScopeImpl implements Scope {
     private VFlow flow;
     private ObservableCodeImpl observableCode;
     private boolean textRenderingEnabled = true;
+    
+    private final ObservableMap<String,Object> metadata = FXCollections.observableHashMap();
 
     public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
         this.id = id;
@@ -583,6 +586,14 @@ class ScopeImpl implements Scope {
      */
     public boolean isTextRenderingEnabled() {
         return textRenderingEnabled;
+    }
+
+    /**
+     * @return the metadata
+     */
+    @Override
+    public ObservableMap<String,Object> getMetaData() {
+        return metadata;
     }
 
 }

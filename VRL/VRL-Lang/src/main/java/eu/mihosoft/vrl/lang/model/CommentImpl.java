@@ -54,6 +54,8 @@ import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.workflow.VNode;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 
 /**
  *
@@ -69,6 +71,7 @@ public class CommentImpl implements Comment {
     private VNode node;
     private ObservableCodeImpl observableCode;
     private boolean textRenderingEnabled = true;
+    private final ObservableMap<String,Object> metadata = FXCollections.observableHashMap();
 
     public CommentImpl(String id, ICodeRange codeRange, String comment) {
         this.id = id;
@@ -206,6 +209,14 @@ public class CommentImpl implements Comment {
      */
     public boolean isTextRenderingEnabled() {
         return textRenderingEnabled;
+    }
+
+    /**
+     * @return the metadata
+     */
+    @Override
+    public ObservableMap<String,Object> getMetaData() {
+        return metadata;
     }
 
 }

@@ -55,11 +55,11 @@ import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 /**
  *
@@ -82,6 +82,8 @@ class InvocationImpl implements Invocation {
     private VNode node;
     private ObservableCodeImpl observableCode;
     private boolean textRenderingEnabled = true;
+    
+    private final ObservableMap<String,Object> metadata = FXCollections.observableHashMap();
 
     public InvocationImpl(
             Scope parent,
@@ -431,6 +433,14 @@ class InvocationImpl implements Invocation {
         if (parent != oldParent) {
             init(varName, oldParent);
         }
+    }
+
+    /**
+     * @return the metadata
+     */
+    @Override
+    public ObservableMap<String,Object> getMetaData() {
+        return metadata;
     }
 
 }
