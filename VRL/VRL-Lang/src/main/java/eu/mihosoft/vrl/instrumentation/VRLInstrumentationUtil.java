@@ -19,6 +19,9 @@ import eu.mihosoft.vrl.lang.model.WhileDeclaration;
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VRLInstrumentationUtil {
+    
+    private static final InstrumentationEventSender eventSender
+            = new InstrumentationEventSender();
 
     /**
      * Generates a pre event invocation for the specified invocation.
@@ -40,15 +43,15 @@ public class VRLInstrumentationUtil {
             // ... for all other invocations we add all arguments since they
             // are known at event invocation time
             args = new IArgument[inv.getArguments().size() + 2];
-
+            
             args[0] = Argument.constArg(Type.STRING, inv.getId());
             args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
-
+            
             for (int i = 0; i < inv.getArguments().size(); i++) {
                 args[i + 2] = inv.getArguments().get(i);
             }
         }
-
+        
         return cf.callStaticMethod(
                 "",
                 Type.fromClass(VRLInstrumentationUtil.class),
@@ -65,13 +68,13 @@ public class VRLInstrumentationUtil {
      */
     public static Invocation generatePostEvent(ControlFlow cf,
             Invocation inv, IArgument retValArg) {
-
+        
         IArgument[] args = new IArgument[3];
-
+        
         args[0] = Argument.constArg(Type.STRING, inv.getId());
         args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
         args[2] = retValArg;
-
+        
         return cf.callStaticMethod(
                 "",
                 Type.fromClass(VRLInstrumentationUtil.class),
@@ -88,10 +91,10 @@ public class VRLInstrumentationUtil {
     public static Invocation generatePostEvent(ControlFlow cf,
             Invocation inv) {
         IArgument[] args = new IArgument[2];
-
+        
         args[0] = Argument.constArg(Type.STRING, inv.getId());
         args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
-
+        
         return cf.callStaticMethod(
                 "",
                 Type.fromClass(VRLInstrumentationUtil.class),
@@ -110,14 +113,20 @@ public class VRLInstrumentationUtil {
     @Deprecated()
     public static void __preEvent(String id, String invName, Object... args) {
         String[] argsStr = new String[args.length];
-
+        
         for (int i = 0; i < argsStr.length; i++) {
             String s = args[i] != null ? args[i].toString() : "null";
             argsStr[i] = "'" + s + "'";
         }
-
+        
         System.out.println("pre-event: " + invName + ", id: '" + id
                 + "', args: [ " + String.join(", ", argsStr) + " ]");
+        
+        InstrumentationEvent evt = new InstrumentationEventImpl(
+                InstrumentationEventType.PRE_INVOCATION,
+                new InstrumentationSourceImpl(id, invName, args, null, true));
+        
+        eventSender.fireEvent(evt);
     }
 
     /**
@@ -132,9 +141,15 @@ public class VRLInstrumentationUtil {
     @Deprecated()
     public static void __postEvent(String id, String invName, Object retVal) {
         String retValStr = "'" + retVal != null ? retVal.toString() : "null" + "'";
-
+        
         System.out.println("post-event: '" + invName + "', id: '" + id
                 + "', ret: [ '" + retValStr + "' ]");
+        
+        InstrumentationEvent evt = new InstrumentationEventImpl(
+                InstrumentationEventType.POST_INVOCATION,
+                new InstrumentationSourceImpl(id, invName, null, retVal, true));
+        
+        eventSender.fireEvent(evt);
     }
 
     /**
@@ -147,8 +162,22 @@ public class VRLInstrumentationUtil {
      */
     @Deprecated()
     public static void __postEvent(String id, String invName) {
-
+        
         System.out.println("post-event: '" + invName + "', id: '" + id
                 + "', ret: [ void ]");
+        
+        InstrumentationEvent evt = new InstrumentationEventImpl(
+                InstrumentationEventType.POST_INVOCATION,
+                new InstrumentationSourceImpl(id, invName, null, null, true));
+        
+        eventSender.fireEvent(evt);
+    }
+    
+    public static void addEventHandler(InstrumentationEventType type, InstrumentationEventHandler eventHandler) {
+        eventSender.addEventHandler(type, eventHandler);
+    }
+    
+    public static void removeEventHandler(InstrumentationEventType type, InstrumentationEventHandler eventHandler) {
+        eventSender.removeEventHandler(type, eventHandler);
     }
 }

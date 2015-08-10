@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-class ObservableCodeImpl implements ObservableCode, EventSender {
+class ObservableCodeImpl implements ObservableCode, EventSender<CodeEvent> {
 
     private final Map<ICodeEventType, List<CodeEventHandler>> handlers = new HashMap<>();
     private final List<CodeEventHandler> handlerList = new ArrayList<>();
@@ -57,8 +57,12 @@ class ObservableCodeImpl implements ObservableCode, EventSender {
     public void fireEvent(CodeEvent evt) {
 
         ICodeEventType type = evt.getType();
+        
+        ICodeEventType prevType = null;
 
-        while (type != CodeEventType.ROOT) {
+        while (prevType != CodeEventType.ROOT) {
+            
+            prevType = type;
 
             for (CodeEventHandler h : getHandlersOfType(type)) {
                 h.handle(evt);

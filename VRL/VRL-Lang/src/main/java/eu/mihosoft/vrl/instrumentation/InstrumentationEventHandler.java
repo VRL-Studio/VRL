@@ -3,13 +3,14 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package eu.mihosoft.vrl.instrumentation;
 
-package eu.mihosoft.vrl.lang.model;
 
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface EventSender<T> {
-    void fireEvent(T evt); 
+@FunctionalInterface
+public interface InstrumentationEventHandler {
+    public void handle(InstrumentationEvent evt);
 }

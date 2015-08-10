@@ -56,7 +56,7 @@ import eu.mihosoft.vrl.workflow.VNode;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface CodeEntity extends ObservableCode, EventSender{
+public interface CodeEntity extends ObservableCode, EventSender<CodeEvent>{
     public void setId(String id);
     public String getId();
     
