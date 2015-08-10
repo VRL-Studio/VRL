@@ -85,10 +85,18 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         return currentVarName;
     }
 
+    /**
+     * Returns the previous intermediate variable name.
+     * @return previous intermediate variable name
+     */
     private String previousVarName() {
         return prevVarName;
     }
 
+    /**
+     * Returns the current intermediate variable name.
+     * @return current intermediate variable name
+     */
     private String currentVarName() {
         return currentVarName;
     }
@@ -113,14 +121,18 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
     /**
      * Returns the specified invocation and all connected invocations. Connected
      * invocations are defined as invocations that are connected via *dataflow*:
+     * <pre>
+     *  a) invocations that are inputs of
+     *     other invocations
+     *  b) invocations that are called on
+     *     objects returned by invocations
+     * </pre>
      *
-     * - invocations that are inputs of other invocations - invocations that are
-     * called on objects returned by invocations
-     *
-     * @param cf
-     * @param invocations
-     * @param inv
-     * @return
+     * @param cf control flow that contains the invocations to check
+     * @param invocations invocations that shall be considered
+     * @param inv invocation
+     * @return list that contains the specifried invocation and all connected
+     *         invocations
      */
     private List<Invocation> getInvAndConnectedInvs(ControlFlow cf,
             List<Invocation> invocations, Invocation inv) {
