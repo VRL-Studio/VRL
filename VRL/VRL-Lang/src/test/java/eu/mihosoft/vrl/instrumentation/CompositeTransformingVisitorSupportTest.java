@@ -280,12 +280,12 @@ public class CompositeTransformingVisitorSupportTest {
 
 	@Test
 	public void testNestedResolution() throws Exception {
-		SourceUnit src = fromCode("class A{ void run(){ if (2>1) { run(); } else if (2<1) { run(); } else { run(); } }}");
+		SourceUnit src = fromCode("class A{ void run(){ if (2>1) { run_if(); } else if (2<1) { run_elseif(); } else { run_else(); } }}");
 		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
 				.init(src);
 		visitor.visitModuleNode(src.getAST());
 		String code = Scope2Code.getCode((CompilationUnitDeclaration) visitor.getRoot().getRootObject());
-		assertEquals("", code);
+		assertEquals("", code.substring(code.indexOf("run()") + 8,code.lastIndexOf("}\n    }")+1).trim());
 	}
 
 	void printBindings() {

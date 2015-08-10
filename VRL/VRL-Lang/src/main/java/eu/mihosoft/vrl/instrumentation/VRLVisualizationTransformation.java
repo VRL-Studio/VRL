@@ -49,8 +49,22 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
+import java.io.IOException;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.codehaus.groovy.ast.ASTNode;
+import org.codehaus.groovy.control.CompilePhase;
+import org.codehaus.groovy.control.SourceUnit;
+import org.codehaus.groovy.transform.ASTTransformation;
+import org.codehaus.groovy.transform.GroovyASTTransformation;
+
 import eu.mihosoft.vrl.instrumentation.composites.BinaryExpressionPart;
-import eu.mihosoft.vrl.instrumentation.composites.BooleanExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.BreakPart;
 import eu.mihosoft.vrl.instrumentation.composites.ClassNodePart;
 import eu.mihosoft.vrl.instrumentation.composites.ConstantExpressionPart;
@@ -70,31 +84,11 @@ import eu.mihosoft.vrl.instrumentation.composites.WhileLoopPart;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.IdRequest;
-import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
-import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
-import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.CodeReader;
-import eu.mihosoft.vrl.lang.VCommentParser;
+import eu.mihosoft.vrl.lang.model.UIBinding;
+import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.codehaus.groovy.transform.ASTTransformation;
-import org.codehaus.groovy.transform.GroovyASTTransformation;
-import org.codehaus.groovy.control.SourceUnit;
-import org.codehaus.groovy.control.CompilePhase;
-import org.codehaus.groovy.ast.ASTNode;
-import org.codehaus.groovy.ast.ClassNode;
 
 /**
  *
@@ -183,9 +177,7 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 							stateMachine, sourceUnit, builder, mapper),
 					new MethodCallExpressionPart(stateMachine, sourceUnit,
 							builder, mapper), new PropertyExpressionPart(
-							stateMachine, sourceUnit, builder, mapper),
-					new BooleanExpressionPart(stateMachine, sourceUnit,
-							builder, mapper));
+							stateMachine, sourceUnit, builder, mapper));
 
 		} catch (IOException ex) {
 			Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(

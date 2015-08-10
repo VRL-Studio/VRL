@@ -9,6 +9,7 @@ import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.BinaryExpression;
+import org.codehaus.groovy.ast.expr.BooleanExpression;
 import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
@@ -299,6 +300,10 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 					ConstantValue.class);
 			arg = Argument.constArg(constVal);
 		} else if (expr instanceof BinaryExpression) {
+			Invocation inv = context.resolve(key, expr,
+					BinaryOperatorInvocation.class);
+			arg = Argument.invArg(inv);
+		} else if (expr instanceof BooleanExpression) {
 			Invocation inv = context.resolve(key, expr,
 					BinaryOperatorInvocation.class);
 			arg = Argument.invArg(inv);

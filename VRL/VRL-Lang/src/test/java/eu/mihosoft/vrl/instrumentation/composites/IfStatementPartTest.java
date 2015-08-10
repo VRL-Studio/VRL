@@ -6,10 +6,12 @@ import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.junit.Test;
 
 import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
 import eu.mihosoft.vrl.lang.model.ConstantValueFactory;
 import eu.mihosoft.vrl.lang.model.ElseIfDeclaration;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IfDeclaration;
+import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Type;
 
 public class IfStatementPartTest extends CompositeTestUtil<IfStatement, IfStatementPart> {
@@ -24,21 +26,22 @@ public class IfStatementPartTest extends CompositeTestUtil<IfStatement, IfStatem
 	{
 		createHarness("if (1<2) then { println(\"if\"); }", IfStatement.class, IfStatementPart.class);
 		IArgument arg = Argument.constArg(ConstantValueFactory.createConstantValue("test", Type.STRING));
-		resolveAs("IfStatement.condition", arg);
+		Invocation inv = createProxy(BinaryOperatorInvocation.class);
+		resolveAs("IfStatement.condition", inv);
 		IfDeclaration decl = part.transform(statement, scope, context);
 		
-		assertEquals(arg, decl.getCheck());
+		assertTrue(inv == decl.getCheck().getInvocation().get());
 	}
 	
 	@Test public void testIfStatementPartElseIf() throws Exception
 	{
 		createHarness("if (1<2) then { println(\"if\"); }", IfStatement.class, IfStatementPart.class);
 		scope = fixture(IfDeclaration.class);
-		IArgument arg = Argument.constArg(ConstantValueFactory.createConstantValue("test", Type.STRING));
-		resolveAs("IfStatement.condition", arg);
+		Invocation inv = createProxy(BinaryOperatorInvocation.class);
+		resolveAs("IfStatement.condition", inv);
 		IfDeclaration decl = part.transform(statement, scope, context);
 		assertTrue(decl instanceof ElseIfDeclaration);
-		assertEquals(arg, decl.getCheck());
+		assertTrue(inv == decl.getCheck().getInvocation().get());
 	}
 
 }

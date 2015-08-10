@@ -52,7 +52,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -656,11 +658,32 @@ public class CompositeTransformingVisitorSupport extends
 			return proxied;
 		}
 
-		public void update(Object in, Object result) {
+		protected void updateRecursive(Stack<Object> outs, Stack<Object> ins,
+				Object result) {
+
+			Object out = outs.pop();
+			Object in = ins.pop();
+			
 			if (unresolved.contains(in)) {
 				proxies.get(in).setProxied(result);
 				unresolved.remove(in);
 			}
+			
+			if (outs.isEmpty() || ins.isEmpty())
+				return;
+			
+			if (out == NULL) {
+				updateRecursive(outs, ins, result);
+			}
+
+		}
+
+		public void update(Object in, Object result) {
+			Stack<Object> ins = new Stack<Object>();
+			ins.addAll(stackIn);
+			Stack<Object> outs = new Stack<Object>();
+			outs.addAll(stackOut);
+			updateRecursive(outs, ins, result);
 		}
 	}
 }

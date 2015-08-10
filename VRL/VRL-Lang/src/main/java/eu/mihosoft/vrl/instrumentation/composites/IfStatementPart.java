@@ -1,8 +1,6 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import org.codehaus.groovy.ast.stmt.EmptyStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.StateMachine;
@@ -25,8 +23,8 @@ public class IfStatementPart extends
 	public IfDeclaration transform(IfStatement s,
 			ControlFlowScope currentScope, TransformContext context) {
 
-		IArgument condition = context.resolve("IfStatement.condition",
-				s.getBooleanExpression(), IArgument.class);
+		IArgument condition = convertToArgument("IfStatement.condition",
+				s.getBooleanExpression(), context);
 
 		IfDeclaration decl = null;
 
