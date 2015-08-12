@@ -168,17 +168,17 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 
     @Override
     public BinaryOperatorInvocation assignVariable(Scope scope, String varNameDest, String varNameSrc) {
-        return scope.assignVariable(varNameDest, varNameSrc);
+        return scope.assignVariable(idRequest.request(), varNameDest, varNameSrc);
     }
 
     @Override
     public BinaryOperatorInvocation assignConstant(Scope scope, String varName, Object constant) {
-        return scope.assignConstant(varName, constant);
+        return scope.assignConstant(idRequest.request(), varName, constant);
     }
 
     @Override
     public BinaryOperatorInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation) {
-        return scope.assignInvocationResult(varName, invocation);
+        return scope.assignInvocationResult(idRequest.request(), varName, invocation);
     }
 
     public void setIdRequest(IdRequest idRequest) {

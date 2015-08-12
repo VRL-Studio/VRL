@@ -1,124 +1,167 @@
-/* 
- * VRLInstrumentationUtil.java
- *
- * Copyright (c) 2009–2014 Steinbeis Forschungszentrum (STZ Ölbronn),
- * Copyright (c) 2006–2014 by Michael Hoffer
- * 
- * This file is part of Visual Reflection Library (VRL).
- *
- * VRL is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License version 3
- * as published by the Free Software Foundation.
- * 
- * see: http://opensource.org/licenses/LGPL-3.0
- *      file://path/to/VRL/src/eu/mihosoft/vrl/resources/license/lgplv3.txt
- *
- * VRL is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * This version of VRL includes copyright notice and attribution requirements.
- * According to the LGPL this information must be displayed even if you modify
- * the source code of VRL. Neither the VRL Canvas attribution icon nor any
- * copyright statement/attribution may be removed.
- *
- * Attribution Requirements:
- *
- * If you create derived work you must do three things regarding copyright
- * notice and author attribution.
- *
- * First, the following text must be displayed on the Canvas or an equivalent location:
- * "based on VRL source code".
- * 
- * Second, the copyright notice must remain. It must be reproduced in any
- * program that uses VRL.
- *
- * Third, add an additional notice, stating that you modified VRL. In addition
- * you must cite the publications listed below. A suitable notice might read
- * "VRL source code modified by YourName 2012".
- * 
- * Note, that these requirements are in full accordance with the LGPL v3
- * (see 7. Additional Terms, b).
- *
- * Publications:
- *
- * M. Hoffer, C.Poliwoda, G.Wittum. Visual Reflection Library -
- * A Framework for Declarative GUI Programming on the Java Platform.
- * Computing and Visualization in Science, in press.
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package eu.mihosoft.vrl.instrumentation;
 
+import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.ControlFlow;
+import eu.mihosoft.vrl.lang.model.IArgument;
+import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.ScopeInvocation;
+import eu.mihosoft.vrl.lang.model.Type;
+import eu.mihosoft.vrl.lang.model.WhileDeclaration;
+
 /**
+ * Instrumentation utility class for model based instrumentation.
  *
- * @author Michael Hoffer <info@michaelhoffer.de>
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VRLInstrumentationUtil {
-    // http://groovy.codehaus.org/Compile-time+Metaprogramming+-+AST+Transformations
-    // http://hamletdarcy.blogspot.de/2009/01/groovy-compile-time-meta-magic.html
-    // methodcall transformations:
-    // http://groovy.329449.n5.nabble.com/AST-Transforming-a-MethodCallExpression-td5711841.html
-    // type transformations:
-    // http://groovy.329449.n5.nabble.com/is-possible-an-AST-transformation-to-convert-all-BigDecimals-to-doubles-in-GroovyLab-td5711461.html
+    
+    private static final InstrumentationEventSender eventSender
+            = new InstrumentationEventSender();
 
-    private VRLInstrumentationUtil() {
-        throw new AssertionError("Don't instantiate me!");
+    /**
+     * Generates a pre event invocation for the specified invocation.
+     *
+     * @param cf controlflow
+     * @param inv invocation
+     * @return the generated pre event invocation
+     */
+    public static Invocation generatePreEvent(ControlFlow cf, Invocation inv) {
+        IArgument[] args;
+        // for while-loops we don't add the arguments to the event invocation
+        // since they are unknown before we enter the loop body
+        if (inv instanceof ScopeInvocation
+                && ((ScopeInvocation) inv).getScope() instanceof WhileDeclaration) {
+            args = new IArgument[2];
+            args[0] = Argument.constArg(Type.STRING, inv.getId());
+            args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
+        } else {
+            // ... for all other invocations we add all arguments since they
+            // are known at event invocation time
+            args = new IArgument[inv.getArguments().size() + 2];
+            
+            args[0] = Argument.constArg(Type.STRING, inv.getId());
+            args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
+            
+            for (int i = 0; i < inv.getArguments().size(); i++) {
+                args[i + 2] = inv.getArguments().get(i);
+            }
+        }
+        
+        return cf.callStaticMethod(
+                "",
+                Type.fromClass(VRLInstrumentationUtil.class),
+                "__preEvent", Type.VOID, args);
+    }
+
+    /**
+     * Generates a post event invocation for the specified invocation.
+     *
+     * @param cf controlflow
+     * @param inv invocation
+     * @param retValArg return value argument of the specified invocation
+     * @return the generated post event invocation
+     */
+    public static Invocation generatePostEvent(ControlFlow cf,
+            Invocation inv, IArgument retValArg) {
+        
+        IArgument[] args = new IArgument[3];
+        
+        args[0] = Argument.constArg(Type.STRING, inv.getId());
+        args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
+        args[2] = retValArg;
+        
+        return cf.callStaticMethod(
+                "",
+                Type.fromClass(VRLInstrumentationUtil.class),
+                "__postEvent", Type.VOID, args);
+    }
+
+    /**
+     * Generates a post event invocation for the specified invocation.
+     *
+     * @param cf controlflow
+     * @param inv invocation
+     * @return the generated post event invocation
+     */
+    public static Invocation generatePostEvent(ControlFlow cf,
+            Invocation inv) {
+        IArgument[] args = new IArgument[2];
+        
+        args[0] = Argument.constArg(Type.STRING, inv.getId());
+        args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
+        
+        return cf.callStaticMethod(
+                "",
+                Type.fromClass(VRLInstrumentationUtil.class),
+                "__postEvent", Type.VOID, args);
+    }
+
+    /**
+     * Don't call this method manually. It is designed for the automatic model
+     * based instrumentation only! API is subject to change.
+     *
+     * @param id invocation id
+     * @param invName invocation name
+     * @param args invocation arguments
+     * @deprecated
+     */
+    @Deprecated()
+    public static void __preEvent(String id, String invName, Object... args) {
+        
+        InstrumentationEvent evt = new InstrumentationEventImpl(
+                InstrumentationEventType.PRE_INVOCATION,
+                new InstrumentationSourceImpl(id, invName, args, null, true));
+        
+        eventSender.fireEvent(evt);
+    }
+
+    /**
+     * Don't call this method manually. It is designed for the automatic model
+     * based instrumentation only! API is subject to change.
+     *
+     * @param id invocation id
+     * @param invName invocation name
+     * @param retVal return value
+     * @deprecated
+     */
+    @Deprecated()
+    public static void __postEvent(String id, String invName, Object retVal) {
+        
+        InstrumentationEvent evt = new InstrumentationEventImpl(
+                InstrumentationEventType.POST_INVOCATION,
+                new InstrumentationSourceImpl(id, invName, null, retVal, true));
+        
+        eventSender.fireEvent(evt);
+    }
+
+    /**
+     * Don't call this method manually. It is designed for the automatic model
+     * based instrumentation only! API is subject to change.
+     *
+     * @param id invocation id
+     * @param invName invocation name
+     * @deprecated
+     */
+    @Deprecated()
+    public static void __postEvent(String id, String invName) {
+        
+        InstrumentationEvent evt = new InstrumentationEventImpl(
+                InstrumentationEventType.POST_INVOCATION,
+                new InstrumentationSourceImpl(id, invName, null, null, true));
+        
+        eventSender.fireEvent(evt);
     }
     
-    /**
-     * Do not call manually! This method will be used by AST transformations to
-     * instrument method calls.
-     *
-     * @param staticCall defines whether method call is a static method call
-     * @param o instance the method belongs to
-     * @param mName method name
-     * @param args method arguments
-     * @return return value of the method that shall be instrumented
-     * @throws Throwable
-     */
-    public static Object __instrumentCode(boolean staticCall, Object o, String mName, Object[] args) throws Throwable {
-
-        System.out.println(" --> calling " + mName + "(...)");
-
-        Object result = null;
-
-        if (staticCall) {
-            result = org.codehaus.groovy.runtime.InvokerHelper.invokeStaticMethod((Class<?>) o, mName, args);
-        } else {
-            result = org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(o, mName, args);
-        }
-
-        System.out.println(" --> returning " + result);
-
-        return result;
+    public static void addEventHandler(InstrumentationEventType type, InstrumentationEventHandler eventHandler) {
+        eventSender.addEventHandler(type, eventHandler);
     }
-
-    /**
-     * Do not call manually! This method will be used by AST transformations to
-     * instrument method calls.
-     *
-     * @param staticCall defines whether method call is a static method call
-     * @param scopeId position in scope
-     * @param o instance the method belongs to
-     * @param mName method name
-     * @param args method arguments
-     * @return return value of the method that shall be instrumented
-     * @throws Throwable
-     */
-    public static Object __instrumentCode(int scopeId, boolean staticCall, Object o, String mName, Object[] args) throws Throwable {
-
-        System.out.println(" --> calling " + o.toString() + "." + mName + "(...): scope=" + scopeId);
-
-        Object result = null;
-
-        if (staticCall) {
-            result = org.codehaus.groovy.runtime.InvokerHelper.invokeStaticMethod((Class<?>) o, mName, args);
-        } else {
-            result = org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(o, mName, args);
-        }
-
-        System.out.println(" --> returning " + result);
-
-        return result;
+    
+    public static void removeEventHandler(InstrumentationEventType type, InstrumentationEventHandler eventHandler) {
+        eventSender.removeEventHandler(type, eventHandler);
     }
 }

@@ -6,6 +6,8 @@
 package eu.mihosoft.vrl.lang.model.transform;
 
 import eu.mihosoft.vrl.base.IOUtil;
+import eu.mihosoft.vrl.instrumentation.InstrumentationEventType;
+import eu.mihosoft.vrl.instrumentation.VRLInstrumentationUtil;
 import eu.mihosoft.vrl.lang.model.CommentTest;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.LangModelTest;
@@ -47,9 +49,11 @@ public class InstrumentationTest {
 
     @Test
     public void instrumentationTest() {
-        
-        String fileName = "Instrumentation01.groovy";
-        
+
+        UIBinding.scopes.clear();
+
+        String fileName = "Instrumentation02.groovy";
+
         String code = getResourceAsString(fileName);
 
         // checking whether sample code compiles and generate model
@@ -73,30 +77,38 @@ public class InstrumentationTest {
         for (Collection<Scope> scopeList : UIBinding.scopes.values()) {
             for (Scope s : scopeList) {
                 if (s instanceof CompilationUnitDeclaration) {
-                    
+
                     cu = (CompilationUnitDeclaration) s;
                     newCode = Scope2Code.getCode(cu);
                     break;
                 }
             }
         }
-        
+
         System.out.println(newCode);
-        
+
         InstrumentCode instrumentCode = new InstrumentCode();
-        
+
         CompilationUnitDeclaration newCu = instrumentCode.transform(cu);
-        
+
         String instrumentedCode = Scope2Code.getCode(newCu);
-        
+
+        VRLInstrumentationUtil.addEventHandler(InstrumentationEventType.PRE_INVOCATION,
+                (evt) -> {
+                    System.out.println("pre-evt:\t" + evt.toString());
+                });
+        VRLInstrumentationUtil.addEventHandler(InstrumentationEventType.POST_INVOCATION,
+                (evt) -> {
+                    System.out.println("post-evt:\t" + evt.toString());
+                });
+
         System.out.println(instrumentedCode);
-        
-        
+
         try {
             GroovyClassLoader gcl = new GroovyClassLoader();
             Class<?> instrumentedCodeClass = gcl.parseClass(instrumentedCode);
             instrumentedCodeClass.getMethod("main", String[].class).
-                    invoke(instrumentedCodeClass, (Object)new String[0]);
+                    invoke(instrumentedCodeClass, (Object) new String[0]);
 
         } catch (CompilationFailedException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
             Logger.getLogger(LangModelTest.class.getName()).log(Level.SEVERE, null, ex);

@@ -55,11 +55,11 @@ import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 /**
  *
@@ -74,7 +74,7 @@ class InvocationImpl implements Invocation {
     private final boolean constructor;
     private boolean Void;
 //    private String code;
-    private final Scope parent;
+    private Scope parent;
     private boolean Static;
     private ICodeRange location;
     private IType returnType;
@@ -82,6 +82,8 @@ class InvocationImpl implements Invocation {
     private VNode node;
     private ObservableCodeImpl observableCode;
     private boolean textRenderingEnabled = true;
+    
+    private final ObservableMap<String,Object> metadata = FXCollections.observableHashMap();
 
     public InvocationImpl(
             Scope parent,
@@ -105,11 +107,11 @@ class InvocationImpl implements Invocation {
 //        } else {
 //            returnValue = parent.createVariable(this);
 //        }
-        init(varName);
+        init(varName, parent);
 
     }
 
-    private void init(String varName) {
+    private void init(String varName, Scope oldParent) {
 
         if (varName != null && !varName.isEmpty()) {
             Variable var = null;
@@ -134,7 +136,10 @@ class InvocationImpl implements Invocation {
         if (isScope()) {
             // nothing (see ScopeInvocationImpl)
         } else {
-            if (node == null) {
+            if (node == null || parent != oldParent) {
+                if (node != null) {
+                    oldParent.getFlow().remove(node);
+                }
                 node = parent.getFlow().newNode();
             } else {
                 List<Connector> delList = new ArrayList<>();
@@ -419,7 +424,23 @@ class InvocationImpl implements Invocation {
     @Override
     public void setVariableName(String variableName) {
         this.varName = variableName;
-        init(varName);
+        init(varName, parent);
+    }
+
+    void setParent(Scope parent) {
+        Scope oldParent = this.parent;
+        this.parent = parent;
+        if (parent != oldParent) {
+            init(varName, oldParent);
+        }
+    }
+
+    /**
+     * @return the metadata
+     */
+    @Override
+    public ObservableMap<String,Object> getMetaData() {
+        return metadata;
     }
 
 }

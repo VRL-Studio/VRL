@@ -51,14 +51,18 @@
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.workflow.VNode;
+import java.util.Map;
+import javafx.collections.ObservableMap;
 
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface CodeEntity extends ObservableCode, EventSender{
+public interface CodeEntity extends ObservableCode, EventSender<CodeEvent>{
     public void setId(String id);
     public String getId();
+    
+    public ObservableMap<String,Object> getMetaData();
     
 //    public void setCode(String code);
 //    public String getCode();

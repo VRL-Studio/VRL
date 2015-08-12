@@ -19,6 +19,8 @@ dependencies {
     compile "commons-io:commons-io:2.4"
 
     compile project(":vrl-lang")
+    
+    compile files("lib/JCSG.jar");
 }
 
 

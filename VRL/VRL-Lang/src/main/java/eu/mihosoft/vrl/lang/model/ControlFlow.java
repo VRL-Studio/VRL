@@ -51,6 +51,7 @@
 package eu.mihosoft.vrl.lang.model;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -77,6 +78,7 @@ public interface ControlFlow {
     public List<Invocation> getInvocations();
     
     public boolean isUsedAsInput(Invocation invocation);
+    public Optional<Invocation> returnInvTargetIfPresent(Invocation invocation);
 
     public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg, IArgument rightArg, Operator operator);
     

@@ -85,7 +85,8 @@ public final class Argument implements IArgument {
 
     @Override
     public String toString() {
-        return "[Argument: argType=" + getArgType() + ", type=" + getType() + "]";
+        String valueString = ", val='"+getConstant().orElse("?").toString()+"'";
+        return "[Argument: argType=" + getArgType() + ", type=" + getType() + valueString + "]";
     }
 
 }

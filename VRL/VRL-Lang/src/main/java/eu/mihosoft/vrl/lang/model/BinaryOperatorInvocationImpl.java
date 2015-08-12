@@ -15,9 +15,9 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
 
     private final Operator operator;
 
-    public BinaryOperatorInvocationImpl(Scope parent, IArgument leftArg, IArgument rightArg, Operator operator) {
+    public BinaryOperatorInvocationImpl(String id, Scope parent, IArgument leftArg, IArgument rightArg, Operator operator) {
 
-        super(parent, "", null, "op " + operator, Type.VOID, false, true, leftArg, rightArg);
+        super(parent, id, null, "op " + operator, Type.VOID, false, true, leftArg, rightArg);
 
         this.operator = operator;
 
@@ -33,7 +33,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
 //            if (leftArg.getArgType() == ArgumentType.VARIABLE
 //                    && rightArg.getArgType() == ArgumentType.VARIABLE) {
 
-                // TODO: check that leftArg and rightArg == const or var
+                // TODO: check that leftArg and rightArg == const or var or invocation
             retType = Type.BOOLEAN;
 //            }
         } else if (basicArithmeticOperator(operator)) {
@@ -51,11 +51,11 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
         getNode().setTitle("op " + operator);
     }
 
-    private boolean pureAssignmentOperator(Operator operator) {
+    public static boolean pureAssignmentOperator(Operator operator) {
         return operator == Operator.ASSIGN;
     }
 
-    private boolean assignmentOperator(Operator operator) {
+    public static boolean assignmentOperator(Operator operator) {
         return operator == Operator.ASSIGN
                 || operator == Operator.PLUS_ASSIGN
                 || operator == Operator.MINUS_ASSIGN
@@ -69,6 +69,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
                 || operator == Operator.NOT_EQUALS
                 || operator == Operator.LESS_EQUALS
                 || operator == Operator.GREATER_EQUALS
+                || operator == Operator.GREATER
                 || operator == Operator.LESS
                 || operator == Operator.GREATER_EQUALS
                 || operator == Operator.OR

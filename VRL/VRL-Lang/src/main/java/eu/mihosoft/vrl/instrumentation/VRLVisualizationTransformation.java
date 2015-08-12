@@ -774,14 +774,14 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     @Override
     public void visitMethodCallExpression(MethodCallExpression s) {
-        
+
         System.err.println("m-call: " + s.getText());
 
         if (returnVariables.containsKey(s)) {
             System.err.println(" -> no ret-key");
             return;
         }
-        
+
         System.err.println(" -> ret-key");
 
         super.visitMethodCallExpression(s);
@@ -790,13 +790,19 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         IArgument[] arguments = convertArguments(args);
 
         String objectName = null;
+        
+        if (s.getText().startsWith("this.")) {
+            objectName = "this";
+        }
 
         boolean isIdCall = false;
+        boolean isStatic = false;
 
         if (s.getObjectExpression() instanceof VariableExpression) {
             VariableExpression ve = (VariableExpression) s.getObjectExpression();
             objectName = ve.getName();
         } else if (s.getObjectExpression() instanceof ClassExpression) {
+            isStatic = true;
             ClassExpression ce = (ClassExpression) s.getObjectExpression();
             objectName = ce.getType().getName();
 
@@ -828,11 +834,21 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         if (!isIdCall) {
             if (objectName != null) {
 
-                Invocation invocation = codeBuilder.invokeMethod(
-                        (ControlFlowScope) currentScope, objectName,
-                        s.getMethod().getText(),
-                        returnType,
-                        arguments);
+                Invocation invocation;
+
+                if (isStatic) {
+                    invocation = codeBuilder.invokeStaticMethod(
+                            (ControlFlowScope) currentScope, new Type(objectName),
+                            s.getMethod().getText(),
+                            returnType,
+                            arguments);
+                } else {
+                    invocation = codeBuilder.invokeMethod(
+                            (ControlFlowScope) currentScope, objectName,
+                            s.getMethod().getText(),
+                            returnType,
+                            arguments);
+                }
 
                 if (stateMachine.getBoolean("variable-declaration")) {
 
@@ -1512,8 +1528,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     private void setRootCodeRange(Scope scope, Reader codeReader) {
 
-    	CodeLineColumnMapper mapper = new CodeLineColumnMapper();
-    	mapper.init(codeReader);
+        CodeLineColumnMapper mapper = new CodeLineColumnMapper();
+        mapper.init(codeReader);
         scope.setRange(new CodeRange(new CodeLocation(0, mapper),
                 mapper));
 

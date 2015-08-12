@@ -50,6 +50,9 @@
 package eu.mihosoft.vrl.ui.codevisualization;
 
 import com.thoughtworks.xstream.XStream;
+import eu.mihosoft.vrl.instrumentation.InstrumentationEvent;
+import eu.mihosoft.vrl.instrumentation.InstrumentationEventType;
+import eu.mihosoft.vrl.instrumentation.VRLInstrumentationUtil;
 import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
@@ -64,6 +67,7 @@ import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.WhileDeclaration;
+import eu.mihosoft.vrl.lang.model.transform.InstrumentCode;
 import eu.mihosoft.vrl.workflow.Connection;
 import eu.mihosoft.vrl.workflow.Connections;
 import eu.mihosoft.vrl.workflow.Connector;
@@ -78,11 +82,13 @@ import eu.mihosoft.vrl.workflow.fx.ScalableContentPane;
 import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
 import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
+import eu.mihosoft.vrl.workflow.skin.VNodeSkin;
 import groovy.lang.GroovyClassLoader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -120,6 +126,7 @@ import javafx.stage.WindowEvent;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 
@@ -163,10 +170,9 @@ public class MainWindowController implements Initializable {
         canvas.setMinScaleY(0.2);
         canvas.setMaxScaleX(1);
         canvas.setMaxScaleY(1);
-        
+
 //        canvas.setScaleBehavior(ScaleBehavior.IF_NECESSARY);
 //        canvas.setTranslateBehavior(TranslateBehavior.IF_NECESSARY);
-
         addResetViewMenu(canvas);
 
         ScrollPane scrollPane = new ScrollPane(canvas);
@@ -178,7 +184,6 @@ public class MainWindowController implements Initializable {
         rootPane = canvas.getContent();
 
         rootPane.setStyle("-fx-background-color: linear-gradient(to bottom, rgb(10,32,60), rgb(42,52,120));");
-
 
         flow = FlowFactory.newFlow();
         flow.setVisible(true);
@@ -292,6 +297,11 @@ public class MainWindowController implements Initializable {
     public void onCloseAction(ActionEvent e) {
     }
 
+    @FXML
+    public void onRunCodeAction(ActionEvent e) {
+        runCode();
+    }
+
     public void loadTextFile(File f) {
 
         try {
@@ -356,6 +366,99 @@ public class MainWindowController implements Initializable {
 
         fileMonitor.addObserver(observer);
 
+    }
+
+    private Optional<VNode> getNodeByCodeId(VFlowModel flow, String id) {
+
+        System.out.println("-> searching for: " + id);
+
+        for (VNode vn : flow.getNodes()) {
+
+            boolean valObjectIsCodeEntity
+                    = vn.getValueObject().getValue() instanceof CodeEntity;
+
+            if (valObjectIsCodeEntity) {
+                CodeEntity ce = (CodeEntity) vn.getValueObject().getValue();
+
+                if (Objects.equals(ce.getId(), id)) {
+                    return Optional.of(vn);
+                }
+            }
+
+            if (vn instanceof VFlowModel) {
+                VFlowModel subFlow = (VFlowModel) vn;
+                Optional<VNode> res = getNodeByCodeId(subFlow, id);
+
+                if (res.isPresent()) {
+                    return res;
+                }
+            }
+
+        }
+
+        return Optional.empty();
+    }
+
+//    private Optional<VNode> _getNodeByCodeId(VFlow flow, String id) {
+//        return flow.getNodes().stream().
+//                filter((vn) -> {
+//                    return vn.getValueObject() instanceof CodeEntity;
+//                }).
+//                map((vn) -> {
+//                    return (CodeEntity) vn.getValueObject();
+//                }).
+//                filter((ce) -> {
+//                    return Objects.equals(ce.getId(),
+//                            id);
+//                }).findFirst().map(ce -> ce.getNode());
+//    }
+    private void runCode() {
+
+        CompilationUnitDeclaration cu
+                = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                iterator().next().get(0);
+
+        // copy cu
+        // TODO 10.08.2015 add copy/cloning functionality (see todos in model)
+        updateView();
+        InstrumentCode instrumentCode = new InstrumentCode();
+        CompilationUnitDeclaration newCu = instrumentCode.transform(cu);
+
+        String instrumentedCode = Scope2Code.getCode(newCu);
+
+        VRLInstrumentationUtil.addEventHandler(
+                InstrumentationEventType.PRE_INVOCATION,
+                (evt) -> {
+                    System.out.println("pre-evt:\t" + evt.toString());
+                });
+        VRLInstrumentationUtil.addEventHandler(
+                InstrumentationEventType.POST_INVOCATION,
+                (evt) -> {
+                    System.out.println("post-evt:\t" + evt.toString());
+                });
+
+        VRLInstrumentationUtil.addEventHandler(
+                InstrumentationEventType.POST_INVOCATION,
+                (evt) -> {
+                    getNodeByCodeId(
+                            flow.getModel(),
+                            evt.getSource().getId()).ifPresent(
+                            vn -> {
+                                visualizeEvent(evt, vn);
+                            });
+                });
+
+        System.out.println(instrumentedCode);
+
+        try {
+            GroovyClassLoader gcl = new GroovyClassLoader();
+            Class<?> instrumentedCodeClass = gcl.parseClass(instrumentedCode);
+            instrumentedCodeClass.getMethod("main", String[].class).
+                    invoke(instrumentedCodeClass, (Object) new String[0]);
+
+        } catch (CompilationFailedException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     private void updateView() {
@@ -744,6 +847,25 @@ public class MainWindowController implements Initializable {
                 cm.show(canvas, e.getScreenX(), e.getScreenY());
             }
         });
+    }
+
+    private void visualizeEvent(InstrumentationEvent evt, VNode vn) {
+        System.out.println("vn: " + vn.getId());
+        
+        if (vn.getValueObject().getValue() instanceof CodeEntity) {
+            CodeEntity ce = (CodeEntity) vn.getValueObject().getValue();
+            ce.getMetaData().put("VRL:retVal", evt.getSource().getReturnValue().orElse(null));
+        }
+        
+//        List<VNodeSkin> skins = flow.getNodeSkinLookup().getById(vn.getId());
+//
+//        skins.stream().filter(sk -> sk instanceof VariableFlowNodeSkin).
+//                map((sk) -> {
+//                    return (VariableFlowNodeSkin) sk;
+//                }).
+//                forEach(sk -> {
+//                    sk.updateOutputView(evt.getSource().getReturnValue());
+//                });
     }
 }
 

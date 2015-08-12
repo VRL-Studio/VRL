@@ -27,10 +27,10 @@ public class IfDeclarationImpl extends ScopeImpl implements IfDeclaration {
     @Override
     public IArgument getCheck() {
 
-        return getMetaData().getCheck();
+        return getIfMetaData().getCheck();
     }
 
-    private IfDeclarationMetaData getMetaData() {
+    private IfDeclarationMetaData getIfMetaData() {
         if (metadata == null) {
             metadata = (IfDeclarationMetaData) getScopeArgs()[0];
         }
@@ -45,9 +45,9 @@ public class IfDeclarationImpl extends ScopeImpl implements IfDeclaration {
         i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
             while (c.next()) {
                 if (i.getArguments().isEmpty()) {
-                    getMetaData().setCheck(Argument.NULL);
+                    getIfMetaData().setCheck(Argument.NULL);
                 } else {
-                    getMetaData().setCheck(i.getArguments().get(0));
+                    getIfMetaData().setCheck(i.getArguments().get(0));
                 }
             }
         });

@@ -225,7 +225,7 @@ class MethodCallExpressionTransformer extends ClassCodeExpressionTransformer {
         // create a static method call to the instrumentation method which
         // calls the original method via reflection
         return new StaticMethodCallExpression(
-                new ClassNode(VRLInstrumentationUtil.class),
+                new ClassNode(VRLGroovyInstrumentationUtil.class),
                 "__instrumentCode", finalArgs);
     }
 
@@ -288,7 +288,7 @@ class MethodCallExpressionTransformer extends ClassCodeExpressionTransformer {
         // create a static method call to the instrumentation method which
         // calls the original method via reflection
         return new StaticMethodCallExpression(
-                new ClassNode(VRLInstrumentationUtil.class),
+                new ClassNode(VRLGroovyInstrumentationUtil.class),
                 "__instrumentCode", finalArgs);
     }
 

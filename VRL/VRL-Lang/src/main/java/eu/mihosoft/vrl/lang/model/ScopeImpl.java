@@ -64,6 +64,7 @@ import java.util.function.Consumer;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 
 /**
  *
@@ -88,6 +89,8 @@ class ScopeImpl implements Scope {
     private VFlow flow;
     private ObservableCodeImpl observableCode;
     private boolean textRenderingEnabled = true;
+    
+    private final ObservableMap<String,Object> metadata = FXCollections.observableHashMap();
 
     public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
         this.id = id;
@@ -299,7 +302,7 @@ class ScopeImpl implements Scope {
 //        return variable;
 //    }
     @Override
-    public BinaryOperatorInvocation assignConstant(String varName, Object constant) {
+    public BinaryOperatorInvocation assignConstant(String id, String varName, Object constant) {
         Variable var = getVariable(varName);
 
         if (var == null) {
@@ -313,7 +316,7 @@ class ScopeImpl implements Scope {
     }
 
     @Override
-    public BinaryOperatorInvocation assignVariable(String varNameDest, String varNameSrc) {
+    public BinaryOperatorInvocation assignVariable(String id, String varNameDest, String varNameSrc) {
         Variable varDest = getVariable(varNameDest);
         Variable varSrc = getVariable(varNameSrc);
 
@@ -332,7 +335,7 @@ class ScopeImpl implements Scope {
     }
 
     @Override
-    public BinaryOperatorInvocation assignInvocationResult(String varName, Invocation invocation) {
+    public BinaryOperatorInvocation assignInvocationResult(String id, String varName, Invocation invocation) {
         Variable varDest = getVariable(varName);
 
         if (varDest == null) {
@@ -583,6 +586,14 @@ class ScopeImpl implements Scope {
      */
     public boolean isTextRenderingEnabled() {
         return textRenderingEnabled;
+    }
+
+    /**
+     * @return the metadata
+     */
+    @Override
+    public ObservableMap<String,Object> getMetaData() {
+        return metadata;
     }
 
 }
