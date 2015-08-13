@@ -7,6 +7,7 @@ package eu.mihosoft.vrl.ui.codevisualization;
 
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ArgumentType;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeEvent;
 import eu.mihosoft.vrl.lang.model.CodeEventType;
@@ -14,6 +15,7 @@ import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
@@ -74,15 +76,15 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
     }
 
     private Invocation getInvocation() {
-        return (Invocation)getModel().getValueObject().getValue();
+        return (Invocation) getModel().getValueObject().getValue();
     }
 
     @Override
     protected Node createView() {
 
-        ComboBox<MethodDeclaration> box = new ComboBox<>();
+        ComboBox<Object> box;
 
-        VBox parent = new VBox(box);
+        VBox parent = new VBox();
 
         parent.setAlignment(Pos.CENTER);
 
@@ -107,7 +109,23 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 //            }
         Invocation invocation = (Invocation) value;
 
+        if (invocation instanceof BinaryOperatorInvocation) {
+            BinaryOperatorInvocation opInv = (BinaryOperatorInvocation) invocation;
+            box = new ComboBox<>();
+            box.getItems().addAll(Operator.PLUS, Operator.MINUS, Operator.TIMES, Operator.DIV);
+            
+            box.getSelectionModel().selectedItemProperty().addListener((ov,oldV,newV)-> {
+                opInv.setOperator((Operator) newV);
+            });
+            
+        } else {
+            box = new ComboBox<>();
+        }
+        
+        parent.getChildren().add(box);
+
         box.setVisible(!invocation.getArguments().isEmpty());
+
 
         VBox inputs = new VBox();
         outputs = new VBox();
@@ -342,7 +360,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             Label l = new Label();
             if (isInvocation()) {
                 Invocation invocation = getInvocation();
-                if(!invocation.isVoid() && !(invocation instanceof DeclarationInvocation)) {
+                if (!invocation.isVoid() && !(invocation instanceof DeclarationInvocation)) {
                     l.setText("null");
                 }
             }
