@@ -13,7 +13,7 @@ import java.util.Objects;
  */
 public class BinaryOperatorInvocationImpl extends InvocationImpl implements BinaryOperatorInvocation {
 
-    private final Operator operator;
+    private Operator operator;
 
     public BinaryOperatorInvocationImpl(String id, Scope parent, IArgument leftArg, IArgument rightArg, Operator operator) {
 
@@ -21,34 +21,35 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
 
         this.operator = operator;
 
-        IType retType = Type.VOID;
+        validate(operator, leftArg);
+    }
 
-        if (assignmentOperator(operator)) {
+    private void validate(Operator operator1, IArgument leftArg) throws IllegalArgumentException {
+        IType retType = Type.VOID;
+        if (assignmentOperator(operator1)) {
             if (leftArg.getArgType() != ArgumentType.VARIABLE) {
                 throw new IllegalArgumentException("Left Argument must be a variable!");
             } else {
                 retType = leftArg.getVariable().get().getType();
             }
-        } else if (booleanOperator(operator)) {
-//            if (leftArg.getArgType() == ArgumentType.VARIABLE
+        } else if (booleanOperator(operator1)) {
+            //            if (leftArg.getArgType() == ArgumentType.VARIABLE
 //                    && rightArg.getArgType() == ArgumentType.VARIABLE) {
-
-                // TODO: check that leftArg and rightArg == const or var or invocation
+            
+            // TODO: check that leftArg and rightArg == const or var or invocation
             retType = Type.BOOLEAN;
 //            }
-        } else if (basicArithmeticOperator(operator)) {
+        } else if (basicArithmeticOperator(operator1)) {
             retType = Type.OBJECT;
-        } else if (arrayElementOperator(operator)) {
+        } else if (arrayElementOperator(operator1)) {
             if (leftArg.getArgType() != ArgumentType.VARIABLE) {
                 throw new IllegalArgumentException("Left Argument must be a variable!");
             } else {
                 retType = leftArg.getVariable().get().getType();
             }
         }
-
         setReturnType(retType);
-
-        getNode().setTitle("op " + operator);
+        getNode().setTitle("op " + operator1);
     }
 
     public static boolean pureAssignmentOperator(Operator operator) {
@@ -149,6 +150,12 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
     @Override
     public boolean isArrayAccessOperator() {
         return arrayElementOperator(operator);
+    }
+
+    @Override
+    public void setOperator(Operator op) {
+        this.operator = op;
+        validate(operator, getLeftArgument());
     }
 
 }
