@@ -78,11 +78,7 @@ import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.fx.FXValueSkinFactory;
-import eu.mihosoft.vrl.workflow.fx.ScalableContentPane;
-import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
-import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
-import eu.mihosoft.vrl.workflow.skin.VNodeSkin;
 import groovy.lang.GroovyClassLoader;
 import java.io.File;
 import java.io.FileWriter;
@@ -414,13 +410,15 @@ public class MainWindowController implements Initializable {
 //    }
     private void runCode() {
 
+        // copy cu
+        // TODO 10.08.2015 add copy/cloning functionality (see todos in model)
+        updateView();
         CompilationUnitDeclaration cu
                 = (CompilationUnitDeclaration) UIBinding.scopes.values().
                 iterator().next().get(0);
 
-        // copy cu
-        // TODO 10.08.2015 add copy/cloning functionality (see todos in model)
         updateView();
+
         InstrumentCode instrumentCode = new InstrumentCode();
         CompilationUnitDeclaration newCu = instrumentCode.transform(cu);
 
@@ -438,7 +436,7 @@ public class MainWindowController implements Initializable {
                 });
 
         VRLInstrumentationUtil.addEventHandler(
-                InstrumentationEventType.POST_INVOCATION,
+                InstrumentationEventType.INVOCATION,
                 (evt) -> {
                     getNodeByCodeId(
                             flow.getModel(),
@@ -851,12 +849,16 @@ public class MainWindowController implements Initializable {
 
     private void visualizeEvent(InstrumentationEvent evt, VNode vn) {
         System.out.println("vn: " + vn.getId());
-        
+
         if (vn.getValueObject().getValue() instanceof CodeEntity) {
             CodeEntity ce = (CodeEntity) vn.getValueObject().getValue();
-            ce.getMetaData().put("VRL:retVal", evt.getSource().getReturnValue().orElse(null));
+            if (evt.getType() == InstrumentationEventType.POST_INVOCATION) {
+                ce.getMetaData().put("VRL:retVal", evt.getSource().getReturnValue().orElse(null));
+            } else if (evt.getType() == InstrumentationEventType.PRE_INVOCATION) {
+                ce.getMetaData().put("VRL:args", evt.getSource().getArguments());
+            }
         }
-        
+
 //        List<VNodeSkin> skins = flow.getNodeSkinLookup().getById(vn.getId());
 //
 //        skins.stream().filter(sk -> sk instanceof VariableFlowNodeSkin).

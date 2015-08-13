@@ -10,6 +10,7 @@ import eu.mihosoft.vrl.lang.model.ArgumentType;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeEvent;
 import eu.mihosoft.vrl.lang.model.CodeEventType;
+import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
@@ -25,8 +26,9 @@ import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
 import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
-import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -53,6 +55,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
     private boolean updating;
     private VBox outputs;
+    private final ObjectProperty<Object[]> args = new SimpleObjectProperty<>();
 
     public VariableFlowNodeSkin(FXSkinFactory skinFactory, VNode model, VFlow controller) {
         super(skinFactory, model, controller);
@@ -64,6 +67,14 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
         canvas.setScaleBehavior(ScaleBehavior.ALWAYS);
         canvas.setTranslateBehavior(TranslateBehavior.ALWAYS);
+    }
+
+    private boolean isInvocation() {
+        return getModel().getValueObject().getValue() instanceof Invocation;
+    }
+
+    private Invocation getInvocation() {
+        return (Invocation)getModel().getValueObject().getValue();
     }
 
     @Override
@@ -81,7 +92,9 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
         }
 
-        if (value instanceof Invocation) {
+        if (!(value instanceof Invocation)) {
+            return parent;
+        }
 
 //            if (value instanceof ScopeInvocation) {
 //                ScopeInvocation inv = (ScopeInvocation) value;
@@ -92,37 +105,42 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 //                    System.exit(1);
 //                }
 //            }
-            Invocation invocation = (Invocation) value;
+        Invocation invocation = (Invocation) value;
 
-            box.setVisible(!invocation.getArguments().isEmpty());
+        box.setVisible(!invocation.getArguments().isEmpty());
 
-            VBox inputs = new VBox();
-            outputs = new VBox();
-            HBox hbox = new HBox(inputs, outputs);
-            hbox.setPadding(new Insets(0, 15, 0, 15));
+        VBox inputs = new VBox();
+        outputs = new VBox();
+        HBox hbox = new HBox(inputs, outputs);
+        hbox.setPadding(new Insets(0, 15, 0, 15));
 
-            createArgView(invocation, inputs, false);
+        createArgView(invocation, inputs, false);
 
-            invocation.getArguments().addListener(
-                    (ListChangeListener.Change<? extends IArgument> c) -> {
-                        box.setVisible(!invocation.getArguments().isEmpty());
-                        if (!updating) {
-                            createArgView(invocation, inputs,
-                                    invocation.getArguments().size()
-                                    == inputs.getChildren().size());
-                        }
-                    });
-            parent.getChildren().add(hbox);
-        }
-        
-        
+        invocation.getArguments().addListener(
+                (ListChangeListener.Change<? extends IArgument> c) -> {
+                    box.setVisible(!invocation.getArguments().isEmpty());
+                    if (!updating) {
+                        createArgView(invocation, inputs,
+                                invocation.getArguments().size()
+                                == inputs.getChildren().size());
+                    }
+                });
+        parent.getChildren().add(hbox);
 
         if (getModel().getValueObject().getValue() instanceof CodeEntity) {
             CodeEntity ce = (CodeEntity) getModel().getValueObject().getValue();
             updateOutputView(ce.getMetaData().get("VRL:retVal"));
-            
+
+            args.set((Object[]) ce.getMetaData().get("VRL:args"));
+            createArgView(invocation, inputs, true);
+
             ce.getMetaData().addListener((Observable observable) -> {
                 updateOutputView(ce.getMetaData().get("VRL:retVal"));
+
+                args.set((Object[]) ce.getMetaData().get("VRL:args"));
+
+                createArgView(invocation, inputs, true);
+
             });
         }
 
@@ -130,6 +148,10 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             if (newV instanceof CodeEntity) {
                 CodeEntity ce = (CodeEntity) newV;
                 ce.getMetaData().addListener((Observable observable) -> {
+
+                    args.set((Object[]) ce.getMetaData().get("VRL:args"));
+                    createArgView(invocation, inputs, true);
+
                     updateOutputView(ce.getMetaData().get("VRL:retVal"));
                 });
             }
@@ -221,6 +243,18 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                 } else {
                     inputs.getChildren().add(label);
                 }
+
+                if (args.get() != null) {
+                    Object[] currentArgs = args.get();
+                    if (argIndex < currentArgs.length) {
+                        Object arg = currentArgs[argIndex];
+                        if (arg != null) {
+                            label.setText(arg.toString());
+                            label.setTextFill(Color.WHITE);
+                        }
+                    }
+                }
+
             } else if (a.getArgType() == ArgumentType.INVOCATION) {
                 Label label = new Label();
                 label.setTextFill(Color.WHITE);
@@ -229,6 +263,17 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                     inputs.getChildren().set(argIndex, label);
                 } else {
                     inputs.getChildren().add(label);
+                }
+
+                if (args.get() != null) {
+                    Object[] currentArgs = args.get();
+                    if (argIndex < currentArgs.length) {
+                        Object arg = currentArgs[argIndex];
+                        if (arg != null) {
+                            label.setText(arg.toString());
+                            label.setTextFill(Color.WHITE);
+                        }
+                    }
                 }
             }
 
@@ -290,9 +335,19 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
             outputs.getChildren().addAll(subScene);
         } else if (retVal != null) {
-            outputs.getChildren().add(new Label(retVal.toString()));
+            Label l = new Label(retVal.toString());
+            l.setTextFill(Color.WHITE);
+            outputs.getChildren().add(l);
         } else {
-            outputs.getChildren().add(new Label("null"));
+            Label l = new Label();
+            if (isInvocation()) {
+                Invocation invocation = getInvocation();
+                if(!invocation.isVoid() && !(invocation instanceof DeclarationInvocation)) {
+                    l.setText("null");
+                }
+            }
+            l.setTextFill(Color.WHITE);
+            outputs.getChildren().add(l);
         }
 
     }
