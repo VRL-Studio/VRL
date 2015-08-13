@@ -57,6 +57,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -82,8 +83,8 @@ class InvocationImpl implements Invocation {
     private VNode node;
     private ObservableCodeImpl observableCode;
     private boolean textRenderingEnabled = true;
-    
-    private final ObservableMap<String,Object> metadata = FXCollections.observableHashMap();
+
+    private final ObservableMap<String, Object> metadata = FXCollections.observableHashMap();
 
     public InvocationImpl(
             Scope parent,
@@ -360,15 +361,38 @@ class InvocationImpl implements Invocation {
 
         this.Void = Type.VOID.equals(returnType);
 
-        List<Connector> connectorsToRemove
-                = node.getOutputs().filtered(o -> o.getType().equals(WorkflowUtil.DATA_FLOW));
+        List<List<Connector>> receivers = new ArrayList<>();
 
-        node.getOutputs().removeAll(connectorsToRemove);
+        List<Connector> connectorsToRemove
+                = new ArrayList<>(
+                        node.getOutputs().filtered(
+                                o -> o.getType().equals(WorkflowUtil.DATA_FLOW)));
+
+//        node.getOutputs().removeAll(connectorsToRemove);
+        for (Connector ctr : connectorsToRemove) {
+            List<Connector> receiversForC
+                    = node.getFlow().getConnections(ctr.getType()).
+                    getAllWith(ctr).stream().
+                    map(conn -> conn.getReceiver()).
+                    collect(Collectors.toList());
+
+            receivers.add(receiversForC);
+
+            node.removeConnector(ctr);
+        }
+
 
         if (!Objects.equals(returnType, Type.VOID)) {
             Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
             output.getValueObject().setValue(returnType);
             node.setMainOutput(output);
+
+            if (!receivers.isEmpty()) {
+                for (Connector rec : receivers.get(0)) {
+                    node.getFlow().connect(output, rec);
+                }
+            }
+
         }
 
         this.returnType = returnType;
@@ -439,7 +463,7 @@ class InvocationImpl implements Invocation {
      * @return the metadata
      */
     @Override
-    public ObservableMap<String,Object> getMetaData() {
+    public ObservableMap<String, Object> getMetaData() {
         return metadata;
     }
 
