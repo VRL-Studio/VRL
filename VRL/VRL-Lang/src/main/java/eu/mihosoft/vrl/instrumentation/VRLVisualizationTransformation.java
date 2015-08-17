@@ -156,30 +156,24 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 			mapper.init(in);
 
 			return new CompositeTransformingVisitorSupport(sourceUnit,
-					new BinaryExpressionPart(stateMachine, sourceUnit, builder,
-							mapper), new BreakPart(stateMachine, sourceUnit,
-							builder, mapper), new ClassNodePart(stateMachine,
-							sourceUnit, builder, mapper), new ContinuePart(
-							stateMachine, sourceUnit, builder, mapper),
-					new DeclarationExpressionPart(stateMachine, sourceUnit,
-							builder, mapper), new FieldPart(stateMachine,
-							sourceUnit, builder, mapper), new ForLoopPart(
-							stateMachine, sourceUnit, builder, mapper),
-					new IfStatementPart(stateMachine, sourceUnit, builder,
-							mapper), new MethodNodePart(stateMachine,
-							sourceUnit, builder, mapper), new ModuleNodePart(
-							builder, mapper), new PostFixExpressionPart(
-							stateMachine, sourceUnit, builder, mapper),
-					new ReturnStatementPart(stateMachine, sourceUnit, builder,
-							mapper), new WhileLoopPart(stateMachine,
-							sourceUnit, builder, mapper),
-					new ConstantExpressionPart(stateMachine, sourceUnit,
-							builder, mapper), new VariableExpressionPart(
-							stateMachine, sourceUnit, builder, mapper),
-					new MethodCallExpressionPart(stateMachine, sourceUnit,
-							builder, mapper), new PropertyExpressionPart(
-							stateMachine, sourceUnit, builder, mapper),
-					new ElsePart(stateMachine, sourceUnit, builder, mapper));
+					new BinaryExpressionPart(sourceUnit, builder, mapper),
+					new BreakPart(sourceUnit, builder, mapper),
+					new ClassNodePart(sourceUnit, builder, mapper),
+					new ContinuePart(sourceUnit, builder, mapper),
+					new DeclarationExpressionPart(sourceUnit, builder, mapper),
+					new FieldPart(sourceUnit, builder, mapper),
+					new ForLoopPart(sourceUnit, builder, mapper),
+					new IfStatementPart(sourceUnit, builder, mapper),
+					new MethodNodePart(sourceUnit, builder, mapper),
+					new ModuleNodePart(builder, mapper),
+					new PostFixExpressionPart(sourceUnit, builder, mapper),
+					new ReturnStatementPart(sourceUnit, builder, mapper),
+					new WhileLoopPart(sourceUnit, builder, mapper),
+					new ConstantExpressionPart(sourceUnit, builder, mapper),
+					new VariableExpressionPart(sourceUnit, builder, mapper),
+					new MethodCallExpressionPart(sourceUnit, builder, mapper),
+					new PropertyExpressionPart(sourceUnit, builder, mapper),
+					new ElsePart(sourceUnit, builder, mapper));
 
 		} catch (IOException ex) {
 			Logger.getLogger(VGroovyCodeVisitor.class.getName()).log(

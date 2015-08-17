@@ -14,14 +14,13 @@ public class ContinuePart
 		extends
 		AbstractCodeBuilderPart<ContinueStatement, ContinueInvocation, ControlFlowScope> {
 
-	public ContinuePart(StateMachine stateMachine, SourceUnit sourceUnit,
-			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
-		super(stateMachine, sourceUnit, builder, mapper);
+	public ContinuePart(SourceUnit sourceUnit, VisualCodeBuilder builder,
+			CodeLineColumnMapper mapper) {
+		super(sourceUnit, builder, mapper);
 	}
 
 	@Override
-	public ContinueInvocation transform(
-			ContinueStatement obj,
+	public ContinueInvocation transform(ContinueStatement obj,
 			ControlFlowScope parent, TransformContext context) {
 		return builder.invokeContinue(parent);
 	}

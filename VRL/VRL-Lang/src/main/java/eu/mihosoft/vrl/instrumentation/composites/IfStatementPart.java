@@ -5,22 +5,19 @@ import org.codehaus.groovy.ast.stmt.IfStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
 
-import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
-import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IfDeclaration;
-import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 
 public class IfStatementPart extends
 		AbstractCodeBuilderPart<IfStatement, IfDeclaration, ControlFlowScope> {
 
-	public IfStatementPart(StateMachine stateMachine, SourceUnit sourceUnit,
-			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
-		super(stateMachine, sourceUnit, builder, mapper);
+	public IfStatementPart(SourceUnit sourceUnit, VisualCodeBuilder builder,
+			CodeLineColumnMapper mapper) {
+		super(sourceUnit, builder, mapper);
 	}
 
 	@Override
@@ -38,7 +35,7 @@ public class IfStatementPart extends
 		} else {
 			decl = builder.invokeIf(currentScope, condition);
 		}
-		
+
 		setCodeRange(decl, s);
 		addCommentsToScope(decl, comments);
 		return decl;
@@ -54,7 +51,6 @@ public class IfStatementPart extends
 	public void postTransform(IfDeclaration obj, IfStatement in,
 			ControlFlowScope parent, TransformContext context) {
 
-		
 		if (in.getBooleanExpression().getExpression() == null) {
 			throwErrorMessage("if-statement: must contain boolean"
 					+ " expression!", in.getBooleanExpression());

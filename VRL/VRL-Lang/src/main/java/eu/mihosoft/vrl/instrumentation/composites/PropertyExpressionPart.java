@@ -3,11 +3,9 @@ package eu.mihosoft.vrl.instrumentation.composites;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.control.SourceUnit;
 
-import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
-import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
@@ -15,10 +13,9 @@ import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 public class PropertyExpressionPart extends
 		AbstractCodeBuilderPart<PropertyExpression, Variable, CodeEntity> {
 
-	public PropertyExpressionPart(StateMachine stateMachine,
-			SourceUnit sourceUnit, VisualCodeBuilder builder,
-			CodeLineColumnMapper mapper) {
-		super(stateMachine, sourceUnit, builder, mapper);
+	public PropertyExpressionPart(SourceUnit sourceUnit,
+			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
+		super(sourceUnit, builder, mapper);
 	}
 
 	@Override
@@ -26,8 +23,7 @@ public class PropertyExpressionPart extends
 			TransformContext ctx) {
 		Scope parent = getParentScope(ce, Scope.class);
 		// TODO generate proper model structure for properties
-		Variable v = parent.getVariable(
-				obj.getObjectExpression().getText());
+		Variable v = parent.getVariable(obj.getObjectExpression().getText());
 		setCodeRange(v, obj);
 		return v;
 	}

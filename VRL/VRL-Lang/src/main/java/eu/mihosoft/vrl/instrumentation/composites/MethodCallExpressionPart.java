@@ -6,8 +6,6 @@ import org.codehaus.groovy.ast.expr.MethodCallExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.control.SourceUnit;
 
-import eu.mihosoft.vrl.instrumentation.StateMachine;
-import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import eu.mihosoft.vrl.instrumentation.VSource;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
@@ -22,10 +20,9 @@ import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 public class MethodCallExpressionPart extends
 		AbstractCodeBuilderPart<MethodCallExpression, Invocation, CodeEntity> {
 
-	public MethodCallExpressionPart(StateMachine stateMachine,
-			SourceUnit sourceUnit, VisualCodeBuilder builder,
-			CodeLineColumnMapper mapper) {
-		super(stateMachine, sourceUnit, builder, mapper);
+	public MethodCallExpressionPart(SourceUnit sourceUnit,
+			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
+		super(sourceUnit, builder, mapper);
 	}
 
 	@Override

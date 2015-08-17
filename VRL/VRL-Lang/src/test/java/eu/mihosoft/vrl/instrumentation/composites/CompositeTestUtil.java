@@ -1,7 +1,5 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import static org.junit.Assert.assertEquals;
-
 import java.io.Reader;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -9,9 +7,7 @@ import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.codehaus.groovy.ast.stmt.ForStatement;
 import org.codehaus.groovy.control.SourceUnit;
-import org.junit.Test;
 
 import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupportTest;
 import eu.mihosoft.vrl.instrumentation.StateMachine;
@@ -19,7 +15,6 @@ import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
-import eu.mihosoft.vrl.lang.model.DeclarationInvocationImpl;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.IdRequest;
 import eu.mihosoft.vrl.lang.model.Scope;
@@ -36,7 +31,6 @@ public class CompositeTestUtil<GroovyType, PartType> {
 	protected ControlFlowScope scope;
 	protected TransformContext context;
 	protected GroovyType statement;
-	protected StateMachine stateMachine;
 	protected SourceUnit sourceUnit;
 	protected PartType part;
 
@@ -117,7 +111,6 @@ public class CompositeTestUtil<GroovyType, PartType> {
 			Class<PartType> partClass) throws Exception {
 		resolutionMap.clear();
 		VisualCodeBuilder_Impl builder = new VisualCodeBuilder_Impl();
-		stateMachine = new StateMachine();
 
 		builder.setIdRequest(new IdRequest() {
 
@@ -144,8 +137,8 @@ public class CompositeTestUtil<GroovyType, PartType> {
 				return cls.cast(resolutionMap.get(key));
 			}
 		}, TransformContext.class);
-		part = partClass.getConstructor(StateMachine.class, SourceUnit.class,
+		part = partClass.getConstructor(SourceUnit.class,
 				VisualCodeBuilder.class, CodeLineColumnMapper.class)
-				.newInstance(stateMachine, sourceUnit, builder, mapper);
+				.newInstance(sourceUnit, builder, mapper);
 	}
 }

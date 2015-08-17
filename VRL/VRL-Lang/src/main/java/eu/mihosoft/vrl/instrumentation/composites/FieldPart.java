@@ -1,12 +1,9 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import java.util.Stack;
-
 import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.control.SourceUnit;
 
-import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
@@ -19,9 +16,9 @@ public class FieldPart
 		extends
 		AbstractCodeBuilderPart<FieldNode, DeclarationInvocation, ClassDeclaration> {
 
-	public FieldPart(StateMachine stateMachine, SourceUnit sourceUnit,
-			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
-		super(stateMachine, sourceUnit, builder, mapper);
+	public FieldPart(SourceUnit sourceUnit, VisualCodeBuilder builder,
+			CodeLineColumnMapper mapper) {
+		super(sourceUnit, builder, mapper);
 	}
 
 	@Override

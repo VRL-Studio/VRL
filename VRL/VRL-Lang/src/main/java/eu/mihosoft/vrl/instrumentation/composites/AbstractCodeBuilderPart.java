@@ -10,13 +10,10 @@ import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.BooleanExpression;
-import org.codehaus.groovy.ast.expr.ClassExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.ConstructorCallExpression;
 import org.codehaus.groovy.ast.expr.EmptyExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
-import org.codehaus.groovy.ast.expr.NotExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.SpreadExpression;
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
@@ -26,10 +23,6 @@ import org.codehaus.groovy.control.messages.LocatedMessage;
 import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.transform.stc.StaticTypesMarker;
 
-import com.google.common.base.Objects;
-
-import eu.mihosoft.vrl.instrumentation.StateMachine;
-import eu.mihosoft.vrl.instrumentation.VSource;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.instrumentation.transform.TransformPart;
 import eu.mihosoft.vrl.lang.model.Argument;
@@ -40,8 +33,6 @@ import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.CommentImpl;
 import eu.mihosoft.vrl.lang.model.ConstantValue;
-import eu.mihosoft.vrl.lang.model.ConstantValueFactory;
-import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.Extends;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
@@ -52,7 +43,6 @@ import eu.mihosoft.vrl.lang.model.Modifier;
 import eu.mihosoft.vrl.lang.model.Modifiers;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.SimpleForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
@@ -64,14 +54,11 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 	VisualCodeBuilder builder;
 	CodeLineColumnMapper mapper;
 	List<Comment> comments = new ArrayList<>();
-	StateMachine stateMachine;
 
-	public AbstractCodeBuilderPart(StateMachine stateMachine,
-			SourceUnit sourceUnit, VisualCodeBuilder builder,
-			CodeLineColumnMapper mapper) {
+	public AbstractCodeBuilderPart(SourceUnit sourceUnit,
+			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
 		this.builder = builder;
 		this.mapper = mapper;
-		this.stateMachine = stateMachine;
 		this.sourceUnit = sourceUnit;
 	}
 

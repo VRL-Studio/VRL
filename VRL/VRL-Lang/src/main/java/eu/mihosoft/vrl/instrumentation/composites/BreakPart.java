@@ -3,7 +3,6 @@ package eu.mihosoft.vrl.instrumentation.composites;
 import org.codehaus.groovy.ast.stmt.BreakStatement;
 import org.codehaus.groovy.control.SourceUnit;
 
-import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.BreakInvocation;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
@@ -14,14 +13,13 @@ public class BreakPart
 		extends
 		AbstractCodeBuilderPart<BreakStatement, BreakInvocation, ControlFlowScope> {
 
-	public BreakPart(StateMachine stateMachine, SourceUnit sourceUnit,
-			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
-		super(stateMachine, sourceUnit, builder, mapper);
+	public BreakPart(SourceUnit sourceUnit, VisualCodeBuilder builder,
+			CodeLineColumnMapper mapper) {
+		super(sourceUnit, builder, mapper);
 	}
 
 	@Override
-	public BreakInvocation transform(
-			BreakStatement obj,
+	public BreakInvocation transform(BreakStatement obj,
 			ControlFlowScope parent, TransformContext context) {
 		return builder.invokeBreak(parent);
 	}

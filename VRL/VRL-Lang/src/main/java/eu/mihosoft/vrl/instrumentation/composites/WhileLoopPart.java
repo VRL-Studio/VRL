@@ -8,7 +8,6 @@ import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.control.SourceUnit;
 
-import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
@@ -24,9 +23,9 @@ public class WhileLoopPart
 		extends
 		AbstractCodeBuilderPart<WhileStatement, WhileDeclaration, ControlFlowScope> {
 
-	public WhileLoopPart(StateMachine stateMachine, SourceUnit sourceUnit,
-			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
-		super(stateMachine, sourceUnit, builder, mapper);
+	public WhileLoopPart(SourceUnit sourceUnit, VisualCodeBuilder builder,
+			CodeLineColumnMapper mapper) {
+		super(sourceUnit, builder, mapper);
 	}
 
 	@Override
@@ -99,8 +98,9 @@ public class WhileLoopPart
 			throwErrorMessage("While-Loop can only be invoked "
 					+ "inside ControlFlowScopes!", s);
 		}
-		
-		IArgument arg = convertToArgument("WhileLoop.condition", s.getBooleanExpression().getExpression(), context);
+
+		IArgument arg = convertToArgument("WhileLoop.condition", s
+				.getBooleanExpression().getExpression(), context);
 
 		WhileDeclaration inv = builder.invokeWhileLoop(parent, arg);
 
@@ -113,9 +113,9 @@ public class WhileLoopPart
 	@Override
 	public void postTransform(WhileDeclaration obj, WhileStatement in,
 			ControlFlowScope parent, TransformContext context) {
-		
+
 	}
-	
+
 	@Override
 	public Class<WhileStatement> getAcceptedType() {
 		return WhileStatement.class;

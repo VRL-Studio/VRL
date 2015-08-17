@@ -12,6 +12,7 @@ import org.codehaus.groovy.ast.expr.Expression;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.Invocation;
 
+@Deprecated
 public class StateMachine {
 
     private final Stack<Map<String, Object>> stateStack = new Stack<>();

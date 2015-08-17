@@ -1,11 +1,8 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import org.codehaus.groovy.ast.expr.ConstantExpression;
-import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.codehaus.groovy.control.SourceUnit;
 
-import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
@@ -17,16 +14,17 @@ public class ReturnStatementPart
 		extends
 		AbstractCodeBuilderPart<ReturnStatement, ReturnStatementInvocation, ControlFlowScope> {
 
-	public ReturnStatementPart(StateMachine stateMachine, SourceUnit unit, VisualCodeBuilder builder,
+	public ReturnStatementPart(SourceUnit unit, VisualCodeBuilder builder,
 			CodeLineColumnMapper mapper) {
-		super(stateMachine, unit, builder, mapper);
+		super(unit, builder, mapper);
 	}
 
 	@Override
-	public ReturnStatementInvocation transform(
-			ReturnStatement s, ControlFlowScope parent, TransformContext context) {
+	public ReturnStatementInvocation transform(ReturnStatement s,
+			ControlFlowScope parent, TransformContext context) {
 
-		IArgument arg = convertToArgument("ReturnStatement.returnValue", s.getExpression(), context);
+		IArgument arg = convertToArgument("ReturnStatement.returnValue",
+				s.getExpression(), context);
 		ReturnStatementInvocation inv = builder.returnValue(parent, arg);
 		return inv;
 	}
@@ -35,9 +33,9 @@ public class ReturnStatementPart
 	public void postTransform(ReturnStatementInvocation obj,
 			ReturnStatement in, ControlFlowScope parent,
 			TransformContext context) {
-		
+
 	}
-	
+
 	@Override
 	public Class<ReturnStatement> getAcceptedType() {
 		return ReturnStatement.class;

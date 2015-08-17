@@ -14,9 +14,9 @@ import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 public class ElsePart extends
 		AbstractCodeBuilderPart<BlockStatement, ElseDeclaration, IfDeclaration> {
 
-	public ElsePart(StateMachine stateMachine, SourceUnit sourceUnit,
-			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
-		super(stateMachine, sourceUnit, builder, mapper);
+	public ElsePart(SourceUnit sourceUnit, VisualCodeBuilder builder,
+			CodeLineColumnMapper mapper) {
+		super(sourceUnit, builder, mapper);
 	}
 
 	@Override

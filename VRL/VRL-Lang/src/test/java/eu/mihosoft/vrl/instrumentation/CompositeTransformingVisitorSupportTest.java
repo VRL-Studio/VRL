@@ -279,7 +279,7 @@ public class CompositeTransformingVisitorSupportTest {
 	}
 
 	@Test
-	public void testNestedResolution() throws Exception {
+	public void testIfThenElse() throws Exception {
 		SourceUnit src = fromCode("class A{ void run(){ if (2>1) { run_if(); } else if (2<1) { run_elseif(); } else { run_else(); } }}");
 		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
 				.init(src);

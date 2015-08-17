@@ -3,7 +3,6 @@ package eu.mihosoft.vrl.instrumentation.composites;
 import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.control.SourceUnit;
 
-import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
@@ -17,9 +16,9 @@ public class MethodNodePart
 		extends
 		AbstractCodeBuilderPart<MethodNode, MethodDeclaration, ClassDeclaration> {
 
-	public MethodNodePart(StateMachine stateMachine, SourceUnit unit,
-			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
-		super(stateMachine, unit, builder, mapper);
+	public MethodNodePart(SourceUnit unit, VisualCodeBuilder builder,
+			CodeLineColumnMapper mapper) {
+		super(unit, builder, mapper);
 	}
 
 	@Override

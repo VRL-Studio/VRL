@@ -1,7 +1,5 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import java.lang.reflect.Proxy;
-
 import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.ClosureListExpression;
 import org.codehaus.groovy.ast.expr.ConstantExpression;
@@ -14,8 +12,6 @@ import org.codehaus.groovy.control.SourceUnit;
 
 import com.google.common.base.Objects;
 
-import eu.mihosoft.vrl.instrumentation.StateMachine;
-import eu.mihosoft.vrl.instrumentation.transform.DefaultProxy;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
@@ -31,9 +27,9 @@ public class ForLoopPart
 
 	private static final String KEY_SIMPLE_FOR_DECLARATION = "SimpleForDeclaration.declaration";
 
-	public ForLoopPart(StateMachine stateMachine, SourceUnit sourceUnit,
-			VisualCodeBuilder builder, CodeLineColumnMapper mapper) {
-		super(stateMachine, sourceUnit, builder, mapper);
+	public ForLoopPart(SourceUnit sourceUnit, VisualCodeBuilder builder,
+			CodeLineColumnMapper mapper) {
+		super(sourceUnit, builder, mapper);
 	}
 
 	@Override
@@ -47,8 +43,8 @@ public class ForLoopPart
 
 		ClosureListExpression expr = (ClosureListExpression) s
 				.getCollectionExpression();
-		context.resolve(KEY_SIMPLE_FOR_DECLARATION,
-				expr.getExpression(0), DeclarationInvocation.class);
+		context.resolve(KEY_SIMPLE_FOR_DECLARATION, expr.getExpression(0),
+				DeclarationInvocation.class);
 
 		setCodeRange(currentScope, s);
 		addCommentsToScope(currentScope, comments);
@@ -69,7 +65,7 @@ public class ForLoopPart
 		DeclarationInvocation declaration = context.resolve(
 				KEY_SIMPLE_FOR_DECLARATION, expr.getExpression(0),
 				DeclarationInvocation.class);
-		
+
 		DeclarationInvocationImpl impl = (DeclarationInvocationImpl) declaration;
 		impl.setTextRenderingEnabled(false);
 
