@@ -3,90 +3,42 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package eu.mihosoft.vrl.lang.model;
 
+import static eu.mihosoft.vrl.lang.model.Argument_Impl.NULL;
 import java.util.Optional;
 
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public final class Argument implements IArgument {
-
-    private final ArgumentType argType;
-    private final Variable variable;
-    private final Object constant;
-    private final Invocation invocation;
-    private final IType constType;
-
-    public static final IArgument NULL = new Argument(ArgumentType.NULL, null, null, null, null);
-
-    private Argument(ArgumentType argType, Variable variable, Object constant, IType constType, Invocation invocation) {
-        this.argType = argType;
-        this.variable = variable;
-        this.constant = constant;
-        this.constType = constType;
-        this.invocation = invocation;
-    }
-
-    public static IArgument constArg(IType type, Object constant) {
-        IArgument result = new Argument(ArgumentType.CONSTANT, null, constant, type, null);
+public interface Argument {
+    public ArgumentType getArgType();
+    public Optional<Variable> getVariable();
+    public Optional<Invocation> getInvocation();
+    public Optional<Object> getConstant();
+    public IType getType();
+    
+    public static Argument constArg(IType type, Object constant) {
+        Argument result = new Argument_Impl(ArgumentType.CONSTANT, null, constant, type, null);
 
         return result;
     }
 
-    public static IArgument varArg(Variable v) {
-        IArgument result = new Argument(ArgumentType.VARIABLE, v, null, null, null);
+    public static Argument varArg(Variable v) {
+        Argument result = new Argument_Impl(ArgumentType.VARIABLE, v, null, null, null);
 
         return result;
     }
 
-    public static IArgument invArg(Invocation i) {
-        IArgument result = new Argument(ArgumentType.INVOCATION, null, null, null, i);
+    public static Argument invArg(Invocation i) {
+        Argument result = new Argument_Impl(ArgumentType.INVOCATION, null, null, null, i);
 
         return result;
     }
 
-    public static IArgument nullArg() {
+    public static Argument nullArg() {
         return NULL;
     }
-
-    @Override
-    public ArgumentType getArgType() {
-        return this.argType;
-    }
-
-    @Override
-    public Optional<Variable> getVariable() {
-        return Optional.ofNullable(variable);
-    }
-
-    @Override
-    public Optional<Invocation> getInvocation() {
-        return Optional.ofNullable(invocation);
-    }
-
-    @Override
-    public Optional<Object> getConstant() {
-        return Optional.ofNullable(constant);
-    }
-
-    @Override
-    public IType getType() {
-        if (getArgType() == ArgumentType.CONSTANT) {
-            return constType;
-        } else if (getArgType() == ArgumentType.VARIABLE) {
-            return getVariable().get().getType();
-        } else if (getArgType() == ArgumentType.INVOCATION) {
-            return getInvocation().get().getReturnType();
-        }
-        return Type.VOID;
-    }
-
-    @Override
-    public String toString() {
-        String valueString = ", val='"+getConstant().orElse("?").toString()+"'";
-        return "[Argument: argType=" + getArgType() + ", type=" + getType() + valueString + "]";
-    }
-
 }

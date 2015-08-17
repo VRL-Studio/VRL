@@ -5,9 +5,8 @@
  */
 package eu.mihosoft.vrl.instrumentation;
 
-import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ControlFlow;
-import eu.mihosoft.vrl.lang.model.IArgument;
+import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
@@ -31,18 +30,18 @@ public class VRLInstrumentationUtil {
      * @return the generated pre event invocation
      */
     public static Invocation generatePreEvent(ControlFlow cf, Invocation inv) {
-        IArgument[] args;
+        Argument[] args;
         // for while-loops we don't add the arguments to the event invocation
         // since they are unknown before we enter the loop body
         if (inv instanceof ScopeInvocation
                 && ((ScopeInvocation) inv).getScope() instanceof WhileDeclaration) {
-            args = new IArgument[2];
+            args = new Argument[2];
             args[0] = Argument.constArg(Type.STRING, inv.getId());
             args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
         } else {
             // ... for all other invocations we add all arguments since they
             // are known at event invocation time
-            args = new IArgument[inv.getArguments().size() + 2];
+            args = new Argument[inv.getArguments().size() + 2];
             
             args[0] = Argument.constArg(Type.STRING, inv.getId());
             args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
@@ -67,9 +66,9 @@ public class VRLInstrumentationUtil {
      * @return the generated post event invocation
      */
     public static Invocation generatePostEvent(ControlFlow cf,
-            Invocation inv, IArgument retValArg) {
+            Invocation inv, Argument retValArg) {
         
-        IArgument[] args = new IArgument[3];
+        Argument[] args = new Argument[3];
         
         args[0] = Argument.constArg(Type.STRING, inv.getId());
         args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
@@ -90,7 +89,7 @@ public class VRLInstrumentationUtil {
      */
     public static Invocation generatePostEvent(ControlFlow cf,
             Invocation inv) {
-        IArgument[] args = new IArgument[2];
+        Argument[] args = new Argument[2];
         
         args[0] = Argument.constArg(Type.STRING, inv.getId());
         args[1] = Argument.constArg(Type.STRING, inv.getMethodName());

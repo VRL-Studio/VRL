@@ -12,9 +12,9 @@ package eu.mihosoft.vrl.lang.model;
  */
 class ArgumentValue {
     private int argIndex;
-    private IArgument argument;
+    private Argument argument;
 
-    public ArgumentValue(int argIndex, IArgument argument) {
+    public ArgumentValue(int argIndex, Argument argument) {
         this.argIndex = argIndex;
         this.argument = argument;
     }
@@ -29,7 +29,7 @@ class ArgumentValue {
     /**
      * @return the argument
      */
-    public IArgument getArgument() {
+    public Argument getArgument() {
         return argument;
     }
     

@@ -15,7 +15,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
 
     private Operator operator;
 
-    public BinaryOperatorInvocationImpl(String id, Scope parent, IArgument leftArg, IArgument rightArg, Operator operator) {
+    public BinaryOperatorInvocationImpl(String id, Scope parent, Argument leftArg, Argument rightArg, Operator operator) {
 
         super(parent, id, null, "op " + operator, Type.VOID, false, true, leftArg, rightArg);
 
@@ -88,7 +88,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
         return operator == Operator.ACCESS_ARRAY_ELEMENT;
     }
 
-    private void validateInputs(Operator operator, IArgument leftArg, IArgument rightArg) {
+    private void validateInputs(Operator operator, Argument leftArg, Argument rightArg) {
 
         boolean isVariableL = leftArg.getArgType() == ArgumentType.VARIABLE;
         boolean isVariableR = rightArg.getArgType() == ArgumentType.VARIABLE;
@@ -125,12 +125,12 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
     }
 
     @Override
-    public IArgument getLeftArgument() {
+    public Argument getLeftArgument() {
         return getArguments().get(0);
     }
 
     @Override
-    public IArgument getRightArgument() {
+    public Argument getRightArgument() {
         return getArguments().get(1);
     }
 
@@ -139,7 +139,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
         return this.operator;
     }
 
-    private boolean number(IArgument leftArg) {
+    private boolean number(Argument leftArg) {
         return Objects.equals(leftArg.getType(), Type.INT)
                 || Objects.equals(leftArg.getType(), Type.LONG)
                 || Objects.equals(leftArg.getType(), Type.SHORT)

@@ -6,14 +6,12 @@
 package eu.mihosoft.vrl.lang.model;
 
 /**
- *
- * @author miho
+ * 
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface BinaryOperatorInvocation extends Invocation {
-
-    IArgument getLeftArgument();
-
-    IArgument getRightArgument();
+public interface BinaryOperatorInvocation extends Invocation{
+    Argument getLeftArgument();  
+    Argument getRightArgument();
 
     Operator getOperator();
 

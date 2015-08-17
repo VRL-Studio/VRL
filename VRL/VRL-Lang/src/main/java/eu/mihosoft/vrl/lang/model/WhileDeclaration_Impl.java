@@ -59,13 +59,13 @@ class WhileDeclaration_Impl extends ScopeImpl implements WhileDeclaration {
 
     private WhileDeclarationMetaData metadata;
 
-    public WhileDeclaration_Impl(String id, Scope parent, IArgument argument) {
+    public WhileDeclaration_Impl(String id, Scope parent, Argument argument) {
         super(id, parent, ScopeType.WHILE, ScopeType.WHILE.name(), new WhileDeclarationMetaData(argument));
 
     }
 
     @Override
-    public IArgument getCheck() {
+    public Argument getCheck() {
 
         return getWhileMetaData().getCheck();
     }
@@ -82,10 +82,10 @@ class WhileDeclaration_Impl extends ScopeImpl implements WhileDeclaration {
     public void defineParameters(Invocation i) {
         i.getArguments().setAll(getCheck());
 
-        i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
+        i.getArguments().addListener((ListChangeListener.Change<? extends Argument> c) -> {
             while (c.next()) {
                 if (i.getArguments().isEmpty()) {
-                    getWhileMetaData().setCheck(Argument.NULL);
+                    getWhileMetaData().setCheck(Argument_Impl.NULL);
                 } else {
                     getWhileMetaData().setCheck(i.getArguments().get(0));
                 }
@@ -96,20 +96,20 @@ class WhileDeclaration_Impl extends ScopeImpl implements WhileDeclaration {
 
 class WhileDeclarationMetaData {
 
-    private IArgument check;
+    private Argument check;
 
-    public WhileDeclarationMetaData(IArgument check) {
+    public WhileDeclarationMetaData(Argument check) {
         this.check = check;
     }
 
     /**
      * @return the check
      */
-    public IArgument getCheck() {
+    public Argument getCheck() {
         return check;
     }
 
-    public void setCheck(IArgument check) {
+    public void setCheck(Argument check) {
         this.check = check;
     }
 

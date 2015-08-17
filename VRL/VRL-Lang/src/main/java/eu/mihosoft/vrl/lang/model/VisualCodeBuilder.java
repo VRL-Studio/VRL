@@ -57,13 +57,13 @@ public interface VisualCodeBuilder {
 
     CompilationUnitDeclaration declareCompilationUnit(String name, String packageName);
     
-    BinaryOperatorInvocation assign(Scope scope, String varName, IArgument arg);
+    BinaryOperatorInvocation assign(Scope scope, String varName, Argument arg);
 
     BinaryOperatorInvocation assignConstant(Scope scope, String varName, Object constant);
 
     BinaryOperatorInvocation assignVariable(Scope scope, String varNameDest, String varNameSrc);
 
-    Invocation createInstance(Scope scope, IType type, IArgument... args);
+    Invocation createInstance(Scope scope, IType type, Argument... args);
 
     DeclarationInvocation declareVariable(Scope scope, IType type, String varName);
 
@@ -78,27 +78,27 @@ public interface VisualCodeBuilder {
     
     MethodDeclaration declareMethod(ClassDeclaration scope, IType returnType, String methodName);
     
-    WhileDeclaration invokeWhileLoop(ControlFlowScope scope, IArgument check);
+    WhileDeclaration invokeWhileLoop(ControlFlowScope scope, Argument check);
 
     BreakInvocation invokeBreak(ControlFlowScope scope);
 
     ContinueInvocation invokeContinue(ControlFlowScope scope);
 
-    Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, IArgument... args);
+    Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, Argument... args);
 
-    Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, IArgument... args);
+    Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, Argument... args);
 
-    Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, IArgument... args);
+    Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, Argument... args);
 
-    ReturnStatementInvocation returnValue(ControlFlowScope scope, IArgument arg);
+    ReturnStatementInvocation returnValue(ControlFlowScope scope, Argument arg);
 
     BinaryOperatorInvocation assignInvocationResult(Scope scope, String varName, Invocation invocation);
 
-    BinaryOperatorInvocation invokeOperator(Scope scope, IArgument leftArg, IArgument rightArg, Operator operator);
+    BinaryOperatorInvocation invokeOperator(Scope scope, Argument leftArg, Argument rightArg, Operator operator);
 
-    NotInvocation invokeNot(ControlFlowScope scope, IArgument arg);
+    NotInvocation invokeNot(ControlFlowScope scope, Argument arg);
 
-    IfDeclaration invokeIf(ControlFlowScope scope, IArgument check);
+    IfDeclaration invokeIf(ControlFlowScope scope, Argument check);
 
-    ElseIfDeclaration invokeElseIf(ControlFlowScope scope, IArgument check);
+    ElseIfDeclaration invokeElseIf(ControlFlowScope scope, Argument check);
 }

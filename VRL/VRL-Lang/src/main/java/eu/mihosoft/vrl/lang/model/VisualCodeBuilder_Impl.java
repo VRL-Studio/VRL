@@ -126,7 +126,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public WhileDeclaration invokeWhileLoop(ControlFlowScope scope, IArgument check) {
+    public WhileDeclaration invokeWhileLoop(ControlFlowScope scope, Argument check) {
 
         if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
             throw new UnsupportedOperationException("Unsupported parent scope specified."
@@ -141,7 +141,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public Invocation createInstance(Scope scope, IType type, IArgument... args) {
+    public Invocation createInstance(Scope scope, IType type, Argument... args) {
 
         String id = idRequest.request();
 
@@ -149,7 +149,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, IArgument... args) {
+    public Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, Argument... args) {
         String id = idRequest.request();
 
         Invocation result = scope.getControlFlow().callMethod(id, varName, mName, returnType, args);
@@ -158,7 +158,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, IArgument... args) {
+    public Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, Argument... args) {
         String id = idRequest.request();
 
         Invocation result = scope.getControlFlow().callStaticMethod(id, type, mName, returnType, args);
@@ -195,7 +195,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, IArgument... args) {
+    public Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, Argument... args) {
         String id = idRequest.request();
 
         Invocation result = scope.getControlFlow().callMethod(id, varName, mDec, args);
@@ -204,7 +204,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public BinaryOperatorInvocation invokeOperator(Scope scope, IArgument leftArg, IArgument rightArg, Operator operator) {
+    public BinaryOperatorInvocation invokeOperator(Scope scope, Argument leftArg, Argument rightArg, Operator operator) {
         String id = idRequest.request();
 
         BinaryOperatorInvocation result = scope.getControlFlow().invokeOperator(id, leftArg, rightArg, operator);
@@ -213,7 +213,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public ReturnStatementInvocation returnValue(ControlFlowScope scope, IArgument arg) {
+    public ReturnStatementInvocation returnValue(ControlFlowScope scope, Argument arg) {
         String id = idRequest.request();
 
         ReturnStatementInvocation result = scope.getControlFlow().returnValue(id, arg);
@@ -240,7 +240,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public NotInvocation invokeNot(ControlFlowScope scope, IArgument arg) {
+    public NotInvocation invokeNot(ControlFlowScope scope, Argument arg) {
         String id = idRequest.request();
 
         NotInvocation result = scope.getControlFlow().invokeNot(id, arg);
@@ -249,7 +249,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public IfDeclaration invokeIf(ControlFlowScope scope, IArgument check) {
+    public IfDeclaration invokeIf(ControlFlowScope scope, Argument check) {
 
         if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
             throw new UnsupportedOperationException("Unsupported parent scope specified."
@@ -277,7 +277,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public ElseIfDeclaration invokeElseIf(ControlFlowScope scope, IArgument check) {
+    public ElseIfDeclaration invokeElseIf(ControlFlowScope scope, Argument check) {
 
         if (scope.getType() == ScopeType.CLASS || scope.getType() == ScopeType.INTERFACE) {
             throw new UnsupportedOperationException("Unsupported parent scope specified."
@@ -292,7 +292,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public BinaryOperatorInvocation assign(Scope scope, String varName, IArgument arg) {
+    public BinaryOperatorInvocation assign(Scope scope, String varName, Argument arg) {
         if (arg.getArgType() == ArgumentType.CONSTANT) {
             return assignConstant(scope, varName, arg.getConstant().get());
         } else if (arg.getArgType() == ArgumentType.VARIABLE) {

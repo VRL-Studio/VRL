@@ -15,7 +15,7 @@ public class IfDeclarationImpl extends ScopeImpl implements IfDeclaration {
 
     private IfDeclarationMetaData metadata;
 
-    public IfDeclarationImpl(String id, Scope parent, IArgument arg) {
+    public IfDeclarationImpl(String id, Scope parent, Argument arg) {
 
         super(id, parent, ScopeType.IF, ScopeType.IF.name(), new IfDeclarationMetaData(arg));
     }
@@ -25,7 +25,7 @@ public class IfDeclarationImpl extends ScopeImpl implements IfDeclaration {
     }
 
     @Override
-    public IArgument getCheck() {
+    public Argument getCheck() {
 
         return getIfMetaData().getCheck();
     }
@@ -42,10 +42,10 @@ public class IfDeclarationImpl extends ScopeImpl implements IfDeclaration {
     public void defineParameters(Invocation i) {
         i.getArguments().setAll(getCheck());
 
-        i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
+        i.getArguments().addListener((ListChangeListener.Change<? extends Argument> c) -> {
             while (c.next()) {
                 if (i.getArguments().isEmpty()) {
-                    getIfMetaData().setCheck(Argument.NULL);
+                    getIfMetaData().setCheck(Argument_Impl.NULL);
                 } else {
                     getIfMetaData().setCheck(i.getArguments().get(0));
                 }
@@ -57,20 +57,20 @@ public class IfDeclarationImpl extends ScopeImpl implements IfDeclaration {
 
 class IfDeclarationMetaData {
 
-    private IArgument check;
+    private Argument check;
 
-    public IfDeclarationMetaData(IArgument check) {
+    public IfDeclarationMetaData(Argument check) {
         this.check = check;
     }
 
     /**
      * @return the check
      */
-    public IArgument getCheck() {
+    public Argument getCheck() {
         return check;
     }
 
-    public void setCheck(IArgument check) {
+    public void setCheck(Argument check) {
         this.check = check;
     }
 

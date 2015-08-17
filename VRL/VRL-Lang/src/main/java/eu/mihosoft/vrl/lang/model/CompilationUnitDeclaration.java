@@ -65,5 +65,5 @@ public interface CompilationUnitDeclaration extends Scope{
     
     public String getPackageName();
     
-//    public List<ImportDeclaration> getImports();
+    public List<ImportDeclaration> getImports();
 }

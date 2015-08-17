@@ -12,13 +12,13 @@ package eu.mihosoft.vrl.lang.model;
  */
 public class NotInvocationImpl extends InvocationImpl implements NotInvocation {
 
-        public NotInvocationImpl(String id, Scope parent, IArgument arg) {
+        public NotInvocationImpl(String id, Scope parent, Argument arg) {
 
         super(parent, id, null, "not", Type.BOOLEAN, false, true, arg);
     }
     
     @Override
-    public IArgument getArgument() {
+    public Argument getArgument() {
         return getArguments().get(0);
     }
 }

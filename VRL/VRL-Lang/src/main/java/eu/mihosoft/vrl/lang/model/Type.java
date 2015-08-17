@@ -95,6 +95,7 @@ public final class Type implements IType {
         this(fullName, false);
     }
 
+    @Deprecated
     public Type(String fullName, boolean isReturnOrParamType) {
 
         // check for array type
@@ -212,7 +213,7 @@ public final class Type implements IType {
         return true;
     }
 
-    public static Type fromObject(Object o, boolean isReturnOrParamType) {
+    public static Type fromObject(Object o) {
 
         return new Type(o.getClass().getName());
 

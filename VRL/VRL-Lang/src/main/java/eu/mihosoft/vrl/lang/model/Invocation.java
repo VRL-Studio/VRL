@@ -67,7 +67,7 @@ public interface Invocation extends CodeEntity {
     
     public IType getReturnType();
 
-    public ObservableList<IArgument> getArguments();
+    public ObservableList<Argument> getArguments();
 
     public boolean isConstructor();
 

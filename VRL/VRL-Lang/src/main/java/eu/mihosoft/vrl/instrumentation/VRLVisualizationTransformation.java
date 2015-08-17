@@ -74,12 +74,10 @@ import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.VCommentParser;
 import eu.mihosoft.vrl.lang.model.CodeLocation;
 import eu.mihosoft.vrl.lang.model.CodeRange;
-import eu.mihosoft.vrl.lang.CodeReader;
-import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
-import eu.mihosoft.vrl.lang.model.IArgument;
+import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.model.Operator;
@@ -107,6 +105,7 @@ import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.ast.ClassNode;
 import org.codehaus.groovy.ast.FieldNode;
 import org.codehaus.groovy.ast.MethodNode;
+import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.ast.expr.ArgumentListExpression;
 import org.codehaus.groovy.ast.expr.BinaryExpression;
 import org.codehaus.groovy.ast.expr.BooleanExpression;
@@ -390,6 +389,13 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     }
 
     @Override
+    public void visitImports(ModuleNode node) {
+        super.visitImports(node);
+    }
+    
+    
+
+    @Override
     public void visitClass(ClassNode s) {
 
 //        System.out.println("CLASS: " + s.getName());
@@ -437,7 +443,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     public void visitReturnStatement(ReturnStatement s) {
         if (currentScope instanceof ControlFlowScope) {
             ControlFlowScope cfS = (ControlFlowScope) currentScope;
-            IArgument arg = convertExpressionToArgument(s.getExpression());
+            Argument arg = convertExpressionToArgument(s.getExpression());
             codeBuilder.returnValue(cfS, arg);
         }
     }
@@ -467,7 +473,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         if (currentScope instanceof ControlFlowScope) {
             ControlFlowScope cfS = (ControlFlowScope) currentScope;
-            IArgument arg = convertExpressionToArgument(n.getExpression());
+            Argument arg = convertExpressionToArgument(n.getExpression());
             Invocation notInvocation = codeBuilder.invokeNot(cfS, arg);
             setCodeRange(notInvocation, n);
             returnVariables.put(n, notInvocation);
@@ -547,7 +553,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             } else {
 
                 IType expressionType
-                        = Type.fromObject(constExpression.getValue(), true);
+                        = Type.fromObject(constExpression.getValue());
 
                 if (!Type.BOOLEAN.equals(expressionType)
                         && !new Type("java.lang.Boolean").equals(expressionType)) {
@@ -705,7 +711,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
 
-        IArgument[] arguments = convertArguments(args);
+        Argument[] arguments = convertArguments(args);
 
         Invocation invocation = codeBuilder.createInstance(
                 currentScope, new Type(s.getType().getName(), false),
@@ -738,7 +744,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         super.visitStaticMethodCallExpression(s);
 
         ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
-        IArgument[] arguments = convertArguments(args);
+        Argument[] arguments = convertArguments(args);
 
         String objectName = null;
 
@@ -787,7 +793,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         super.visitMethodCallExpression(s);
 
         ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
-        IArgument[] arguments = convertArguments(args);
+        Argument[] arguments = convertArguments(args);
 
         String objectName = null;
         
@@ -809,7 +815,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             if (ce.getType().getName().equals(VSource.class.getName())) {
                 isIdCall = true;
 
-                for (IArgument arg : arguments) {
+                for (Argument arg : arguments) {
 
                     // TODO is this still in use? 18.02.2014
                     vIdStack.push(arg.toString());
@@ -1158,10 +1164,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             if (!returnVariables.containsKey(s)) {
 
                 Operator operator = convertOperator(s);
-                IArgument leftArg = convertExpressionToArgument(s.getLeftExpression());
-                IArgument rightArg = convertExpressionToArgument(s.getRightExpression());
+                Argument leftArg = convertExpressionToArgument(s.getLeftExpression());
+                Argument rightArg = convertExpressionToArgument(s.getRightExpression());
 
-                boolean emptyAssignment = (Objects.equal(Argument.NULL, rightArg) && operator == Operator.ASSIGN);
+                boolean emptyAssignment = (Objects.equal(Argument.nullArg(), rightArg) && operator == Operator.ASSIGN);
 
                 if (!emptyAssignment) {
 
@@ -1306,25 +1312,25 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         }
     }
 
-    private IArgument[] convertArguments(ArgumentListExpression args) {
-        IArgument[] arguments = new IArgument[args.getExpressions().size()];
+    private Argument[] convertArguments(ArgumentListExpression args) {
+        Argument[] arguments = new Argument[args.getExpressions().size()];
         for (int i = 0; i < args.getExpressions().size(); i++) {
             arguments[i] = convertExpressionToArgument(args.getExpression(i));
         }
         return arguments;
     }
 
-    private IArgument convertExpressionToArgument(Expression e) {
+    private Argument convertExpressionToArgument(Expression e) {
 
         stateMachine.push("convert-argument", true);
 
-        IArgument result = null;
+        Argument result = null;
 
         if (e instanceof ConstantExpression) {
             ConstantExpression ce = (ConstantExpression) e;
 
             if (ce.isNullExpression()) {
-                result = Argument.NULL;
+                result = Argument.nullArg();
             } else {
                 result = Argument.constArg(new Type(ce.getType().getName(), true), ce.getValue());
             }
@@ -1410,11 +1416,11 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         if (e instanceof EmptyExpression) {
             EmptyExpression empty = (EmptyExpression) e;
             System.err.println(" -> EMPTY-ARG: " + e + " : " + e.getLineNumber());
-            result = Argument.NULL;
+            result = Argument.nullArg();
         } else // if nothing worked so far, we assumen null arg
         if (result == null) {
             System.err.println(" -> UNSUPPORTED-ARG: " + e);
-            result = Argument.NULL;
+            result = Argument.nullArg();
         }
 
         stateMachine.pop();

@@ -59,16 +59,16 @@ import java.util.Optional;
  */
 public interface ControlFlow {
 
-    public Invocation createInstance(String id, IType type, IArgument... args);
+    public Invocation createInstance(String id, IType type, Argument... args);
 
-    public Invocation callMethod(String id, String varName, String mName, IType returnType, IArgument... args);
+    public Invocation callMethod(String id, String varName, String mName, IType returnType, Argument... args);
     
-    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType, IArgument... args);
+    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType, Argument... args);
     
-    public Invocation callMethod(String id, String varName, MethodDeclaration mDec, IArgument... args);
+    public Invocation callMethod(String id, String varName, MethodDeclaration mDec, Argument... args);
     
-    public BinaryOperatorInvocation assignConstant(String id, String varName, IArgument arg);
-    public BinaryOperatorInvocation assignVariable(String id, String varName, IArgument arg);
+    public BinaryOperatorInvocation assignConstant(String id, String varName, Argument arg);
+    public BinaryOperatorInvocation assignVariable(String id, String varName, Argument arg);
     public BinaryOperatorInvocation assignInvocationResult(String id, String varName, Invocation invocation);
     
     public DeclarationInvocation declareVariable(String id, IType type, String varName);
@@ -80,18 +80,18 @@ public interface ControlFlow {
     public boolean isUsedAsInput(Invocation invocation);
     public Optional<Invocation> returnInvTargetIfPresent(Invocation invocation);
 
-    public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg, IArgument rightArg, Operator operator);
+    public BinaryOperatorInvocation invokeOperator(String id, Argument leftArg, Argument rightArg, Operator operator);
     
     // TODO 02.06.2014 switch to ControlFlowScope
     public Scope getParent();
 
-    public ReturnStatementInvocation returnValue(String id, IArgument arg);
+    public ReturnStatementInvocation returnValue(String id, Argument arg);
 
     public BreakInvocation invokeBreak(String id);
 
     public ContinueInvocation invokeContinue(String id);
 
-    public NotInvocation invokeNot(String id, IArgument arg);
+    public NotInvocation invokeNot(String id, Argument arg);
 
     
 }

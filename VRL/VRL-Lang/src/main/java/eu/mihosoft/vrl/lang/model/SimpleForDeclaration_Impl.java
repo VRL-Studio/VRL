@@ -112,7 +112,7 @@ public class SimpleForDeclaration_Impl extends ScopeImpl implements SimpleForDec
 
         i.getArguments().addAll(Argument.constArg(Type.INT, 0),Argument.constArg(Type.INT, 0),Argument.constArg(Type.INT, 0));
 
-        i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
+        i.getArguments().addListener((ListChangeListener.Change<? extends Argument> c) -> {
             System.out.println("change: " + c);
             i.getArguments().get(0).getConstant().ifPresent(constVal->metadata.setFrom((Integer)constVal));
             i.getArguments().get(1).getConstant().ifPresent(constVal->metadata.setTo((Integer)constVal));

@@ -11,7 +11,7 @@ package eu.mihosoft.vrl.lang.model;
  */
 public class ReturnStatementInvocationImpl extends InvocationImpl implements ReturnStatementInvocation {
 
-    public ReturnStatementInvocationImpl(String id, Scope parent, IArgument arg ) {
+    public ReturnStatementInvocationImpl(String id, Scope parent, Argument arg ) {
 
         super(parent, id, null, "return", arg.getType(), false, true, arg);
 
@@ -20,7 +20,7 @@ public class ReturnStatementInvocationImpl extends InvocationImpl implements Ret
 
     
     @Override
-    public IArgument getArgument() {
+    public Argument getArgument() {
         return getArguments().get(0);
     }
 

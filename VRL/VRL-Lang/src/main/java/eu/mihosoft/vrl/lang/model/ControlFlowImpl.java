@@ -192,7 +192,7 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public Invocation createInstance(String id, IType type, IArgument... args) {
+    public Invocation createInstance(String id, IType type, Argument... args) {
         Invocation result = new InvocationImpl(parent, id, type.getFullClassName(),
                 "<init>", type, true, true, args);
         getInvocations().add(result);
@@ -201,7 +201,7 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public Invocation callMethod(String id, String varName, String mName, IType returnType,
-            IArgument... args) {
+            Argument... args) {
         Invocation result = new InvocationImpl(parent, id, varName, mName, returnType,
                 false, false, args);
         getInvocations().add(result);
@@ -210,7 +210,7 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public Invocation callStaticMethod(String id, IType type, String mName, IType returnType,
-            IArgument... args) {
+            Argument... args) {
         Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), mName,
                 returnType, false, true, args);
         getInvocations().add(result);
@@ -246,7 +246,7 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public Invocation callMethod(String id, String varName,
-            MethodDeclaration mDec, IArgument... args) {
+            MethodDeclaration mDec, Argument... args) {
 
         if (mDec.getModifiers().getModifiers().contains(Modifier.STATIC)) {
             return callStaticMethod(id, mDec.getClassDeclaration().getClassType(),
@@ -278,7 +278,7 @@ class ControlFlowImpl implements ControlFlow {
                 }
             }
 
-            for (IArgument arg : inv.getArguments()) {
+            for (Argument arg : inv.getArguments()) {
 
                 if (arg.getArgType() == ArgumentType.INVOCATION) {
                     if (arg.getInvocation().get().equals(invocation)) {
@@ -292,7 +292,7 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public BinaryOperatorInvocation assignConstant(String id, String varName, IArgument arg) {
+    public BinaryOperatorInvocation assignConstant(String id, String varName, Argument arg) {
         Variable var = parent.getVariable(varName);
 
         if (var == null) {
@@ -308,7 +308,7 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public BinaryOperatorInvocation assignVariable(String id, String varName, IArgument arg) {
+    public BinaryOperatorInvocation assignVariable(String id, String varName, Argument arg) {
         Variable var = parent.getVariable(varName);
 
         if (var == null) {
@@ -365,8 +365,8 @@ class ControlFlowImpl implements ControlFlow {
 //        return invocation;
 //    }
     @Override
-    public BinaryOperatorInvocation invokeOperator(String id, IArgument leftArg,
-            IArgument rightArg, Operator operator) {
+    public BinaryOperatorInvocation invokeOperator(String id, Argument leftArg,
+            Argument rightArg, Operator operator) {
         BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(id,parent,
                 leftArg, rightArg, operator);
 
@@ -381,7 +381,7 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public ReturnStatementInvocation returnValue(String id, IArgument arg) {
+    public ReturnStatementInvocation returnValue(String id, Argument arg) {
         ReturnStatementInvocation invocation = 
                 new ReturnStatementInvocationImpl(id,parent, arg);
 
@@ -409,7 +409,7 @@ class ControlFlowImpl implements ControlFlow {
     }
 
     @Override
-    public NotInvocation invokeNot(String id, IArgument arg) {
+    public NotInvocation invokeNot(String id, Argument arg) {
         NotInvocation invocation = new NotInvocationImpl(id,parent, arg);
 
         getInvocations().add(invocation);

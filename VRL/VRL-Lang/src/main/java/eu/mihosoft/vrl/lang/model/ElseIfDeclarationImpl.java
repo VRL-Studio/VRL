@@ -11,7 +11,7 @@ package eu.mihosoft.vrl.lang.model;
  */
 public class ElseIfDeclarationImpl extends IfDeclarationImpl implements ElseIfDeclaration{
 
-    public ElseIfDeclarationImpl(String id, Scope parent, IArgument arg) {
+    public ElseIfDeclarationImpl(String id, Scope parent, Argument arg) {
         super(id, parent, ScopeType.IF, ScopeType.ELSE.name()+" "+ScopeType.IF.name(), new IfDeclarationMetaData(arg));
     }
 }

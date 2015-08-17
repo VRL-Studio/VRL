@@ -87,7 +87,7 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
         }
 
         int argIndex = 0;
-        for (IArgument arg : getArguments()) {
+        for (Argument arg : getArguments()) {
             node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().
                     setValue(new ArgumentValue(argIndex, arg));
             argIndex++;

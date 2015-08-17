@@ -54,6 +54,8 @@ import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.workflow.VFlow;
 import java.util.List;
 import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  *
@@ -111,12 +113,17 @@ public class CompilationUnitDeclaration_Impl extends ScopeImpl implements Compil
                 map(it->(ClassDeclaration)it).
                 collect(Collectors.toList());
     }
-    
-    
+
+    @Override
+    public List<ImportDeclaration> getImports() {
+        return this.metadata.getImportDeclarations();
+    }
 }
 
 final class CompilationUnitMetaData {
     private final String packageName;
+    private final ObservableList<ImportDeclaration> importDeclarations =
+            FXCollections.observableArrayList();
 
     public CompilationUnitMetaData(String packageName) {
         this.packageName = packageName;
@@ -127,6 +134,13 @@ final class CompilationUnitMetaData {
      */
     public String getPackageName() {
         return packageName;
+    }
+
+    /**
+     * @return the importDeclarations
+     */
+    public ObservableList<ImportDeclaration> getImportDeclarations() {
+        return importDeclarations;
     }
     
     

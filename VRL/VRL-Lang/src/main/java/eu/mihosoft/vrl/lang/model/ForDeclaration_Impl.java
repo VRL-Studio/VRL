@@ -95,7 +95,7 @@ public class ForDeclaration_Impl extends ScopeImpl implements ForDeclaration {
 
         i.getArguments().addAll(Argument.invArg(getFrom()),Argument.invArg(getTo()),Argument.invArg(getInc()));
 
-//        i.getArguments().addListener((ListChangeListener.Change<? extends IArgument> c) -> {
+//        i.getArguments().addListener((ListChangeListener.Change<? extends Argument> c) -> {
 //            System.out.println("change: " + c);
 //            i.getArguments().get(0).getConstant().ifPresent(constVal->metadata.setFrom(constVal));
 //            i.getArguments().get(1).getConstant().ifPresent(constVal->metadata.setTo(constVal));

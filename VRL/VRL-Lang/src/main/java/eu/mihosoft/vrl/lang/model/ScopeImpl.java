@@ -312,7 +312,7 @@ class ScopeImpl implements Scope {
         var.setValue(constant);
         var.setConstant(true);
 
-        return getControlFlow().assignConstant(id, varName, Argument.constArg(Type.fromObject(constant, false), constant));
+        return getControlFlow().assignConstant(id, varName, Argument.constArg(Type.fromObject(constant), constant));
     }
 
     @Override
@@ -443,7 +443,7 @@ class ScopeImpl implements Scope {
 
 //        for (Invocation i : controlFlow.getInvocations()) {
 ////            System.out.println("invocation: " + i);
-//            for (IArgument a : i.getArguments()) {
+//            for (Argument a : i.getArguments()) {
 //                System.out.println("--> arg: " + a + ", " + i);
 //            }
 //

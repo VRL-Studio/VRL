@@ -71,7 +71,7 @@ class InvocationImpl implements Invocation {
     private String id;
     private String varName;
     private final String methodName;
-    private final ObservableList<IArgument> arguments = FXCollections.observableArrayList();
+    private final ObservableList<Argument> arguments = FXCollections.observableArrayList();
     private final boolean constructor;
     private boolean Void;
 //    private String code;
@@ -90,7 +90,7 @@ class InvocationImpl implements Invocation {
             Scope parent,
             String id,
             String varName, String methodName, IType returnType,
-            boolean constructor, boolean isStatic, IArgument... args) {
+            boolean constructor, boolean isStatic, Argument... args) {
         this.parent = parent;
         this.id = id;
         this.varName = varName;
@@ -170,7 +170,7 @@ class InvocationImpl implements Invocation {
             controlflowOutput.setMaxNumberOfConnections(1);
 
             int argIndex = 0;
-            for (IArgument arg : arguments) {
+            for (Argument arg : arguments) {
                 node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().
                         setValue(new ArgumentValue(argIndex, arg));
                 argIndex++;
@@ -198,7 +198,7 @@ class InvocationImpl implements Invocation {
     }
 
     @Override
-    public ObservableList<IArgument> getArguments() {
+    public ObservableList<Argument> getArguments() {
         return arguments;
     }
 
@@ -224,7 +224,7 @@ class InvocationImpl implements Invocation {
 
         result += "constructor=" + constructor + ", var=" + varName + ", mName=" + methodName /*+ ", retVal=" + returnValue*/ + ", args=[";
 
-        for (IArgument a : arguments) {
+        for (Argument a : arguments) {
             result += a + ", ";
         }
 
@@ -254,21 +254,6 @@ class InvocationImpl implements Invocation {
         return false;
     }
 
-//    /**
-//     * @return the code
-//     */
-//    @Override
-//    public String getCode() {
-//        return code;
-//    }
-//
-//    /**
-//     * @param code the code to set
-//     */
-//    @Override
-//    public void setCode(String code) {
-//        this.code = code;
-//    }
     /**
      * @return the Static
      */
@@ -308,10 +293,6 @@ class InvocationImpl implements Invocation {
         return this.parent;
     }
 
-//    @Override
-//    public Optional<Variable> getReturnValue() {
-//        return Optional.ofNullable(returnValue);
-//    }
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {

@@ -549,7 +549,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
     private void renderArguments(Invocation e, CodeBuilder cb) {
         boolean firstCall = true;
-        for (IArgument a : e.getArguments()) {
+        for (Argument a : e.getArguments()) {
 
             if (firstCall) {
                 firstCall = false;
@@ -561,7 +561,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         }
     }
 
-    private void renderArgument(IArgument arg, CodeBuilder cb) {
+    private void renderArgument(Argument arg, CodeBuilder cb) {
 
         if (arg.getArgType() == ArgumentType.CONSTANT) {
 
@@ -808,6 +808,8 @@ class CompilationUnitRenderer implements
             cb.append("package ").append(e.getPackageName()).append(";").
                     newLine();
         }
+        
+        List<? extends ImportDeclaration> imports = e.getImports();
 
         List<? extends CodeEntity> entities = e.getDeclaredClasses();
 

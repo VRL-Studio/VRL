@@ -6,7 +6,6 @@
 package eu.mihosoft.vrl.lang.model.transform;
 
 import eu.mihosoft.vrl.instrumentation.VRLInstrumentationUtil;
-import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.BreakInvocation;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
@@ -15,7 +14,7 @@ import eu.mihosoft.vrl.lang.model.ContinueInvocation;
 import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
-import eu.mihosoft.vrl.lang.model.IArgument;
+import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.IfDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
@@ -382,7 +381,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         // whether the return value of the current invocation is the invocation
         // object of the next invocation
         boolean lastInvocation = i == invocations.size() - 1;
-        IArgument retValArg = Argument.NULL;
+        Argument retValArg = Argument.nullArg();
         Invocation nextI = null;
         boolean retValIsObjectOfNextI = false;
         if (!lastInvocation) {
@@ -428,7 +427,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
         cf.getInvocations().add(inv);
         resultInvs.add(inv);
-        if (Objects.equals(retValArg, Argument.NULL)) {
+        if (Objects.equals(retValArg, Argument.nullArg())) {
             resultInvs.add(VRLInstrumentationUtil.generatePostEvent(cf, inv));
         } else {
             resultInvs.add(VRLInstrumentationUtil.generatePostEvent(
@@ -533,8 +532,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         // add an if-statement to the while-loop body controlflow that simulates
         // the original while-loop behavior
         VisualCodeBuilder builder = new VisualCodeBuilder_Impl();
-        IfDeclaration ifDecl = builder.invokeIf(
-                whileScope, Argument.varArg(cf.getParent().
+        IfDeclaration ifDecl = builder.invokeIf(whileScope, Argument.varArg(cf.getParent().
                         getVariable(varName)));
         Invocation conditionIfInv = whileScope.getControlFlow().
                 getInvocations().get(

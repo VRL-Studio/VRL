@@ -82,7 +82,7 @@ class DataFlowImpl implements DataFlow {
     private boolean currentlyUpdatingFromUI;
     private boolean listenersInitialized = false;
 
-    void createDataRelation(Invocation sender, Invocation receiver, IArgument receiverArg, int receiverArgIndex) {
+    void createDataRelation(Invocation sender, Invocation receiver, Argument receiverArg, int receiverArgIndex) {
         DataRelationImpl relation = new DataRelationImpl(sender, receiver, receiverArg, receiverArgIndex);
 
         relations.add(relation);
@@ -117,7 +117,7 @@ class DataFlowImpl implements DataFlow {
 
         for (Invocation receiver : controlFlow.getInvocations()) {
             int argIndex = 0;
-            for (IArgument a : receiver.getArguments()) {
+            for (Argument a : receiver.getArguments()) {
 
                 Invocation sender = null;
 
@@ -394,7 +394,7 @@ class DataFlowImpl implements DataFlow {
 
                         int argIndex = connectorsToArgIndex(conn.getReceiver(), receiverInv);
 
-                        IArgument arg = Argument.NULL;
+                        Argument arg = Argument_Impl.NULL;
 
                         if (senderInv instanceof DeclarationInvocation) {
                             arg = Argument.varArg(((DeclarationInvocation) senderInv).getDeclaredVariable());
@@ -464,7 +464,7 @@ class DataFlowImpl implements DataFlow {
 
                         receiverInv.getArguments().set(
                                 argIndex,
-                                Argument.NULL);
+                                Argument_Impl.NULL);
 
                     } catch (Exception ex) {
                         ex.printStackTrace(System.err);
