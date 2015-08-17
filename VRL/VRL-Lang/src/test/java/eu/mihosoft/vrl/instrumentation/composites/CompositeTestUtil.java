@@ -72,6 +72,10 @@ public class CompositeTestUtil<GroovyType, PartType> {
 
 				}, ControlFlow.class);
 			}
+
+			public Scope _getParent() {
+				return fixture(ControlFlowScope.class);
+			}
 		}, cls);
 	}
 

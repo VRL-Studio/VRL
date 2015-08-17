@@ -300,7 +300,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 		return result;
 	}
 
-	public Scope invokeElse(ControlFlowScope scope) {
+	public ElseDeclaration invokeElse(ControlFlowScope scope) {
 		if (scope.getType() == ScopeType.CLASS
 				|| scope.getType() == ScopeType.INTERFACE) {
 			throw new UnsupportedOperationException(

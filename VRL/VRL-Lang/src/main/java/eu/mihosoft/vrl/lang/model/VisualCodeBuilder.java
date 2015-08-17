@@ -102,4 +102,6 @@ public interface VisualCodeBuilder {
     IfDeclaration invokeIf(ControlFlowScope scope, IArgument check);
 
     ElseIfDeclaration invokeElseIf(ControlFlowScope scope, IArgument check);
+    
+    ElseDeclaration invokeElse(ControlFlowScope scope);
 }

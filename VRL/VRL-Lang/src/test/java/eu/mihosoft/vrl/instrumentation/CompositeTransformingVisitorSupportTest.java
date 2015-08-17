@@ -272,9 +272,9 @@ public class CompositeTransformingVisitorSupportTest {
 		visitor.visitModuleNode(src.getAST());
 		CompilationUnitDeclaration decl = (CompilationUnitDeclaration) visitor
 				.getRoot().getRootObject();
-		ScopeInvocation inv = (ScopeInvocation) decl
-				.getDeclaredClasses().get(0).getDeclaredMethods().get(0)
-				.getControlFlow().getInvocations().get(0);
+		ScopeInvocation inv = (ScopeInvocation) decl.getDeclaredClasses()
+				.get(0).getDeclaredMethods().get(0).getControlFlow()
+				.getInvocations().get(0);
 		assertTrue(inv.getScope() instanceof WhileDeclaration);
 	}
 
@@ -284,8 +284,15 @@ public class CompositeTransformingVisitorSupportTest {
 		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
 				.init(src);
 		visitor.visitModuleNode(src.getAST());
-		String code = Scope2Code.getCode((CompilationUnitDeclaration) visitor.getRoot().getRootObject());
-		assertEquals("", code.substring(code.indexOf("run()") + 8,code.lastIndexOf("}\n    }")+1).trim());
+		String code = Scope2Code.getCode((CompilationUnitDeclaration) visitor
+				.getRoot().getRootObject());
+		assertEquals(
+				"if (2 > 1) {\n" + "    run_if();\n" + "}\n"
+						+ "else if (2 < 1) {\n" + "    run_elseif();\n" + "}\n"
+						+ "else {\n" + "    run_else();\n" + "}",
+				code.substring(code.indexOf("run()") + 8,
+						code.lastIndexOf("}\n    }") + 1)
+						.replace("        ", "").trim());
 	}
 
 	void printBindings() {
