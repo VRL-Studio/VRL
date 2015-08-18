@@ -11,8 +11,11 @@ import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeEvent;
 import eu.mihosoft.vrl.lang.model.CodeEventType;
 import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
+import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
@@ -25,8 +28,11 @@ import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
 import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
+import java.time.Duration;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
@@ -44,6 +50,10 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.MeshView;
+import org.reactfx.Change;
+import org.reactfx.EventStream;
+import org.reactfx.EventStreams;
+import org.reactfx.Guardian;
 
 /**
  *
@@ -53,8 +63,10 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
     private boolean updating;
     private VBox outputs;
+    private final ObjectProperty<Object[]> args = new SimpleObjectProperty<>();
 
-    public VariableFlowNodeSkin(FXSkinFactory skinFactory, VNode model, VFlow controller) {
+    public VariableFlowNodeSkin(FXSkinFactory skinFactory,
+            VNode model, VFlow controller) {
         super(skinFactory, model, controller);
     }
 
@@ -66,12 +78,20 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
         canvas.setTranslateBehavior(TranslateBehavior.ALWAYS);
     }
 
+    private boolean isInvocation() {
+        return getModel().getValueObject().getValue() instanceof Invocation;
+    }
+
+    private Invocation getInvocation() {
+        return (Invocation) getModel().getValueObject().getValue();
+    }
+
     @Override
     protected Node createView() {
 
-        ComboBox<MethodDeclaration> box = new ComboBox<>();
+        ComboBox<Object> box;
 
-        VBox parent = new VBox(box);
+        VBox parent = new VBox();
 
         parent.setAlignment(Pos.CENTER);
 
@@ -81,7 +101,9 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
         }
 
-        if (value instanceof Invocation) {
+        if (!(value instanceof Invocation)) {
+            return parent;
+        }
 
 //            if (value instanceof ScopeInvocation) {
 //                ScopeInvocation inv = (ScopeInvocation) value;
@@ -92,90 +114,134 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 //                    System.exit(1);
 //                }
 //            }
-            Invocation invocation = (Invocation) value;
+        Invocation invocation = (Invocation) value;
 
-            box.setVisible(!invocation.getArguments().isEmpty());
+        if (invocation instanceof BinaryOperatorInvocation) {
+            BinaryOperatorInvocation opInv
+                    = (BinaryOperatorInvocation) invocation;
 
-            VBox inputs = new VBox();
-            outputs = new VBox();
-            HBox hbox = new HBox(inputs, outputs);
-            hbox.setPadding(new Insets(0, 15, 0, 15));
+            box = new ComboBox<>();
+            box.getItems().addAll(
+                    Operator.PLUS,
+                    Operator.MINUS,
+                    Operator.TIMES,
+                    Operator.DIV);
 
-            createArgView(invocation, inputs, false);
-
-            invocation.getArguments().addListener((ListChangeListener.Change<? extends Argument> c) -> {
-                        box.setVisible(!invocation.getArguments().isEmpty());
-                        if (!updating) {
-                            createArgView(invocation, inputs,
-                                    invocation.getArguments().size()
-                                    == inputs.getChildren().size());
-                        }
+            box.getSelectionModel().selectedItemProperty().
+                    addListener((ov, oldV, newV) -> {
+                        opInv.setOperator((Operator) newV);
                     });
-            parent.getChildren().add(hbox);
+
+        } else {
+            box = new ComboBox<>();
         }
-        
-        
+
+        parent.getChildren().add(box);
+
+        box.setVisible(!invocation.getArguments().isEmpty());
+
+        VBox inputs = new VBox();
+        outputs = new VBox();
+        HBox hbox = new HBox(inputs, outputs);
+        hbox.setPadding(new Insets(0, 15, 0, 15));
+
+        createArgView(invocation, inputs, false);
+
+        invocation.getArguments().addListener(
+                (ListChangeListener.Change<? extends Argument> c) -> {
+                    box.setVisible(!invocation.getArguments().isEmpty());
+                    if (!updating) {
+                        createArgView(invocation, inputs,
+                                invocation.getArguments().size()
+                                == inputs.getChildren().size());
+                    }
+                });
+
+        parent.getChildren().add(hbox);
 
         if (getModel().getValueObject().getValue() instanceof CodeEntity) {
             CodeEntity ce = (CodeEntity) getModel().getValueObject().getValue();
             updateOutputView(ce.getMetaData().get("VRL:retVal"));
-            
+
+            Object argsObj = ce.getMetaData().get("VRL:args");
+            if (argsObj != null) {
+                args.set((Object[]) argsObj);
+            }
+
+            createArgView(invocation, inputs, true);
+
             ce.getMetaData().addListener((Observable observable) -> {
                 updateOutputView(ce.getMetaData().get("VRL:retVal"));
+
+                Object argsObj1 = ce.getMetaData().get("VRL:args");
+                if (argsObj1 != null) {
+                    args.set((Object[]) argsObj1);
+                }
+
+                createArgView(invocation, inputs, true);
+
             });
         }
 
-        getModel().getValueObject().valueProperty().addListener((ov, oldV, newV) -> {
-            if (newV instanceof CodeEntity) {
-                CodeEntity ce = (CodeEntity) newV;
-                ce.getMetaData().addListener((Observable observable) -> {
-                    updateOutputView(ce.getMetaData().get("VRL:retVal"));
+        getModel().getValueObject().valueProperty().addListener(
+                (ov, oldV, newV) -> {
+                    if (newV instanceof CodeEntity) {
+                        CodeEntity ce = (CodeEntity) newV;
+                        ce.getMetaData().addListener((Observable observable) -> {
+
+                            Object argsObj1 = ce.getMetaData().get("VRL:args");
+                            if (argsObj1 != null) {
+                                args.set((Object[]) argsObj1);
+                            }
+
+                            createArgView(invocation, inputs, true);
+
+                            updateOutputView(ce.getMetaData().get("VRL:retVal"));
+                        });
+                    }
                 });
-            }
-        });
 
         return parent;
     }
 
-    private void setFieldListener(int argIndex, TextField field, Invocation invocation, Argument a) {
-        field.textProperty().addListener((ov, oldV, newV) -> {
-            try {
-                Integer intValue = Integer.parseInt(newV);
+    private void setFieldListener(int argIndex, TextField field,
+            Invocation invocation, Argument a) {
 
-                invocation.getArguments().set(argIndex,
-                        Argument.constArg(Type.INT, intValue));
-                invocation.getParent().fireEvent(new CodeEvent(
-                        CodeEventType.CHANGE, invocation.getParent()));
+        EventStream<Change<String>> textEvents
+                = EventStreams.changesOf(field.textProperty());
 
-                if (invocation instanceof ScopeInvocation) {
-                    ScopeInvocation scopeInv = (ScopeInvocation) invocation;
-                    Scope scope = scopeInv.getScope();
+        textEvents.reduceSuccessions((red1, red2) -> red2,
+                // update the model/code after specified time
+                // multiple events/changes per specified interval 
+                // will be reduced (merged to one event)
+                Duration.ofMillis(1000)).
+                subscribe(newV -> {
+                    // only fire code change events for fields that are changed
+                    // by the user
+                    if (!field.isFocused()) {
+                        return;
+                    }
+                    try {
+                        Integer intValue = Integer.parseInt(newV.getNewValue());
+                        invocation.getArguments().set(argIndex,
+                                Argument.constArg(Type.INT, intValue));
+                        invocation.getParent().fireEvent(new CodeEvent(
+                                        CodeEventType.CHANGE,
+                                        invocation.getParent()));
 
-                }
-            } catch (Exception ex) {
+                        if (invocation instanceof ScopeInvocation) {
+                            ScopeInvocation scopeInv
+                            = (ScopeInvocation) invocation;
+                            Scope scope = scopeInv.getScope();
+                        }
+                    } catch (Exception ex) {
 
-            }
-        });
-//        EventStream<Change<String>> textEvents
-//                = EventStreams.changesOf(field.textProperty());
-//
-//        textEvents.reduceSuccessions((red1, red2) -> red2, Duration.ofMillis(1000)).
-//                subscribe(text -> {
-//                    try {
-//                        Integer intValue = Integer.parseInt(text.getNewValue());
-//
-//                        invocation.getArguments().set(argIndex,
-//                                Argument_Impl.constArg(Type.INT, intValue));
-//                        invocation.getParent().fireEvent(new CodeEvent(
-//                                        CodeEventType.CHANGE, invocation.getParent()));
-//
-//                    } catch (Exception ex) {
-//                        //
-//                    }
-//                });
+                    }
+                });
     }
 
-    private void createArgView(Invocation invocation, VBox inputs, boolean update) {
+    private void createArgView(
+            Invocation invocation, VBox inputs, boolean update) {
 
         updating = true;
 
@@ -185,7 +251,8 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
         int argIndex = 0;
         for (Argument a : invocation.getArguments()) {
-            if (a.getArgType() == ArgumentType.CONSTANT || a.getArgType() == ArgumentType.NULL) {
+            if (a.getArgType() == ArgumentType.CONSTANT
+                    || a.getArgType() == ArgumentType.NULL) {
                 TextField field;
 
                 if (update && inputs.getChildren().get(argIndex) instanceof TextField) {
@@ -220,6 +287,18 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                 } else {
                     inputs.getChildren().add(label);
                 }
+
+                if (args.get() != null) {
+                    Object[] currentArgs = args.get();
+                    if (argIndex < currentArgs.length) {
+                        Object arg = currentArgs[argIndex];
+                        if (arg != null) {
+                            label.setText(arg.toString());
+                            label.setTextFill(Color.WHITE);
+                        }
+                    }
+                }
+
             } else if (a.getArgType() == ArgumentType.INVOCATION) {
                 Label label = new Label();
                 label.setTextFill(Color.WHITE);
@@ -229,6 +308,17 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                 } else {
                     inputs.getChildren().add(label);
                 }
+
+                if (args.get() != null) {
+                    Object[] currentArgs = args.get();
+                    if (argIndex < currentArgs.length) {
+                        Object arg = currentArgs[argIndex];
+                        if (arg != null) {
+                            label.setText(arg.toString());
+                            label.setTextFill(Color.WHITE);
+                        }
+                    }
+                }
             }
 
             argIndex++;
@@ -237,16 +327,17 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
         updating = false;
     }
 
-    private void setMeshScale(MeshContainer meshContainer, Bounds t1, final MeshView meshView) {
+    private void setMeshScale(MeshContainer meshContainer,
+            Bounds t1, final MeshView meshView) {
         double maxDim
                 = Math.max(meshContainer.getWidth(),
-                        Math.max(meshContainer.getHeight(), meshContainer.getDepth()));
+                        Math.max(meshContainer.getHeight(),
+                                meshContainer.getDepth()));
 
         double minContDim = Math.min(t1.getWidth(), t1.getHeight());
 
         double scale = minContDim / (maxDim * 2);
 
-        //System.out.println("scale: " + scale + ", maxDim: " + maxDim + ", " + meshContainer);
         meshView.setScaleX(scale);
         meshView.setScaleY(scale);
         meshView.setScaleZ(scale);
@@ -266,7 +357,8 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
             Group viewGroup = new Group();
 
-            SubScene subScene = new SubScene(viewGroup, 300, 200, true, SceneAntialiasing.DISABLED);
+            SubScene subScene = new SubScene(viewGroup, 300, 200, true,
+                    SceneAntialiasing.DISABLED);
 //            subScene.setFill(Color.WHEAT);
             PerspectiveCamera subSceneCamera = new PerspectiveCamera(false);
             subScene.setCamera(subSceneCamera);
@@ -282,16 +374,29 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
             VFX3DUtil.addMouseBehavior(mv, subScene, MouseButton.PRIMARY);
 
-            viewGroup.layoutXProperty().bind(subScene.widthProperty().divide(2));
-            viewGroup.layoutYProperty().bind(subScene.heightProperty().divide(2));
+            viewGroup.layoutXProperty().bind(
+                    subScene.widthProperty().divide(2));
+            viewGroup.layoutYProperty().bind(
+                    subScene.heightProperty().divide(2));
 
             viewGroup.getChildren().addAll(mv);
 
             outputs.getChildren().addAll(subScene);
         } else if (retVal != null) {
-            outputs.getChildren().add(new Label(retVal.toString()));
+            Label l = new Label(retVal.toString());
+            l.setTextFill(Color.WHITE);
+            outputs.getChildren().add(l);
         } else {
-            outputs.getChildren().add(new Label("null"));
+            Label l = new Label();
+            if (isInvocation()) {
+                Invocation invocation = getInvocation();
+                if (!invocation.isVoid()
+                        && !(invocation instanceof DeclarationInvocation)) {
+                    l.setText("null");
+                }
+            }
+            l.setTextFill(Color.WHITE);
+            outputs.getChildren().add(l);
         }
 
     }

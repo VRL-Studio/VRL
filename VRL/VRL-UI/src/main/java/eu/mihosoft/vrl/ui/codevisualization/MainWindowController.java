@@ -824,7 +824,7 @@ public class MainWindowController implements Initializable {
 
         mainWindow.setOnCloseRequest((WindowEvent event) -> {
             try {
-                fileMonitor.stop();
+                fileMonitor.stop(1);
             } catch (Exception ex) {
                 Logger.getLogger(MainWindowController.class.getName()).
                         log(Level.SEVERE, null, ex);
