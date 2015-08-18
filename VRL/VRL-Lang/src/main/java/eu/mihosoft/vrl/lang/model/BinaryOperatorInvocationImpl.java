@@ -24,7 +24,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
         validate(operator, leftArg);
     }
 
-    private void validate(Operator operator1, IArgument leftArg) throws IllegalArgumentException {
+    private void validate(Operator operator1, Argument leftArg) throws IllegalArgumentException {
         IType retType = Type.VOID;
         if (assignmentOperator(operator1)) {
             if (leftArg.getArgType() != ArgumentType.VARIABLE) {

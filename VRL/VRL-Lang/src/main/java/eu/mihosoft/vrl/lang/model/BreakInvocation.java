@@ -7,8 +7,8 @@
 package eu.mihosoft.vrl.lang.model;
 
 /**
- *
- * @author miho
+ * 
+ * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface BreakInvocation extends Invocation{
 
