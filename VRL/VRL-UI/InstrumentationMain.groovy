@@ -1,7 +1,7 @@
 package my.testpackage;
 public class MainCSG {
 
-    
+
     public static eu.mihosoft.vrl.v3d.jcsg.CSG createSphere(double radius) {
         eu.mihosoft.vrl.v3d.jcsg.Sphere sphere;
         sphere = (new eu.mihosoft.vrl.v3d.jcsg.Sphere(radius));
@@ -20,13 +20,10 @@ public class MainCSG {
         return cube.difference(sphere);
     }
     public static void main(String[] args) {
-        eu.mihosoft.vrl.v3d.jcsg.CSG res1;
-        res1 = (createDiff(13, 10));
-        eu.mihosoft.vrl.v3d.jcsg.CSG res2;
-        res2 = (createDiff(13, 9));
-        eu.mihosoft.vrl.v3d.jcsg.CSG res3;
-        res3 = (createDiff(13, 8));
-        res3 = (createDiff(13, 7));
+        createDiff(13, 10);
+        createDiff(13, 9);
+        createDiff(13, 8);
+        createDiff(13, 7);
     }
 }
 // <editor-fold defaultstate="collapsed" desc="VRL-Data">
