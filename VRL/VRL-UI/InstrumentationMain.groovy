@@ -1,7 +1,7 @@
 package my.testpackage;
 public class MainCSG {
 
-
+    
     public static eu.mihosoft.vrl.v3d.jcsg.CSG createSphere(double radius) {
         eu.mihosoft.vrl.v3d.jcsg.Sphere sphere;
         sphere = (new eu.mihosoft.vrl.v3d.jcsg.Sphere(radius));
@@ -20,10 +20,15 @@ public class MainCSG {
         return cube.difference(sphere);
     }
     public static void main(String[] args) {
-        createDiff(13, 10);
-        createDiff(13, 9);
-        createDiff(13, 8);
-        createDiff(13, 7);
+        eu.mihosoft.vrl.v3d.jcsg.CSG res1;
+        res1 = (createDiff(13, 10));
+        eu.mihosoft.vrl.v3d.jcsg.CSG res2;
+        res2 = (createDiff(13, 9));
+        eu.mihosoft.vrl.v3d.jcsg.CSG res3;
+        res3 = (createDiff(13, 8));
+        res3 = (createDiff(13, 7));
+        Integer a;
+        a = (3 * (2 * 4));
     }
 }
 // <editor-fold defaultstate="collapsed" desc="VRL-Data">
@@ -62,8 +67,8 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:createCube</string>
     <layout>
-      <x>50.056397579767946</x>
-      <y>492.77519139764064</y>
+      <x>58.05639757976792</x>
+      <y>485.7751913976406</y>
       <width>793.6768012893114</width>
       <height>486.0</height>
       <contentVisible>true</contentVisible>
@@ -94,7 +99,7 @@ public class MainCSG {
     <layout>
       <x>1403.399693446297</x>
       <y>799.1509080868534</y>
-      <width>200.0</width>
+      <width>213.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
@@ -102,7 +107,7 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:op ASSIGN</string>
     <layout>
-      <x>566.4963161067597</x>
+      <x>566.3898142277258</x>
       <y>1.6689560767845872</y>
       <width>200.0</width>
       <height>150.0</height>
@@ -124,7 +129,7 @@ public class MainCSG {
     <layout>
       <x>678.2063186324276</x>
       <y>15.302523784982583</y>
-      <width>377.0</width>
+      <width>423.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
@@ -170,6 +175,16 @@ public class MainCSG {
     </layout>
   </entry>
   <entry>
+    <string>Script:my.testpackage.MainCSG:main:inv:declare a</string>
+    <layout>
+      <x>929.6136867363838</x>
+      <y>901.1742622855575</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
     <string>Script</string>
     <layout>
       <x>0.0</x>
@@ -192,7 +207,7 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:declare res3</string>
     <layout>
-      <x>1116.5568802350374</x>
+      <x>1116.4503783560035</x>
       <y>467.0322867143526</y>
       <width>200.0</width>
       <height>150.0</height>
@@ -212,7 +227,7 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:declare res1</string>
     <layout>
-      <x>256.460066901611</x>
+      <x>256.3535650225772</x>
       <y>31.048915458907167</y>
       <width>200.0</width>
       <height>150.0</height>
@@ -232,7 +247,7 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:declare res2</string>
     <layout>
-      <x>808.4949472405247</x>
+      <x>808.3884453614908</x>
       <y>0.0</y>
       <width>200.0</width>
       <height>150.0</height>
@@ -252,7 +267,7 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:createDiff:0</string>
     <layout>
-      <x>551.625462306822</x>
+      <x>551.5189604277881</x>
       <y>205.25132947795328</y>
       <width>493.15194582875756</width>
       <height>295.30203604145663</height>
@@ -262,7 +277,7 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:createDiff:1</string>
     <layout>
-      <x>0.10650187903385527</x>
+      <x>0.0</x>
       <y>554.5654394940567</y>
       <width>480.57934824687493</width>
       <height>283.80791770063945</height>
@@ -272,9 +287,9 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:createSphere</string>
     <layout>
-      <x>224.58156420000907</x>
+      <x>433.49498761828767</x>
       <y>27.231853802680885</y>
-      <width>623.1296213580301</width>
+      <width>414.2161979397515</width>
       <height>393.99326567216355</height>
       <contentVisible>true</contentVisible>
     </layout>
@@ -292,7 +307,7 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:createDiff:2</string>
     <layout>
-      <x>548.3455411798705</x>
+      <x>548.2390393008366</x>
       <y>559.1066960660496</y>
       <width>497.83413869367007</width>
       <height>289.32230214917354</height>
@@ -342,17 +357,17 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:createDiff</string>
     <layout>
-      <x>895.2632897885192</x>
-      <y>528.0275596552435</y>
-      <width>690.5866827119339</width>
-      <height>416.33920129170326</height>
+      <x>892.4607897885192</x>
+      <y>30.626309655243404</y>
+      <width>657.5391845703125</width>
+      <height>433.37371826171875</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:declare args</string>
     <layout>
-      <x>31.88528579575292</x>
+      <x>31.77878391671906</x>
       <y>29.782459382122575</y>
       <width>200.0</width>
       <height>150.0</height>
@@ -362,7 +377,7 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:op ASSIGN:0</string>
     <layout>
-      <x>1118.2005714456734</x>
+      <x>1118.0940695666395</x>
       <y>290.1396073605182</y>
       <width>200.0</width>
       <height>150.0</height>
@@ -374,16 +389,16 @@ public class MainCSG {
     <layout>
       <x>0.0</x>
       <y>0.0</y>
-      <width>1197.9276094709583</width>
-      <height>797.9176169092005</height>
+      <width>2160.5</width>
+      <height>1301.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:createDiff</string>
     <layout>
-      <x>0.0</x>
-      <y>208.8924407522298</y>
+      <x>2.5034704622206223</x>
+      <y>213.89938167667103</y>
       <width>480.15421239841635</width>
       <height>291.66092328613877</height>
       <contentVisible>true</contentVisible>
@@ -392,8 +407,18 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:op ASSIGN:1</string>
     <layout>
-      <x>139.9622118382441</x>
+      <x>139.85570995921026</x>
       <y>916.4784169059851</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainCSG:main:inv:op TIMES:0</string>
+    <layout>
+      <x>1275.6728379096232</x>
+      <y>903.4201838438457</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -402,8 +427,8 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:main:inv:op ASSIGN:2</string>
     <layout>
-      <x>1583.116561902281</x>
-      <y>1148.8623318074738</y>
+      <x>699.2136601092511</x>
+      <y>905.7361846192368</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -420,12 +445,32 @@ public class MainCSG {
     </layout>
   </entry>
   <entry>
+    <string>Script:my.testpackage.MainCSG:main:inv:op ASSIGN:3</string>
+    <layout>
+      <x>1541.5328845182569</x>
+      <y>900.2311181073412</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainCSG:main:inv:op TIMES</string>
+    <layout>
+      <x>1504.2490290026444</x>
+      <y>714.0284826524852</y>
+      <width>200.0</width>
+      <height>150.0</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
     <string>Script:my.testpackage.MainCSG:main</string>
     <layout>
-      <x>884.7068097898517</x>
-      <y>35.066389916636055</y>
-      <width>819.9814953017315</width>
-      <height>463.93939361829143</height>
+      <x>954.3775475377942</x>
+      <y>510.25580725864836</y>
+      <width>1093.555908203125</width>
+      <height>896.9336242675781</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
@@ -434,7 +479,7 @@ public class MainCSG {
     <layout>
       <x>302.2877135424976</x>
       <y>289.52871155344764</y>
-      <width>383.0</width>
+      <width>414.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
