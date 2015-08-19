@@ -792,24 +792,30 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
         Argument[] arguments = convertArguments(args);
 
+        // TODO 19.08.2015 get rid of objectName since it is fully replaced
+        // by objectProvider now
         String objectName = null;
 
-        System.err.println("obj-name: " + objectName + ", m: " + s.getText());
+//        System.err.println("obj-name: " + objectName + ", m: " + s.getText());
 
         if (s.getText().startsWith("this.")) {
             objectName = "this";
         }
 
         boolean isIdCall = false;
-        boolean isStatic = false;
+
+        ObjectProvider objectProvider = ObjectProvider.empty();
 
         if (s.getObjectExpression() instanceof VariableExpression) {
             VariableExpression ve = (VariableExpression) s.getObjectExpression();
             objectName = ve.getName();
+            objectProvider = ObjectProvider.fromVariable(ve.getName());
         } else if (s.getObjectExpression() instanceof ClassExpression) {
-            isStatic = true;
+//            isStatic = true;
             ClassExpression ce = (ClassExpression) s.getObjectExpression();
             objectName = ce.getType().getName();
+            objectProvider = ObjectProvider.fromClassObject(
+                    new Type(ce.getType().getName()));
 
             if (ce.getType().getName().equals(VSource.class.getName())) {
                 isIdCall = true;
@@ -824,19 +830,32 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             MethodCallExpression me = (MethodCallExpression) s.getObjectExpression();
             objectName = "";
 
+            if (returnVariables.containsKey(me)) {
+                objectProvider = ObjectProvider.
+                        fromInvocation(returnVariables.get(me));
+            }
+
         } else if (s.getObjectExpression() instanceof StaticMethodCallExpression) {
             StaticMethodCallExpression me = (StaticMethodCallExpression) s.getObjectExpression();
             objectName = "";
+
+            if (returnVariables.containsKey(me)) {
+                objectProvider = ObjectProvider.
+                        fromInvocation(returnVariables.get(me));
+            }
 
         } else if (s.getObjectExpression() instanceof ConstructorCallExpression) {
             ConstructorCallExpression me = (ConstructorCallExpression) s.getObjectExpression();
             objectName = "";
 
+            if (returnVariables.containsKey(me)) {
+                objectProvider = ObjectProvider.
+                        fromInvocation(returnVariables.get(me));
+            }
+
         } else {
             System.err.println("UNSUPPORTED OBJ EXPRESSION: " + s.getObjectExpression() + " in " + s.getText() + ", line: " + s.getLineNumber());
         }
-
-        String returnValueName = "void";
 
         IType returnType = convertMethodReturnType(s);
 
@@ -846,27 +865,14 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         if (!isIdCall) {
             if (objectName != null) {
-
-                Invocation invocation;
-
-                if (isStatic) {
-                    invocation = codeBuilder.invokeMethod(
-                            (ControlFlowScope) currentScope, ObjectProvider.fromClassObject(new Type(objectName)),
+                Invocation invocation = codeBuilder.invokeMethod(
+                            (ControlFlowScope) currentScope, objectProvider,
                             s.getMethod().getText(),
                             returnType,
                             arguments);
-                } else {
-                    invocation = codeBuilder.invokeMethod(
-                            (ControlFlowScope) currentScope, ObjectProvider.fromVariable(objectName),
-                            s.getMethod().getText(),
-                            returnType,
-                            arguments);
-                }
 
                 if (stateMachine.getBoolean("variable-declaration")) {
-
                     stateMachine.addToList("variable-declaration:assignment-invocations", invocation);
-
                 }
 
                 setCodeRange(invocation, s);
@@ -878,7 +884,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
 //                        returnValueName, arguments).setCode(getCode(s));
                 Invocation invocation = codeBuilder.invokeMethod(
-                        (ControlFlowScope) currentScope,ObjectProvider.fromClassObject(new Type("System.out")),
+                        (ControlFlowScope) currentScope, ObjectProvider.fromClassObject(new Type("System.out")),
                         s.getMethod().getText(), Type.VOID,
                         arguments);
                 setCodeRange(invocation, s);
