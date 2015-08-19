@@ -67,7 +67,7 @@ class ScopeInvocationImpl extends InvocationImpl implements ScopeInvocation {
     public ScopeInvocationImpl(Scope s) {
         // TODO 07.08.2015 investigate whether scope and the corresponding
         // invocation can have the same id
-        super(s, s.getId(), null, "scope", Type.VOID, false, true);
+        super(s, s.getId(), ObjectProvider.empty(), "scope", Type.VOID, false, true);
         this.scope = s;
 
         VNode node = scope.getNode();
