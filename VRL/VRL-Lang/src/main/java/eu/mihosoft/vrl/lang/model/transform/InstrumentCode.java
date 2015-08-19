@@ -87,6 +87,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
     /**
      * Returns the previous intermediate variable name.
+     *
      * @return previous intermediate variable name
      */
     private String previousVarName() {
@@ -95,6 +96,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
     /**
      * Returns the current intermediate variable name.
+     *
      * @return current intermediate variable name
      */
     private String currentVarName() {
@@ -132,7 +134,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
      * @param invocations invocations that shall be considered
      * @param inv invocation
      * @return list that contains the specifried invocation and all connected
-     *         invocations
+     * invocations
      */
     private List<Invocation> getInvAndConnectedInvs(ControlFlow cf,
             List<Invocation> invocations, Invocation inv) {
@@ -385,6 +387,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         Argument retValArg = Argument.nullArg();
         Invocation nextI = null;
         boolean retValIsObjectOfNextI = false;
+
         if (!lastInvocation) {
             nextI = invocations.get(i + 1);
             retValIsObjectOfNextI = isRetValObjectOfNextInv(inv, nextI);
@@ -407,17 +410,26 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
             // variable
             if (invocationTarget.isPresent()) {
                 // search argument indices
-                int[] argumentsToReplace = invocationTarget.get().getArguments().stream().
-                        filter(a -> Objects.equals(a.getInvocation().orElse(null), inv)).
-                        mapToInt(a -> invocationTarget.get().getArguments().indexOf(a)).toArray();
+                int[] argumentsToReplace = invocationTarget.get().
+                        getArguments().stream().
+                        filter(a -> Objects.equals(a.getInvocation().
+                                        orElse(null), inv)).
+                        mapToInt(a -> invocationTarget.get().
+                                getArguments().indexOf(a)).toArray();
                 // replace args
                 for (int aIndex : argumentsToReplace) {
                     invocationTarget.get().getArguments().set(aIndex,
-                            Argument.varArg(cf.getParent().getVariable(varName)));
+                            Argument.varArg(cf.getParent().
+                                    getVariable(varName)));
                 }
-            } 
-            
-            if (retValIsObjectOfNextI && nextI !=null) {
+            }
+
+            if (nextI != null && nextI.getMethodName().contains("return")
+                    && inv.getMethodName().contains("toCSG")) {
+                System.out.println("");
+            }
+
+            if (retValIsObjectOfNextI && nextI != null) {
                 // if the result of the current invocation is used as
                 // invocation object then we need to call the next invocation
                 // on the previously defined tmp variable that stores the return
@@ -454,12 +466,9 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
      */
     private boolean isRetValObjectOfNextInv(Invocation inv, Invocation nextI) {
 
-        boolean retValIsObjectOfNextI = 
-                nextI.getObjectProvider().getInvocation().isPresent() &&
-                nextI.getObjectProvider().getInvocation().get().equals(inv);
-                // TODO 04.08.2015 chained method check buggy, needs to be modeled too
-//                = nextI.getVariableName() != null
-//                && nextI.getVariableName().isEmpty();
+        boolean retValIsObjectOfNextI
+                = nextI.getObjectProvider().getInvocation().isPresent()
+                && nextI.getObjectProvider().getInvocation().get().equals(inv);
         return retValIsObjectOfNextI;
     }
 
@@ -540,7 +549,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         // the original while-loop behavior
         VisualCodeBuilder builder = new VisualCodeBuilder_Impl();
         IfDeclaration ifDecl = builder.invokeIf(whileScope, Argument.varArg(cf.getParent().
-                        getVariable(varName)));
+                getVariable(varName)));
         Invocation conditionIfInv = whileScope.getControlFlow().
                 getInvocations().get(
                         whileScope.getControlFlow().getInvocations().

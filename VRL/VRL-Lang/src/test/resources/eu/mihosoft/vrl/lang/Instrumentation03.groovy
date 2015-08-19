@@ -8,6 +8,11 @@ package my.testpackage;
 @eu.mihosoft.vrl.instrumentation.VRLVisualization
 public class MyFileClass {
     
+    private MyFileClass m(int a) {
+        println("m: " + a);
+        return this;
+    }
+    
     public static void main(String[] args) {
         
         int a = 2+3*2;
@@ -16,5 +21,16 @@ public class MyFileClass {
         if (b<a) {
             println("a<b: " + (b < a));
         }
+        
+        int i = 0;
+        
+        while(i<a) {
+            println("i: " + i);
+            i+=1;
+        }
+        
+        MyFileClass mfc = new MyFileClass();
+        
+        mfc.m(a).m(a)
     }
 }

@@ -288,12 +288,11 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             return;
         }
 
-        if (inParam) {
-            ObjectProvider objP = i.getObjectProvider();
- 
-            if(objP.getInvocation().isPresent()) {
-                render(objP.getInvocation().get(),cb, true);
-            }
+        ObjectProvider objP = i.getObjectProvider();
+
+        if (objP.getInvocation().isPresent()) {
+            // TODO 19.08.2015 reconsider misuse of 'inParam' as 'inChain'
+            render(objP.getInvocation().get(), cb, true);
         }
 
         if (i.isConstructor()) {
