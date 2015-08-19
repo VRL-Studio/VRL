@@ -51,20 +51,14 @@ package eu.mihosoft.vrl.lang.model;
 
 //import org.stringtemplate.v4.ST;
 import eu.mihosoft.vrl.lang.CodeRenderer;
-import com.google.common.io.Files;
 import eu.mihosoft.vrl.lang.VLangUtils;
-import groovy.lang.GroovyClassLoader;
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 //import org.stringtemplate.v4.STGroup;
 //import org.stringtemplate.v4.STGroupString;
@@ -195,6 +189,12 @@ final class Utils {
 
 class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
+    /**
+     * chained method map. values are inv-object providers, keys are invocations
+     * that are called on return values of other invocations.
+     */
+    private Map<Invocation, Invocation> chainedMethods = new HashMap<>();
+
     public InvocationCodeRenderer() {
     }
 
@@ -280,15 +280,20 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
     private void render(Invocation i, CodeBuilder cb, boolean inParam) {
 
         boolean isUsedAsInput = i.getParent().getControlFlow().isUsedAsInput(i);
+        boolean retValOfInvIsUsedAsInvObj
+                = getNextInvocationWithRetValOf(i).isPresent();
         boolean newLine = !inParam;
 
-        if (!inParam && isUsedAsInput) {
+        if (!inParam && (isUsedAsInput || retValOfInvIsUsedAsInvObj)) {
             return;
         }
 
+//        if (inParam) {
+//            
+//        }
         if (i.isConstructor()) {
             cb.
-                    append("new ").append(i.getVariableName()).
+                    append("new ").append(renderObjProvider(i.getObjectProvider())).
                     append("(");
             renderArguments(i, cb);
             cb.append(")");
@@ -369,10 +374,13 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             }
         } else if (!i.isScope()) {
 
-            if (!i.getVariableName().equals("this")
+            boolean isThis = i.getObjectProvider().getVariableName().
+                    map(vName -> vName.equals("this")).orElse(false);
+
+            if (!isThis
                     && !ScopeUtils.callingObjectIsEnclosingClass(i)) {
                 cb.
-                        append(i.getVariableName()).
+                        append(renderObjProvider(i.getObjectProvider())).
                         append(".");
             }
 
@@ -520,21 +528,8 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         }
 
         // look ahead
-        int indexOfCurrentInvocation = i.getParent().getControlFlow().
-                getInvocations().indexOf(i);
-
-        boolean hasNextInvocation = i.getParent().getControlFlow().
-                getInvocations().size() - 1 > indexOfCurrentInvocation;
-        boolean currentInvIsChainedWithNext = false;
-
-        if (hasNextInvocation) {
-            Invocation nextI = i.getParent().getControlFlow().
-                    getInvocations().get(indexOfCurrentInvocation + 1);
-            // TODO 01.08.2015 improve check (objName/varName is not sufficient)
-            currentInvIsChainedWithNext
-                    = nextI.getVariableName() != null
-                    && nextI.getVariableName().isEmpty();
-        }
+        boolean currentInvIsChainedWithNext
+                = getNextInvocationWithRetValOf(i).isPresent();
 
         if (!currentInvIsChainedWithNext) {
             if (!inParam && !i.isScope()) {
@@ -545,6 +540,43 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                 cb.newLine();
             }
         }
+    }
+
+    private static Optional<Invocation> getNextInvocationWithRetValOf(Invocation inv) {
+
+        ControlFlow cf = inv.getParent().getControlFlow();
+
+//        if (inv)
+//
+//        // look ahead
+//        int indexOfCurrentInvocation = cf.getInvocations().indexOf(inv);
+//
+//        List<Invocation> invocations = cf.getInvocations();
+//
+//        for (int i = indexOfCurrentInvocation + 1; i < invocations.size(); i++) {
+//
+//            Invocation potentialInv = invocations.get(i);
+//
+//            // TODO 01.08.2015 improve check (objName/varName is not sufficient)
+//            boolean currentInvIsChainedWithNext
+//                    = potentialInv.getVariableName() != null
+//                    && potentialInv.getVariableName().isEmpty();
+//
+//            if (currentInvIsChainedWithNext) {
+//                return Optional.of(potentialInv);
+//            }
+//
+//            if (!cf.isUsedAsInput(potentialInv)) {
+//                break;
+//            }
+//        }
+//
+//        return Optional.empty();
+        return cf.getInvocations().stream().
+                filter(i -> i.getObjectProvider().getInvocation().isPresent()).
+                filter(i -> Objects.equals(i.getObjectProvider().
+                                getInvocation().orElse(null), inv)).
+                findAny();
     }
 
     private void renderArguments(Invocation e, CodeBuilder cb) {
@@ -584,6 +616,18 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         } else if (arg.getArgType() == ArgumentType.NULL) {
             cb.append("null");
         }
+    }
+
+    private String renderObjProvider(ObjectProvider objProvider) {
+        if (objProvider.getVariableName().isPresent()) {
+            return objProvider.getVariableName().get();
+        } else if (objProvider.getClassObject().isPresent()) {
+            return objProvider.getClassObject().get().getFullClassName();
+        } else if (objProvider.getInvocation().isPresent()) {
+            return "";
+        }
+
+        return "/*UNSUPPORTED OBJ PROVIDER*/";
     }
 }
 
@@ -808,7 +852,7 @@ class CompilationUnitRenderer implements
             cb.append("package ").append(e.getPackageName()).append(";").
                     newLine();
         }
-        
+
         List<? extends ImportDeclaration> imports = e.getImports();
 
         List<? extends CodeEntity> entities = e.getDeclaredClasses();

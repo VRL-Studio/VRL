@@ -58,12 +58,10 @@ import javafx.collections.ObservableList;
  */
 public interface Invocation extends CodeEntity {
 
-    public String getVariableName();
-    public void setVariableName(String variableName);
+    public ObjectProvider getObjectProvider();
+    public void setObjectProvider(ObjectProvider objProvider);
 
     public String getMethodName();
-
-//    public Optional<Variable> getReturnValue();
     
     public IType getReturnType();
 

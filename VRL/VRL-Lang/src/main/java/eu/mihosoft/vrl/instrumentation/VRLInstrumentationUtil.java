@@ -8,6 +8,7 @@ package eu.mihosoft.vrl.instrumentation;
 import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.ObjectProvider;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.WhileDeclaration;
@@ -51,9 +52,9 @@ public class VRLInstrumentationUtil {
             }
         }
         
-        return cf.callStaticMethod(
+        return cf.callMethod(
                 "",
-                Type.fromClass(VRLInstrumentationUtil.class),
+                ObjectProvider.fromClassObject(Type.fromClass(VRLInstrumentationUtil.class)),
                 "__preEvent", Type.VOID, args);
     }
 
@@ -74,9 +75,9 @@ public class VRLInstrumentationUtil {
         args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
         args[2] = retValArg;
         
-        return cf.callStaticMethod(
+        return cf.callMethod(
                 "",
-                Type.fromClass(VRLInstrumentationUtil.class),
+                ObjectProvider.fromClassObject(Type.fromClass(VRLInstrumentationUtil.class)),
                 "__postEvent", Type.VOID, args);
     }
 
@@ -94,9 +95,9 @@ public class VRLInstrumentationUtil {
         args[0] = Argument.constArg(Type.STRING, inv.getId());
         args[1] = Argument.constArg(Type.STRING, inv.getMethodName());
         
-        return cf.callStaticMethod(
+        return cf.callMethod(
                 "",
-                Type.fromClass(VRLInstrumentationUtil.class),
+                ObjectProvider.fromClassObject(Type.fromClass(VRLInstrumentationUtil.class)),
                 "__postEvent", Type.VOID, args);
     }
 

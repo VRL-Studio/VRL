@@ -18,6 +18,7 @@ import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.IfDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.ObjectProvider;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.ReturnStatementInvocation;
 import eu.mihosoft.vrl.lang.model.Scope;
@@ -145,7 +146,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
             Invocation nextInv = invocations.get(i);
 
             if (cf.isUsedAsInput(inv)
-                    || isRetValObjectOfNextInv(nextInv)) {
+                    || isRetValObjectOfNextInv(inv, nextInv)) {
                 result.add(inv);
                 if (i == invocations.size() - 1) {
                     result.add(nextInv);
@@ -386,7 +387,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         boolean retValIsObjectOfNextI = false;
         if (!lastInvocation) {
             nextI = invocations.get(i + 1);
-            retValIsObjectOfNextI = isRetValObjectOfNextInv(nextI);
+            retValIsObjectOfNextI = isRetValObjectOfNextInv(inv, nextI);
         }
 
         // searches invocation target (other invocation that uses the current
@@ -414,12 +415,15 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
                     invocationTarget.get().getArguments().set(aIndex,
                             Argument.varArg(cf.getParent().getVariable(varName)));
                 }
-            } else if (nextI != null) {
+            } 
+            
+            if (retValIsObjectOfNextI && nextI !=null) {
                 // if the result of the current invocation is used as
                 // invocation object then we need to call the next invocation
                 // on the previously defined tmp variable that stores the return
                 // value of the current invocation
-                nextI.setVariableName(varName);
+                nextI.setObjectProvider(ObjectProvider.fromVariable(varName));
+                System.out.println("VARNAME: " + varName);
             }
 
             retValArg = Argument.varArg(result.getVariable(varName));
@@ -448,11 +452,14 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
      * @return {@code true} if the return value if this invocation is the
      * invocation object of the next invocation; {@code false} otherwise
      */
-    private boolean isRetValObjectOfNextInv(Invocation nextI) {
-        // TODO 04.08.2015 chained method check buggy, needs to be modeled too
-        boolean retValIsObjectOfNextI
-                = nextI.getVariableName() != null
-                && nextI.getVariableName().isEmpty();
+    private boolean isRetValObjectOfNextInv(Invocation inv, Invocation nextI) {
+
+        boolean retValIsObjectOfNextI = 
+                nextI.getObjectProvider().getInvocation().isPresent() &&
+                nextI.getObjectProvider().getInvocation().get().equals(inv);
+                // TODO 04.08.2015 chained method check buggy, needs to be modeled too
+//                = nextI.getVariableName() != null
+//                && nextI.getVariableName().isEmpty();
         return retValIsObjectOfNextI;
     }
 

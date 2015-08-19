@@ -193,29 +193,58 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public Invocation createInstance(String id, IType type, Argument... args) {
-        Invocation result = new InvocationImpl(parent, id, type.getFullClassName(),
+        Invocation result = new InvocationImpl(parent, id, ObjectProvider.fromClassObject(type),
                 "<init>", type, true, true, args);
         getInvocations().add(result);
         return result;
     }
 
+//    @Override
+//    public Invocation callMethod(String id, String varName, String mName, IType returnType,
+//            Argument... args) {
+//        Invocation result = new InvocationImpl(parent, id, ObjectProvider.fromVariable(varName), mName, returnType,
+//                false, false, args);
+//        getInvocations().add(result);
+//        return result;
+//    }
+//
+//    @Override
+//    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType,
+//            Argument... args) {
+//        Invocation result = new InvocationImpl(parent, id, ObjectProvider.fromClassObject(type), mName,
+//                returnType, false, true, args);
+//        getInvocations().add(result);
+//        return result;
+//    }
+//        @Override
+//    public Invocation callMethod(String id, String varName,
+//            MethodDeclaration mDec, Argument... args) {
+//
+//        if (mDec.getModifiers().getModifiers().contains(Modifier.STATIC)) {
+//            return callStaticMethod(id, mDec.getClassDeclaration().getClassType(),
+//                    varName, mDec.getReturnType(), args);
+//        } else {
+//            return callMethod(id, varName, mDec.getName(), mDec.getReturnType(), args);
+//        }
+//
+//    }
     @Override
-    public Invocation callMethod(String id, String varName, String mName, IType returnType,
+    public Invocation callMethod(String id, ObjectProvider objProvider, String mName, IType returnType,
             Argument... args) {
-        Invocation result = new InvocationImpl(parent, id, varName, mName, returnType,
-                false, false, args);
+        Invocation result = new InvocationImpl(parent, id, objProvider, mName, returnType,
+                false, objProvider.getClassObject().isPresent(), args);
         getInvocations().add(result);
         return result;
     }
 
     @Override
-    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType,
-            Argument... args) {
-        Invocation result = new InvocationImpl(parent, id, type.getFullClassName(), mName,
-                returnType, false, true, args);
-        getInvocations().add(result);
-        return result;
+    public Invocation callMethod(String id, ObjectProvider objProvider,
+            MethodDeclaration mDec, Argument... args) {
+
+        return callMethod(id, objProvider, mDec.getName(), mDec.getReturnType(), args);
+
     }
+
 
     @Override
     public ScopeInvocation callScope(Scope scope) {
@@ -242,19 +271,6 @@ class ControlFlowImpl implements ControlFlow {
     @Override
     public List<Invocation> getInvocations() {
         return invocations;
-    }
-
-    @Override
-    public Invocation callMethod(String id, String varName,
-            MethodDeclaration mDec, Argument... args) {
-
-        if (mDec.getModifiers().getModifiers().contains(Modifier.STATIC)) {
-            return callStaticMethod(id, mDec.getClassDeclaration().getClassType(),
-                    varName, mDec.getReturnType(), args);
-        } else {
-            return callMethod(id, varName, mDec.getName(), mDec.getReturnType(), args);
-        }
-
     }
 
     @Override
@@ -299,7 +315,7 @@ class ControlFlowImpl implements ControlFlow {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(id,parent,
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(id, parent,
                 Argument.varArg(var), arg, Operator.ASSIGN);
 
         getInvocations().add(invocation);
@@ -315,7 +331,7 @@ class ControlFlowImpl implements ControlFlow {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(id,parent,
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(id, parent,
                 Argument.varArg(var), arg, Operator.ASSIGN);
 
         getInvocations().add(invocation);
@@ -331,7 +347,7 @@ class ControlFlowImpl implements ControlFlow {
             throw new IllegalArgumentException("Variable " + varName + " does not exist!");
         }
 
-        BinaryOperatorInvocation result = new BinaryOperatorInvocationImpl(id,parent,
+        BinaryOperatorInvocation result = new BinaryOperatorInvocationImpl(id, parent,
                 Argument.varArg(var), Argument.invArg(invocation), Operator.ASSIGN);
 
         getInvocations().add(result);
@@ -367,7 +383,7 @@ class ControlFlowImpl implements ControlFlow {
     @Override
     public BinaryOperatorInvocation invokeOperator(String id, Argument leftArg,
             Argument rightArg, Operator operator) {
-        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(id,parent,
+        BinaryOperatorInvocation invocation = new BinaryOperatorInvocationImpl(id, parent,
                 leftArg, rightArg, operator);
 
         getInvocations().add(invocation);
@@ -382,8 +398,8 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public ReturnStatementInvocation returnValue(String id, Argument arg) {
-        ReturnStatementInvocation invocation = 
-                new ReturnStatementInvocationImpl(id,parent, arg);
+        ReturnStatementInvocation invocation
+                = new ReturnStatementInvocationImpl(id, parent, arg);
 
         getInvocations().add(invocation);
 
@@ -392,7 +408,7 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public BreakInvocation invokeBreak(String id) {
-        BreakInvocation invocation = new BreakInvocationImpl(id,parent);
+        BreakInvocation invocation = new BreakInvocationImpl(id, parent);
 
         getInvocations().add(invocation);
 
@@ -401,7 +417,7 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public ContinueInvocation invokeContinue(String id) {
-        ContinueInvocation invocation = new ContinueInvocationImpl(id,parent);
+        ContinueInvocation invocation = new ContinueInvocationImpl(id, parent);
 
         getInvocations().add(invocation);
 
@@ -410,7 +426,7 @@ class ControlFlowImpl implements ControlFlow {
 
     @Override
     public NotInvocation invokeNot(String id, Argument arg) {
-        NotInvocation invocation = new NotInvocationImpl(id,parent, arg);
+        NotInvocation invocation = new NotInvocationImpl(id, parent, arg);
 
         getInvocations().add(invocation);
 

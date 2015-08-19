@@ -13,7 +13,7 @@ public class ReturnStatementInvocationImpl extends InvocationImpl implements Ret
 
     public ReturnStatementInvocationImpl(String id, Scope parent, Argument arg ) {
 
-        super(parent, id, null, "return", arg.getType(), false, true, arg);
+        super(parent, id, ObjectProvider.empty(), "return", arg.getType(), false, true, arg);
 
         getNode().setTitle("return ");
     }

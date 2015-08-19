@@ -61,11 +61,14 @@ public interface ControlFlow {
 
     public Invocation createInstance(String id, IType type, Argument... args);
 
-    public Invocation callMethod(String id, String varName, String mName, IType returnType, Argument... args);
+//    public Invocation callMethod(String id, String varName, String mName, IType returnType, Argument... args);
+//    
+//    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType, Argument... args);
+//    
+//    public Invocation callMethod(String id, String varName, MethodDeclaration mDec, Argument... args);
     
-    public Invocation callStaticMethod(String id, IType type, String mName, IType returnType, Argument... args);
-    
-    public Invocation callMethod(String id, String varName, MethodDeclaration mDec, Argument... args);
+    public Invocation callMethod(String id, ObjectProvider objProvider, String mName, IType returnType, Argument... args);
+    public Invocation callMethod(String id, ObjectProvider objProvider, MethodDeclaration mDec, Argument... args);
     
     public BinaryOperatorInvocation assignConstant(String id, String varName, Argument arg);
     public BinaryOperatorInvocation assignVariable(String id, String varName, Argument arg);
@@ -92,6 +95,8 @@ public interface ControlFlow {
     public ContinueInvocation invokeContinue(String id);
 
     public NotInvocation invokeNot(String id, Argument arg);
+
+
 
     
 }

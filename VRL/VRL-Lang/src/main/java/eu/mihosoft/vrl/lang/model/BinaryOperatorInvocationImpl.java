@@ -17,7 +17,7 @@ public class BinaryOperatorInvocationImpl extends InvocationImpl implements Bina
 
     public BinaryOperatorInvocationImpl(String id, Scope parent, Argument leftArg, Argument rightArg, Operator operator) {
 
-        super(parent, id, null, "op " + operator, Type.VOID, false, true, leftArg, rightArg);
+        super(parent, id, ObjectProvider.empty(), "op " + operator, Type.VOID, false, true, leftArg, rightArg);
 
         this.operator = operator;
 

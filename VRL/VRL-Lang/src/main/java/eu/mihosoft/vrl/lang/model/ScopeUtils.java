@@ -60,7 +60,8 @@ public class ScopeUtils {
             return false;
         }
 
-        return i.getVariableName().equals(enclosingClass.get().getName());
+        return i.getObjectProvider().getClassObject().
+                map(cls->cls.equals(enclosingClass.get().getClassType())).orElse(false);
 
     }
 }

@@ -80,6 +80,7 @@ import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.IType;
+import eu.mihosoft.vrl.lang.model.ObjectProvider;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
@@ -392,8 +393,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     public void visitImports(ModuleNode node) {
         super.visitImports(node);
     }
-    
-    
 
     @Override
     public void visitClass(ClassNode s) {
@@ -758,9 +757,9 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             throwErrorMessage("Method can only be invoked inside ControlFlowScopes!", s);
         }
 
-        Invocation invocation = codeBuilder.invokeStaticMethod(
+        Invocation invocation = codeBuilder.invokeMethod(
                 (ControlFlowScope) currentScope,
-                convertStaticMethodOwnerType(s),
+                ObjectProvider.fromClassObject(convertStaticMethodOwnerType(s)),
                 s.getMethod(),
                 returnType,
                 arguments);
@@ -782,23 +781,21 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     public void visitMethodCallExpression(MethodCallExpression s) {
 
 //        System.err.println("m-call: " + s.getText());
-
         if (returnVariables.containsKey(s)) {
 //            System.err.println(" -> no ret-key");
             return;
         }
 
 //        System.err.println(" -> ret-key");
-
         super.visitMethodCallExpression(s);
 
         ArgumentListExpression args = (ArgumentListExpression) s.getArguments();
         Argument[] arguments = convertArguments(args);
 
         String objectName = null;
-        
+
         System.err.println("obj-name: " + objectName + ", m: " + s.getText());
-        
+
         if (s.getText().startsWith("this.")) {
             objectName = "this";
         }
@@ -827,6 +824,14 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             MethodCallExpression me = (MethodCallExpression) s.getObjectExpression();
             objectName = "";
 
+        } else if (s.getObjectExpression() instanceof StaticMethodCallExpression) {
+            StaticMethodCallExpression me = (StaticMethodCallExpression) s.getObjectExpression();
+            objectName = "";
+
+        } else if (s.getObjectExpression() instanceof ConstructorCallExpression) {
+            ConstructorCallExpression me = (ConstructorCallExpression) s.getObjectExpression();
+            objectName = "";
+
         } else {
             System.err.println("UNSUPPORTED OBJ EXPRESSION: " + s.getObjectExpression() + " in " + s.getText() + ", line: " + s.getLineNumber());
         }
@@ -845,14 +850,14 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 Invocation invocation;
 
                 if (isStatic) {
-                    invocation = codeBuilder.invokeStaticMethod(
-                            (ControlFlowScope) currentScope, new Type(objectName),
+                    invocation = codeBuilder.invokeMethod(
+                            (ControlFlowScope) currentScope, ObjectProvider.fromClassObject(new Type(objectName)),
                             s.getMethod().getText(),
                             returnType,
                             arguments);
                 } else {
                     invocation = codeBuilder.invokeMethod(
-                            (ControlFlowScope) currentScope, objectName,
+                            (ControlFlowScope) currentScope, ObjectProvider.fromVariable(objectName),
                             s.getMethod().getText(),
                             returnType,
                             arguments);
@@ -872,8 +877,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             } else if (s.getMethod().getText().equals("println")) {
 //                codeBuilder.invokeStaticMethod(currentScope, new Type("System.out"), s.getMethod().getText(), isVoid,
 //                        returnValueName, arguments).setCode(getCode(s));
-                Invocation invocation = codeBuilder.invokeStaticMethod(
-                        (ControlFlowScope) currentScope, new Type("System.out"),
+                Invocation invocation = codeBuilder.invokeMethod(
+                        (ControlFlowScope) currentScope,ObjectProvider.fromClassObject(new Type("System.out")),
                         s.getMethod().getText(), Type.VOID,
                         arguments);
                 setCodeRange(invocation, s);

@@ -147,24 +147,51 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 
         return scope.getControlFlow().createInstance(id, type, args);
     }
-
+    
     @Override
-    public Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, Argument... args) {
+    public Invocation invokeMethod(ControlFlowScope scope, ObjectProvider objProvider, MethodDeclaration mDec, Argument... args) {
         String id = idRequest.request();
 
-        Invocation result = scope.getControlFlow().callMethod(id, varName, mName, returnType, args);
+        Invocation result = scope.getControlFlow().callMethod(id, objProvider, mDec, args);
+
+        return result;
+    }
+    
+    @Override
+    public Invocation invokeMethod(ControlFlowScope scope, ObjectProvider objProvider, String mName, IType returnType, Argument... args) {
+        String id = idRequest.request();
+
+        Invocation result = scope.getControlFlow().callMethod(id, objProvider, mName, returnType, args);
 
         return result;
     }
 
-    @Override
-    public Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, Argument... args) {
-        String id = idRequest.request();
-
-        Invocation result = scope.getControlFlow().callStaticMethod(id, type, mName, returnType, args);
-
-        return result;
-    }
+//    @Override
+//    public Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, Argument... args) {
+//        String id = idRequest.request();
+//
+//        Invocation result = scope.getControlFlow().callMethod(id, varName, mDec, args);
+//
+//        return result;
+//    }
+//
+//    @Override
+//    public Invocation invokeMethod(ControlFlowScope scope, String varName, String mName, IType returnType, Argument... args) {
+//        String id = idRequest.request();
+//
+//        Invocation result = scope.getControlFlow().callMethod(id, varName, mName, returnType, args);
+//
+//        return result;
+//    }
+//
+//    @Override
+//    public Invocation invokeStaticMethod(ControlFlowScope scope, IType type, String mName, IType returnType, Argument... args) {
+//        String id = idRequest.request();
+//
+//        Invocation result = scope.getControlFlow().callStaticMethod(id, type, mName, returnType, args);
+//
+//        return result;
+//    }
 
     @Override
     public BinaryOperatorInvocation assignVariable(Scope scope, String varNameDest, String varNameSrc) {
@@ -190,15 +217,6 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
         String id = idRequest.request();
 
         ClassDeclaration result = new ClassDeclaration_Impl(id, scope, type, modifiers, extendz, implementz);
-
-        return result;
-    }
-
-    @Override
-    public Invocation invokeMethod(ControlFlowScope scope, String varName, MethodDeclaration mDec, Argument... args) {
-        String id = idRequest.request();
-
-        Invocation result = scope.getControlFlow().callMethod(id, varName, mDec, args);
 
         return result;
     }

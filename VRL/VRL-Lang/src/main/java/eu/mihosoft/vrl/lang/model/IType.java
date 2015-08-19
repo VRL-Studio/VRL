@@ -71,7 +71,7 @@ public interface IType {
     /**
      * @return 
      */
-    boolean isArray();
+    boolean isArray(); 
     
     IType getComponentType();
 

@@ -69,7 +69,7 @@ import javafx.collections.ObservableMap;
 class InvocationImpl implements Invocation {
 
     private String id;
-    private String varName;
+    private ObjectProvider objProvider;
     private final String methodName;
     private final ObservableList<Argument> arguments = FXCollections.observableArrayList();
     private final boolean constructor;
@@ -89,11 +89,11 @@ class InvocationImpl implements Invocation {
     public InvocationImpl(
             Scope parent,
             String id,
-            String varName, String methodName, IType returnType,
+            ObjectProvider objProvider, String methodName, IType returnType,
             boolean constructor, boolean isStatic, Argument... args) {
         this.parent = parent;
         this.id = id;
-        this.varName = varName;
+        this.objProvider = objProvider;
         this.methodName = methodName;
         this.constructor = constructor;
         this.Void = Type.VOID.equals(returnType);
@@ -108,31 +108,31 @@ class InvocationImpl implements Invocation {
 //        } else {
 //            returnValue = parent.createVariable(this);
 //        }
-        init(varName, parent);
+        init(objProvider, parent);
 
     }
 
-    private void init(String varName, Scope oldParent) {
+    private void init(ObjectProvider objProvider, Scope oldParent) {
 
-        if (varName != null && !varName.isEmpty()) {
-            Variable var = null;
-            try {
-                var = parent.getVariable(varName);
-            } catch (IllegalArgumentException ex) {
-                // will be checked later (see if below)
-            }
-
-            if (!isStatic() && !isScope() && var == null) {
-
-                throw new IllegalArgumentException(
-                        "Variable '"
-                        + varName
-                        + "' does not exist in scope '" + parent.getName() + "'!");
-            } else if (varName != null) {
-                // check whether varName is a valid type
-                Type type = new Type(varName);
-            }
-        }
+//        if (varName != null && !varName.isEmpty()) {
+//            Variable var = null;
+//            try {
+//                var = parent.getVariable(varName);
+//            } catch (IllegalArgumentException ex) {
+//                // will be checked later (see if below)
+//            }
+//
+//            if (!isStatic() && !isScope() && var == null) {
+//
+//                throw new IllegalArgumentException(
+//                        "Variable '"
+//                        + varName
+//                        + "' does not exist in scope '" + parent.getName() + "'!");
+//            } else if (varName != null) {
+//                // check whether varName is a valid type
+//                Type type = new Type(varName);
+//            }
+//        }
 
         if (isScope()) {
             // nothing (see ScopeInvocationImpl)
@@ -182,20 +182,22 @@ class InvocationImpl implements Invocation {
                 node.setMainOutput(output);
             }
 
-            node.setTitle(varName + "." + methodName + "()");
+            node.setTitle(objProvider.toString() + "." + methodName + "()");
 
         }
     }
 
     @Override
-    public String getVariableName() {
-        return varName;
+    public void setObjectProvider(ObjectProvider objProvider) {
+        this.objProvider = objProvider;
+        init(objProvider, parent);
     }
 
     @Override
-    public String getMethodName() {
-        return methodName;
+    public ObjectProvider getObjectProvider() {
+        return objProvider;
     }
+
 
     @Override
     public ObservableList<Argument> getArguments() {
@@ -222,7 +224,7 @@ class InvocationImpl implements Invocation {
             result += "scopeType: " + scopeInvocation.getScope().getType() + ", ";
         }
 
-        result += "constructor=" + constructor + ", var=" + varName + ", mName=" + methodName /*+ ", retVal=" + returnValue*/ + ", args=[";
+        result += "constructor=" + constructor + ", objProv=" + objProvider + ", mName=" + methodName /*+ ", retVal=" + returnValue*/ + ", args=[";
 
         for (Argument a : arguments) {
             result += a + ", ";
@@ -305,7 +307,7 @@ class InvocationImpl implements Invocation {
         if (!Objects.equals(this.id, other.id)) {
             return false;
         }
-        if (!Objects.equals(this.varName, other.varName)) {
+        if (!Objects.equals(this.objProvider, other.objProvider)) {
             return false;
         }
         if (!Objects.equals(this.methodName, other.methodName)) {
@@ -319,13 +321,15 @@ class InvocationImpl implements Invocation {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 23 * hash + Objects.hashCode(this.id);
-        hash = 23 * hash + Objects.hashCode(this.varName);
-        hash = 23 * hash + Objects.hashCode(this.methodName);
-        hash = 23 * hash + Objects.hashCode(this.arguments);
+        int hash = 7;
+        hash = 37 * hash + Objects.hashCode(this.id);
+        hash = 37 * hash + Objects.hashCode(this.objProvider);
+        hash = 37 * hash + Objects.hashCode(this.methodName);
+        hash = 37 * hash + Objects.hashCode(this.arguments);
         return hash;
     }
+
+
 
     /**
      * @return the returnType
@@ -426,17 +430,13 @@ class InvocationImpl implements Invocation {
         this.textRenderingEnabled = textRenderingEnabled;
     }
 
-    @Override
-    public void setVariableName(String variableName) {
-        this.varName = variableName;
-        init(varName, parent);
-    }
+
 
     void setParent(Scope parent) {
         Scope oldParent = this.parent;
         this.parent = parent;
         if (parent != oldParent) {
-            init(varName, oldParent);
+            init(objProvider, oldParent);
         }
     }
 
@@ -448,4 +448,8 @@ class InvocationImpl implements Invocation {
         return metadata;
     }
 
+    @Override
+    public String getMethodName() {
+        return methodName;
+    }
 }
