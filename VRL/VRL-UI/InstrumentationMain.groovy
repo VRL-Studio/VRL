@@ -13,8 +13,10 @@ public class MainCSG {
         return cube.toCSG();
     }
     public static eu.mihosoft.vrl.v3d.jcsg.CSG createDiff(double r1, double r2) {
-        eu.mihosoft.vrl.v3d.jcsg.CSG result =  createCube(r1);
-        return result.difference(createSphere(r2));
+//        eu.mihosoft.vrl.v3d.jcsg.CSG result;
+ //        result = (createCube(r1));
+//        return result.difference(createSphere(r2));
+          return createCube(r1).difference(createSphere(r2));
     }
     public static void main(String[] args) {
         createDiff(13, 10);
@@ -49,8 +51,8 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:createDiff:inv:op ASSIGN</string>
     <layout>
-      <x>778.6583681208228</x>
-      <y>282.9607836665687</y>
+      <x>781.2158115210628</x>
+      <y>83.35082344784453</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -67,16 +69,6 @@ public class MainCSG {
     </layout>
   </entry>
   <entry>
-    <string>Script:my.testpackage.MainCSG:createDiff:inv:declare sphere</string>
-    <layout>
-      <x>1080.516856242133</x>
-      <y>161.68077459428378</y>
-      <width>233.59146118164062</width>
-      <height>151.23339299368985</height>
-      <contentVisible>true</contentVisible>
-    </layout>
-  </entry>
-  <entry>
     <string>Script:my.testpackage.MainCSG:createSphere:inv:op ASSIGN</string>
     <layout>
       <x>733.5939538785191</x>
@@ -89,10 +81,10 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:createDiff:inv:difference</string>
     <layout>
-      <x>1403.399693446297</x>
-      <y>799.1509080868534</y>
-      <width>213.0</width>
-      <height>150.0</height>
+      <x>894.1051849334559</x>
+      <y>740.2003348813322</y>
+      <width>433.30340428571503</width>
+      <height>265.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
@@ -179,30 +171,10 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:createDiff:inv:return</string>
     <layout>
-      <x>1834.454720192043</x>
-      <y>840.6634451049031</y>
-      <width>200.0</width>
-      <height>150.0</height>
-      <contentVisible>true</contentVisible>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MainCSG:createDiff:inv:declare cube</string>
-    <layout>
-      <x>306.3069870496926</x>
-      <y>62.77689172613738</y>
-      <width>200.0</width>
-      <height>150.0</height>
-      <contentVisible>true</contentVisible>
-    </layout>
-  </entry>
-  <entry>
-    <string>Script:my.testpackage.MainCSG:createDiff:inv:op ASSIGN:0</string>
-    <layout>
-      <x>1104.5081167036678</x>
-      <y>779.3899334342689</y>
-      <width>200.0</width>
-      <height>150.0</height>
+      <x>1552.8147575283479</x>
+      <y>863.5510607070636</y>
+      <width>481.6399626636951</width>
+      <height>165.3916274608115</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
@@ -239,10 +211,10 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:createDiff:inv:createSphere</string>
     <layout>
-      <x>929.1160893655617</x>
-      <y>536.2494419313799</y>
-      <width>488.2100199662136</width>
-      <height>150.0</height>
+      <x>784.135093282742</x>
+      <y>277.8182835071345</y>
+      <width>622.9612424480731</width>
+      <height>311.8217736064229</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
@@ -253,6 +225,16 @@ public class MainCSG {
       <y>529.324236683927</y>
       <width>497.83413869367007</width>
       <height>289.32230214917354</height>
+      <contentVisible>true</contentVisible>
+    </layout>
+  </entry>
+  <entry>
+    <string>Script:my.testpackage.MainCSG:createDiff:inv:declare result</string>
+    <layout>
+      <x>294.99593442784624</x>
+      <y>0.0</y>
+      <width>200.0</width>
+      <height>150.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
@@ -270,7 +252,7 @@ public class MainCSG {
     <string>Script:my.testpackage.MainCSG:createDiff:inv:declare r2</string>
     <layout>
       <x>0.0</x>
-      <y>181.57893200268745</y>
+      <y>204.46654760484793</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -280,7 +262,7 @@ public class MainCSG {
     <string>Script:my.testpackage.MainCSG:createDiff:inv:declare r1</string>
     <layout>
       <x>0.2909204568268864</x>
-      <y>0.0</y>
+      <y>22.88761560216048</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -359,10 +341,10 @@ public class MainCSG {
   <entry>
     <string>Script:my.testpackage.MainCSG:createDiff:inv:createCube</string>
     <layout>
-      <x>302.2877135424976</x>
-      <y>289.52871155344764</y>
-      <width>414.0</width>
-      <height>150.0</height>
+      <x>279.3282229403371</x>
+      <y>283.95382475296753</y>
+      <width>410.2389748082358</width>
+      <height>307.91302481580937</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
