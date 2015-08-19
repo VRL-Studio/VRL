@@ -288,12 +288,18 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             return;
         }
 
-//        if (inParam) {
-//            
-//        }
+        if (inParam) {
+            ObjectProvider objP = i.getObjectProvider();
+ 
+            if(objP.getInvocation().isPresent()) {
+                render(objP.getInvocation().get(),cb, true);
+            }
+        }
+
         if (i.isConstructor()) {
             cb.
-                    append("new ").append(renderObjProvider(i.getObjectProvider())).
+                    append("new ").append(
+                            renderObjProvider(i.getObjectProvider())).
                     append("(");
             renderArguments(i, cb);
             cb.append(")");
