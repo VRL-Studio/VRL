@@ -367,7 +367,6 @@ public class MainWindowController implements Initializable {
     private Optional<VNode> getNodeByCodeId(VFlowModel flow, String id) {
 
 //        System.out.println("-> searching for: " + id);
-
         for (VNode vn : flow.getNodes()) {
 
             boolean valObjectIsCodeEntity
@@ -412,15 +411,32 @@ public class MainWindowController implements Initializable {
 
         // copy cu
         // TODO 10.08.2015 add copy/cloning functionality (see todos in model)
+        VFlow origFlow = flow;
+        CompilationUnitDeclaration origCU
+                = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                iterator().next().get(0);
+        UIBinding.setRootFlow(FlowFactory.newFlow());
         updateView();
-        CompilationUnitDeclaration cu
+        CompilationUnitDeclaration clonedCU
                 = (CompilationUnitDeclaration) UIBinding.scopes.values().
                 iterator().next().get(0);
 
-        updateView();
+        UIBinding.setRootFlow(origFlow);
+        UIBinding.scopes.values().iterator().next().clear();
+        UIBinding.scopes.values().iterator().next().add(origCU);
+
+        String clonedCode = Scope2Code.getCode(clonedCU);
+        System.out.println("cloned: " + clonedCode);
 
         InstrumentCode instrumentCode = new InstrumentCode();
-        CompilationUnitDeclaration newCu = instrumentCode.transform(cu);
+        CompilationUnitDeclaration newCu = instrumentCode.transform(clonedCU);
+
+        String instrCode = Scope2Code.getCode(newCu);
+        System.out.println("instr: " + instrCode);
+
+//        if (true) {
+//            return;
+//        }
 
         String instrumentedCode = Scope2Code.getCode(newCu);
 
