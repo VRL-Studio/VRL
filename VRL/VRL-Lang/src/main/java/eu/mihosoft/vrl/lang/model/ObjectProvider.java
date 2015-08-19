@@ -37,7 +37,7 @@ public interface ObjectProvider {
     }
 
     static ObjectProvider empty() {
-        return new ObjectProvider_Impl();
+        return ObjectProvider_Impl.EMPTY;
     }
 
 }
@@ -47,6 +47,8 @@ class ObjectProvider_Impl implements ObjectProvider {
     private final Optional<String> variableName;
     private final Optional<Invocation> invocation;
     private final Optional<IType> classObject;
+    
+    static final ObjectProvider EMPTY = new ObjectProvider_Impl();
 
     public ObjectProvider_Impl() {
         this.variableName = Optional.empty();
