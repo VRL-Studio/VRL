@@ -366,7 +366,7 @@ public class MainWindowController implements Initializable {
 
     private Optional<VNode> getNodeByCodeId(VFlowModel flow, String id) {
 
-        System.out.println("-> searching for: " + id);
+//        System.out.println("-> searching for: " + id);
 
         for (VNode vn : flow.getNodes()) {
 
@@ -848,7 +848,7 @@ public class MainWindowController implements Initializable {
     }
 
     private void visualizeEvent(InstrumentationEvent evt, VNode vn) {
-        System.out.println("vn: " + vn.getId());
+//        System.out.println("vn: " + vn.getId());
 
         if (vn.getValueObject().getValue() instanceof CodeEntity) {
             CodeEntity ce = (CodeEntity) vn.getValueObject().getValue();
