@@ -633,8 +633,7 @@ public class MainWindowController implements Initializable {
                 xstream.alias("layout", LayoutData.class);
                 layoutData.clear();
                 loadLayoutIds.clear();
-                layoutData.putAll(
-                        (Map<String, LayoutData>) xstream.fromXML(vrlComment));
+                layoutData.putAll((Map<String, LayoutData>) xstream.fromXML(vrlComment));
             } else {
                 System.err.println("-> cannot load layout - not present!");
             }
@@ -735,6 +734,7 @@ public class MainWindowController implements Initializable {
         System.out.println("Scope: UpdateCode");
         String code = Scope2Code.getCode(
                 (CompilationUnitDeclaration) getRootScope(rootScope));
+//        System.out.println(code);
         editor.setText(code);
     }
 
