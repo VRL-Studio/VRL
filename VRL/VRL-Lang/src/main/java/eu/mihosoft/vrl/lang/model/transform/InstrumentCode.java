@@ -170,10 +170,11 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
      * declarations) but they must not be used as argument of other invocations.
      *
      * @param inv invocation
+     * @param invocations list of invocations
      * @return {@code true} if the invocation needs a tmp variable;
      * {@code false} otherwise
      */
-    private boolean invNeedsTmpVar(Invocation inv) {
+    private boolean invNeedsTmpVar(Invocation inv, List<Invocation> invocations) {
 
         if (inv.getReturnType() == Type.VOID) {
             return false;
@@ -195,7 +196,9 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
             return false;
         }
 
+        // normal non-void method
         if (!(inv instanceof BinaryOperatorInvocationImpl)) {
+
             return true;
         }
 
@@ -287,6 +290,11 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         List<Invocation> invocations
                 = new ArrayList<>(ce.getControlFlow().getInvocations());
         ControlFlow cf = result.getControlFlow();
+        
+        if(ce.getName().contains("createSphere")) {
+            System.out.println("");
+        }
+        
         addInstrumentation(cf, invocations);
 
         return result;
@@ -398,7 +406,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         Optional<Invocation> invocationTarget = isInvArg(inv, cf);
 
         // if the current method is non-void we need to introduce tmp variables
-        if (invNeedsTmpVar(inv)) {
+        if (invNeedsTmpVar(inv, invocations)) {
 
             // creates and assigns tmp variable
             String varName = newVarName();
@@ -409,6 +417,11 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
             // need to replace the argument with the previously defined tmp
             // variable
             if (invocationTarget.isPresent()) {
+
+                if (invocationTarget.get().getMethodName().contains("return")) {
+                    System.out.println("");
+                }
+
                 // search argument indices
                 int[] argumentsToReplace = invocationTarget.get().
                         getArguments().stream().
@@ -422,11 +435,6 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
                             Argument.varArg(cf.getParent().
                                     getVariable(varName)));
                 }
-            }
-
-            if (nextI != null && nextI.getMethodName().contains("return")
-                    && inv.getMethodName().contains("toCSG")) {
-                System.out.println("");
             }
 
             if (retValIsObjectOfNextI && nextI != null) {

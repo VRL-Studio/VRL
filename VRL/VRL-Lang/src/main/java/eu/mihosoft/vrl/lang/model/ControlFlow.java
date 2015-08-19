@@ -81,6 +81,7 @@ public interface ControlFlow {
     public List<Invocation> getInvocations();
     
     public boolean isUsedAsInput(Invocation invocation);
+    
     public Optional<Invocation> returnInvTargetIfPresent(Invocation invocation);
 
     public BinaryOperatorInvocation invokeOperator(String id, Argument leftArg, Argument rightArg, Operator operator);

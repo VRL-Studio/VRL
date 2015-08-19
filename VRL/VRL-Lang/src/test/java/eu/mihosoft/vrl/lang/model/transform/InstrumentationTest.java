@@ -51,7 +51,7 @@ public class InstrumentationTest {
     public void instrumentationTest() {
 //        createInstrumentationTest("Instrumentation01.groovy");
 //        createInstrumentationTest("Instrumentation02.groovy");
-        createInstrumentationTest("Instrumentation04.groovy");
+        createInstrumentationTest("Instrumentation05.groovy");
     }
    
     public void createInstrumentationTest(String fileName) {
