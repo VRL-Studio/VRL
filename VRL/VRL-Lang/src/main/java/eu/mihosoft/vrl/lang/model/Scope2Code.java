@@ -52,6 +52,7 @@ package eu.mihosoft.vrl.lang.model;
 //import org.stringtemplate.v4.ST;
 import eu.mihosoft.vrl.lang.CodeRenderer;
 import eu.mihosoft.vrl.lang.VLangUtils;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,6 +60,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import rx.Observable;
 
 //import org.stringtemplate.v4.STGroup;
 //import org.stringtemplate.v4.STGroupString;
@@ -69,7 +73,6 @@ import java.util.Set;
 public class Scope2Code {
 
     static Set<Comment> renderedComments = new HashSet<>();
-    
 
     public static String getCode(CompilationUnitDeclaration scope) {
 
@@ -188,16 +191,78 @@ final class Utils {
     }
 }
 
+enum TypeRenderer implements CodeRenderer<IType> {
+
+    INSTANCE;
+
+    private final Set<IType> types = new HashSet<>();
+    private CompilationUnitDeclaration cu;
+
+    @Override
+    public void render(IType e, CodeBuilder cb) {
+
+        if (e.getPackageName().equals(cu.getPackageName())) {
+            cb.append(e.getShortName());
+        } else if (types.contains(e)) {
+            cb.append(e.getShortName());
+        } else {
+            cb.append(e.getClassNameAsCode());
+        }
+    }
+
+    public String renderAsPlainString(IType e) {
+        if (e.getPackageName().equals(cu.getPackageName())) {
+            return e.getShortName();
+        } else if (types.contains(e)) {
+            return e.getShortName();
+        } else {
+            return e.getClassNameAsCode();
+        }
+    }
+
+    void initialize(CompilationUnitDeclaration e) {
+        this.cu = e;
+
+        // filter types that must not or don't have to be imported
+        Predicate<IType> notTypeOfCurrentPackage
+                = t -> !t.getPackageName().equals(e.getPackageName());
+        Predicate<IType> isNoArrayType = t -> !t.isArray();
+        Predicate<IType> isNoJavaLangType
+                = t -> !t.getPackageName().equals("java.lang");
+        Predicate<IType> isNoPrimitive = t -> !t.isPrimitive();
+        Predicate<IType> isNoVoid = t -> !t.equals(Type.VOID);
+
+        Predicate<IType> typesToImport = notTypeOfCurrentPackage.
+                and(isNoVoid).and(isNoArrayType).and(isNoVoid).
+                and(isNoJavaLangType).and(isNoPrimitive);
+
+        List<IType> typesToImportList = ScopeUtils.getUsedTypes(e).stream().
+                filter(typesToImport).
+                collect(Collectors.toList());
+
+        typesToImportList.sort(
+                (t1, t2) -> t1.getFullClassName().compareTo(t2.getFullClassName()));
+
+        List<IType> distinctTypes = Observable.from(typesToImportList).
+                distinct(t -> t.getShortName()).toList().toBlocking().single();
+
+        types.clear();
+
+        types.addAll(distinctTypes);
+    }
+
+    void renderImports(CodeBuilder cb) {
+        cb.newLine();
+        for (IType type : types) {
+            cb.addLine("import " + type.getClassNameAsCode() + ";");
+        }
+        cb.newLine();
+    }
+}
+
 class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
     public InvocationCodeRenderer() {
-    }
-
-    @Override
-    public String render(Invocation e) {
-        CodeBuilder cb = new CodeBuilder();
-        render(e, cb);
-        return cb.getCode();
     }
 
     @Override
@@ -300,12 +365,12 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
         } else if (i instanceof DeclarationInvocation) {
             DeclarationInvocation decl = (DeclarationInvocation) i;
-            cb.append(decl.getDeclaredVariable().getType().
-                    getClassNameAsCode()).append(" ").
+            TypeRenderer.INSTANCE.render(decl.getDeclaredVariable().getType(), cb);
+            cb.append(" ").
                     append(decl.getDeclaredVariable().getName());
         } else if (i instanceof BinaryOperatorInvocation) {
-            BinaryOperatorInvocation operatorInvocation = 
-                    (BinaryOperatorInvocation) i;
+            BinaryOperatorInvocation operatorInvocation
+                    = (BinaryOperatorInvocation) i;
 
             boolean letArgNeedsParantheses
                     = operatorInvocation.getLeftArgument().getArgType()
@@ -624,7 +689,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         if (objProvider.getVariableName().isPresent()) {
             return objProvider.getVariableName().get();
         } else if (objProvider.getClassObject().isPresent()) {
-            return objProvider.getClassObject().get().getFullClassName();
+            return TypeRenderer.INSTANCE.renderAsPlainString(objProvider.getClassObject().get());
         } else if (objProvider.getInvocation().isPresent()) {
             return "";
         }
@@ -654,7 +719,7 @@ class MethodDeclarationRenderer implements CodeRenderer<MethodDeclaration> {
     public void render(MethodDeclaration e, CodeBuilder cb) {
 
         createModifiers(e, cb);
-        cb.append(e.getReturnType().getClassNameAsCode());
+        TypeRenderer.INSTANCE.render(e.getReturnType(), cb);
         cb.append(" ").append(e.getName()).append("(");
         renderParams(e, cb);
         cb.append(") {").newLine();
@@ -693,7 +758,9 @@ class MethodDeclarationRenderer implements CodeRenderer<MethodDeclaration> {
                 cb.append(", ");
             }
 
-            cb.append(v.getType().getClassNameAsCode()).append(" ").
+            TypeRenderer.INSTANCE.render(v.getType(), cb);
+
+            cb.append(" ").
                     append(v.getName());
 
 //            if (v.getType().getPackageName().equals("java.lang")) {
@@ -756,7 +823,8 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
         for (Variable v : cd.getVariables()) {
             if (!"this".equals(v.getName())) {
                 createModifiers(v, cb);
-                cb.append(v.getType().getClassNameAsCode()).
+                TypeRenderer.INSTANCE.render(v.getType(), cb);
+                cb.
                         append(" ").append(v.getName()).append(";").newLine();
             }
         }
@@ -800,7 +868,7 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
             } else {
                 cb.append(", ");
             }
-            cb.append(type.getClassNameAsCode());
+            TypeRenderer.INSTANCE.render(type, cb);
         }
     }
 
@@ -820,7 +888,8 @@ class ClassDeclarationRenderer implements CodeRenderer<ClassDeclaration> {
             } else {
                 cb.append(", ");
             }
-            cb.append(type.getClassNameAsCode());
+            TypeRenderer.INSTANCE.render(type, cb);
+
         }
     }
 }
@@ -854,8 +923,8 @@ class CompilationUnitRenderer implements
             cb.append("package ").append(e.getPackageName()).append(";").
                     newLine();
         }
-
-        List<? extends ImportDeclaration> imports = e.getImports();
+        TypeRenderer.INSTANCE.initialize(e);
+        TypeRenderer.INSTANCE.renderImports(cb);
 
         List<? extends CodeEntity> entities = e.getDeclaredClasses();
 
