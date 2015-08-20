@@ -440,16 +440,16 @@ public class MainWindowController implements Initializable {
 
         String instrumentedCode = Scope2Code.getCode(newCu);
 
-        VRLInstrumentationUtil.addEventHandler(
-                InstrumentationEventType.PRE_INVOCATION,
-                (evt) -> {
-                    System.out.println("pre-evt:\t" + evt.toString());
-                });
-        VRLInstrumentationUtil.addEventHandler(
-                InstrumentationEventType.POST_INVOCATION,
-                (evt) -> {
-                    System.out.println("post-evt:\t" + evt.toString());
-                });
+//        VRLInstrumentationUtil.addEventHandler(
+//                InstrumentationEventType.PRE_INVOCATION,
+//                (evt) -> {
+//                    System.out.println("pre-evt:\t" + evt.toString());
+//                });
+//        VRLInstrumentationUtil.addEventHandler(
+//                InstrumentationEventType.POST_INVOCATION,
+//                (evt) -> {
+//                    System.out.println("post-evt:\t" + evt.toString());
+//                });
 
         VRLInstrumentationUtil.addEventHandler(
                 InstrumentationEventType.INVOCATION,
