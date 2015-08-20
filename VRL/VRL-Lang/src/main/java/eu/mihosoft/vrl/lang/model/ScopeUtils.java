@@ -5,7 +5,14 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Utility methods for analyzing scope hierarchies.
@@ -61,7 +68,92 @@ public class ScopeUtils {
         }
 
         return i.getObjectProvider().getClassObject().
-                map(cls->cls.equals(enclosingClass.get().getClassType())).orElse(false);
+                map(cls -> cls.equals(enclosingClass.get().getClassType())).orElse(false);
 
+    }
+
+    /**
+     * Returns a set containing all used types in the specified scope and all
+     * of its subscopes.
+     * 
+     * @param s scope to analyze
+     * @return set that contains all types that are used in the specified scope
+     */
+    public static Set<IType> getUsedTypes(Scope s) {
+
+        Set<IType> usedTypes = new HashSet<>();
+
+        // adding results to set to get distinct collection
+        usedTypes.addAll(scopeTypes(s));
+        
+        return usedTypes;
+    }
+
+    /**
+     * @see #getUsedTypes(eu.mihosoft.vrl.lang.model.Scope) 
+     * @param cd
+     * @return 
+     */
+    private static List<IType> classTypes(ClassDeclaration cd) {
+        List<IType> cTypes = new ArrayList<>();
+
+        cTypes.add(cd.getClassType());
+        cTypes.addAll(cd.getExtends().getTypes());
+        cTypes.addAll(cd.getImplements().getTypes());
+
+        return cTypes;
+    }
+
+    /**
+     * @see #getUsedTypes(eu.mihosoft.vrl.lang.model.Scope) 
+     * @param md
+     * @return 
+     */
+    private static List<IType> methodTypes(MethodDeclaration md) {
+        List<IType> mTypes = new ArrayList<>();
+
+        mTypes.add(md.getReturnType());
+        List<IType> params
+                = md.getParameters().getParamenters().stream().
+                map(p -> p.getType()).collect(Collectors.toList());
+        mTypes.addAll(params);
+
+        return mTypes;
+    }
+
+    /**
+     * @see #getUsedTypes(eu.mihosoft.vrl.lang.model.Scope) 
+     * @param scope
+     * @return 
+     */
+    private static List<IType> scopeTypes(Scope scope) {
+        List<IType> result = new ArrayList<>();
+        scope.getVariables().stream().map(v -> v.getType()).
+                collect(Collectors.toCollection(() -> result));
+
+        scope.getScopes().stream().flatMap(s -> scopeTypes(s).stream()).
+                collect(Collectors.toCollection(() -> result));
+
+        if (scope instanceof ControlFlowScope) {
+            ControlFlowScope cfs = (ControlFlowScope) scope;
+            cfs.getControlFlow().getInvocations().stream().
+                    filter(inv -> inv.getObjectProvider().getClassObject().isPresent()).
+                    map(inv -> inv.getObjectProvider().getClassObject().get()).
+                    collect(Collectors.toCollection(() -> result));
+
+            cfs.getControlFlow().getInvocations().stream().
+                    filter(inv -> inv instanceof ScopeInvocation).
+                    map(inv -> (ScopeInvocation) inv).
+                    flatMap(sInv -> scopeTypes(sInv.getScope()).stream()).
+                    collect(Collectors.toCollection(() -> result));
+        }
+
+        if (scope instanceof ClassDeclaration) {
+            result.addAll(classTypes((ClassDeclaration) scope));
+        } else if (scope instanceof MethodDeclaration) {
+            result.addAll(methodTypes((MethodDeclaration) scope));
+        }
+
+        return result;
     }
 }
