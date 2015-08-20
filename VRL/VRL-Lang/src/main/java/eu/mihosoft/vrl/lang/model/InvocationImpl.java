@@ -148,7 +148,6 @@ class InvocationImpl implements Invocation {
                 for (Connector c : delList) {
                     node.removeConnector(c);
                     // TODO 19.08.2015 restore output connections
-                    
                 }
             }
 
