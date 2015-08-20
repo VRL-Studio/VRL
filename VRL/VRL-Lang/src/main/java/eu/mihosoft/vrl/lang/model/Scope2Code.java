@@ -69,6 +69,7 @@ import java.util.Set;
 public class Scope2Code {
 
     static Set<Comment> renderedComments = new HashSet<>();
+    
 
     public static String getCode(CompilationUnitDeclaration scope) {
 
