@@ -1,14 +1,18 @@
 package my.testpackage;
+
+import eu.mihosoft.vrl.v3d.jcsg.CSG;
+import eu.mihosoft.vrl.v3d.jcsg.Cube;
+import eu.mihosoft.vrl.v3d.jcsg.Sphere;
+
 public class MainCSG {
 
-
-    public static eu.mihosoft.vrl.v3d.jcsg.CSG createSphere(double radius) {
-        return new eu.mihosoft.vrl.v3d.jcsg.Sphere(radius).toCSG();
+    public static CSG createSphere(double radius) {
+        return new Sphere(radius).toCSG();
     }
-    public static eu.mihosoft.vrl.v3d.jcsg.CSG createCube(double dimensions) {
-        return new eu.mihosoft.vrl.v3d.jcsg.Cube(dimensions).toCSG();
+    public static CSG createCube(double dimensions) {
+        return new Cube(dimensions).toCSG();
     }
-    public static eu.mihosoft.vrl.v3d.jcsg.CSG createDiff(double r1, double r2) {
+    public static CSG createDiff(double r1, double r2) {
         return createCube(r1).difference(createSphere(r2));
     }
     public static void main(String[] args) {
