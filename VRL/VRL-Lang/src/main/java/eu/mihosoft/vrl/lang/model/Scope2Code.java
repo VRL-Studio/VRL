@@ -356,9 +356,17 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         }
 
         if (i.isConstructor()) {
-            cb.
-                    append("new ").append(
-                            renderObjProvider(i.getObjectProvider())).
+            cb.append("new");
+
+            // TODO 20.08.2015 improve line break (maybe in second pass)
+            if (cb.getCurrentLineLength() >= 80) {
+                cb.newLine();
+            } else {
+                cb.append(" ");
+            }
+
+            cb.append(
+                    renderObjProvider(i.getObjectProvider())).
                     append("(");
             renderArguments(i, cb);
             cb.append(")");
@@ -449,6 +457,11 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                 cb.
                         append(renderObjProvider(i.getObjectProvider())).
                         append(".");
+            }
+
+            // TODO 20.08.2015 improve line break (maybe in second pass)
+            if (cb.getCurrentLineLength() >= 80) {
+                cb.newLine();
             }
 
             cb.append(i.getMethodName()).append("(");
@@ -654,6 +667,14 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
                 firstCall = false;
             } else {
                 cb.append(", ");
+            }
+
+            // look ahead for potential line break
+            // TODO 20.08.2015 improve line break (maybe in second pass)
+            CodeBuilder laCb = new CodeBuilder();
+            renderArgument(a, laCb);
+            if (cb.getCurrentLineLength() + laCb.getCurrentLineLength() >= 80) {
+                cb.newLine();
             }
 
             renderArgument(a, cb);

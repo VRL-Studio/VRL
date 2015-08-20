@@ -143,6 +143,14 @@ public class CodeBuilder {
 
         return this;
     }
+    
+    /**
+     * Returns the length of the current line.
+     * @return length of the current line
+     */
+    public int getCurrentLineLength() {
+        return currentLine.length() + getIndentation(cursorPos).length();
+    }
 
     /**
      * Inserts a line break.
