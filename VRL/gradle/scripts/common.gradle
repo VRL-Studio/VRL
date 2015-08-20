@@ -31,6 +31,9 @@ dependencies {
     compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.9';
     compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.9', classifier: 'sources';
     compile group: 'org.codehaus.groovy', name: 'groovy', version:'2.3.9', classifier: 'javadoc';
+    
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.14';
+    compile group: 'io.reactivex', name: 'rxjava', version: '1.0.14', classifier: 'sources';
 }
 
 // maven config
