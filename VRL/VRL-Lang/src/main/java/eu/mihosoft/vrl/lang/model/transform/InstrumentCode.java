@@ -29,6 +29,7 @@ import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
 import eu.mihosoft.vrl.lang.model.WhileDeclaration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -418,10 +419,6 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
             // variable
             if (invocationTarget.isPresent()) {
 
-                if (invocationTarget.get().getMethodName().contains("return")) {
-                    System.out.println("");
-                }
-
                 // search argument indices
                 int[] argumentsToReplace = invocationTarget.get().
                         getArguments().stream().
@@ -443,7 +440,6 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
                 // on the previously defined tmp variable that stores the return
                 // value of the current invocation
                 nextI.setObjectProvider(ObjectProvider.fromVariable(varName));
-                System.out.println("VARNAME: " + varName);
             }
 
             retValArg = Argument.varArg(result.getVariable(varName));
@@ -456,6 +452,18 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         } else {
             resultInvs.add(VRLInstrumentationUtil.generatePostEvent(
                     cf, inv, retValArg));
+        }
+        
+        // if the current invocation is a return,break or continue statement,
+        // we need to swap the statement invocation and 
+        // the post event invocation  since after the return statement no event
+        // can be generated.
+        if(inv instanceof ReturnStatementInvocation
+                || inv instanceof ContinueInvocation
+                || inv instanceof BreakInvocation) {
+            Collections.swap(resultInvs,
+                    resultInvs.indexOf(inv),
+                    resultInvs.indexOf(inv)+1);
         }
 
         if (inv instanceof ScopeInvocation) {
