@@ -133,54 +133,58 @@ class InvocationImpl implements Invocation {
 //                Type type = new Type(varName);
 //            }
 //        }
-
         if (isScope()) {
             // nothing (see ScopeInvocationImpl)
         } else {
-            if (node == null || parent != oldParent) {
+
+            boolean newNode = node == null || parent != oldParent;
+
+            if (newNode) {
                 if (node != null) {
                     oldParent.getFlow().remove(node);
                 }
                 node = parent.getFlow().newNode();
-            } else {
-                List<Connector> delList = new ArrayList<>();
-                delList.addAll(node.getConnectors());
-                for (Connector c : delList) {
-                    node.removeConnector(c);
-                    // TODO 19.08.2015 restore output connections
+//            } else {
+//                List<Connector> delList = new ArrayList<>();
+//                delList.addAll(node.getConnectors());
+//                for (Connector c : delList) {
+//                    System.out.println("del: " + c + ", node: " + node + ", inv: " + methodName);
+//                    node.removeConnector(c);
+//                    // TODO 19.08.2015 restore output connections
+//                }
+
+                node.getValueObject().setValue(this);
+
+                Connector controlflowInput = node.setMainInput(
+                        node.addInput(WorkflowUtil.CONTROL_FLOW));
+
+                controlflowInput.getVisualizationRequest().set(
+                        VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
+
+                controlflowInput.setMaxNumberOfConnections(1);
+
+                Connector controlflowOutput = node.setMainOutput(
+                        node.addOutput(WorkflowUtil.CONTROL_FLOW));
+
+                controlflowOutput.
+                        getVisualizationRequest().set(
+                                VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
+
+                controlflowOutput.setMaxNumberOfConnections(1);
+
+                int argIndex = 0;
+                for (Argument arg : arguments) {
+                    node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().
+                            setValue(new ArgumentValue(argIndex, arg));
+                    argIndex++;
                 }
-            }
 
-            node.getValueObject().setValue(this);
+                if (!Objects.equals(returnType, Type.VOID)) {
+                    Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
+                    output.getValueObject().setValue(returnType);
+                    node.setMainOutput(output);
+                }
 
-            Connector controlflowInput = node.setMainInput(
-                    node.addInput(WorkflowUtil.CONTROL_FLOW));
-
-            controlflowInput.getVisualizationRequest().set(
-                    VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
-
-            controlflowInput.setMaxNumberOfConnections(1);
-
-            Connector controlflowOutput = node.setMainOutput(
-                    node.addOutput(WorkflowUtil.CONTROL_FLOW));
-
-            controlflowOutput.
-                    getVisualizationRequest().set(
-                            VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
-
-            controlflowOutput.setMaxNumberOfConnections(1);
-
-            int argIndex = 0;
-            for (Argument arg : arguments) {
-                node.addInput(WorkflowUtil.DATA_FLOW).getValueObject().
-                        setValue(new ArgumentValue(argIndex, arg));
-                argIndex++;
-            }
-
-            if (!Objects.equals(returnType, Type.VOID)) {
-                Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
-                output.getValueObject().setValue(returnType);
-                node.setMainOutput(output);
             }
 
             node.setTitle(objProvider.toString() + "." + methodName + "()");
@@ -198,7 +202,6 @@ class InvocationImpl implements Invocation {
     public ObjectProvider getObjectProvider() {
         return objProvider;
     }
-
 
     @Override
     public ObservableList<Argument> getArguments() {
@@ -330,8 +333,6 @@ class InvocationImpl implements Invocation {
         return hash;
     }
 
-
-
     /**
      * @return the returnType
      */
@@ -366,7 +367,6 @@ class InvocationImpl implements Invocation {
 
             node.removeConnector(ctr);
         }
-
 
         if (!Objects.equals(returnType, Type.VOID)) {
             Connector output = node.addOutput(WorkflowUtil.DATA_FLOW);
@@ -430,8 +430,6 @@ class InvocationImpl implements Invocation {
     public void setTextRenderingEnabled(boolean textRenderingEnabled) {
         this.textRenderingEnabled = textRenderingEnabled;
     }
-
-
 
     void setParent(Scope parent) {
         Scope oldParent = this.parent;
