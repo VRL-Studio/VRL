@@ -50,9 +50,10 @@
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.base.VClassLoaderUtil;
-import eu.mihosoft.vrl.lang.model.IType;
-import eu.mihosoft.vrl.lang.Patterns;
 import eu.mihosoft.vrl.lang.VLangUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -75,8 +76,14 @@ public final class Type implements IType {
     public static final IType DOUBLE = new Type("double");
     public static final IType BOOLEAN = new Type("boolean");
     public static final IType CHAR = new Type("char");
+    public static final IType BYTE = new Type("byte");
     public static final IType STRING = new Type("java.lang.String");
     public static final IType OBJECT = new Type("java.lang.Object");
+    
+    private static final List<IType> primitives = 
+            new ArrayList<>(
+                    Arrays.asList(new IType[]{
+                        INT,LONG,SHORT,FLOAT,DOUBLE,BOOLEAN,CHAR, BYTE}));
 
 //    public Type(String packageName, String shortName, boolean isReturnOrParamType) {
 //        this.packageName = packageName;
@@ -246,6 +253,11 @@ public final class Type implements IType {
                 return getFullClassName();
             }
         }
+    }
+
+    @Override
+    public boolean isPrimitive() {
+        return primitives.contains(this);
     }
 
 }

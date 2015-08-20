@@ -54,7 +54,8 @@ public class VRLInstrumentationUtil {
         
         return cf.callMethod(
                 "",
-                ObjectProvider.fromClassObject(Type.fromClass(VRLInstrumentationUtil.class)),
+                ObjectProvider.fromClassObject(
+                        Type.fromClass(VRLInstrumentationUtil.class)),
                 "__preEvent", Type.VOID, args);
     }
 
@@ -77,7 +78,8 @@ public class VRLInstrumentationUtil {
         
         return cf.callMethod(
                 "",
-                ObjectProvider.fromClassObject(Type.fromClass(VRLInstrumentationUtil.class)),
+                ObjectProvider.fromClassObject(
+                        Type.fromClass(VRLInstrumentationUtil.class)),
                 "__postEvent", Type.VOID, args);
     }
 
@@ -97,7 +99,8 @@ public class VRLInstrumentationUtil {
         
         return cf.callMethod(
                 "",
-                ObjectProvider.fromClassObject(Type.fromClass(VRLInstrumentationUtil.class)),
+                ObjectProvider.fromClassObject(Type.fromClass(
+                        VRLInstrumentationUtil.class)),
                 "__postEvent", Type.VOID, args);
     }
 
@@ -157,11 +160,13 @@ public class VRLInstrumentationUtil {
         eventSender.fireEvent(evt);
     }
     
-    public static void addEventHandler(InstrumentationEventType type, InstrumentationEventHandler eventHandler) {
+    public static void addEventHandler(InstrumentationEventType type,
+            InstrumentationEventHandler eventHandler) {
         eventSender.addEventHandler(type, eventHandler);
     }
     
-    public static void removeEventHandler(InstrumentationEventType type, InstrumentationEventHandler eventHandler) {
+    public static void removeEventHandler(InstrumentationEventType type,
+            InstrumentationEventHandler eventHandler) {
         eventSender.removeEventHandler(type, eventHandler);
     }
 }

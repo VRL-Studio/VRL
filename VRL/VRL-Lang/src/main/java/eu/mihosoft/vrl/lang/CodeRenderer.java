@@ -47,18 +47,24 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang;
 
 import eu.mihosoft.vrl.lang.model.CodeBuilder;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
+import eu.mihosoft.vrl.lang.model.Invocation;
 
 /**
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
- * @param <T> 
+ * @param <T>
  */
-public interface CodeRenderer <T extends CodeEntity> {
-    public String render(T e);
+public interface CodeRenderer<T> {
+
+    public default String render(T e) {
+        CodeBuilder cb = new CodeBuilder();
+        render(e, cb);
+        return cb.getCode();
+    }
+
     public void render(T e, CodeBuilder cb);
 }

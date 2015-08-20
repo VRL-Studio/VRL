@@ -73,6 +73,8 @@ public interface IType {
      */
     boolean isArray(); 
     
+    boolean isPrimitive();
+    
     IType getComponentType();
 
     String getClassNameAsCode();
