@@ -152,7 +152,7 @@ final class Utils {
                 }
 
                 if (ce.getRange() == null) {
-                    System.err.println("RANGE NULL for: " + ce);
+//                    System.err.println("RANGE NULL for: " + ce);
                     continue;
                 }
 
@@ -188,12 +188,6 @@ final class Utils {
 }
 
 class InvocationCodeRenderer implements CodeRenderer<Invocation> {
-
-    /**
-     * chained method map. values are inv-object providers, keys are invocations
-     * that are called on return values of other invocations.
-     */
-    private Map<Invocation, Invocation> chainedMethods = new HashMap<>();
 
     public InvocationCodeRenderer() {
     }
@@ -305,10 +299,12 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
 
         } else if (i instanceof DeclarationInvocation) {
             DeclarationInvocation decl = (DeclarationInvocation) i;
-            cb.append(decl.getDeclaredVariable().getType().getClassNameAsCode()).append(" ").
+            cb.append(decl.getDeclaredVariable().getType().
+                    getClassNameAsCode()).append(" ").
                     append(decl.getDeclaredVariable().getName());
         } else if (i instanceof BinaryOperatorInvocation) {
-            BinaryOperatorInvocation operatorInvocation = (BinaryOperatorInvocation) i;
+            BinaryOperatorInvocation operatorInvocation = 
+                    (BinaryOperatorInvocation) i;
 
             boolean letArgNeedsParantheses
                     = operatorInvocation.getLeftArgument().getArgType()
