@@ -524,6 +524,11 @@ class ScopeImpl implements Scope {
     public DeclarationInvocation declareVariable(String id, IType type, String varName) {
         return getControlFlow().declareVariable(id, type, varName);
     }
+    
+        @Override
+    public DeclareAndAssignInvocation declareAndAssignVariable(String request, IType type, String varName, Argument assignmentArg) {
+        return getControlFlow().declareAndAssignVariable(id, type, varName, assignmentArg);
+    }
 
     /**
      * @return the invocation
@@ -595,5 +600,7 @@ class ScopeImpl implements Scope {
     public ObservableMap<String,Object> getMetaData() {
         return metadata;
     }
+
+
 
 }

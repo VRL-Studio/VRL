@@ -66,6 +66,9 @@ public interface VisualCodeBuilder {
     Invocation createInstance(Scope scope, IType type, Argument... args);
 
     DeclarationInvocation declareVariable(Scope scope, IType type, String varName);
+    
+    @Deprecated
+    DeclareAndAssignInvocation declareAndAssignVariable(Scope scope, IType type, String varName, Argument assignmentArg);
 
     SimpleForDeclaration invokeForLoop(ControlFlowScope scope, String varName, int from, int to, int inc);
 

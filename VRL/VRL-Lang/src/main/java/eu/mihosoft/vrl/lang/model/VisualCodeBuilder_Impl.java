@@ -94,6 +94,13 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     public DeclarationInvocation declareVariable(Scope scope, IType type, String varName) {
         return scope.declareVariable(idRequest.request(), type, varName);
     }
+    
+    
+    @Override
+    @Deprecated
+    public DeclareAndAssignInvocation declareAndAssignVariable(Scope scope, IType type, String varName, Argument assignmentArg) {
+        return scope.declareAndAssignVariable(idRequest.request(), type, varName, assignmentArg);
+    }
 
 //    @Deprecated
 //    public Variable createVariable(Scope scope, IType type) {

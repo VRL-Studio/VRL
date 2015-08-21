@@ -367,6 +367,20 @@ class ControlFlowImpl implements ControlFlow {
 
         return invocation;
     }
+    
+        @Override
+    public DeclareAndAssignInvocation declareAndAssignVariable(String id, IType type, String varName, Argument assignArg) {
+        VariableImpl var = (VariableImpl) ((ScopeImpl) parent)._createVariable(type, varName);
+
+        DeclareAndAssignInvocation_Impl invocation 
+                = new DeclareAndAssignInvocation_Impl(id, parent, var, assignArg);
+
+        var.setDeclaration(invocation);
+
+        getInvocations().add(invocation);
+
+        return invocation;
+    }
 
 //     @Override
 //    public DeclarationInvocation declareStaticVariable(String id, IType type, String varName) {

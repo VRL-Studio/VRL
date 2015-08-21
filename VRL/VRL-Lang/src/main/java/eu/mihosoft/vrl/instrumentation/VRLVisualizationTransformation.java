@@ -78,6 +78,8 @@ import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.ArgumentType;
+import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.model.ObjectProvider;
@@ -797,7 +799,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         String objectName = null;
 
 //        System.err.println("obj-name: " + objectName + ", m: " + s.getText());
-
         if (s.getText().startsWith("this.")) {
             objectName = "this";
         }
@@ -866,10 +867,10 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         if (!isIdCall) {
             if (objectName != null) {
                 Invocation invocation = codeBuilder.invokeMethod(
-                            (ControlFlowScope) currentScope, objectProvider,
-                            s.getMethod().getText(),
-                            returnType,
-                            arguments);
+                        (ControlFlowScope) currentScope, objectProvider,
+                        s.getMethod().getText(),
+                        returnType,
+                        arguments);
 
                 if (stateMachine.getBoolean("variable-declaration")) {
                     stateMachine.addToList("variable-declaration:assignment-invocations", invocation);
@@ -1180,7 +1181,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                 Argument leftArg = convertExpressionToArgument(s.getLeftExpression());
                 Argument rightArg = convertExpressionToArgument(s.getRightExpression());
 
-                boolean emptyAssignment = (Objects.equal(Argument.nullArg(), rightArg) && operator == Operator.ASSIGN);
+                boolean emptyAssignment = (Objects.equal(Argument.nullArg(),
+                        rightArg) && operator == Operator.ASSIGN);
 
                 if (!emptyAssignment) {
 
@@ -1190,8 +1192,49 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
                     );
 
                     setCodeRange(invocation, s);
-
                     returnVariables.put(s, invocation);
+
+//                    boolean declareAndAssignDetected = false;
+//
+//                    if (operator == Operator.ASSIGN) {
+//
+//                        ControlFlow cf = invocation.getParent().
+//                                getControlFlow();
+//
+//                        DeclarationInvocation declInv = null;
+//
+//                        // we assume, that assignments always have a var as
+//                        // left arg
+//                        Variable variable = leftArg.getVariable().get();
+//
+//                        // check for declare&assign invocation
+//                        int indexOfAssIgnmentInv = cf.getInvocations().
+//                                indexOf(invocation);
+//
+//                        if (indexOfAssIgnmentInv > 0) {
+//                            Invocation prevInvocation
+//                                    = cf.getInvocations().
+//                                    get(indexOfAssIgnmentInv - 1);
+//
+//                            if (prevInvocation instanceof DeclarationInvocation) {
+//                                declInv = (DeclarationInvocation) prevInvocation;
+//                                if (declInv.getDeclaredVariable().equals(variable)) {
+//                                    declareAndAssignDetected = true;
+//                                }
+//                            }
+//                        }
+//
+//                        if (declareAndAssignDetected) {
+//                            // undo previous declaration and assignment
+//                            cf.getInvocations().
+//                                    remove(indexOfAssIgnmentInv);
+//                            cf.getInvocations().remove(declInv);
+//
+//                            codeBuilder.declareAndAssignVariable(
+//                                    currentScope, variable.getType(),
+//                                    variable.getName(), rightArg);
+//                        }
+//                    }
                 }
             }
         }

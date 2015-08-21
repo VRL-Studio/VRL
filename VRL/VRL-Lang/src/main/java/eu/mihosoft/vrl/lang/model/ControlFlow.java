@@ -75,6 +75,7 @@ public interface ControlFlow {
     public BinaryOperatorInvocation assignInvocationResult(String id, String varName, Invocation invocation);
     
     public DeclarationInvocation declareVariable(String id, IType type, String varName);
+    public DeclareAndAssignInvocation declareAndAssignVariable(String id, IType type, String varName, Argument assignmentArg);
 
     public ScopeInvocation callScope(Scope scope);
 
@@ -96,6 +97,8 @@ public interface ControlFlow {
     public ContinueInvocation invokeContinue(String id);
 
     public NotInvocation invokeNot(String id, Argument arg);
+
+    
 
 
 

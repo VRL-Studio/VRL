@@ -114,5 +114,7 @@ public interface Scope extends CodeEntity {
     public VFlow getFlow();
     
     public void visitScopeAndAllSubElements(Consumer<CodeEntity> consumer);
+
+    public DeclareAndAssignInvocation declareAndAssignVariable(String request, IType type, String varName, Argument assignmentArg);
 }
 
