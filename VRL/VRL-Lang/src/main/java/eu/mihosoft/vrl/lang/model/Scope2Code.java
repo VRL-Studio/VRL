@@ -380,29 +380,36 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
             BinaryOperatorInvocation operatorInvocation
                     = (BinaryOperatorInvocation) i;
 
-            boolean letArgNeedsParantheses
+            boolean leftArgNeedsParantheses
                     = operatorInvocation.getLeftArgument().getArgType()
-                    == ArgumentType.INVOCATION;
+                    == ArgumentType.INVOCATION
+                    && (operatorInvocation.getLeftArgument().
+                    getInvocation().get() instanceof BinaryOperatorInvocation);
+
             boolean rightArgNeedsParantheses
                     = operatorInvocation.getRightArgument().getArgType()
-                    == ArgumentType.INVOCATION;
+                    == ArgumentType.INVOCATION
+                    && (operatorInvocation.getRightArgument().
+                    getInvocation().get() instanceof BinaryOperatorInvocation);
 
             // no parantheses around not operator
-            if (letArgNeedsParantheses) {
-                letArgNeedsParantheses = !(operatorInvocation.getLeftArgument()
+            if (leftArgNeedsParantheses) {
+                leftArgNeedsParantheses
+                        = !(operatorInvocation.getLeftArgument()
                         .getInvocation().get() instanceof NotInvocation);
             }
             // no parantheses around not operator
             if (rightArgNeedsParantheses) {
-                rightArgNeedsParantheses = !(operatorInvocation.getRightArgument()
+                rightArgNeedsParantheses
+                        = !(operatorInvocation.getRightArgument()
                         .getInvocation().get() instanceof NotInvocation);
             }
 
-            if (letArgNeedsParantheses) {
+            if (leftArgNeedsParantheses) {
                 cb.append("(");
             }
             renderArgument(operatorInvocation.getLeftArgument(), cb);
-            if (letArgNeedsParantheses) {
+            if (leftArgNeedsParantheses) {
                 cb.append(")");
             }
             if (!operatorInvocation.isArrayAccessOperator()) {
