@@ -539,10 +539,6 @@ public class MainWindowController implements Initializable {
     }
 
     private void applyPositions() {
-//        nodeToScopes.keySet().
-//                forEach(id -> applyPosition(flow.getNodeLookup().getById(id)));
-//        nodeInvocations.keySet().
-//                forEach(id -> applyPosition(flow.getNodeLookup().getById(id)));
 
         if (UIBinding.scopes.values().
                 iterator().hasNext()) {
@@ -569,6 +565,7 @@ public class MainWindowController implements Initializable {
 
         // auto layout for nodes without previous layout data
         if (d == null) {
+            
             VNode n = cE.getNode();
             VFlowModel nParent = n.getFlow();
             Collection<Connection> connections
@@ -580,7 +577,9 @@ public class MainWindowController implements Initializable {
                     filter(pn->pn.getReceiver().getNode().equals(n)).
                     map(conn->conn.getSender().getNode()).
                     findFirst();
+            
             int gap = 50;
+            
             if (previousNode.isPresent()) {
                 VNode prevN = previousNode.get();
                 n.setX(prevN.getX()+prevN.getWidth()+gap);
