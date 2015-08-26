@@ -43,5 +43,10 @@ public class IfStatementPartTest extends CompositeTestUtil<IfStatement, IfStatem
 		assertTrue(decl instanceof ElseIfDeclaration);
 		assertTrue(inv == decl.getCheck().getInvocation().get());
 	}
+	
+	@Test public void testIfStatementValidation() throws Exception
+	{
+		
+	}
 
 }

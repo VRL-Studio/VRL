@@ -1,8 +1,6 @@
 package eu.mihosoft.vrl.instrumentation.composites;
 
-import org.codehaus.groovy.ast.stmt.EmptyStatement;
 import org.codehaus.groovy.ast.stmt.IfStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
 
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
@@ -39,12 +37,6 @@ public class IfStatementPart extends
 		setCodeRange(decl, s);
 		addCommentsToScope(decl, comments);
 		return decl;
-	}
-
-	private boolean hasUnconditionalElseBlock(IfStatement in) {
-		Statement elseBlock = in.getElseBlock();
-		return (elseBlock != null || elseBlock instanceof EmptyStatement)
-				&& !(elseBlock instanceof IfStatement);
 	}
 
 	@Override
