@@ -22,7 +22,7 @@ public class ElsePart extends
 	@Override
 	public ElseDeclaration transform(BlockStatement obj, IfDeclaration parent,
 			TransformContext ctx) {
-		if (parent.getControlFlow().getInvocations().size() == 1) {
+		if (parent.getControlFlow().getInvocations().size() > 0) {
 			return builder.invokeElse((ControlFlowScope) parent.getParent());
 		} else {
 			return null;

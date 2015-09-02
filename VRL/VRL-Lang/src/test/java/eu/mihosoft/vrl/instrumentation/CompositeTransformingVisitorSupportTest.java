@@ -294,6 +294,27 @@ public class CompositeTransformingVisitorSupportTest {
 						code.lastIndexOf("}\n    }") + 1)
 						.replace("        ", "").trim());
 	}
+	
+	@Test
+	public void testIfThenElseWithDeclaration() throws Exception {
+		SourceUnit src = fromCode("class B{void run(){if(1>2){int i=0;run_if();}else{int j=0;run_else();}}}");
+		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
+				.init(src);
+		visitor.visitModuleNode(src.getAST());
+		String code = Scope2Code.getCode((CompilationUnitDeclaration) visitor
+				.getRoot().getRootObject());
+		assertEquals(
+				"if (1 > 2) {\n"
+				+ "    Integer i = 0;\n"
+				+ "    run_if();\n"
+				+ "}\nelse {\n"
+				+ "    Integer j = 0;\n"
+				+ "    run_else();\n"
+				+ "}",
+				code.substring(code.indexOf("run()") + 8,
+						code.lastIndexOf("}\n    }") + 1)
+						.replace("        ", "").trim());	
+	}
 
 	void printBindings() {
 		for (Collection<Scope> scopeList : UIBinding.scopes.values()) {

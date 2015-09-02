@@ -452,6 +452,7 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
 	@Override
 	public String toString() {
 		String result = "Scope:" + type;
+		if (name!=null) result += (", name = " + name);
 
 		result += "\n>> Variables:\n";
 
