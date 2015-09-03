@@ -64,6 +64,8 @@ import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 
+import eu.mihosoft.transverse.Validatelet;
+import eu.mihosoft.transverse.ValidationHook;
 import eu.mihosoft.vrl.instrumentation.composites.BinaryExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.BreakPart;
 import eu.mihosoft.vrl.instrumentation.composites.ClassNodePart;
@@ -80,11 +82,14 @@ import eu.mihosoft.vrl.instrumentation.composites.ModuleNodePart;
 import eu.mihosoft.vrl.instrumentation.composites.PostFixExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.PropertyExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.ReturnStatementPart;
+import eu.mihosoft.vrl.instrumentation.composites.ValidationUtil;
 import eu.mihosoft.vrl.instrumentation.composites.VariableExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.WhileLoopPart;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.IdRequest;
+import eu.mihosoft.vrl.lang.model.IfDeclaration;
+import eu.mihosoft.vrl.lang.model.ModelTraverse;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
@@ -125,10 +130,18 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 		List<Scope> clsScopes = new ArrayList<>();
 		UIBinding.scopes.put(sourceUnit.getName(), clsScopes);
 
+		// Create VRL model
 		visitor.visitModuleNode(sourceUnit.getAST());
-
 		CompilationUnitDeclaration decl = (CompilationUnitDeclaration) visitor
 				.getRoot().getRootObject();
+		
+		// Apply validation code
+		ValidationHook hook = new ValidationHook(new ValidationUtil().validations());
+
+		ModelTraverse traverse = new ModelTraverse(hook);
+		traverse.traverse(decl);
+
+		
 
 		clsScopes.add(decl);
 	}

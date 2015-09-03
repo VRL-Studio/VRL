@@ -12,6 +12,7 @@ import org.codehaus.groovy.ast.MethodNode;
 import org.codehaus.groovy.ast.ModuleNode;
 import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.MultipleCompilationErrorsException;
 import org.codehaus.groovy.control.Phases;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
@@ -266,7 +267,7 @@ public class CompositeTransformingVisitorSupportTest {
 
 	@Test
 	public void testWhileLoopTransform() throws Exception {
-		SourceUnit src = fromCode("class A{ void run(){while(1>3) { run(); }}}");
+		SourceUnit src = fromCode(wrap("while(1>3) { run(); }"));
 		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
 				.init(src);
 		visitor.visitModuleNode(src.getAST());
@@ -280,40 +281,55 @@ public class CompositeTransformingVisitorSupportTest {
 
 	@Test
 	public void testIfThenElse() throws Exception {
-		SourceUnit src = fromCode("class A{ void run(){ if (2>1) { run_if(); } else if (2<1) { run_elseif(); } else { run_else(); } }}");
+		SourceUnit src = fromCode(wrap("if (2>1) { run_if(); } else if (2<1) { run_elseif(); } else { run_else(); }"));
 		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
 				.init(src);
 		visitor.visitModuleNode(src.getAST());
 		String code = Scope2Code.getCode((CompilationUnitDeclaration) visitor
 				.getRoot().getRootObject());
-		assertEquals(
-				"if (2 > 1) {\n" + "    run_if();\n" + "}\n"
-						+ "else if (2 < 1) {\n" + "    run_elseif();\n" + "}\n"
-						+ "else {\n" + "    run_else();\n" + "}",
-				code.substring(code.indexOf("run()") + 8,
-						code.lastIndexOf("}\n    }") + 1)
-						.replace("        ", "").trim());
+		assertEquals("if (2 > 1) {\n" + "    run_if();\n" + "}\n"
+				+ "else if (2 < 1) {\n" + "    run_elseif();\n" + "}\n"
+				+ "else {\n" + "    run_else();\n" + "}", unwrap(code));
 	}
-	
+
+	@Test
+	public void testForLoopWithBadStyle() throws Exception {
+		SourceUnit src = fromCode(wrap("for (int i=0; i>=0; i++) { run(); }"));
+		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
+				.init(src);
+		try {
+			visitor.visitModuleNode(src.getAST());
+		} catch (MultipleCompilationErrorsException ex) {
+            assertTrue(ex.getMessage().contains("infinite loops are not supported"));
+		}
+		String code = Scope2Code.getCode((CompilationUnitDeclaration) visitor
+				.getRoot().getRootObject());
+		assertEquals("for(int i = 0; i >= 0; i++) {\n" + "    run();\n" + "}",
+				unwrap(code));
+	}
+
+	private String wrap(String snippet) {
+		return "class A{void run(){" + snippet + "}}";
+	}
+
+	private String unwrap(String code) {
+		return code
+				.substring(code.indexOf("run()") + 8,
+						code.lastIndexOf("}\n    }") + 1)
+				.replace("        ", "").trim();
+	}
+
 	@Test
 	public void testIfThenElseWithDeclaration() throws Exception {
-		SourceUnit src = fromCode("class B{void run(){if(1>2){int i=0;run_if();}else{int j=0;run_else();}}}");
+		SourceUnit src = fromCode(wrap("if(1>2){int i=0;run_if();}else{int j=0;run_else();}"));
 		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
 				.init(src);
 		visitor.visitModuleNode(src.getAST());
 		String code = Scope2Code.getCode((CompilationUnitDeclaration) visitor
 				.getRoot().getRootObject());
-		assertEquals(
-				"if (1 > 2) {\n"
-				+ "    Integer i = 0;\n"
-				+ "    run_if();\n"
-				+ "}\nelse {\n"
-				+ "    Integer j = 0;\n"
-				+ "    run_else();\n"
-				+ "}",
-				code.substring(code.indexOf("run()") + 8,
-						code.lastIndexOf("}\n    }") + 1)
-						.replace("        ", "").trim());	
+		assertEquals("if (1 > 2) {\n" + "    Integer i = 0;\n"
+				+ "    run_if();\n" + "}\nelse {\n" + "    Integer j = 0;\n"
+				+ "    run_else();\n" + "}", unwrap(code));
 	}
 
 	void printBindings() {

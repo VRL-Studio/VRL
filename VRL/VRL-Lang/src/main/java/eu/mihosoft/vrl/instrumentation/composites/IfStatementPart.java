@@ -40,22 +40,6 @@ public class IfStatementPart extends
 	}
 
 	@Override
-	public void postTransform(IfDeclaration obj, IfStatement in,
-			ControlFlowScope parent, TransformContext context) {
-
-		if (in.getBooleanExpression().getExpression() == null) {
-			throwErrorMessage("if-statement: must contain boolean"
-					+ " expression!", in.getBooleanExpression());
-		}
-
-		if (!(parent instanceof ControlFlowScope)) {
-			throwErrorMessage(
-					"If-Statement can only be invoked inside ControlFlowScopes!",
-					in);
-		}
-	}
-
-	@Override
 	public Class<IfStatement> getAcceptedType() {
 		return IfStatement.class;
 	}

@@ -70,11 +70,20 @@ public class ForLoopPart
 		impl.setTextRenderingEnabled(false);
 
 		checkLoopCondition(obj, expr.getExpression(1));
-		checkLoopExpression(obj, expr.getExpression(2));
+		checkLoopExpression(obj, expr.getExpression(2), expr.getExpression(1));
+	}
+
+	private String getOperation(Expression ex) {
+		if (ex instanceof PostfixExpression) {
+			return ((PostfixExpression) ex).getOperation().getText();
+		} else if (ex instanceof BinaryExpression) {
+			return ((BinaryExpression) ex).getOperation().getText();
+		}
+		return "NOP";
 	}
 
 	private void checkLoopExpression(SimpleForDeclaration decl,
-			Expression expression) {
+			Expression expression, Expression condition) {
 
 		SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) decl;
 		if (expression instanceof PostfixExpression) {
@@ -86,7 +95,7 @@ public class ForLoopPart
 				forD.setInc(-1);
 			}
 
-			if (forD.getInc() > 0 && ">=".equals(obj.getOperation())) {
+			if (forD.getInc() > 0 && ">=".equals(getOperation(condition))) {
 				// throw new IllegalStateException("In for-loop: infinite loops"
 				// + " are not supported! Change '>=' to '<=' to prevent that."
 				// );
@@ -96,7 +105,7 @@ public class ForLoopPart
 						obj);
 			}
 
-			if (forD.getInc() < 0 && "<=".equals(obj.getOperation())) {
+			if (forD.getInc() < 0 && "<=".equals(getOperation(condition))) {
 				// throw new IllegalStateException("In for-loop: infinite loops"
 				// + " are not supported! Change '<=' to '>=' to prevent that."
 				// );
@@ -133,14 +142,14 @@ public class ForLoopPart
 				forD.setInc(-(int) ce.getValue());
 			}
 
-			if (forD.getInc() > 0 && ">=".equals(s.getOperation())) {
+			if (forD.getInc() > 0 && ">=".equals(getOperation(condition))) {
 				throwErrorMessage(
 						"In for-loop: infinite loops"
 								+ " are not supported! Change '>=' to '<=' to prevent that.",
 						s);
 			}
 
-			if (forD.getInc() < 0 && "<=".equals(s.getOperation())) {
+			if (forD.getInc() < 0 && "<=".equals(getOperation(condition))) {
 				throwErrorMessage(
 						"In for-loop: infinite loops"
 								+ " are not supported! Change '<=' to '>=' to prevent that.",
