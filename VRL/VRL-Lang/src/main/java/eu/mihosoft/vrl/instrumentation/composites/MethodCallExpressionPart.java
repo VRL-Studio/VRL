@@ -48,12 +48,6 @@ public class MethodCallExpressionPart extends
 
 			if (ce.getType().getName().equals(VSource.class.getName())) {
 				isIdCall = true;
-
-				for (IArgument arg : arguments) {
-
-					// TODO is this still in use? 18.02.2014
-					// vIdStack.push(arg.toString());
-				}
 			}
 		}
 

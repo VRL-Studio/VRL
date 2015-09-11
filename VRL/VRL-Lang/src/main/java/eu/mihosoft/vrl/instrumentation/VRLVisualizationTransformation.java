@@ -62,11 +62,11 @@ import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.messages.LocatedMessage;
+import org.codehaus.groovy.control.messages.SimpleMessage;
 import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 
-import eu.mihosoft.transverse.Validatelet;
 import eu.mihosoft.transverse.ValidationHook;
 import eu.mihosoft.transverse.ValidationMessage;
 import eu.mihosoft.vrl.instrumentation.composites.BinaryExpressionPart;
@@ -88,10 +88,11 @@ import eu.mihosoft.vrl.instrumentation.composites.ReturnStatementPart;
 import eu.mihosoft.vrl.instrumentation.composites.ValidationUtil;
 import eu.mihosoft.vrl.instrumentation.composites.VariableExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.WhileLoopPart;
+import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.IdRequest;
-import eu.mihosoft.vrl.lang.model.IfDeclaration;
 import eu.mihosoft.vrl.lang.model.ModelTraverse;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.UIBinding;
@@ -121,10 +122,6 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 			transformation.visit(astNodes, sourceUnit);
 		}
 
-		VisualCodeBuilder_Impl codeBuilder = new VisualCodeBuilder_Impl();
-
-		Map<String, List<Scope>> scopes = new HashMap<>();
-
 		CompositeTransformingVisitorSupport visitor = init(sourceUnit);
 
 		// VGroovyCodeVisitor visitor = new VGroovyCodeVisitor(sourceUnit,
@@ -137,34 +134,55 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 		visitor.visitModuleNode(sourceUnit.getAST());
 		CompilationUnitDeclaration decl = (CompilationUnitDeclaration) visitor
 				.getRoot().getRootObject();
-		
+
 		// Apply validation code
-		ValidationHook hook = new ValidationHook(new ValidationUtil().validations());
+		ValidationHook hook = new ValidationHook(
+				new ValidationUtil().validations());
 
 		ModelTraverse traverse = new ModelTraverse(hook);
 		traverse.traverse(decl);
 
-		for (ValidationMessage msg : hook.getMessages())
-		{
-			throwErrorMessage(msg.getMessage(), sourceUnit.getAST() ,sourceUnit);
+		for (ValidationMessage msg : hook.getMessages()) {
+			throwErrorMessage(msg, sourceUnit);
 		}
 
 		clsScopes.add(decl);
 	}
-	
-	protected static void throwErrorMessage(String text, ASTNode node, SourceUnit sourceUnit) {
 
-		// thanks to
-		// http://grails.io/post/15965611310/lessons-learnt-developing-groovy-ast-transformations
-		Token token = Token.newString(node.getText(), node.getLineNumber(),
-				node.getColumnNumber());
-		LocatedMessage message = new LocatedMessage(text, token, sourceUnit);
+	protected static void throwErrorMessage(ValidationMessage msg,
+			SourceUnit sourceUnit) {
+		CodeEntity codeEntity = (CodeEntity) msg.getSender();
+		ICodeRange range = codeEntity.getRange();
+		Token token;
+		SimpleMessage message;
+		if (range != null) {
+			// thanks to
+			// http://grails.io/post/15965611310/lessons-learnt-developing-groovy-ast-transformations
+			Reader r = range.getSource();
+			String txt = "<not available>";
+			try {
+				r.reset();
+				char[] buf = new char[range.size()];
+				r.skip(range.getBegin().getCharIndex());
+				r.read(buf, 0, range.size());
+				txt = new String(buf);
+			} catch (IOException e) {
+				// Cannot re-read stream, if you miss position info here
+				// review creation of ICodeRange objects.
+			}
+			;
+			token = Token.newString(txt, range.getBegin().getLine(), range
+					.getBegin().getColumn());
+			message = new LocatedMessage(msg.getMessage(), token, sourceUnit);
+		} else {
+
+			message = new SimpleMessage(msg.getMessage(), sourceUnit);
+		}
 		sourceUnit.getErrorCollector().addError(message);
 	}
 
 	public static CompositeTransformingVisitorSupport init(SourceUnit sourceUnit) {
 		VisualCodeBuilder_Impl builder = new VisualCodeBuilder_Impl();
-		StateMachine stateMachine = new StateMachine();
 
 		builder.setIdRequest(new IdRequest() {
 

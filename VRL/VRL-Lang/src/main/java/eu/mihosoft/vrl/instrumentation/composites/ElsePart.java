@@ -3,7 +3,6 @@ package eu.mihosoft.vrl.instrumentation.composites;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.control.SourceUnit;
 
-import eu.mihosoft.vrl.instrumentation.StateMachine;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;

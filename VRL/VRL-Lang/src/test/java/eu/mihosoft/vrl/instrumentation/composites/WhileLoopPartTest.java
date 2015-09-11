@@ -30,11 +30,9 @@ public class WhileLoopPartTest extends
 				WhileStatement.class, WhileLoopPart.class);
 		resolveAs("WhileLoop.condition",
 				ConstantValueFactory.createConstantValue(null, Type.VOID));
-		try {
-			WhileDeclaration decl = part.transform(statement, scope, context);
-            fail("Error expected because null not allowed as while loop condition");
-		} catch (MultipleCompilationErrorsException e) {
-            assertTrue(e.getMessage().contains("Null"));
-		}
+		WhileDeclaration decl = part.transform(statement, scope, context);
+
+		assertTrue(decl.getCheck().getType().equals(Type.VOID));
+
 	}
 }

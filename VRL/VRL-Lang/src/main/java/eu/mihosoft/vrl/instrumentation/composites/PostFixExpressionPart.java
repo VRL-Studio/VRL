@@ -34,12 +34,6 @@ public class PostFixExpressionPart
 	}
 
 	@Override
-	public void postTransform(CodeEntity out, PostfixExpression obj,
-			ControlFlowScope parent, TransformContext context) {
-
-	}
-
-	@Override
 	public Class<PostfixExpression> getAcceptedType() {
 
 		return PostfixExpression.class;

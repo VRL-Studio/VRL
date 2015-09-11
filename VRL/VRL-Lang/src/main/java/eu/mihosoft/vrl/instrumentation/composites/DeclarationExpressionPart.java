@@ -36,13 +36,6 @@ public class DeclarationExpressionPart
 	}
 
 	@Override
-	public void postTransform(DeclarationInvocation obj,
-			DeclarationExpression s, ControlFlowScope currentScope,
-			TransformContext context) {
-
-	}
-
-	@Override
 	public Class<DeclarationExpression> getAcceptedType() {
 		return DeclarationExpression.class;
 	}

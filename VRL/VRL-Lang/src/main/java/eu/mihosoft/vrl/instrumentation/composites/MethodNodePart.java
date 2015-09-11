@@ -51,12 +51,6 @@ public class MethodNodePart
 			org.codehaus.groovy.ast.Parameter p = params[i];
 
 			String pType = p.getType().getName();
-
-			// if (pType.startsWith("[L")) {
-			// System.err.print("convertMethodParameters(): array param not supported! "
-			// + pType);
-			// pType = pType.replace("[L", "").replace(";", "");
-			// }
 			result[i] = new Parameter(new Type(pType, true), p.getName(),
 					setCodeRange(p));
 		}

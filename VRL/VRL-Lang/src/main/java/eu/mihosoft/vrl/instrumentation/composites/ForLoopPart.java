@@ -36,8 +36,6 @@ public class ForLoopPart
 	@Override
 	public SimpleForDeclaration transform(ForStatement s,
 			ControlFlowScope currentScope, TransformContext context) {
-		System.out.println(" --> FOR-LOOP: " + s.getVariable());
-
 		// predeclaration, ranges will be defined later
 		SimpleForDeclaration decl = builder.invokeForLoop(currentScope, null,
 				0, 0, 0, Operator.GREATER_EQUALS);

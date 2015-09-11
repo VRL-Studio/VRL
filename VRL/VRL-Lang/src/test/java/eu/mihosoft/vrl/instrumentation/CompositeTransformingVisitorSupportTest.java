@@ -231,7 +231,7 @@ public class CompositeTransformingVisitorSupportTest {
 		// ReturnPart uses deferred resolution to connect the constant
 		// expression "0" with the
 		// ReturnInvocation instance.
-		SourceUnit src = fromCode("class A{ void run(){ return 0; }}");
+		SourceUnit src = source("return 0;");
 		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
 				.init(src);
 		visitor.visitModuleNode(src.getAST());
@@ -246,7 +246,7 @@ public class CompositeTransformingVisitorSupportTest {
 
 	@Test
 	public void testWhileLoopTransform() throws Exception {
-		SourceUnit src = fromCode(wrap("while(1>3) { run(); }"));
+		SourceUnit src = source("while(1>3) { run(); }");
 		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
 				.init(src);
 		visitor.visitModuleNode(src.getAST());
@@ -260,7 +260,7 @@ public class CompositeTransformingVisitorSupportTest {
 
 	@Test
 	public void testIfThenElse() throws Exception {
-		SourceUnit src = fromCode(wrap("if (2>1) { run_if(); } else if (2<1) { run_elseif(); } else { run_else(); }"));
+		SourceUnit src = source("if (2>1) { run_if(); } else if (2<1) { run_elseif(); } else { run_else(); }");
 		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
 				.init(src);
 		visitor.visitModuleNode(src.getAST());
@@ -273,7 +273,7 @@ public class CompositeTransformingVisitorSupportTest {
 
 	@Test
 	public void testForLoopWithInfiniteLoop1() throws Exception {
-		SourceUnit src = fromCode(wrap("for (int i=0; i>=0; i++) { run(); }"));
+		SourceUnit src = source("for (int i=0; i>=0; i++) { run(); }");
 		VRLVisualizationTransformation transform = new VRLVisualizationTransformation();
 		try {
 			UIBinding.scopes.clear();
@@ -288,7 +288,7 @@ public class CompositeTransformingVisitorSupportTest {
 	@Test
 	public void testForLoopWithNonIntegerConst() throws Exception
 	{
-		SourceUnit src = fromCode(wrap("for (char i='4'; i>='5'; i++) { run(); }"));
+		SourceUnit src = source("for (char i='4'; i>='5'; i++) { run(); }");
 		VRLVisualizationTransformation transform = new VRLVisualizationTransformation();
 		try {
 			UIBinding.scopes.clear();
@@ -297,6 +297,56 @@ public class CompositeTransformingVisitorSupportTest {
 		} catch (MultipleCompilationErrorsException ex) {
 			assertTrue(ex.getMessage().contains(
 					"for-loop: variable 'i' must be of type integer"));
+		}
+	}
+	
+	@Test 
+	public void testWhileLoopBooleanExpressionException() throws Exception
+	{
+		SourceUnit src = source("while(1){ run(); }");
+		VRLVisualizationTransformation transform = new VRLVisualizationTransformation();
+		try {
+			UIBinding.scopes.clear();
+			transform.visit(null, src);
+			fail("Exception not thrown");
+		} catch (MultipleCompilationErrorsException ex) {
+			assertTrue(ex.getMessage().contains(
+					"must contain boolean"));
+		}
+	}
+	
+	private SourceUnit source(String snippet) throws Exception
+	{
+		return fromCode(wrap(snippet));
+	}
+	
+	@Test 
+	public void testWhileLoopBooleanExpressionException2() throws Exception
+	{
+		SourceUnit src = source("while(i=1){ run(); }");
+		VRLVisualizationTransformation transform = new VRLVisualizationTransformation();
+		try {
+			UIBinding.scopes.clear();
+			transform.visit(null, src);
+			fail("Exception not thrown");
+		} catch (MultipleCompilationErrorsException ex) {
+			assertTrue(ex.getMessage().contains(
+					"must contain boolean"));
+		}
+	}
+	
+	@Test
+	public void testWhileLoopNullExpressionException() throws Exception 
+	{
+		SourceUnit src = source("while(null){ run(); }");
+		VRLVisualizationTransformation transform = new VRLVisualizationTransformation();
+		try {
+			UIBinding.scopes.clear();
+			transform.visit(null, src);
+			fail("Exception not thrown");
+		} catch (MultipleCompilationErrorsException ex) {
+			assertTrue(ex.getMessage().contains(
+					"Null"));
 		}
 	}
 
@@ -313,7 +363,7 @@ public class CompositeTransformingVisitorSupportTest {
 
 	@Test
 	public void testIfThenElseWithDeclaration() throws Exception {
-		SourceUnit src = fromCode(wrap("if(1>2){int i=0;run_if();}else{int j=0;run_else();}"));
+		SourceUnit src = source("if(1>2){int i=0;run_if();}else{int j=0;run_else();}");
 		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
 				.init(src);
 		visitor.visitModuleNode(src.getAST());
