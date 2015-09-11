@@ -2,7 +2,6 @@ package eu.mihosoft.vrl.instrumentation;
 
 import static org.junit.Assert.*;
 
-import java.io.Reader;
 import java.lang.reflect.Proxy;
 import java.util.Collection;
 
@@ -21,32 +20,14 @@ import org.codehaus.groovy.transform.GroovyASTTransformation;
 import org.junit.Test;
 
 import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupport.Root;
-import eu.mihosoft.vrl.instrumentation.composites.BinaryExpressionPart;
-import eu.mihosoft.vrl.instrumentation.composites.BreakPart;
-import eu.mihosoft.vrl.instrumentation.composites.ClassNodePart;
-import eu.mihosoft.vrl.instrumentation.composites.ConstantExpressionPart;
-import eu.mihosoft.vrl.instrumentation.composites.ContinuePart;
-import eu.mihosoft.vrl.instrumentation.composites.DeclarationExpressionPart;
-import eu.mihosoft.vrl.instrumentation.composites.FieldPart;
-import eu.mihosoft.vrl.instrumentation.composites.ForLoopPart;
-import eu.mihosoft.vrl.instrumentation.composites.IfStatementPart;
-import eu.mihosoft.vrl.instrumentation.composites.MethodCallExpressionPart;
-import eu.mihosoft.vrl.instrumentation.composites.MethodNodePart;
-import eu.mihosoft.vrl.instrumentation.composites.ModuleNodePart;
-import eu.mihosoft.vrl.instrumentation.composites.PostFixExpressionPart;
-import eu.mihosoft.vrl.instrumentation.composites.ReturnStatementPart;
-import eu.mihosoft.vrl.instrumentation.composites.WhileLoopPart;
 import eu.mihosoft.vrl.instrumentation.transform.DefaultProxy;
 import eu.mihosoft.vrl.instrumentation.transform.TransformContext;
 import eu.mihosoft.vrl.instrumentation.transform.TransformPart;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
-import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.IArgument;
-import eu.mihosoft.vrl.lang.model.IdRequest;
-import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
@@ -56,8 +37,6 @@ import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
 import eu.mihosoft.vrl.lang.model.WhileDeclaration;
-import eu.mihosoft.vrl.workflow.FlowFactory;
-import eu.mihosoft.vrl.workflow.IdGenerator;
 import groovy.lang.GroovyShell;
 import groovy.lang.Script;
 
@@ -293,19 +272,32 @@ public class CompositeTransformingVisitorSupportTest {
 	}
 
 	@Test
-	public void testForLoopWithBadStyle() throws Exception {
+	public void testForLoopWithInfiniteLoop1() throws Exception {
 		SourceUnit src = fromCode(wrap("for (int i=0; i>=0; i++) { run(); }"));
-		CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
-				.init(src);
+		VRLVisualizationTransformation transform = new VRLVisualizationTransformation();
 		try {
-			visitor.visitModuleNode(src.getAST());
+			UIBinding.scopes.clear();
+			transform.visit(null, src);
+			fail("Exception not thrown");
 		} catch (MultipleCompilationErrorsException ex) {
-            assertTrue(ex.getMessage().contains("infinite loops are not supported"));
+			assertTrue(ex.getMessage().contains(
+					"infinite loops are not supported"));
 		}
-		String code = Scope2Code.getCode((CompilationUnitDeclaration) visitor
-				.getRoot().getRootObject());
-		assertEquals("for(int i = 0; i >= 0; i++) {\n" + "    run();\n" + "}",
-				unwrap(code));
+	}
+	
+	@Test
+	public void testForLoopWithNonIntegerConst() throws Exception
+	{
+		SourceUnit src = fromCode(wrap("for (char i='4'; i>='5'; i++) { run(); }"));
+		VRLVisualizationTransformation transform = new VRLVisualizationTransformation();
+		try {
+			UIBinding.scopes.clear();
+			transform.visit(null, src);
+			fail("Exception not thrown");
+		} catch (MultipleCompilationErrorsException ex) {
+			assertTrue(ex.getMessage().contains(
+					"for-loop: variable 'i' must be of type integer"));
+		}
 	}
 
 	private String wrap(String snippet) {

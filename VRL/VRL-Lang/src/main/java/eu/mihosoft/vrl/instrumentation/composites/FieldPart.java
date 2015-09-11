@@ -23,14 +23,7 @@ public class FieldPart
 
 	@Override
 	public DeclarationInvocation transform(FieldNode field,
-			ClassDeclaration currentScope, TransformContext context) {
-		if (!(currentScope instanceof ClassDeclaration)) {
-			throwErrorMessage("Field '" + field.getName()
-					+ "' cannot be declared inside a scope of type '"
-					+ currentScope.getType() + "'.", field);
-
-			return null;
-		}
+			ClassDeclaration currentScope, TransformContext context) {		
 
 		String varType = field.getType().getName();
 		String varName = field.getName();

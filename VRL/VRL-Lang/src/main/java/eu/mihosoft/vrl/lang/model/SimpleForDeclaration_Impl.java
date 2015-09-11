@@ -62,9 +62,9 @@ public class SimpleForDeclaration_Impl extends ScopeImpl implements
 	private final ForDeclarationMetaData metadata;
 
 	public SimpleForDeclaration_Impl(String id, Scope parent, String varName,
-			int from, int to, int inc) {
+			int from, int to, int inc, Operator op) {
 		super(id, parent, ScopeType.FOR, ScopeType.FOR.name(),
-				new ForDeclarationMetaData(varName, from, to, inc));
+				new ForDeclarationMetaData(varName, from, to, inc, op));
 
 		boolean forceIncrement = from < to;
 		boolean equal = from == to;
@@ -149,7 +149,7 @@ public class SimpleForDeclaration_Impl extends ScopeImpl implements
 		metadata.setVarName(varName);
 		if (varName != null
 				&& !varName.isEmpty()
-				&& getControlFlow().getParent().getVariable(varName).getScope()==null) {
+				&& getControlFlow().getParent().getVariable(varName).getScope() == null) {
 			DeclarationInvocationImpl inv = (DeclarationInvocationImpl) getControlFlow()
 					.declareVariable(getId(), Type.INT, varName);
 			inv.setTextRenderingEnabled(false);
@@ -196,6 +196,16 @@ public class SimpleForDeclaration_Impl extends ScopeImpl implements
 								.createConstantValue(getInc(), Type.INT))));
 	}
 
+	@Override
+	public Operator getOperation() {
+		return metadata.getOperation();
+	}
+	
+	public void setOperation(Operator op)
+	{
+		metadata.setOperation(op);
+	}
+
 }
 
 class ForDeclarationMetaData {
@@ -204,12 +214,15 @@ class ForDeclarationMetaData {
 	private int from;
 	private int to;
 	private int inc;
+	private Operator operation;
 
-	public ForDeclarationMetaData(String varName, int from, int to, int inc) {
+	public ForDeclarationMetaData(String varName, int from, int to, int inc,
+			Operator operation) {
 		this.varName = varName;
 		this.from = from;
 		this.to = to;
 		this.inc = inc;
+		this.operation = operation;
 	}
 
 	/**
@@ -270,6 +283,14 @@ class ForDeclarationMetaData {
 	 */
 	public void setInc(int inc) {
 		this.inc = inc;
+	}
+
+	public void setOperation(Operator operation) {
+		this.operation = operation;
+	}
+
+	public Operator getOperation() {
+		return operation;
 	}
 
 }

@@ -283,7 +283,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         }
 
         // predeclaration, ranges will be defined later
-        currentScope = codeBuilder.invokeForLoop((ControlFlowScope) currentScope, null, 0, 0, 0);
+        currentScope = codeBuilder.invokeForLoop((ControlFlowScope) currentScope, null, 0, 0, 0, Operator.GREATER_EQUALS);
         setCodeRange(currentScope, s);
         addCommentsToScope(currentScope, comments);
 

@@ -125,7 +125,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 
 	@Override
 	public SimpleForDeclaration invokeForLoop(ControlFlowScope scope,
-			String varName, int from, int to, int inc) {
+			String varName, int from, int to, int inc, Operator op) {
 
 		if (scope.getType() == ScopeType.CLASS
 				|| scope.getType() == ScopeType.INTERFACE) {
@@ -136,7 +136,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
 		}
 
 		SimpleForDeclaration result = new SimpleForDeclaration_Impl(
-				idRequest.request(), scope, varName, from, to, inc);
+				idRequest.request(), scope, varName, from, to, inc, op);
 
 		return result;
 	}

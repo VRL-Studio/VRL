@@ -59,4 +59,5 @@ public interface SimpleForDeclaration extends ControlFlowScope, ControlFlowState
    int getFrom();
    int getTo();
    int getInc();
+   Operator getOperation();
 }

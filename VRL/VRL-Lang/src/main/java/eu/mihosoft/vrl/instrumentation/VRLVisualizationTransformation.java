@@ -61,11 +61,14 @@ import java.util.logging.Logger;
 import org.codehaus.groovy.ast.ASTNode;
 import org.codehaus.groovy.control.CompilePhase;
 import org.codehaus.groovy.control.SourceUnit;
+import org.codehaus.groovy.control.messages.LocatedMessage;
+import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.transform.ASTTransformation;
 import org.codehaus.groovy.transform.GroovyASTTransformation;
 
 import eu.mihosoft.transverse.Validatelet;
 import eu.mihosoft.transverse.ValidationHook;
+import eu.mihosoft.transverse.ValidationMessage;
 import eu.mihosoft.vrl.instrumentation.composites.BinaryExpressionPart;
 import eu.mihosoft.vrl.instrumentation.composites.BreakPart;
 import eu.mihosoft.vrl.instrumentation.composites.ClassNodePart;
@@ -141,9 +144,22 @@ public class VRLVisualizationTransformation implements ASTTransformation {
 		ModelTraverse traverse = new ModelTraverse(hook);
 		traverse.traverse(decl);
 
-		
+		for (ValidationMessage msg : hook.getMessages())
+		{
+			throwErrorMessage(msg.getMessage(), sourceUnit.getAST() ,sourceUnit);
+		}
 
 		clsScopes.add(decl);
+	}
+	
+	protected static void throwErrorMessage(String text, ASTNode node, SourceUnit sourceUnit) {
+
+		// thanks to
+		// http://grails.io/post/15965611310/lessons-learnt-developing-groovy-ast-transformations
+		Token token = Token.newString(node.getText(), node.getLineNumber(),
+				node.getColumnNumber());
+		LocatedMessage message = new LocatedMessage(text, token, sourceUnit);
+		sourceUnit.getErrorCollector().addError(message);
 	}
 
 	public static CompositeTransformingVisitorSupport init(SourceUnit sourceUnit) {

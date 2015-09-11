@@ -94,11 +94,6 @@ public class WhileLoopPart
 					+ " expression!" + expression.getExpression(), s);
 		}
 
-		if (!(parent instanceof ControlFlowScope)) {
-			throwErrorMessage("While-Loop can only be invoked "
-					+ "inside ControlFlowScopes!", s);
-		}
-
 		IArgument arg = convertToArgument("WhileLoop.condition", s
 				.getBooleanExpression().getExpression(), context);
 

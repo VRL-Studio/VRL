@@ -17,6 +17,7 @@ import eu.mihosoft.vrl.lang.model.CodeLineColumnMapper;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocationImpl;
+import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration_Impl;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
@@ -39,7 +40,7 @@ public class ForLoopPart
 
 		// predeclaration, ranges will be defined later
 		SimpleForDeclaration decl = builder.invokeForLoop(currentScope, null,
-				0, 0, 0);
+				0, 0, 0, Operator.GREATER_EQUALS);
 
 		ClosureListExpression expr = (ClosureListExpression) s
 				.getCollectionExpression();
@@ -69,23 +70,16 @@ public class ForLoopPart
 		DeclarationInvocationImpl impl = (DeclarationInvocationImpl) declaration;
 		impl.setTextRenderingEnabled(false);
 
+		forD.setOperation(convertOperator(expr.getExpression(1)));
+
 		checkLoopCondition(obj, expr.getExpression(1));
-		checkLoopExpression(obj, expr.getExpression(2), expr.getExpression(1));
+		checkLoopExpression((SimpleForDeclaration_Impl) obj,
+				expr.getExpression(2));
 	}
 
-	private String getOperation(Expression ex) {
-		if (ex instanceof PostfixExpression) {
-			return ((PostfixExpression) ex).getOperation().getText();
-		} else if (ex instanceof BinaryExpression) {
-			return ((BinaryExpression) ex).getOperation().getText();
-		}
-		return "NOP";
-	}
+	private void checkLoopExpression(SimpleForDeclaration_Impl forD,
+			Expression expression) {
 
-	private void checkLoopExpression(SimpleForDeclaration decl,
-			Expression expression, Expression condition) {
-
-		SimpleForDeclaration_Impl forD = (SimpleForDeclaration_Impl) decl;
 		if (expression instanceof PostfixExpression) {
 			PostfixExpression obj = (PostfixExpression) expression;
 
@@ -95,17 +89,8 @@ public class ForLoopPart
 				forD.setInc(-1);
 			}
 
-			if (forD.getInc() > 0 && ">=".equals(getOperation(condition))) {
-				// throw new IllegalStateException("In for-loop: infinite loops"
-				// + " are not supported! Change '>=' to '<=' to prevent that."
-				// );
-				throwErrorMessage(
-						"In for-loop: infinite loops"
-								+ " are not supported! Change '>=' to '<=' to prevent that.",
-						obj);
-			}
-
-			if (forD.getInc() < 0 && "<=".equals(getOperation(condition))) {
+			if (forD.getInc() < 0
+					&& Operator.LESS_EQUALS.equals(forD.getOperation())) {
 				// throw new IllegalStateException("In for-loop: infinite loops"
 				// + " are not supported! Change '<=' to '>=' to prevent that."
 				// );
@@ -142,14 +127,16 @@ public class ForLoopPart
 				forD.setInc(-(int) ce.getValue());
 			}
 
-			if (forD.getInc() > 0 && ">=".equals(getOperation(condition))) {
+			if (forD.getInc() > 0
+					&& Operator.GREATER_EQUALS.equals(forD.getOperation())) {
 				throwErrorMessage(
 						"In for-loop: infinite loops"
 								+ " are not supported! Change '>=' to '<=' to prevent that.",
 						s);
 			}
 
-			if (forD.getInc() < 0 && "<=".equals(getOperation(condition))) {
+			if (forD.getInc() < 0
+					&& Operator.LESS_EQUALS.equals(forD.getOperation())) {
 				throwErrorMessage(
 						"In for-loop: infinite loops"
 								+ " are not supported! Change '<=' to '>=' to prevent that.",

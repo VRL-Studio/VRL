@@ -14,6 +14,7 @@ import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.ast.expr.EmptyExpression;
 import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.MethodCallExpression;
+import org.codehaus.groovy.ast.expr.PostfixExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.SpreadExpression;
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
@@ -158,8 +159,17 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 		}
 	}
 
-	protected static Operator convertOperator(BinaryExpression be) {
-		switch (be.getOperation().getType()) {
+	protected static Operator convertOperator(Expression e) {
+		if (e instanceof PostfixExpression) {
+			return convertOperator(((PostfixExpression) e).getOperation());
+		} else if (e instanceof BinaryExpression) {
+			return convertOperator(((BinaryExpression) e).getOperation());
+		}
+		throw new IllegalArgumentException("Cannot resolve operator for " + e);
+	}
+
+	protected static Operator convertOperator(Token op) {
+		switch (op.getType()) {
 		case org.codehaus.groovy.syntax.Types.PLUS:
 			return Operator.PLUS;
 		case org.codehaus.groovy.syntax.Types.MINUS:
@@ -199,13 +209,8 @@ public abstract class AbstractCodeBuilderPart<In extends ASTNode, Out extends Co
 
 		default:
 
-			String leftStr = be.getLeftExpression().getText();
-			String opStr = be.getOperation().getText();
-			String rightStr = be.getRightExpression().getText();
-
-			throw new UnsupportedOperationException("Operation " + opStr
-					+ " not supported! Left: " + leftStr + ", right: "
-					+ rightStr);
+			throw new UnsupportedOperationException("Operation " + op.getText()
+					+ " not supported!");
 
 		}
 	}
