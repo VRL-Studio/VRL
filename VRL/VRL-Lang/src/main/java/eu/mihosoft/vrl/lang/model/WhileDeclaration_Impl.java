@@ -28,8 +28,8 @@
  * If you create derived work you must do three things regarding copyright
  * notice and author attribution.
  *
- * First, the following text must be displayed on the Canvas or an equivalent location:
- * "based on VRL source code".
+ * First, the following text must be displayed on the Canvas or an equivalent
+ * location: "based on VRL source code".
  * 
  * Second, the copyright notice must remain. It must be reproduced in any
  * program that uses VRL.
@@ -60,8 +60,8 @@ class WhileDeclaration_Impl extends ScopeImpl implements WhileDeclaration {
     private WhileDeclarationMetaData metadata;
 
     public WhileDeclaration_Impl(String id, Scope parent, Argument argument) {
-        super(id, parent, ScopeType.WHILE, ScopeType.WHILE.name(), new WhileDeclarationMetaData(argument));
-
+        super(id, parent, ScopeType.WHILE, ScopeType.WHILE.name(),
+                new WhileDeclarationMetaData(argument));
     }
 
     @Override
@@ -69,28 +69,29 @@ class WhileDeclaration_Impl extends ScopeImpl implements WhileDeclaration {
 
         return getWhileMetaData().getCheck();
     }
-    
+
     private WhileDeclarationMetaData getWhileMetaData() {
-          if (metadata == null) {
+        if (metadata == null) {
             metadata = (WhileDeclarationMetaData) getScopeArgs()[0];
         }
-          
-          return metadata;
+
+        return metadata;
     }
 
     @Override
     public void defineParameters(Invocation i) {
         i.getArguments().setAll(getCheck());
 
-        i.getArguments().addListener((ListChangeListener.Change<? extends Argument> c) -> {
-            while (c.next()) {
-                if (i.getArguments().isEmpty()) {
-                    getWhileMetaData().setCheck(Argument_Impl.NULL);
-                } else {
-                    getWhileMetaData().setCheck(i.getArguments().get(0));
-                }
-            }
-        });
+        i.getArguments().addListener(
+                (ListChangeListener.Change<? extends Argument> c) -> {
+                    while (c.next()) {
+                        if (i.getArguments().isEmpty()) {
+                            getWhileMetaData().setCheck(Argument_Impl.NULL);
+                        } else {
+                            getWhileMetaData().setCheck(i.getArguments().get(0));
+                        }
+                    }
+                });
     }
 }
 
@@ -112,5 +113,4 @@ class WhileDeclarationMetaData {
     public void setCheck(Argument check) {
         this.check = check;
     }
-
 }

@@ -116,5 +116,13 @@ public interface Scope extends CodeEntity {
     public void visitScopeAndAllSubElements(Consumer<CodeEntity> consumer);
 
     public DeclareAndAssignInvocation declareAndAssignVariable(String request, IType type, String varName, Argument assignmentArg);
+
+    /**
+     * Used to prevent update collisions in transformation/instrumentation phase.
+     * @deprecated don't use this in external transformations (as of 29.09.2015)
+     * this method needs to be removed (fix bugs in setParent(), init inside InvocationImpl)
+     */
+    @Deprecated
+    public void disableParentUpdate();
 }
 

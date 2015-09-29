@@ -89,8 +89,10 @@ class ScopeImpl implements Scope {
     private VFlow flow;
     private ObservableCodeImpl observableCode;
     private boolean textRenderingEnabled = true;
-    
-    private final ObservableMap<String,Object> metadata = FXCollections.observableHashMap();
+
+    private final ObservableMap<String, Object> metadata = FXCollections.observableHashMap();
+
+    private boolean disableParentUpdate;
 
     public ScopeImpl(String id, Scope parent, ScopeType type, String name, VFlow flowParent, Object... scopeArgs) {
         this.id = id;
@@ -251,12 +253,8 @@ class ScopeImpl implements Scope {
         Variable variable = new VariableImpl(this, type, varName, null, false, null);
         variables.put(varName, variable);
 
-
         return variable;
     }
-
-    
-
 
 //    @Override
 //    public Variable createVariable(IType type) {
@@ -524,8 +522,8 @@ class ScopeImpl implements Scope {
     public DeclarationInvocation declareVariable(String id, IType type, String varName) {
         return getControlFlow().declareVariable(id, type, varName);
     }
-    
-        @Override
+
+    @Override
     public DeclareAndAssignInvocation declareAndAssignVariable(String request, IType type, String varName, Argument assignmentArg) {
         return getControlFlow().declareAndAssignVariable(id, type, varName, assignmentArg);
     }
@@ -597,10 +595,17 @@ class ScopeImpl implements Scope {
      * @return the metadata
      */
     @Override
-    public ObservableMap<String,Object> getMetaData() {
+    public ObservableMap<String, Object> getMetaData() {
         return metadata;
     }
 
+    @Override
+    public void disableParentUpdate() {
+        disableParentUpdate = true;
+    }
 
+    boolean isParentUpdateDisabled() {
+        return disableParentUpdate;
+    }
 
 }

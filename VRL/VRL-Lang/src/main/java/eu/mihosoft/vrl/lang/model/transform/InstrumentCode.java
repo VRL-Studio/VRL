@@ -292,10 +292,6 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
                 = new ArrayList<>(ce.getControlFlow().getInvocations());
         ControlFlow cf = result.getControlFlow();
         
-        if(ce.getName().contains("createSphere")) {
-            System.out.println("");
-        }
-        
         addInstrumentation(cf, invocations);
 
         return result;
@@ -564,7 +560,8 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         // add an if-statement to the while-loop body controlflow that simulates
         // the original while-loop behavior
         VisualCodeBuilder builder = new VisualCodeBuilder_Impl();
-        IfDeclaration ifDecl = builder.invokeIf(whileScope, Argument.varArg(cf.getParent().
+        IfDeclaration ifDecl = builder.invokeIf(whileScope,
+                Argument.varArg(cf.getParent().
                 getVariable(varName)));
         Invocation conditionIfInv = whileScope.getControlFlow().
                 getInvocations().get(

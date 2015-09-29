@@ -415,7 +415,8 @@ public class MainWindowController implements Initializable {
         CompilationUnitDeclaration origCU
                 = (CompilationUnitDeclaration) UIBinding.scopes.values().
                 iterator().next().get(0);
-        UIBinding.setRootFlow(FlowFactory.newFlow());
+        VFlow instrFlow = FlowFactory.newFlow();
+        UIBinding.setRootFlow(instrFlow);
         updateView();
         CompilationUnitDeclaration clonedCU
                 = (CompilationUnitDeclaration) UIBinding.scopes.values().
@@ -428,6 +429,7 @@ public class MainWindowController implements Initializable {
         String clonedCode = Scope2Code.getCode(clonedCU);
         System.out.println("cloned: " + clonedCode);
 
+        clonedCU.disableParentUpdate();
         InstrumentCode instrumentCode = new InstrumentCode();
         CompilationUnitDeclaration newCu = instrumentCode.transform(clonedCU);
 
@@ -490,7 +492,8 @@ public class MainWindowController implements Initializable {
         ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
                 new VRLVisualizationTransformation()));
 
-        GroovyClassLoader gcl = new GroovyClassLoader(new GroovyClassLoader(), ccfg);
+        GroovyClassLoader gcl = new GroovyClassLoader(
+                new GroovyClassLoader(), ccfg);
 
         gcl.parseClass(editor.getText(), "Script");
 

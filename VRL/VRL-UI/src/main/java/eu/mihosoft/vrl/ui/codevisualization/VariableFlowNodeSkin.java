@@ -197,6 +197,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                             createArgView(invocation, inputs, true);
 
                             updateOutputView(ce.getMetaData().get("VRL:retVal"));
+
                         });
                     }
                 });

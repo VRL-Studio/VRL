@@ -168,7 +168,8 @@ class InvocationImpl implements Invocation {
 
                 controlflowOutput.
                         getVisualizationRequest().set(
-                                VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
+                                VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT,
+                                true);
 
                 controlflowOutput.setMaxNumberOfConnections(1);
 
@@ -186,9 +187,7 @@ class InvocationImpl implements Invocation {
                 }
 
             }
-
             node.setTitle(objProvider.toString() + "." + methodName + "()");
-
         }
     }
 
@@ -434,7 +433,9 @@ class InvocationImpl implements Invocation {
     void setParent(Scope parent) {
         Scope oldParent = this.parent;
         this.parent = parent;
-        if (parent != oldParent) {
+
+        if (parent != oldParent
+                && !((ScopeImpl) getRootScope()).isParentUpdateDisabled()) {
             init(objProvider, oldParent);
         }
     }

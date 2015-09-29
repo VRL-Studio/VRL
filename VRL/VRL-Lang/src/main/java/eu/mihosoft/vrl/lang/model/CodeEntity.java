@@ -78,6 +78,18 @@ public interface CodeEntity extends ObservableCode, EventSender<CodeEvent>{
     
 //    public void setNode(VNode n);
     
-
+    /**
+     * 
+     * @return root scope
+     */
+    public default Scope getRootScope() {
+        Scope parent = getParent();
+        
+        while (parent!=null) {
+           parent = parent.getParent();
+        }
+        
+        return parent;
+    }
     
 }
