@@ -434,8 +434,18 @@ class InvocationImpl implements Invocation {
         Scope oldParent = this.parent;
         this.parent = parent;
 
+        boolean rootScopeNotNull = getRootScope() != null;
+
+        boolean parentUpdateDisabled = false;
+
+        if (rootScopeNotNull) {
+            parentUpdateDisabled = ((ScopeImpl) getRootScope()).
+                    isParentUpdateDisabled();
+        }
+
         if (parent != oldParent
-                && !((ScopeImpl) getRootScope()).isParentUpdateDisabled()) {
+                && getRootScope() != null
+                && !parentUpdateDisabled) {
             init(objProvider, oldParent);
         }
     }

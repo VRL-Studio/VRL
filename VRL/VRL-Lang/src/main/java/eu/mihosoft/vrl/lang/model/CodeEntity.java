@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.workflow.VNode;
@@ -58,38 +57,46 @@ import javafx.collections.ObservableMap;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface CodeEntity extends ObservableCode, EventSender<CodeEvent>{
+public interface CodeEntity extends ObservableCode, EventSender<CodeEvent> {
+
     public void setId(String id);
+
     public String getId();
-    
-    public ObservableMap<String,Object> getMetaData();
-    
+
+    public ObservableMap<String, Object> getMetaData();
+
 //    public void setCode(String code);
 //    public String getCode();
-    
     public void setRange(ICodeRange location);
+
     public ICodeRange getRange();
-    
+
     public Scope getParent();
-    
+
     public VNode getNode();
-    
+
     public boolean isTextRenderingEnabled();
-    
+
 //    public void setNode(VNode n);
-    
     /**
-     * 
+     *
      * @return root scope
      */
     public default Scope getRootScope() {
         Scope parent = getParent();
-        
-        while (parent!=null) {
-           parent = parent.getParent();
+
+        while (parent != null) {
+            parent = parent.getParent();
         }
-        
+
+        // if we don't have a parent then we are the root
+        if (parent == null) {
+            if (this instanceof Scope) {
+                parent = (Scope) this;
+            }
+        }
+
         return parent;
     }
-    
+
 }
