@@ -50,6 +50,7 @@
 package eu.mihosoft.vrl.ui.codevisualization;
 
 import com.thoughtworks.xstream.XStream;
+import eu.mihosoft.vrl.base.VSysUtil;
 import eu.mihosoft.vrl.instrumentation.InstrumentationEvent;
 import eu.mihosoft.vrl.instrumentation.InstrumentationEventType;
 import eu.mihosoft.vrl.instrumentation.VRLInstrumentationUtil;
@@ -85,7 +86,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -114,6 +114,9 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination.Modifier;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -140,6 +143,19 @@ public class MainWindowController implements Initializable {
     private TextArea editor;
     @FXML
     private Pane view;
+
+    @FXML
+    private MenuItem menuSaveItem;
+
+    @FXML
+    private MenuItem menuLoadItem;
+
+    @FXML
+    private MenuItem menuCloseItem;
+
+    @FXML
+    private MenuItem menuRunItem;
+
     private Pane rootPane;
     private VFlow flow;
 
@@ -221,6 +237,18 @@ public class MainWindowController implements Initializable {
 //        VCodeEditor vEditor = new VCodeEditor(" the code ");
 //        
 //        canvas.getContentPane().getChildren().add(vEditor.getNode());
+        Modifier cmdModifier;
+
+        if (VSysUtil.isMacOSX()) {
+            cmdModifier = KeyCodeCombination.META_DOWN;
+        } else {
+            cmdModifier = KeyCodeCombination.CONTROL_DOWN;
+        }
+
+        menuSaveItem.setAccelerator(new KeyCodeCombination(KeyCode.S, cmdModifier));
+        menuCloseItem.setAccelerator(new KeyCodeCombination(KeyCode.Q, cmdModifier));
+        menuLoadItem.setAccelerator(new KeyCodeCombination(KeyCode.L, cmdModifier));
+        menuRunItem.setAccelerator(new KeyCodeCombination(KeyCode.R, cmdModifier));
     }
 
     @FXML
@@ -364,8 +392,12 @@ public class MainWindowController implements Initializable {
                     Platform.runLater(() -> {
 //                        try {
 
-                        savePositions();
-                        saveUIData();
+                        try {
+                            savePositions();
+                            saveUIData();
+                        } catch (Exception ex) {
+                            ex.printStackTrace(System.err);
+                        }
 
                         loadTextFile(file, false);
 //                            editor.setText(new String(
@@ -503,13 +535,16 @@ public class MainWindowController implements Initializable {
         // copy cu
         // TODO 10.08.2015 add copy/cloning functionality (see todos in model)
         VFlow origFlow = flow;
-        CompilationUnitDeclaration origCU
-                = (CompilationUnitDeclaration) UIBinding.scopes.values().
-                iterator().next().get(0);
-        VFlow tmpFlow = FlowFactory.newFlow();
-        UIBinding.setRootFlow(tmpFlow);
+
+        CompilationUnitDeclaration origCU = null;
 
         try {
+
+            origCU = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                    iterator().next().get(0);
+            VFlow tmpFlow = FlowFactory.newFlow();
+            UIBinding.setRootFlow(tmpFlow);
+
             CompilerConfiguration ccfg = new CompilerConfiguration();
 
             ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
@@ -521,8 +556,11 @@ public class MainWindowController implements Initializable {
             return false;
         } finally {
             UIBinding.setRootFlow(origFlow);
-            UIBinding.scopes.values().iterator().next().clear();
-            UIBinding.scopes.values().iterator().next().add(origCU);
+
+            if (origCU != null) {
+                UIBinding.scopes.values().iterator().next().clear();
+                UIBinding.scopes.values().iterator().next().add(origCU);
+            }
         }
 
         return true;
