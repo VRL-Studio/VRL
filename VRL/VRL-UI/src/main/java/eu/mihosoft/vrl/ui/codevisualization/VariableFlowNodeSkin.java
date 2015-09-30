@@ -93,25 +93,25 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                     map(fns -> ((FXFlowNodeSkinBase) fns).getNode());
         };
 
-        editor.caretPositionProperty().addListener((ov, oldV, newV) -> {
-            CompilationUnitDeclaration cud
-                    = (CompilationUnitDeclaration) UIBinding.scopes.values().
-                    iterator().next().get(0);
-            cud.pick(new CodeLocation(newV.intValue())).
-                    map(mapFlatToWindow).orElse(Stream.empty()).forEach(w -> {
-                WindowUtil.getDefaultClipboard().deselectAll();
-                WindowUtil.getDefaultClipboard().select(w, true);
-            });
-        });
+//        editor.caretPositionProperty().addListener((ov, oldV, newV) -> {
+//            CompilationUnitDeclaration cud
+//                    = (CompilationUnitDeclaration) UIBinding.scopes.values().
+//                    iterator().next().get(0);
+//            cud.pick(new CodeLocation(newV.intValue())).
+//                    map(mapFlatToWindow).orElse(Stream.empty()).forEach(w -> {
+//                WindowUtil.getDefaultClipboard().deselectAll();
+//                WindowUtil.getDefaultClipboard().select(w, true);
+//            });
+//        });
 
         editor.selectionProperty().addListener((ov, oldV, newV) -> {
 
             int start = newV.getStart();
             int end = newV.getEnd();
 
-            if (start == end) {
-                return;
-            }
+//            if (start == end) {
+//                return;
+//            }
 
             WindowUtil.getDefaultClipboard().deselectAll();
 
@@ -152,22 +152,26 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             VNode model, VFlow controller) {
         super(skinFactory, model, controller);
 
-        getNode().addEventFilter(MouseEvent.ANY, (evt) -> {
-            if (evt.getEventType() == MouseEvent.MOUSE_PRESSED) {
-                Object value = getModel().getValueObject().getValue();
-
-                if (value instanceof CodeEntity) {
-                    CodeEntity cE = (CodeEntity) value;
-
-                    int anchor = cE.getRange().getBegin().getCharIndex();
-                    int caretPosition = cE.getRange().getEnd().getCharIndex();
-
-                    editor.selectRange(anchor, caretPosition);
-                }
-            } else if (evt.getEventType() == MouseEvent.MOUSE_RELEASED) {
-                editor.deselect();
-            }
-        });
+//        getNode().addEventFilter(MouseEvent.ANY, (evt) -> {
+//            if (evt.getEventType() == MouseEvent.MOUSE_MOVED) {
+//                Object value = getModel().getValueObject().getValue();
+//
+//                if (value instanceof CodeEntity) {
+//                    CodeEntity cE = (CodeEntity) value;
+//
+//                    if (cE.getRange() != null) {
+//
+//                        int anchor = cE.getRange().getBegin().getCharIndex();
+//                        int caretPosition = cE.getRange().getEnd().getCharIndex();
+////                    WindowUtil.getDefaultClipboard().deselectAll();
+//                        editor.selectRange(anchor, caretPosition);
+//                    }
+//                }
+//            };
+////            else if (evt.getEventType() == MouseEvent.MOUSE_EXITED) {
+////                editor.deselect();
+////            }
+//        });
 
 //        getNode().selectedProperty().addListener((evt) -> {
 //            if (getNode().isSelected()) {

@@ -192,7 +192,7 @@ public class MainWindowController implements Initializable {
         UIBinding.setRootFlow(flow);
 
         VariableFlowNodeSkin.setEditor(editor, flow);
-        
+
         FXValueSkinFactory skinFactory = new FXValueSkinFactory(rootPane);
         skinFactory.setDefaultNodeSkin(VariableFlowNodeSkin.class);
         flow.setSkinFactories(skinFactory);
@@ -276,8 +276,10 @@ public class MainWindowController implements Initializable {
         }
 
         try (FileWriter fileWriter = new FileWriter(currentDocument)) {
-            savePositions();
-            saveUIData();
+            if (compiles(editor.getText())) {
+                savePositions();
+                saveUIData();
+            }
             fileWriter.write(editor.getText() + "\n" + uiData);
         } catch (IOException ex) {
             Logger.getLogger(MainWindowController.class.getName()).
@@ -361,9 +363,10 @@ public class MainWindowController implements Initializable {
 
                     Platform.runLater(() -> {
 //                        try {
+
                         savePositions();
                         saveUIData();
-                        
+
                         loadTextFile(file, false);
 //                            editor.setText(new String(
 //                                    Files.readAllBytes(
@@ -495,6 +498,36 @@ public class MainWindowController implements Initializable {
         }
     }
 
+    private boolean compiles(String s) {
+
+        // copy cu
+        // TODO 10.08.2015 add copy/cloning functionality (see todos in model)
+        VFlow origFlow = flow;
+        CompilationUnitDeclaration origCU
+                = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                iterator().next().get(0);
+        VFlow tmpFlow = FlowFactory.newFlow();
+        UIBinding.setRootFlow(tmpFlow);
+
+        try {
+            CompilerConfiguration ccfg = new CompilerConfiguration();
+
+            ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
+                    new VRLVisualizationTransformation()));
+
+            GroovyClassLoader gcl = new GroovyClassLoader(
+                    new GroovyClassLoader(), ccfg);
+        } catch (Exception ex) {
+            return false;
+        } finally {
+            UIBinding.setRootFlow(origFlow);
+            UIBinding.scopes.values().iterator().next().clear();
+            UIBinding.scopes.values().iterator().next().add(origCU);
+        }
+
+        return true;
+    }
+
     private void updateView() {
 
         savePositions();
@@ -515,7 +548,11 @@ public class MainWindowController implements Initializable {
         GroovyClassLoader gcl = new GroovyClassLoader(
                 new GroovyClassLoader(), ccfg);
 
-        gcl.parseClass(editor.getText(), "Script");
+        try {
+            gcl.parseClass(editor.getText(), "Script");
+        } catch (Exception ex) {
+            ex.printStackTrace(System.err);
+        }
 
         loadUIData();
 
