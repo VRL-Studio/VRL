@@ -191,6 +191,8 @@ public class MainWindowController implements Initializable {
                 VisualizationRequest.KEY_CONNECTOR_AUTO_LAYOUT, true);
         UIBinding.setRootFlow(flow);
 
+        VariableFlowNodeSkin.setEditor(editor);
+        
         FXValueSkinFactory skinFactory = new FXValueSkinFactory(rootPane);
         skinFactory.setDefaultNodeSkin(VariableFlowNodeSkin.class);
         flow.setSkinFactories(skinFactory);

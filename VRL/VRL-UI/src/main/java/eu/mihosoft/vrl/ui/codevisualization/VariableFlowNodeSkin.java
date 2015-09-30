@@ -45,6 +45,7 @@ import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
@@ -54,7 +55,6 @@ import javafx.scene.shape.MeshView;
 import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
-import org.reactfx.Guardian;
 
 /**
  *
@@ -66,9 +66,34 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
     private VBox outputs;
     private final ObjectProperty<Object[]> args = new SimpleObjectProperty<>();
 
+    private static TextArea editor;
+
+    public static void setEditor(TextArea editor) {
+        VariableFlowNodeSkin.editor = editor;
+    }
+
     public VariableFlowNodeSkin(FXSkinFactory skinFactory,
             VNode model, VFlow controller) {
         super(skinFactory, model, controller);
+
+        getNode().selectedProperty().addListener((evt) -> {
+            if (getNode().isSelected()) {
+
+                Object value = getModel().getValueObject().getValue();
+
+                if (value instanceof CodeEntity) {
+                    CodeEntity cE = (CodeEntity) value;
+
+                    int anchor = cE.getRange().getBegin().getCharIndex();
+                    int caretPosition = cE.getRange().getEnd().getCharIndex();
+
+                    editor.selectRange(anchor, caretPosition);
+                }
+
+            } else {
+                editor.deselect();
+            }
+        });
     }
 
     @Override
@@ -227,7 +252,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
                         if (a.getType().equals(Type.INT)) {
                             parseInt(newV, invocation, argIndex);
-                        } else if (a.getType().equals(Type.DOUBLE) 
+                        } else if (a.getType().equals(Type.DOUBLE)
                                 || a.getType().equals(Type.fromClass(BigDecimal.class))) {
                             parseDouble(newV, invocation, argIndex);
                         } else if (a.getType().equals(Type.STRING)) {
