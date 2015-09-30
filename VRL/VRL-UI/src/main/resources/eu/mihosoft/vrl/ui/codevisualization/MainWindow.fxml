@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.mihosoft.vrl.ui.codevisualization.MainWindowController">
+<VBox xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.mihosoft.vrl.ui.codevisualization.MainWindowController">
    <children>
     <MenuBar prefHeight="25.0" prefWidth="1104.0001220703125">
       <menus>
@@ -23,7 +23,7 @@
         </Menu>
       </menus>
     </MenuBar>
-    <SplitPane dividerPositions="0.46460974889740725" focusTraversable="true" prefHeight="763.9999000000025" prefWidth="1104.0001220703125">
+    <SplitPane dividerPositions="0.46460974889740725" focusTraversable="true" prefHeight="763.9999000000025" prefWidth="1104.0001220703125" VBox.vgrow="ALWAYS">
       <items>
         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
           <children>
