@@ -54,6 +54,7 @@ import eu.mihosoft.vrl.instrumentation.InstrumentationEvent;
 import eu.mihosoft.vrl.instrumentation.InstrumentationEventType;
 import eu.mihosoft.vrl.instrumentation.VRLInstrumentationUtil;
 import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
+import eu.mihosoft.vrl.lang.VCommentParser;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.UIBinding;
@@ -83,6 +84,7 @@ import groovy.lang.GroovyClassLoader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
@@ -149,6 +151,8 @@ public class MainWindowController implements Initializable {
     private FileAlterationObserver observer;
 
     private Stage mainWindow;
+
+    private String uiData;
 
     /**
      * Initializes the controller class.
@@ -241,15 +245,14 @@ public class MainWindowController implements Initializable {
 
     @FXML
     public void onLoadAction(ActionEvent e) {
-        loadTextFile(null);
+        loadTextFile(null, true);
     }
 
     @FXML
     public void onSaveAction(ActionEvent e) {
-        updateCode(UIBinding.scopes.values().iterator().next().get(0));
+        //updateCode(UIBinding.scopes.values().iterator().next().get(0));
 
-        updateView();
-
+        //updateView();
         saveDocument(false);
     }
 
@@ -271,7 +274,9 @@ public class MainWindowController implements Initializable {
         }
 
         try (FileWriter fileWriter = new FileWriter(currentDocument)) {
-            fileWriter.write(editor.getText());
+            savePositions();
+            saveUIData();
+            fileWriter.write(editor.getText() + "\n" + uiData);
         } catch (IOException ex) {
             Logger.getLogger(MainWindowController.class.getName()).
                     log(Level.SEVERE, null, ex);
@@ -298,7 +303,7 @@ public class MainWindowController implements Initializable {
         runCode();
     }
 
-    public void loadTextFile(File f) {
+    public void loadTextFile(File f, boolean loadUIData) {
 
         try {
             if (f == null) {
@@ -319,8 +324,15 @@ public class MainWindowController implements Initializable {
                 currentDocument = f;
             }
 
-            editor.setText(new String(Files.readAllBytes(
-                    Paths.get(currentDocument.getAbsolutePath())), "UTF-8"));
+            String loadedText = new String(Files.readAllBytes(
+                    Paths.get(currentDocument.getAbsolutePath())), "UTF-8");
+
+            editor.setText(loadedText);
+
+            if (loadUIData) {
+                uiData = loadedText;
+                loadUIData();
+            }
 
         } catch (Exception ex) {
             Logger.getLogger(MainWindowController.class.getName()).
@@ -328,6 +340,10 @@ public class MainWindowController implements Initializable {
         }
 
         updateView();
+        CompilationUnitDeclaration cud
+                = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                iterator().next().get(0);
+        updateCode(cud);
 
         if (observer != null) {
             fileMonitor.removeObserver(observer);
@@ -342,19 +358,23 @@ public class MainWindowController implements Initializable {
                 if (file.equals(currentDocument.getAbsoluteFile())) {
 
                     Platform.runLater(() -> {
-                        try {
-                            editor.setText(new String(
-                                    Files.readAllBytes(
-                                            Paths.get(currentDocument.getAbsolutePath())),
-                                    "UTF-8"));
-                            updateView();
-                        } catch (UnsupportedEncodingException ex) {
-                            Logger.getLogger(MainWindowController.class.getName()).
-                                    log(Level.SEVERE, null, ex);
-                        } catch (IOException ex) {
-                            Logger.getLogger(MainWindowController.class.getName()).
-                                    log(Level.SEVERE, null, ex);
-                        }
+//                        try {
+                        savePositions();
+                        saveUIData();
+                        
+                        loadTextFile(file, false);
+//                            editor.setText(new String(
+//                                    Files.readAllBytes(
+//                                            Paths.get(currentDocument.getAbsolutePath())),
+//                                    "UTF-8"));
+//                            updateView();
+//                        } catch (UnsupportedEncodingException ex) {
+//                            Logger.getLogger(MainWindowController.class.getName()).
+//                                    log(Level.SEVERE, null, ex);
+//                        } catch (IOException ex) {
+//                            Logger.getLogger(MainWindowController.class.getName()).
+//                                    log(Level.SEVERE, null, ex);
+//                        }
                     });
                 }
             }
@@ -610,13 +630,7 @@ public class MainWindowController implements Initializable {
     }
 
     private void saveUIData() {
-        CompilationUnitDeclaration cud
-                = (CompilationUnitDeclaration) UIBinding.scopes.values().
-                iterator().next().get(0);
-        updateCode(cud);
-    }
 
-    private String generateUIData() {
         XStream xstream = new XStream();
         xstream.alias("layout", LayoutData.class);
         String data = xstream.toXML(layoutData);
@@ -624,6 +638,14 @@ public class MainWindowController implements Initializable {
         CompilationUnitDeclaration cud
                 = (CompilationUnitDeclaration) UIBinding.scopes.values().
                 iterator().next().get(0);
+        removeUIDataComment(cud);
+
+        uiData = "// <editor-fold defaultstate=\"collapsed\" desc=\"VRL-Data\">\n"
+                + "/*<!VRL!><Type:VRL-Layout>\n" + data + "\n*/\n"
+                + "// </editor-fold>";
+    }
+
+    private void removeUIDataComment(CompilationUnitDeclaration cud) {
 
         Predicate<Comment> vrlLayoutType = (Comment c) -> {
             return c.getType() == CommentType.VRL_MULTI_LINE
@@ -640,17 +662,15 @@ public class MainWindowController implements Initializable {
                 collect(Collectors.toList());
 
         cud.getComments().removeAll(toBeRemoved);
-
-        return "// <editor-fold defaultstate=\"collapsed\" desc=\"VRL-Data\">\n"
-                + "/*<!VRL!><Type:VRL-Layout>\n" + data + "\n*/\n"
-                + "// </editor-fold>";
     }
 
     private void loadUIData() {
         try {
-            CompilationUnitDeclaration cud
-                    = (CompilationUnitDeclaration) UIBinding.scopes.values().
-                    iterator().next().get(0);
+//            CompilationUnitDeclaration cud
+//                    = (CompilationUnitDeclaration) UIBinding.scopes.values().
+//                    iterator().next().get(0);
+
+            List<Comment> comments = VCommentParser.parse(new StringReader(uiData));
 
             Predicate<Comment> vrlLayoutType = (Comment c) -> {
                 return c.getType()
@@ -658,7 +678,7 @@ public class MainWindowController implements Initializable {
                         && c.getComment().contains("<!VRL!><Type:VRL-Layout>");
             };
 
-            Optional<Comment> vrlC = cud.getComments().stream().
+            Optional<Comment> vrlC = comments.stream().
                     filter(vrlLayoutType).findFirst();
 
             if (vrlC.isPresent()) {
@@ -767,11 +787,12 @@ public class MainWindowController implements Initializable {
 
     private void updateCode(Scope rootScope) {
         System.out.println("Scope: UpdateCode");
-        String code = Scope2Code.getCode(
-                (CompilationUnitDeclaration) getRootScope(rootScope));
+        CompilationUnitDeclaration cud
+                = (CompilationUnitDeclaration) getRootScope(rootScope);
+        removeUIDataComment(cud);
+        String code = Scope2Code.getCode(cud);
 
-        editor.setText(code);  
-        editor.setText(editor.getText()+"\n"+generateUIData());
+        editor.setText(code);
     }
 
     private Scope getRootScope(Scope s) {
