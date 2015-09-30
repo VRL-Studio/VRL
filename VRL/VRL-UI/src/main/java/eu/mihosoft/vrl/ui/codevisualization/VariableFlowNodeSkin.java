@@ -5,32 +5,40 @@
  */
 package eu.mihosoft.vrl.ui.codevisualization;
 
-import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ArgumentType;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CodeEvent;
 import eu.mihosoft.vrl.lang.model.CodeEventType;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
+import eu.mihosoft.vrl.lang.model.CodeLocation;
+import eu.mihosoft.vrl.lang.model.CodeRange;
+import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
+import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.Invocation;
-import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
+import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.v3d.jcsg.CSG;
 import eu.mihosoft.vrl.v3d.jcsg.MeshContainer;
 import eu.mihosoft.vrl.v3d.jcsg.VFX3DUtil;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
+import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkinBase;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
+import eu.mihosoft.vrl.workflow.fx.FlowNodeWindow;
 import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
 import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
 import java.math.BigDecimal;
 import java.time.Duration;
-import javafx.beans.InvalidationListener;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -48,10 +56,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.MeshView;
+import jfxtras.scene.control.window.SelectableNode;
+import jfxtras.scene.control.window.Window;
+import jfxtras.scene.control.window.WindowUtil;
 import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
@@ -68,17 +80,80 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
     private static TextArea editor;
 
-    public static void setEditor(TextArea editor) {
+    public static void setEditor(TextArea editor, VFlow flow) {
         VariableFlowNodeSkin.editor = editor;
+
+        Function<CodeEntity, Stream< ? extends Window>> mapFlatToWindow = (cE) -> {
+
+            return flow.getNodeSkinLookup().getById(cE.getNode().getId()).
+                    stream().
+                    filter((ns) -> {
+                        return ns instanceof FXFlowNodeSkinBase;
+                    }).
+                    map(fns -> ((FXFlowNodeSkinBase) fns).getNode());
+        };
+
+        editor.caretPositionProperty().addListener((ov, oldV, newV) -> {
+            CompilationUnitDeclaration cud
+                    = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                    iterator().next().get(0);
+            cud.pick(new CodeLocation(newV.intValue())).
+                    map(mapFlatToWindow).orElse(Stream.empty()).forEach(w -> {
+                WindowUtil.getDefaultClipboard().deselectAll();
+                WindowUtil.getDefaultClipboard().select(w, true);
+            });
+        });
+
+        editor.selectionProperty().addListener((ov, oldV, newV) -> {
+
+            int start = newV.getStart();
+            int end = newV.getEnd();
+
+            if (start == end) {
+                return;
+            }
+
+            WindowUtil.getDefaultClipboard().deselectAll();
+
+            System.out.println("s: " + start + ", end: " + end);
+
+            Predicate<CodeEntity> contains = (cE) -> {
+
+                try {
+                    return new CodeRange(start, end).contains(
+                            cE.getRange());
+                } catch (Exception ex) {
+                    System.out.println("EX missing range: " + cE + ", " + cE.getRange());
+                }
+
+                return false;
+            };
+
+            CompilationUnitDeclaration cud
+                    = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                    iterator().next().get(0);
+
+            cud.collectScopeAndAllsubElements().stream().
+                    filter(contains).flatMap(mapFlatToWindow).forEach(
+                    (sce) -> {
+                        WindowUtil.getDefaultClipboard().
+                        select(sce, true);
+                    });
+
+//            WindowUtil.getDefaultClipboard().getSelectedItems().
+//                    filtered(contains).forEach(
+//                            (sce)->{System.out.println("test");WindowUtil.getDefaultClipboard().
+//                                    select(sce, true);});
+        });
+
     }
 
     public VariableFlowNodeSkin(FXSkinFactory skinFactory,
             VNode model, VFlow controller) {
         super(skinFactory, model, controller);
 
-        getNode().selectedProperty().addListener((evt) -> {
-            if (getNode().isSelected()) {
-
+        getNode().addEventFilter(MouseEvent.ANY, (evt) -> {
+            if (evt.getEventType() == MouseEvent.MOUSE_PRESSED) {
                 Object value = getModel().getValueObject().getValue();
 
                 if (value instanceof CodeEntity) {
@@ -89,11 +164,30 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
                     editor.selectRange(anchor, caretPosition);
                 }
-
-            } else {
+            } else if (evt.getEventType() == MouseEvent.MOUSE_RELEASED) {
                 editor.deselect();
             }
         });
+
+//        getNode().selectedProperty().addListener((evt) -> {
+//            if (getNode().isSelected()) {
+//
+////                WindowUtil.getDefaultClipboard().getSelectedItems()
+//                Object value = getModel().getValueObject().getValue();
+//
+//                if (value instanceof CodeEntity) {
+//                    CodeEntity cE = (CodeEntity) value;
+//
+//                    int anchor = cE.getRange().getBegin().getCharIndex();
+//                    int caretPosition = cE.getRange().getEnd().getCharIndex();
+//
+//                    editor.selectRange(anchor, caretPosition);
+//                }
+//
+//            } else {
+//                editor.deselect();
+//            }
+//        });
     }
 
     @Override
