@@ -84,6 +84,7 @@ import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.model.ObjectProvider;
 import eu.mihosoft.vrl.lang.model.Operator;
+import eu.mihosoft.vrl.lang.model.ReturnStatementInvocation;
 import eu.mihosoft.vrl.workflow.FlowFactory;
 import eu.mihosoft.vrl.workflow.IdGenerator;
 
@@ -445,7 +446,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         if (currentScope instanceof ControlFlowScope) {
             ControlFlowScope cfS = (ControlFlowScope) currentScope;
             Argument arg = convertExpressionToArgument(s.getExpression());
-            codeBuilder.returnValue(cfS, arg);
+            ReturnStatementInvocation retInv = codeBuilder.returnValue(cfS, arg);
+            setCodeRange(retInv, s);
         }
     }
 
@@ -453,7 +455,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     public void visitBreakStatement(BreakStatement s) {
         if (currentScope instanceof ControlFlowScope) {
             ControlFlowScope cfS = (ControlFlowScope) currentScope;
-            codeBuilder.invokeBreak(cfS);
+            setCodeRange(codeBuilder.invokeBreak(cfS), s);
         }
     }
 
@@ -461,7 +463,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     public void visitContinueStatement(ContinueStatement s) {
         if (currentScope instanceof ControlFlowScope) {
             ControlFlowScope cfS = (ControlFlowScope) currentScope;
-            codeBuilder.invokeContinue(cfS);
+            setCodeRange(codeBuilder.invokeContinue(cfS),s);
         }
     }
 
