@@ -233,7 +233,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                         } else if (a.getType().equals(Type.STRING)) {
                             parseString(newV, invocation, argIndex);
                         }
-                        System.out.println("type: " + a.getType());
+                        System.out.println("param-type: " + a.getType());
                     } else if (a.getArgType() == ArgumentType.NULL) {
                         parseInt(newV, invocation, argIndex);
                     }
