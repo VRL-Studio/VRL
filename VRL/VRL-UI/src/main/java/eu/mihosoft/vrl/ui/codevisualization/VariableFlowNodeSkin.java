@@ -28,6 +28,7 @@ import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
 import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
+import java.math.BigDecimal;
 import java.time.Duration;
 import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
@@ -222,23 +223,79 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                     if (!field.isFocused()) {
                         return;
                     }
-                    try {
-                        Integer intValue = Integer.parseInt(newV.getNewValue());
-                        invocation.getArguments().set(argIndex,
-                                Argument.constArg(Type.INT, intValue));
-                        invocation.getParent().fireEvent(new CodeEvent(
-                                        CodeEventType.CHANGE,
-                                        invocation.getParent()));
+                    if (a.getArgType() == ArgumentType.CONSTANT) {
 
-                        if (invocation instanceof ScopeInvocation) {
-                            ScopeInvocation scopeInv
-                            = (ScopeInvocation) invocation;
-                            Scope scope = scopeInv.getScope();
+                        if (a.getType().equals(Type.INT)) {
+                            parseInt(newV, invocation, argIndex);
+                        } else if (a.getType().equals(Type.DOUBLE) 
+                                || a.getType().equals(Type.fromClass(BigDecimal.class))) {
+                            parseDouble(newV, invocation, argIndex);
+                        } else if (a.getType().equals(Type.STRING)) {
+                            parseString(newV, invocation, argIndex);
                         }
-                    } catch (Exception ex) {
-
+                        System.out.println("type: " + a.getType());
+                    } else if (a.getArgType() == ArgumentType.NULL) {
+                        parseInt(newV, invocation, argIndex);
                     }
+
                 });
+    }
+
+    private void parseInt(Change<String> newV, Invocation invocation, int argIndex) {
+        try {
+            Integer intValue = Integer.parseInt(newV.getNewValue());
+            invocation.getArguments().set(argIndex,
+                    Argument.constArg(Type.INT, intValue));
+            invocation.getParent().fireEvent(new CodeEvent(
+                    CodeEventType.CHANGE,
+                    invocation.getParent()));
+
+            if (invocation instanceof ScopeInvocation) {
+                ScopeInvocation scopeInv
+                        = (ScopeInvocation) invocation;
+                Scope scope = scopeInv.getScope();
+            }
+        } catch (Exception ex) {
+
+        }
+    }
+
+    private void parseDouble(Change<String> newV, Invocation invocation, int argIndex) {
+        try {
+            Double doubleValue = Double.parseDouble(newV.getNewValue());
+            invocation.getArguments().set(argIndex,
+                    Argument.constArg(Type.DOUBLE, doubleValue));
+            invocation.getParent().fireEvent(new CodeEvent(
+                    CodeEventType.CHANGE,
+                    invocation.getParent()));
+
+            if (invocation instanceof ScopeInvocation) {
+                ScopeInvocation scopeInv
+                        = (ScopeInvocation) invocation;
+                Scope scope = scopeInv.getScope();
+            }
+        } catch (Exception ex) {
+
+        }
+    }
+
+    private void parseString(Change<String> newV, Invocation invocation, int argIndex) {
+        try {
+
+            invocation.getArguments().set(argIndex,
+                    Argument.constArg(Type.STRING, newV.getNewValue()));
+            invocation.getParent().fireEvent(new CodeEvent(
+                    CodeEventType.CHANGE,
+                    invocation.getParent()));
+
+            if (invocation instanceof ScopeInvocation) {
+                ScopeInvocation scopeInv
+                        = (ScopeInvocation) invocation;
+                Scope scope = scopeInv.getScope();
+            }
+        } catch (Exception ex) {
+
+        }
     }
 
     private void createArgView(
