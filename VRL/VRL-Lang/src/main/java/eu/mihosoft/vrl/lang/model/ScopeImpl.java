@@ -55,6 +55,7 @@ import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.ValueObject;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -606,6 +607,14 @@ class ScopeImpl implements Scope {
 
     boolean isParentUpdateDisabled() {
         return disableParentUpdate;
+    }
+    
+    public List<CodeEntity> collectScopeAndAllsubElements() {
+        List<CodeEntity> result = new ArrayList<>();
+        
+        visitScopeAndAllSubElements((cE)->result.add(cE));
+        
+        return result;
     }
 
 }
