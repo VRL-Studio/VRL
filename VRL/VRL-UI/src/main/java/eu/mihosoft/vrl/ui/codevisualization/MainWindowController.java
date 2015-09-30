@@ -434,7 +434,7 @@ public class MainWindowController implements Initializable {
         CompilationUnitDeclaration newCu = instrumentCode.transform(clonedCU);
 
         String instrCode = Scope2Code.getCode(newCu);
-        System.out.println("instr: " + instrCode);
+        System.out.println("instr:\n\n" + instrCode);
 
 //        if (true) {
 //            return;
@@ -461,8 +461,6 @@ public class MainWindowController implements Initializable {
                                 visualizeEvent(evt, vn);
                             });
                 });
-
-        System.out.println(instrumentedCode);
 
         try {
             GroovyClassLoader gcl = new GroovyClassLoader();
@@ -568,24 +566,24 @@ public class MainWindowController implements Initializable {
 
         // auto layout for nodes without previous layout data
         if (d == null) {
-            
+
             VNode n = cE.getNode();
             VFlowModel nParent = n.getFlow();
             Collection<Connection> connections
                     = nParent.getConnections(
                             WorkflowUtil.CONTROL_FLOW).
                     getAllWithNode(n);
-            
+
             Optional<VNode> previousNode = connections.stream().
-                    filter(pn->pn.getReceiver().getNode().equals(n)).
-                    map(conn->conn.getSender().getNode()).
+                    filter(pn -> pn.getReceiver().getNode().equals(n)).
+                    map(conn -> conn.getSender().getNode()).
                     findFirst();
-            
+
             int gap = 50;
-            
+
             if (previousNode.isPresent()) {
                 VNode prevN = previousNode.get();
-                n.setX(prevN.getX()+prevN.getWidth()+gap);
+                n.setX(prevN.getX() + prevN.getWidth() + gap);
                 n.setY(prevN.getY());
             }
 
@@ -612,6 +610,13 @@ public class MainWindowController implements Initializable {
     }
 
     private void saveUIData() {
+        CompilationUnitDeclaration cud
+                = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                iterator().next().get(0);
+        updateCode(cud);
+    }
+
+    private String generateUIData() {
         XStream xstream = new XStream();
         xstream.alias("layout", LayoutData.class);
         String data = xstream.toXML(layoutData);
@@ -634,15 +639,11 @@ public class MainWindowController implements Initializable {
                 filter(vrlLayoutType.or(editorFoldType)).
                 collect(Collectors.toList());
 
-        toBeRemoved.forEach(c -> System.out.println("out: " + c.getType()));
-
         cud.getComments().removeAll(toBeRemoved);
 
-        updateCode(cud);
-        editor.setText(editor.getText()
-                + "// <editor-fold defaultstate=\"collapsed\" desc=\"VRL-Data\">\n"
+        return "// <editor-fold defaultstate=\"collapsed\" desc=\"VRL-Data\">\n"
                 + "/*<!VRL!><Type:VRL-Layout>\n" + data + "\n*/\n"
-                + "// </editor-fold>");
+                + "// </editor-fold>";
     }
 
     private void loadUIData() {
@@ -768,8 +769,9 @@ public class MainWindowController implements Initializable {
         System.out.println("Scope: UpdateCode");
         String code = Scope2Code.getCode(
                 (CompilationUnitDeclaration) getRootScope(rootScope));
-//        System.out.println(code);
-        editor.setText(code);
+
+        editor.setText(code);  
+        editor.setText(editor.getText()+"\n"+generateUIData());
     }
 
     private Scope getRootScope(Scope s) {
@@ -932,7 +934,10 @@ class LayoutData {
         }
     }
 
-    public LayoutData(double x, double y, double width, double height, boolean contentVisible) {
+    public LayoutData(
+            double x, double y,
+            double width, double height,
+            boolean contentVisible) {
         this.x = x;
         this.y = y;
         this.width = width;
