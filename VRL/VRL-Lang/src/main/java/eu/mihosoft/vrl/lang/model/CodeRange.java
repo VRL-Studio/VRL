@@ -177,6 +177,14 @@ public final class CodeRange implements ICodeRange {
 				.getCharIndex(), o.getEnd().getCharIndex()),
 				this.begin.getCodeLineColumnMapper());
 	}
+        
+        @Override
+	public ICodeRange hull(ICodeRange o) {
+		return new CodeRange(Math.min(this.getBegin().getCharIndex(), o
+				.getBegin().getCharIndex()), Math.max(this.getEnd()
+				.getCharIndex(), o.getEnd().getCharIndex()),
+				this.begin.getCodeLineColumnMapper());
+	}
 
 	@Override
 	public int size() {

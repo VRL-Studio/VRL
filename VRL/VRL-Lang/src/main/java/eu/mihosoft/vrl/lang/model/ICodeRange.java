@@ -98,6 +98,14 @@ public interface ICodeRange extends Comparable<ICodeRange> {
      * @return the intersection of this code range and the specified code range
      */
     ICodeRange intersection(ICodeRange o);
+    
+    /**
+     * Returns the hull of this code range and the specified code range.
+     *
+     * @param o code range
+     * @return the hull of this code range and the specified code range
+     */
+    ICodeRange hull(ICodeRange o);
 
     /**
      * Returns the size of this code range (number of characters).
