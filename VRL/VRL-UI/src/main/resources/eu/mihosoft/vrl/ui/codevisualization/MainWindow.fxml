@@ -10,10 +10,10 @@
       <menus>
         <Menu mnemonicParsing="false" text="File">
           <items>
-            <MenuItem mnemonicParsing="false" onAction="#onLoadAction" text="Open" />
-            <MenuItem mnemonicParsing="false" onAction="#onSaveAction" text="Save" />
-            <MenuItem mnemonicParsing="false" onAction="#onSaveAsAction" text="Save As" /><MenuItem mnemonicParsing="false" onAction="#onRunCodeAction" text="Run" />
-            <MenuItem mnemonicParsing="false" onAction="#onCloseAction" text="Close" />
+            <MenuItem fx:id="menuLoadItem" mnemonicParsing="false" onAction="#onLoadAction" text="Open" />
+            <MenuItem fx:id="menuSaveItem" mnemonicParsing="false" onAction="#onSaveAction" text="Save" />
+            <MenuItem mnemonicParsing="false" onAction="#onSaveAsAction" text="Save As" /><MenuItem fx:id="menuRunItem" mnemonicParsing="false" onAction="#onRunCodeAction" text="Run" />
+            <MenuItem fx:id="menuCloseItem" mnemonicParsing="false" onAction="#onCloseAction" text="Close" />
           </items>
         </Menu>
         <Menu mnemonicParsing="false" text="Help">
