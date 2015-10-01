@@ -6,6 +6,7 @@
 package eu.mihosoft.vrl.lang.model.transform;
 
 import eu.mihosoft.vrl.instrumentation.VRLInstrumentationUtil;
+import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocationImpl;
 import eu.mihosoft.vrl.lang.model.BreakInvocation;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
@@ -22,17 +23,22 @@ import eu.mihosoft.vrl.lang.model.ObjectProvider;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.ReturnStatementInvocation;
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
+import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
 import eu.mihosoft.vrl.lang.model.WhileDeclaration;
+import groovy.lang.GroovyClassLoader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 
 /**
  * Model transformation that adds instrumentations to the model that shall be
@@ -61,6 +67,42 @@ public class InstrumentCode implements CodeTransform<CompilationUnitDeclaration>
         }
 
         return result;
+    }
+
+    public static void main(String[] args) {
+        UIBinding.scopes.clear();
+
+        CompilerConfiguration ccfg = new CompilerConfiguration();
+        ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
+                new VRLVisualizationTransformation()));
+        GroovyClassLoader gcl = new GroovyClassLoader(
+                new GroovyClassLoader(), ccfg);
+
+        String code = ""
+                + "package mypackage\n"
+                + "\n"
+                + "public class MyClass {\n"
+                + "  public method() {\n"
+                + "    int a = 2 + 3 * 4\n"
+                + "    int b = a + 7\n"
+                + "  }\n"
+                + "}\n";
+
+        try {
+            gcl.parseClass(code, "Script");
+        } catch (Exception ex) {
+            ex.printStackTrace(System.err);
+        }
+
+        CompilationUnitDeclaration cud
+                = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                iterator().next().get(0);
+
+        cud = new InstrumentCode().transform(cud);
+
+        String newCode = Scope2Code.getCode(cud);
+
+        System.out.println(newCode);
     }
 }
 
@@ -291,7 +333,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         List<Invocation> invocations
                 = new ArrayList<>(ce.getControlFlow().getInvocations());
         ControlFlow cf = result.getControlFlow();
-        
+
         addInstrumentation(cf, invocations);
 
         return result;
@@ -419,7 +461,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
                 int[] argumentsToReplace = invocationTarget.get().
                         getArguments().stream().
                         filter(a -> Objects.equals(a.getInvocation().
-                                        orElse(null), inv)).
+                                orElse(null), inv)).
                         mapToInt(a -> invocationTarget.get().
                                 getArguments().indexOf(a)).toArray();
                 // replace args
@@ -449,17 +491,17 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
             resultInvs.add(VRLInstrumentationUtil.generatePostEvent(
                     cf, inv, retValArg));
         }
-        
+
         // if the current invocation is a return,break or continue statement,
         // we need to swap the statement invocation and 
         // the post event invocation  since after the return statement no event
         // can be generated.
-        if(inv instanceof ReturnStatementInvocation
+        if (inv instanceof ReturnStatementInvocation
                 || inv instanceof ContinueInvocation
                 || inv instanceof BreakInvocation) {
             Collections.swap(resultInvs,
                     resultInvs.indexOf(inv),
-                    resultInvs.indexOf(inv)+1);
+                    resultInvs.indexOf(inv) + 1);
         }
 
         if (inv instanceof ScopeInvocation) {
@@ -552,7 +594,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         // condition variable
         Invocation notInv = whileCf.invokeNot("",
                 Argument.varArg(whileCf.getParent().getVariable(
-                                currentVarName())));
+                        currentVarName())));
         instrumentedCondInvs.add(notInv);
         instrumentedCondInvs.add(whileCf.assignVariable("",
                 varName, Argument.invArg(notInv)));
@@ -562,7 +604,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
         VisualCodeBuilder builder = new VisualCodeBuilder_Impl();
         IfDeclaration ifDecl = builder.invokeIf(whileScope,
                 Argument.varArg(cf.getParent().
-                getVariable(varName)));
+                        getVariable(varName)));
         Invocation conditionIfInv = whileScope.getControlFlow().
                 getInvocations().get(
                         whileScope.getControlFlow().getInvocations().
