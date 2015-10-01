@@ -152,26 +152,26 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             VNode model, VFlow controller) {
         super(skinFactory, model, controller);
 
-//        getNode().addEventFilter(MouseEvent.ANY, (evt) -> {
-//            if (evt.getEventType() == MouseEvent.MOUSE_MOVED) {
-//                Object value = getModel().getValueObject().getValue();
-//
-//                if (value instanceof CodeEntity) {
-//                    CodeEntity cE = (CodeEntity) value;
-//
-//                    if (cE.getRange() != null) {
-//
-//                        int anchor = cE.getRange().getBegin().getCharIndex();
-//                        int caretPosition = cE.getRange().getEnd().getCharIndex();
-////                    WindowUtil.getDefaultClipboard().deselectAll();
-//                        editor.selectRange(anchor, caretPosition);
-//                    }
-//                }
-//            };
-////            else if (evt.getEventType() == MouseEvent.MOUSE_EXITED) {
-////                editor.deselect();
-////            }
-//        });
+        getNode().addEventFilter(MouseEvent.ANY, (evt) -> {
+            if (evt.getEventType() == MouseEvent.MOUSE_CLICKED) {
+                Object value = getModel().getValueObject().getValue();
+
+                if (value instanceof CodeEntity) {
+                    CodeEntity cE = (CodeEntity) value;
+
+                    if (cE.getRange() != null) {
+
+                        int anchor = cE.getRange().getBegin().getCharIndex();
+                        int caretPosition = cE.getRange().getEnd().getCharIndex();
+//                    WindowUtil.getDefaultClipboard().deselectAll();
+                        editor.selectRange(anchor, caretPosition);
+                    }
+                }
+            };
+//            else if (evt.getEventType() == MouseEvent.MOUSE_EXITED) {
+//                editor.deselect();
+//            }
+        });
 
 //        getNode().selectedProperty().addListener((evt) -> {
 //            if (getNode().isSelected()) {

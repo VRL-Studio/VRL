@@ -124,6 +124,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooserBuilder;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import jfxtras.scene.control.window.WindowUtil;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
@@ -186,6 +187,11 @@ public class MainWindowController implements Initializable {
         canvas.setMinScaleY(0.2);
         canvas.setMaxScaleX(1);
         canvas.setMaxScaleY(1);
+        
+        canvas.setOnMouseClicked((evt)->{
+            WindowUtil.getDefaultClipboard().deselectAll();
+            editor.deselect();
+        });
 
 //        canvas.setScaleBehavior(ScaleBehavior.IF_NECESSARY);
 //        canvas.setTranslateBehavior(TranslateBehavior.IF_NECESSARY);
