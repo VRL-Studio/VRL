@@ -130,7 +130,8 @@ public interface Scope extends CodeEntity {
     /**
      * Picks the smallest code entity at the specified location.
      * @param loc location
-     * @return 
+     * @return the smallest code location or an empty optional if the requested
+     *         code entity does not exist
      */
     public Optional<CodeEntity> pick(ICodeLocation loc);
 }
