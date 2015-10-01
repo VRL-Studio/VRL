@@ -32,7 +32,7 @@ public class MyClass {
     }
     public static void main(String[] args) {
         CSG cube;
-        cube = createCube(10.0, 10.0, 1.0);
+        cube = createCube(10.0, 10.0, 2.0);
         CSG prot;
         prot = createCube(1.0, 1.0, 1.0);
         cube.difference(createCircle(prot, 4.0, 10));
@@ -45,8 +45,8 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCube:inv:return</string>
     <layout>
-      <x>1250.0</x>
-      <y>0.0</y>
+      <x>1280.6147658443736</x>
+      <y>146.69442142747297</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -65,8 +65,8 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:declare i</string>
     <layout>
-      <x>1500.0</x>
-      <y>0.0</y>
+      <x>580.1063126102265</x>
+      <y>593.8383146914638</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -85,10 +85,10 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:scope</string>
     <layout>
-      <x>1938.2758071316225</x>
-      <y>201.9621531259909</y>
-      <width>549.5295181625843</width>
-      <height>296.8318987660218</height>
+      <x>1119.614803074124</x>
+      <y>481.17689244190586</y>
+      <width>660.7609958304547</width>
+      <height>412.17296184987356</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
@@ -135,8 +135,8 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:op DIV</string>
     <layout>
-      <x>1000.0</x>
-      <y>0.0</y>
+      <x>317.1348823437038</x>
+      <y>411.999337849894</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -155,8 +155,8 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:declare n</string>
     <layout>
-      <x>250.0</x>
-      <y>0.0</y>
+      <x>0.0</x>
+      <y>420.1665959225276</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -185,8 +185,8 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:return</string>
     <layout>
-      <x>2500.0</x>
-      <y>0.0</y>
+      <x>1376.295105599227</x>
+      <y>1032.183426433415</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -198,25 +198,25 @@ public class MyClass {
       <x>0.0</x>
       <y>0.0</y>
       <width>1114.0</width>
-      <height>680.0</height>
+      <height>846.3417322834647</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
     <string>Script:mypackage.MyClass:createCube:inv:toCSG</string>
     <layout>
-      <x>1000.0</x>
-      <y>0.0</y>
-      <width>200.0</width>
-      <height>150.0</height>
+      <x>825.9999999999999</x>
+      <y>116.0</y>
+      <width>334.0</width>
+      <height>268.0</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:declare step</string>
     <layout>
-      <x>750.0</x>
-      <y>0.0</y>
+      <x>314.0602482370047</x>
+      <y>192.36922427862544</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -227,15 +227,15 @@ public class MyClass {
     <layout>
       <x>335.6060616689985</x>
       <y>118.19840309605163</y>
-      <width>213.76117706298828</width>
-      <height>169.0584367167271</height>
+      <width>438.3939514160156</width>
+      <height>338.80159759521484</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:declare csg</string>
     <layout>
-      <x>0.0</x>
+      <x>1.0342209603039922</x>
       <y>0.0</y>
       <width>200.0</width>
       <height>150.0</height>
@@ -255,8 +255,8 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:declare objects</string>
     <layout>
-      <x>500.0</x>
-      <y>0.0</y>
+      <x>4.566210731139124</x>
+      <y>599.1067552312534</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -315,10 +315,10 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle:while</string>
     <layout>
-      <x>1938.2758071316225</x>
-      <y>201.9621531259909</y>
-      <width>549.5295181625843</width>
-      <height>296.8318987660218</height>
+      <x>1119.614803074124</x>
+      <y>481.17689244190586</y>
+      <width>660.7609958304547</width>
+      <height>412.17296184987356</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
@@ -335,8 +335,8 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCube:inv:declare d</string>
     <layout>
-      <x>500.0</x>
-      <y>0.0</y>
+      <x>3.374999999999943</x>
+      <y>382.4375</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -365,8 +365,8 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCube:inv:declare h</string>
     <layout>
-      <x>250.0</x>
-      <y>0.0</y>
+      <x>3.4999999999999716</x>
+      <y>190.3125</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -395,8 +395,8 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:op LESS</string>
     <layout>
-      <x>2000.0</x>
-      <y>0.0</y>
+      <x>835.0302078060253</x>
+      <y>760.0493669864874</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -415,7 +415,7 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle:while:IF:inv:union</string>
     <layout>
-      <x>356.78605792887794</x>
+      <x>359.78605792887794</x>
       <y>71.22731042639475</y>
       <width>234.0</width>
       <height>268.0</height>
@@ -435,8 +435,8 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:op ASSIGN</string>
     <layout>
-      <x>1250.0</x>
-      <y>0.0</y>
+      <x>580.7468064295093</x>
+      <y>411.69002736087475</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -447,16 +447,16 @@ public class MyClass {
     <layout>
       <x>0.0</x>
       <y>0.0</y>
-      <width>1058.6654224395752</width>
-      <height>611.0</height>
+      <width>1094.4234109713339</width>
+      <height>678.7669312004031</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:declare radius</string>
     <layout>
-      <x>0.0</x>
-      <y>0.0</y>
+      <x>3.3380520699988545</x>
+      <y>205.55939220604174</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -475,7 +475,7 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle:while:IF:inv:op ASSIGN:0</string>
     <layout>
-      <x>269.36049504779675</x>
+      <x>272.36049504779675</x>
       <y>387.0323395656362</y>
       <width>512.3280581657416</width>
       <height>180.5832888269328</height>
@@ -495,18 +495,18 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCircle</string>
     <layout>
-      <x>109.45456490464103</x>
-      <y>417.9799979593491</y>
-      <width>668.8175029286789</width>
-      <height>198.7794409040763</height>
+      <x>8.179862592523499</x>
+      <y>411.16933826199755</y>
+      <width>364.37645313045596</width>
+      <height>214.92495435509113</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
   <entry>
     <string>Script:mypackage.MyClass:createCircle:inv:op ASSIGN:0</string>
     <layout>
-      <x>1750.0</x>
-      <y>0.0</y>
+      <x>829.8537535795106</x>
+      <y>586.8251600712837</y>
       <width>200.0</width>
       <height>150.0</height>
       <contentVisible>true</contentVisible>
@@ -535,10 +535,10 @@ public class MyClass {
   <entry>
     <string>Script:mypackage.MyClass:createCube:inv:&lt;init&gt;</string>
     <layout>
-      <x>750.0</x>
-      <y>0.0</y>
-      <width>200.0</width>
-      <height>150.0</height>
+      <x>443.6875</x>
+      <y>125.0625</y>
+      <width>316.5625228881836</width>
+      <height>225.5625</height>
       <contentVisible>true</contentVisible>
     </layout>
   </entry>
