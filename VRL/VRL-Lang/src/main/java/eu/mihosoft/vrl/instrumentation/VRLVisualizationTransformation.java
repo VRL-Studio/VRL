@@ -463,7 +463,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
     public void visitContinueStatement(ContinueStatement s) {
         if (currentScope instanceof ControlFlowScope) {
             ControlFlowScope cfS = (ControlFlowScope) currentScope;
-            setCodeRange(codeBuilder.invokeContinue(cfS),s);
+            setCodeRange(codeBuilder.invokeContinue(cfS), s);
         }
     }
 
@@ -1175,26 +1175,24 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             stateMachine.setBoolean("for-loop:incExpression", true);
 
             //
-        } else {
+        } else if (!returnVariables.containsKey(s)) {
 
-            if (!returnVariables.containsKey(s)) {
+            Operator operator = convertOperator(s);
+            Argument leftArg = convertExpressionToArgument(s.getLeftExpression());
+            Argument rightArg = convertExpressionToArgument(s.getRightExpression());
 
-                Operator operator = convertOperator(s);
-                Argument leftArg = convertExpressionToArgument(s.getLeftExpression());
-                Argument rightArg = convertExpressionToArgument(s.getRightExpression());
+            boolean emptyAssignment = (Objects.equal(Argument.nullArg(),
+                    rightArg) && operator == Operator.ASSIGN);
 
-                boolean emptyAssignment = (Objects.equal(Argument.nullArg(),
-                        rightArg) && operator == Operator.ASSIGN);
+            if (!emptyAssignment) {
 
-                if (!emptyAssignment) {
+                Invocation invocation = codeBuilder.invokeOperator(
+                        currentScope,
+                        leftArg, rightArg, operator
+                );
 
-                    Invocation invocation = codeBuilder.invokeOperator(
-                            currentScope,
-                            leftArg, rightArg, operator
-                    );
-
-                    setCodeRange(invocation, s);
-                    returnVariables.put(s, invocation);
+                setCodeRange(invocation, s);
+                returnVariables.put(s, invocation);
 
 //                    boolean declareAndAssignDetected = false;
 //
@@ -1237,7 +1235,6 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 //                                    variable.getName(), rightArg);
 //                        }
 //                    }
-                }
             }
         }
 
@@ -1565,9 +1562,15 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
     private void setCodeRange(CodeEntity codeEntity, ASTNode astNode) {
 
+        int lineFrom = astNode.getLineNumber() - 1;
+        int lineTo = astNode.getLastLineNumber() - 1;
+        
+        int columnStart = astNode.getColumnNumber() - 1;
+        int columnStop = astNode.getLastColumnNumber() - 1;
+
         codeEntity.setRange(new CodeRange(
-                astNode.getLineNumber() - 1, astNode.getColumnNumber() - 1,
-                astNode.getLastLineNumber() - 1, astNode.getLastColumnNumber() - 1,
+                lineFrom, columnStart,
+                lineTo, columnStop,
                 mapper));
 //
 //        System.out.println("range: " + codeEntity.getRange());

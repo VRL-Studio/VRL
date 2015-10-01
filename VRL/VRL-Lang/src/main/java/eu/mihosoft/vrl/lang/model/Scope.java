@@ -126,5 +126,12 @@ public interface Scope extends CodeEntity {
      */
     @Deprecated
     public void disableParentUpdate();
+    
+    /**
+     * Picks the smallest code entity at the specified location.
+     * @param loc location
+     * @return 
+     */
+    public Optional<CodeEntity> pick(ICodeLocation loc);
 }
 

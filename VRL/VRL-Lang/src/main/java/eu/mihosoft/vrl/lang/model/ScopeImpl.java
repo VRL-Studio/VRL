@@ -608,13 +608,24 @@ class ScopeImpl implements Scope {
     boolean isParentUpdateDisabled() {
         return disableParentUpdate;
     }
-    
+
     public List<CodeEntity> collectScopeAndAllsubElements() {
         List<CodeEntity> result = new ArrayList<>();
-        
-        visitScopeAndAllSubElements((cE)->result.add(cE));
-        
+
+        visitScopeAndAllSubElements((cE) -> result.add(cE));
+
         return result;
+    }
+
+    public Optional<CodeEntity> pick(ICodeLocation loc) {
+        return collectScopeAndAllsubElements().
+                stream().
+                filter(cE -> cE.getRange()!=null).
+                filter(cE -> cE.getRange().contains(loc)).
+                sorted((e1, e2) -> Integer.compare(
+                        e1.getRange().size(),
+                        e2.getRange().size())).
+                findFirst();
     }
 
 }
