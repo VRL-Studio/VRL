@@ -112,7 +112,7 @@ public class ReplaceOperators implements CodeTransform<CompilationUnitDeclaratio
                 + "\n"
                 + "public class MyClass {\n"
                 + "  public method() {\n"
-                + "    int a = 2 + 3 * 4\n"
+                + "    int a = 2 + 3 * (4 + 2)\n"
                 + "    int b = a + 7\n"
                 + "  }\n"
                 + "}\n";
