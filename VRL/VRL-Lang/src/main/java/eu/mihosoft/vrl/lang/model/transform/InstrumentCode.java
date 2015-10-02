@@ -70,38 +70,44 @@ public class InstrumentCode implements CodeTransform<CompilationUnitDeclaration>
     }
 
     public static void main(String[] args) {
+       // clear model
         UIBinding.scopes.clear();
 
+        // configure groovy compiler with model importer (groovy ast -> model)
         CompilerConfiguration ccfg = new CompilerConfiguration();
         ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
                 new VRLVisualizationTransformation()));
         GroovyClassLoader gcl = new GroovyClassLoader(
                 new GroovyClassLoader(), ccfg);
 
+        // code to compile
         String code = ""
                 + "package mypackage\n"
                 + "\n"
                 + "public class MyClass {\n"
                 + "  public method() {\n"
-                + "    int a = 2 + 3 * 4\n"
-                + "    int b = a + 7\n"
+                + "    int a = 2 + 3\n"
+                + "    \n"
                 + "  }\n"
                 + "}\n";
 
+        // compile the code and execute model importer
         try {
             gcl.parseClass(code, "Script");
         } catch (Exception ex) {
             ex.printStackTrace(System.err);
         }
 
+        // obtain compilation unit (e.g., .groovy file)
         CompilationUnitDeclaration cud
                 = (CompilationUnitDeclaration) UIBinding.scopes.values().
                 iterator().next().get(0);
 
+        // apply transformation
         cud = new InstrumentCode().transform(cud);
 
+        // model -> code
         String newCode = Scope2Code.getCode(cud);
-
         System.out.println(newCode);
     }
 }

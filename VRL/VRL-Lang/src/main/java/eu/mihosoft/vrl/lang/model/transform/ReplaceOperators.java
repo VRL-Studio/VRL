@@ -99,14 +99,17 @@ public class ReplaceOperators implements CodeTransform<CompilationUnitDeclaratio
     }
 
     public static void main(String[] args) {
+        // clear model
         UIBinding.scopes.clear();
 
+        // configure groovy compiler with model importer (groovy ast -> model)
         CompilerConfiguration ccfg = new CompilerConfiguration();
         ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
                 new VRLVisualizationTransformation()));
         GroovyClassLoader gcl = new GroovyClassLoader(
                 new GroovyClassLoader(), ccfg);
 
+        // code to compile
         String code = ""
                 + "package mypackage\n"
                 + "\n"
@@ -116,21 +119,26 @@ public class ReplaceOperators implements CodeTransform<CompilationUnitDeclaratio
                 + "    int b = a + 7\n"
                 + "  }\n"
                 + "}\n";
+        
+        System.out.println(code);
 
+        // compile the code and execute model importer
         try {
             gcl.parseClass(code, "Script");
         } catch (Exception ex) {
             ex.printStackTrace(System.err);
         }
 
+        // obtain compilation unit (e.g., .groovy file)
         CompilationUnitDeclaration cud
                 = (CompilationUnitDeclaration) UIBinding.scopes.values().
                 iterator().next().get(0);
 
+        // apply transformation
         cud = new ReplaceOperators().transform(cud);
 
+        // model -> code
         String newCode = Scope2Code.getCode(cud);
-
         System.out.println(newCode);
     }
 

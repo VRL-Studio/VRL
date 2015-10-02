@@ -229,7 +229,7 @@ public class VisualCodeBuilder_Impl implements VisualCodeBuilder {
     }
 
     @Override
-    public BinaryOperatorInvocation invokeOperator(Scope scope, Argument leftArg, Argument rightArg, Operator operator) {
+    public BinaryOperatorInvocation invokeOperator(ControlFlowScope scope, Argument leftArg, Argument rightArg, Operator operator) {
         String id = idRequest.request();
 
         BinaryOperatorInvocation result = scope.getControlFlow().invokeOperator(id, leftArg, rightArg, operator);

@@ -1186,55 +1186,18 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
             if (!emptyAssignment) {
 
-                Invocation invocation = codeBuilder.invokeOperator(
-                        currentScope,
-                        leftArg, rightArg, operator
-                );
+                if (currentScope instanceof ControlFlowScope) {
+                    ControlFlowScope cfS = (ControlFlowScope) currentScope;
 
-                setCodeRange(invocation, s);
-                returnVariables.put(s, invocation);
+                    Invocation invocation = codeBuilder.invokeOperator(
+                            cfS,
+                            leftArg, rightArg, operator
+                    );
 
-//                    boolean declareAndAssignDetected = false;
-//
-//                    if (operator == Operator.ASSIGN) {
-//
-//                        ControlFlow cf = invocation.getParent().
-//                                getControlFlow();
-//
-//                        DeclarationInvocation declInv = null;
-//
-//                        // we assume, that assignments always have a var as
-//                        // left arg
-//                        Variable variable = leftArg.getVariable().get();
-//
-//                        // check for declare&assign invocation
-//                        int indexOfAssIgnmentInv = cf.getInvocations().
-//                                indexOf(invocation);
-//
-//                        if (indexOfAssIgnmentInv > 0) {
-//                            Invocation prevInvocation
-//                                    = cf.getInvocations().
-//                                    get(indexOfAssIgnmentInv - 1);
-//
-//                            if (prevInvocation instanceof DeclarationInvocation) {
-//                                declInv = (DeclarationInvocation) prevInvocation;
-//                                if (declInv.getDeclaredVariable().equals(variable)) {
-//                                    declareAndAssignDetected = true;
-//                                }
-//                            }
-//                        }
-//
-//                        if (declareAndAssignDetected) {
-//                            // undo previous declaration and assignment
-//                            cf.getInvocations().
-//                                    remove(indexOfAssIgnmentInv);
-//                            cf.getInvocations().remove(declInv);
-//
-//                            codeBuilder.declareAndAssignVariable(
-//                                    currentScope, variable.getType(),
-//                                    variable.getName(), rightArg);
-//                        }
-//                    }
+                    setCodeRange(invocation, s);
+                    returnVariables.put(s, invocation);
+                }
+
             }
         }
 
@@ -1564,7 +1527,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         int lineFrom = astNode.getLineNumber() - 1;
         int lineTo = astNode.getLastLineNumber() - 1;
-        
+
         int columnStart = astNode.getColumnNumber() - 1;
         int columnStop = astNode.getLastColumnNumber() - 1;
 
