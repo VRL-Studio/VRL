@@ -160,11 +160,21 @@ public class VRLInstrumentationUtil {
         eventSender.fireEvent(evt);
     }
     
+    /**
+     * Adds the specified instrumentation event handler.
+     * @param type event type
+     * @param eventHandler event handler that shall be registered
+     */
     public static void addEventHandler(InstrumentationEventType type,
             InstrumentationEventHandler eventHandler) {
         eventSender.addEventHandler(type, eventHandler);
     }
     
+    /**
+     * Removes the specified instrumentation event handler.
+     * @param type event type
+     * @param eventHandler event handler that shall be removed
+     */
     public static void removeEventHandler(InstrumentationEventType type,
             InstrumentationEventHandler eventHandler) {
         eventSender.removeEventHandler(type, eventHandler);
