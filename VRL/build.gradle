@@ -17,7 +17,7 @@ task install {
 }
 
 task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper to the current directory.') {
-    gradleVersion = '2.1'
+    gradleVersion = '2.7'
 }
 
 // test reports
