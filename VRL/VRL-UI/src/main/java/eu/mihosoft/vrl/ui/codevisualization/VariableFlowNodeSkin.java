@@ -11,11 +11,9 @@ import eu.mihosoft.vrl.lang.model.CodeEvent;
 import eu.mihosoft.vrl.lang.model.CodeEventType;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
-import eu.mihosoft.vrl.lang.model.CodeLocation;
 import eu.mihosoft.vrl.lang.model.CodeRange;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
-import eu.mihosoft.vrl.lang.model.ICodeRange;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.Scope;
@@ -29,7 +27,6 @@ import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkinBase;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
-import eu.mihosoft.vrl.workflow.fx.FlowNodeWindow;
 import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
 import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
@@ -37,7 +34,6 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
@@ -46,22 +42,23 @@ import javafx.collections.ListChangeListener;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.AmbientLight;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
-import jfxtras.scene.control.window.SelectableNode;
 import jfxtras.scene.control.window.Window;
 import jfxtras.scene.control.window.WindowUtil;
 import org.reactfx.Change;
@@ -103,77 +100,124 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 //                WindowUtil.getDefaultClipboard().select(w, true);
 //            });
 //        });
+        EventStream<Change<IndexRange>> selEvents
+                = EventStreams.changesOf(editor.selectionProperty());
 
-        editor.selectionProperty().addListener((ov, oldV, newV) -> {
-
-            int start = newV.getStart();
-            int end = newV.getEnd();
+        selEvents.reduceSuccessions((red1, red2) -> red2,
+                // update the model/code after specified time
+                // multiple events/changes per specified interval 
+                // will be reduced (merged to one event)
+                Duration.ofMillis(25)).
+                subscribe(newV -> {
+                    int start = newV.getNewValue().getStart();
+                    int end = newV.getNewValue().getEnd();
 
 //            if (start == end) {
 //                return;
 //            }
+                    WindowUtil.getDefaultClipboard().deselectAll();
+//
+//            System.out.println("s: " + start + ", end: " + end);
 
-            WindowUtil.getDefaultClipboard().deselectAll();
+                    Predicate<CodeEntity> contains = (cE) -> {
 
-            System.out.println("s: " + start + ", end: " + end);
+                        try {
+                            return new CodeRange(start, end).contains(
+                                    cE.getRange());
+                        } catch (Exception ex) {
+                            System.out.println("EX missing range: " + cE + ", " + cE.getRange());
+                        }
 
-            Predicate<CodeEntity> contains = (cE) -> {
+                        return false;
+                    };
 
-                try {
-                    return new CodeRange(start, end).contains(
-                            cE.getRange());
-                } catch (Exception ex) {
-                    System.out.println("EX missing range: " + cE + ", " + cE.getRange());
-                }
+                    CompilationUnitDeclaration cud
+                            = (CompilationUnitDeclaration) UIBinding.scopes.values().
+                            iterator().next().get(0);
 
-                return false;
-            };
-
-            CompilationUnitDeclaration cud
-                    = (CompilationUnitDeclaration) UIBinding.scopes.values().
-                    iterator().next().get(0);
-
-            cud.collectScopeAndAllsubElements().stream().
-                    filter(contains).flatMap(mapFlatToWindow).forEach(
-                    (sce) -> {
-                        WindowUtil.getDefaultClipboard().
-                        select(sce, true);
-                    });
+                    cud.collectScopeAndAllsubElements().stream().
+                            filter(contains).flatMap(mapFlatToWindow).forEach(
+                            (sce) -> {
+                                WindowUtil.getDefaultClipboard().
+                                select(sce, true);
+                            });
 
 //            WindowUtil.getDefaultClipboard().getSelectedItems().
 //                    filtered(contains).forEach(
 //                            (sce)->{System.out.println("test");WindowUtil.getDefaultClipboard().
 //                                    select(sce, true);});
-        });
+                });
 
+//        editor.selectionProperty().addListener((ov, oldV, newV) -> {
+//
+//            int start = newV.getStart();
+//            int end = newV.getEnd();
+//
+////            if (start == end) {
+////                return;
+////            }
+//
+//            WindowUtil.getDefaultClipboard().deselectAll();
+////
+////            System.out.println("s: " + start + ", end: " + end);
+//
+//            Predicate<CodeEntity> contains = (cE) -> {
+//
+//                try {
+//                    return new CodeRange(start, end).contains(
+//                            cE.getRange());
+//                } catch (Exception ex) {
+//                    System.out.println("EX missing range: " + cE + ", " + cE.getRange());
+//                }
+//
+//                return false;
+//            };
+//
+//            CompilationUnitDeclaration cud
+//                    = (CompilationUnitDeclaration) UIBinding.scopes.values().
+//                    iterator().next().get(0);
+//
+//            cud.collectScopeAndAllsubElements().stream().
+//                    filter(contains).flatMap(mapFlatToWindow).forEach(
+//                    (sce) -> {
+//                        WindowUtil.getDefaultClipboard().
+//                        select(sce, true);
+//                    });
+//
+////            WindowUtil.getDefaultClipboard().getSelectedItems().
+////                    filtered(contains).forEach(
+////                            (sce)->{System.out.println("test");WindowUtil.getDefaultClipboard().
+////                                    select(sce, true);});
+//
+//        });
     }
 
     public VariableFlowNodeSkin(FXSkinFactory skinFactory,
             VNode model, VFlow controller) {
         super(skinFactory, model, controller);
 
-        getNode().addEventFilter(MouseEvent.ANY, (evt) -> {
-            if (evt.getEventType() == MouseEvent.MOUSE_CLICKED) {
-                Object value = getModel().getValueObject().getValue();
-
-                if (value instanceof CodeEntity) {
-                    CodeEntity cE = (CodeEntity) value;
-
-                    if (cE.getRange() != null) {
-
-                        int anchor = cE.getRange().getBegin().getCharIndex();
-                        int caretPosition = cE.getRange().getEnd().getCharIndex();
-//                    WindowUtil.getDefaultClipboard().deselectAll();
-                        editor.selectRange(anchor, caretPosition);
-                    }
-                }
-            };
-//            else if (evt.getEventType() == MouseEvent.MOUSE_EXITED) {
-//                editor.deselect();
-//            }
-        });
-
+//        getNode().addEventFilter(MouseEvent.ANY, (evt) -> {
+//            if (evt.getEventType() == MouseEvent.MOUSE_CLICKED) {
+//                Object value = getModel().getValueObject().getValue();
+//
+//                if (value instanceof CodeEntity) {
+//                    CodeEntity cE = (CodeEntity) value;
+//
+//                    if (cE.getRange() != null) {
+//
+//                        int anchor = cE.getRange().getBegin().getCharIndex();
+//                        int caretPosition = cE.getRange().getEnd().getCharIndex();
+////                    WindowUtil.getDefaultClipboard().deselectAll();
+//                        editor.selectRange(anchor, caretPosition);
+//                    }
+//                }
+//            };
+////            else if (evt.getEventType() == MouseEvent.MOUSE_EXITED) {
+////                editor.deselect();
+////            }
+//        });
 //        getNode().selectedProperty().addListener((evt) -> {
+//            
 //            if (getNode().isSelected()) {
 //
 ////                WindowUtil.getDefaultClipboard().getSelectedItems()
@@ -218,6 +262,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
         VBox parent = new VBox();
 
         parent.setAlignment(Pos.CENTER);
+//        parent.setStyle("-fx-border-color: red;");
 
         Object value = getModel().getValueObject().getValue();
 
@@ -226,6 +271,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
         }
 
         if (!(value instanceof Invocation)) {
+
             return parent;
         }
 
@@ -258,14 +304,17 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
         } else {
             box = new ComboBox<>();
+            box.setVisible(false);
         }
 
         parent.getChildren().add(box);
 
-        box.setVisible(!invocation.getArguments().isEmpty());
+//        box.setVisible(!invocation.getArguments().isEmpty());
 
         VBox inputs = new VBox();
+        inputs.setAlignment(Pos.CENTER);
         outputs = new VBox();
+        outputs.setAlignment(Pos.CENTER);
         HBox hbox = new HBox(inputs, outputs);
         hbox.setPadding(new Insets(0, 15, 0, 15));
 
@@ -273,7 +322,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
         invocation.getArguments().addListener(
                 (ListChangeListener.Change<? extends Argument> c) -> {
-                    box.setVisible(!invocation.getArguments().isEmpty());
+//                    box.setVisible(!invocation.getArguments().isEmpty());
                     if (!updating) {
                         createArgView(invocation, inputs,
                                 invocation.getArguments().size()
@@ -441,6 +490,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
                 } else {
                     field = new TextField();
+                    field.getStyleClass().add("vtextfield");
 
                     setFieldListener(argIndex, field, invocation, a);
 
@@ -462,7 +512,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             } else if (a.getArgType() == ArgumentType.VARIABLE) {
                 Label label = new Label();
                 a.getVariable().ifPresent(v -> label.setText(v.getName()));
-                label.setTextFill(Color.WHITE);
+                label.setTextFill(Color.LIGHTBLUE);
                 if (update) {
                     inputs.getChildren().set(argIndex, label);
                 } else {
@@ -475,14 +525,14 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                         Object arg = currentArgs[argIndex];
                         if (arg != null) {
                             label.setText(arg.toString());
-                            label.setTextFill(Color.WHITE);
+                            label.setTextFill(Color.LIGHTBLUE);
                         }
                     }
                 }
 
             } else if (a.getArgType() == ArgumentType.INVOCATION) {
                 Label label = new Label();
-                label.setTextFill(Color.WHITE);
+                label.setTextFill(Color.LIGHTBLUE);
                 a.getInvocation().ifPresent(i -> label.setText(i.getMethodName()));
                 if (update) {
                     inputs.getChildren().set(argIndex, label);
@@ -496,7 +546,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                         Object arg = currentArgs[argIndex];
                         if (arg != null) {
                             label.setText(arg.toString());
-                            label.setTextFill(Color.WHITE);
+                            label.setTextFill(Color.LIGHTBLUE);
                         }
                     }
                 }
@@ -551,6 +601,18 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 //            mv.setScaleY(10);
 //            mv.setScaleZ(10);
 
+//Color diffuse = new Color(0.1, 0.99, 0.99, 0.5);
+
+            Color diffuse = new Color(0.99, 0.52, 0.0, 0.7);
+            Color spec = new Color(1.0, 1.0, 1.0, 1.0);
+            Color ambient = new Color(0.2, 0.15, 0.05, 1.0);
+
+            PhongMaterial mat = new PhongMaterial(diffuse);
+
+            mat.setSpecularColor(spec);
+
+            mv.setMaterial(mat);
+
             setMeshScale(mc, subScene.getBoundsInLocal(), mv);
 
             VFX3DUtil.addMouseBehavior(mv, subScene, MouseButton.PRIMARY);
@@ -561,11 +623,13 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                     subScene.heightProperty().divide(2));
 
             viewGroup.getChildren().addAll(mv);
+//            viewGroup.getChildren().add(new AmbientLight(ambient));
+ 
 
             outputs.getChildren().addAll(subScene);
         } else if (retVal != null) {
             Label l = new Label(retVal.toString());
-            l.setTextFill(Color.WHITE);
+            l.setTextFill(Color.LIGHTBLUE);
             outputs.getChildren().add(l);
         } else {
             Label l = new Label();
@@ -576,7 +640,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                     l.setText("null");
                 }
             }
-            l.setTextFill(Color.WHITE);
+            l.setTextFill(Color.LIGHTBLUE);
             outputs.getChildren().add(l);
         }
 

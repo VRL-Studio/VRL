@@ -79,8 +79,13 @@ import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
+import eu.mihosoft.vrl.workflow.fx.FXConnectionSkin;
+import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkin;
 import eu.mihosoft.vrl.workflow.fx.FXValueSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
+import eu.mihosoft.vrl.workflow.skin.Skin;
+import eu.mihosoft.vrl.workflow.skin.SkinFactory;
+import eu.mihosoft.vrl.workflow.skin.VNodeSkin;
 import groovy.lang.GroovyClassLoader;
 import java.io.File;
 import java.io.FileWriter;
@@ -181,14 +186,14 @@ public class MainWindowController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 
         VCanvas canvas = new VCanvas();
-        canvas.setStyle("-fx-background-color: rgb(0,0, 0)");
+//        canvas.setStyle("-fx-background-color: rgb(0,0, 0)");
 
         canvas.setMinScaleX(0.2);
         canvas.setMinScaleY(0.2);
         canvas.setMaxScaleX(1);
         canvas.setMaxScaleY(1);
-        
-        canvas.setOnMouseClicked((evt)->{
+
+        canvas.setOnMouseClicked((evt) -> {
             WindowUtil.getDefaultClipboard().deselectAll();
             editor.deselect();
         });
@@ -205,8 +210,7 @@ public class MainWindowController implements Initializable {
 
         rootPane = canvas.getContent();
 
-        rootPane.setStyle("-fx-background-color: linear-gradient(to bottom, rgb(10,32,60), rgb(42,52,120));");
-
+        //rootPane.setStyle("-fx-background-color: linear-gradient(to bottom, rgb(10,32,60), rgb(42,52,120));");
         flow = FlowFactory.newFlow();
         flow.setVisible(true);
         flow.getModel().getVisualizationRequest().set(
