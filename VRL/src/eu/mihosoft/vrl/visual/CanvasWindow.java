@@ -1395,7 +1395,7 @@ public class CanvasWindow extends VComponent
 
         // 25.07.2011
         // must be fired from different thread.
-        // otherwise dialog / foxtrott related dialog freezes occur.
+        // otherwise dialog / foxtrot related dialog freezes occur.
         // must be the code that waits for input
         Thread t = new Thread(new Runnable() {
 

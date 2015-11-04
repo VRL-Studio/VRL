@@ -21,9 +21,8 @@ public interface TransformingParent {
         double scaleX = 1.0;
         double scaleY = 1.0;
 
-        TransformingParent tp
-                = (TransformingParent) VSwingUtil.
-                getParent(c, TransformingParent.class);
+        TransformingParent tp = CachingParentForCanvas.
+                getParent(c);
 
         if (tp != null && scaleX > 1e-6 && scaleY > 1e-6) {
             scaleX = 1.0 / tp.getScaleX();
@@ -54,5 +53,18 @@ class CachingVScaleForCanvas {
         }
 
         return lastScale;
+    }
+}
+
+class CachingParentForCanvas {
+
+    private static TransformingParent lastParent;
+
+    public static TransformingParent getParent(Component c) {
+
+        lastParent = (TransformingParent) VSwingUtil.
+                getParent(c, TransformingParent.class);
+
+        return lastParent;
     }
 }
