@@ -641,11 +641,12 @@ class GroovyEditorConfiguration implements EditorConfiguration {
         
         // OS X treats ALT key differently. Therefore, we use the shift
         // key as modifier on OS X.
-        if (VSysUtil.isMacOSX()) {
-            downMask = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
-        } else {
+        // TODO check whether still necessary with 1.8u66 (04.11.2015)
+//        if (VSysUtil.isMacOSX()) {
+//            downMask = KeyEvent.CTRL_DOWN_MASK | KeyEvent.SHIFT_DOWN_MASK;
+//        } else {
             downMask = KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK;
-        }
+//        }
         
         ac.setTriggerKey(KeyStroke.getKeyStroke(
                 KeyEvent.VK_SPACE,
