@@ -6,13 +6,14 @@
 package eu.mihosoft.vrl.visual;
 
 /**
- *
+ * 2-D Scale transform.
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public final class VScale {
-    private double scaleX;
-    private double scaleY;
-    
+
+    private final double scaleX;
+    private final double scaleY;
+
     public static final VScale UNITY = new VScale(1, 1);
 
     public VScale(double scaleX, double scaleY) {
@@ -21,20 +22,28 @@ public final class VScale {
     }
 
     /**
-     * @return the scaleX
+     * @return the scale X
      */
     public double getScaleX() {
         return scaleX;
     }
 
     /**
-     * @return the scaleY
+     * @return the scale Y
      */
     public double getScaleY() {
         return scaleY;
     }
-    
+
+    /**
+     * Determines whether this scale transform is the identity transform, e.g.,
+     * {@code getScaleX() == 1.0 && getScaleY() == 1.0}
+     *
+     * @return {@code true} if this scale transform is the identity transform;
+     * {@code false} otherwise
+     */
     public boolean isIdentity() {
-        return getScaleX() == 1.0 && getScaleY() == 1.0;
+        return Double.compare(getScaleX(), 1.0) == 0
+                && Double.compare(getScaleY(), 1.0) == 0;
     }
 }
