@@ -363,7 +363,7 @@ public class ObjectInspector {
      */
     public boolean addObject(Object o, Integer objID) {
 
-        System.out.println(">> Add Object: " + o);
+        System.out.println(">> Add Object: " + o + ", id: " + objID);
 
         boolean alreadyAdded = false;
 
