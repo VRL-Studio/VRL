@@ -36,8 +36,8 @@ configurations{
 
 artifacts {
     allJars file: file('releases/v0.4.3.0.1/vrl.jar')
-	allJars classifier: 'javadoc', file: file('releases/v0.4.3.0.1/vrl-API-doc.jar')
-	allJars classifier: 'sources', file: file('releases/v0.4.3.0.1/vrl-src.jar')
+    allJars classifier: 'javadoc', file: file('releases/v0.4.3.0.1/vrl-API-doc.jar')
+    allJars classifier: 'sources', file: file('releases/v0.4.3.0.1/vrl-src.jar')
 }
 
 signing {
