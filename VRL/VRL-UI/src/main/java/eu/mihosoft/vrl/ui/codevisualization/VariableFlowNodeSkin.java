@@ -42,7 +42,6 @@ import javafx.collections.ListChangeListener;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.AmbientLight;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
@@ -125,7 +124,10 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                             return new CodeRange(start, end).contains(
                                     cE.getRange());
                         } catch (Exception ex) {
-                            System.out.println("EX missing range: " + cE + ", " + cE.getRange());
+                            System.out.println(
+                                    "EX missing range: " + cE
+                                    + ", " + cE.getRange()
+                                    + ", ex: " + ex);
                         }
 
                         return false;
@@ -310,7 +312,6 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
         parent.getChildren().add(box);
 
 //        box.setVisible(!invocation.getArguments().isEmpty());
-
         VBox inputs = new VBox();
         inputs.setAlignment(Pos.CENTER);
         outputs = new VBox();
@@ -335,6 +336,11 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
         if (getModel().getValueObject().getValue() instanceof CodeEntity) {
             CodeEntity ce = (CodeEntity) getModel().getValueObject().getValue();
             updateOutputView(ce.getMetaData().get("VRL:retVal"));
+            Object pre = ce.getMetaData().get("VRL:pre-timestamp");
+            Object post = ce.getMetaData().get("VRL:post-timestamp");
+            if (pre instanceof Long && post instanceof Long) {
+                updateProfileData((long) post - (long) pre);
+            }
 
             Object argsObj = ce.getMetaData().get("VRL:args");
             if (argsObj != null) {
@@ -345,6 +351,16 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
             ce.getMetaData().addListener((Observable observable) -> {
                 updateOutputView(ce.getMetaData().get("VRL:retVal"));
+//                Object pre1 = ce.getMetaData().get("VRL:pre-timestamp");
+//                Object post1 = ce.getMetaData().get("VRL:post-timestamp");
+//                if (pre1 instanceof Long && post1 instanceof Long) {
+//
+//                    long duration = Math.abs((long) post1 - (long) pre1);
+//
+//                    ce.getMetaData().put("VRL:duration", duration);
+//
+//                    updateProfileData(duration);
+//                }
 
                 Object argsObj1 = ce.getMetaData().get("VRL:args");
                 if (argsObj1 != null) {
@@ -361,6 +377,12 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                     if (newV instanceof CodeEntity) {
                         CodeEntity ce = (CodeEntity) newV;
                         ce.getMetaData().addListener((Observable observable) -> {
+
+                            Object pre = ce.getMetaData().get("VRL:pre-timestamp");
+                            Object post = ce.getMetaData().get("VRL:post-timestamp");
+                            if (pre instanceof Long && post instanceof Long) {
+                                updateProfileData((long) post - (long) pre);
+                            }
 
                             Object argsObj1 = ce.getMetaData().get("VRL:args");
                             if (argsObj1 != null) {
@@ -602,7 +624,6 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 //            mv.setScaleZ(10);
 
 //Color diffuse = new Color(0.1, 0.99, 0.99, 0.5);
-
             Color diffuse = new Color(0.99, 0.52, 0.0, 0.7);
             Color spec = new Color(1.0, 1.0, 1.0, 1.0);
             Color ambient = new Color(0.2, 0.15, 0.05, 1.0);
@@ -624,7 +645,6 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
             viewGroup.getChildren().addAll(mv);
 //            viewGroup.getChildren().add(new AmbientLight(ambient));
- 
 
             outputs.getChildren().addAll(subScene);
         } else if (retVal != null) {
@@ -644,5 +664,12 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             outputs.getChildren().add(l);
         }
 
+    }
+
+    private void updateProfileData(long duration) {
+
+//        double alpha = Math.min(1, Math.abs(duration * 1e-8));
+//
+//        getNode().setStyle("-fx-background-color: rgb(255,0,0," + alpha + ");");
     }
 }

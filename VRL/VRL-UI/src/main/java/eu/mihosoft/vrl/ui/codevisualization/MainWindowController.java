@@ -79,12 +79,9 @@ import eu.mihosoft.vrl.workflow.VFlowModel;
 import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
-import eu.mihosoft.vrl.workflow.fx.FXConnectionSkin;
 import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkin;
 import eu.mihosoft.vrl.workflow.fx.FXValueSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
-import eu.mihosoft.vrl.workflow.skin.Skin;
-import eu.mihosoft.vrl.workflow.skin.SkinFactory;
 import eu.mihosoft.vrl.workflow.skin.VNodeSkin;
 import groovy.lang.GroovyClassLoader;
 import java.io.File;
@@ -106,6 +103,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -125,6 +123,7 @@ import javafx.scene.input.KeyCombination.Modifier;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooserBuilder;
 import javafx.stage.Stage;
@@ -535,9 +534,51 @@ public class MainWindowController implements Initializable {
             instrumentedCodeClass.getMethod("main", String[].class).
                     invoke(instrumentedCodeClass, (Object) new String[0]);
 
-        } catch (CompilationFailedException | NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-            Logger.getLogger(MainWindowController.class.getName()).log(Level.SEVERE, null, ex);
+            visualizeProfiling(origCU);
+
+        } catch (CompilationFailedException | NoSuchMethodException |
+                SecurityException | IllegalAccessException |
+                IllegalArgumentException | InvocationTargetException ex) {
+            Logger.getLogger(MainWindowController.class.getName()).
+                    log(Level.SEVERE, null, ex);
         }
+    }
+
+    private void visualizeProfiling(CompilationUnitDeclaration cu) {
+
+        AtomicLong minDuration = new AtomicLong();
+        AtomicLong maxDuration = new AtomicLong();
+
+        cu.visitScopeAndAllSubElements((cE) -> {
+            Object durationObj = cE.getMetaData().get("VRL:duration");
+            if (durationObj instanceof Long
+                    && !(cE instanceof ScopeInvocation)
+                    && !(cE instanceof Scope)) {
+                minDuration.set(
+                        Math.min(minDuration.get(),
+                                (long) durationObj));
+                maxDuration.set(
+                        Math.max(maxDuration.get(),
+                                (long) durationObj));
+//                System.out.println("max: " + maxDuration + " : "
+//                        + durationObj + " : " + cE);
+            }
+        });
+
+        cu.visitScopeAndAllSubElements((cE) -> {
+            Object durationObj = cE.getMetaData().get("VRL:duration");
+            
+            
+            if (durationObj instanceof Long
+                    && !(cE instanceof ScopeInvocation)
+                    && !(cE instanceof Scope)) {
+
+                VNode n = cE.getNode();
+                visualizeProfilingData(
+                        (long) durationObj,
+                        minDuration.get(), maxDuration.get(), n);
+            }
+        });
     }
 
     private boolean compiles(String s) {
@@ -613,7 +654,8 @@ public class MainWindowController implements Initializable {
             for (Scope scope : sList) {
                 scope.generateDataFlow();
                 scope.addEventHandler(CodeEventType.CHANGE, evt -> {
-                    updateCode((CompilationUnitDeclaration) UIBinding.scopes.values().
+                    updateCode((CompilationUnitDeclaration) UIBinding.scopes.
+                            values().
                             iterator().next().get(0));
                 });
             }
@@ -991,15 +1033,81 @@ public class MainWindowController implements Initializable {
         });
     }
 
+    private void visualizeProfilingData(
+            long duration, long minDuration, long maxDuration, VNode vn) {
+
+        if (vn.getValueObject().getValue() instanceof CodeEntity) {
+
+            List<VNodeSkin> skins
+                    = flow.getNodeSkinLookup().getById(vn.getId());
+
+            double a = 0.45;
+
+            Color maxColor = Color.rgb(255, 0, 0);
+            Color midColor = Color.rgb(255, 255, 0);
+            Color minColor = Color.rgb(0, 255, 0);
+            
+            double t = (double) (duration-minDuration)
+                    / (double) (maxDuration-minDuration);
+
+            Color c;
+
+            if (t < 0.5) {
+//                System.out.println("g-y: " + (t*2) + ", " + t);
+                c = minColor.interpolate(midColor, t * 2);
+            } else {
+//                System.out.println("y-r: " + ((t-0.5)*2) + ", " + t);
+                c = midColor.interpolate(maxColor, (t - 0.5) * 2);
+            }
+
+            double r = c.getRed(), g = c.getGreen(), b = c.getBlue();
+
+            skins.stream().filter((s)
+                    -> (s instanceof FXFlowNodeSkin)).forEach((s) -> {
+                ((FXFlowNodeSkin) s).getNode().
+                        setStyle("-fx-background-color: "
+                                + "rgba("
+                                + (int) (r * 255) + ","
+                                + (int) (g * 255) + ","
+                                + (int) (b * 255) + ","
+                                + a + ");"
+                        );
+            });
+        }
+    }
+
     private void visualizeEvent(InstrumentationEvent evt, VNode vn) {
 //        System.out.println("vn: " + vn.getId());
 
         if (vn.getValueObject().getValue() instanceof CodeEntity) {
             CodeEntity ce = (CodeEntity) vn.getValueObject().getValue();
+
             if (evt.getType() == InstrumentationEventType.POST_INVOCATION) {
-                ce.getMetaData().put("VRL:retVal", evt.getSource().getReturnValue().orElse(null));
-            } else if (evt.getType() == InstrumentationEventType.PRE_INVOCATION) {
-                ce.getMetaData().put("VRL:args", evt.getSource().getArguments());
+                ce.getMetaData().put("VRL:retVal", evt.getSource().
+                        getReturnValue().orElse(null));
+                ce.getMetaData().put("VRL:post-timestamp",
+                        evt.getTimeStamp());
+                Object prevDurationObj = ce.getMetaData().get("VRL:duration");
+                long prevDuration;
+                if (prevDurationObj instanceof Long) {
+                    prevDuration = (long) prevDurationObj;
+                } else {
+                    prevDuration = 0;
+                }
+
+                // add duration
+                ce.getMetaData().put("VRL:duration",
+                        prevDuration
+                        + Math.abs(evt.getTimeStamp()
+                                - (long) ce.getMetaData().
+                                get("VRL:pre-timestamp")));
+
+            } else if (evt.getType()
+                    == InstrumentationEventType.PRE_INVOCATION) {
+                ce.getMetaData().put("VRL:args",
+                        evt.getSource().getArguments());
+                ce.getMetaData().put("VRL:pre-timestamp",
+                        evt.getTimeStamp());
             }
         }
 
