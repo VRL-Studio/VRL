@@ -294,8 +294,6 @@ public class DefaultObjectRepresentation extends JPanel
                         mDesc.getMethodID()));
         mRep.setVisualMethodID(visualMethodId);
 
-        getMethods().add(mRep);
-
         if (mRep.isReferenceMethod() || mRep.isCustomReferenceMethod()) {
             updateSelectionViewVisibility();
             return null;
@@ -318,16 +316,18 @@ public class DefaultObjectRepresentation extends JPanel
             }
         }
 
+        
+        getMethods().add(mRep);
+
         // TODO start appearing with fade in
         // currently this is done inside of FadeIn effect
         //                method.setVisible(true);
-        
         MethodInfo mInfo = mDesc.getMethodInfo();
-        
-        if (mInfo!=null && mInfo.num()==1) {
+
+        if (mInfo != null && mInfo.num() == 1) {
             methodList.removeItem(mDesc);
         }
-        
+
         methodView.add(mRep);
 
         // prevents drawing bugs (setVisible(true) is called later)
@@ -418,10 +418,10 @@ public class DefaultObjectRepresentation extends JPanel
                     != MethodType.REFERENCE
                     && method.getDescription().getMethodType()
                     != MethodType.CUSTOM_REFERENCE) {
-                
+
                 MethodInfo mInfo = method.getDescription().getMethodInfo();
 
-                if (mInfo!=null && !mInfo.hide() && mInfo.num()==1) {
+                if (mInfo != null && !mInfo.hide() && mInfo.num() == 1) {
                     methodList.addItem(method.getDescription(),
                             method.getDescription().getSignature());
                 }
