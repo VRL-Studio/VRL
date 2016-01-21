@@ -39,5 +39,5 @@ Repository: https://oss.sonatype.org/content/repositories/snapshots
     <dependency>
       <groupId>eu.mihosoft.vrl</groupId>
       <artifactId>vrl</artifactId>
-      <version>0.4.2.8.6-SNAPSHOT</version>
+      <version>0.4.3.0.2-SNAPSHOT</version>
     </dependency>
