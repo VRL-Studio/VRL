@@ -294,12 +294,12 @@ public class CanvasWindow extends VComponent
             CapabilityChangedListener capabilityListener
                     = new CapabilityChangedListener() {
 
-                        @Override
-                        public void capabilityChanged(
-                                CapabilityManager manager, Integer bit) {
-                                    defineCapabilities();
-                                }
-                    };
+                @Override
+                public void capabilityChanged(
+                        CapabilityManager manager, Integer bit) {
+                    defineCapabilities();
+                }
+            };
 
             addCapabilityListener(capabilityListener);
 
@@ -442,7 +442,7 @@ public class CanvasWindow extends VComponent
                             scrollPane.getVerticalScrollBar().setValue(
                                     scrollPane.getVerticalScrollBar().getValue() - 30);
                         }
-                        
+
                         if (getX() + mainCanvas.getAutoScrollSensitiveBorderSize()
                                 > mainCanvas.getVisibleRect().x
                                 + mainCanvas.getVisibleRect().width) {
@@ -1243,7 +1243,11 @@ public class CanvasWindow extends VComponent
     public void contentChanged() {
 
         if (getPopup() != null) {
-            SwingUtilities.updateComponentTreeUI(getPopup());
+            try {
+                SwingUtilities.updateComponentTreeUI(getPopup());
+            } catch (Exception ex) {
+                Logger.getLogger(MouseControl.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         super.contentChanged();
@@ -1370,10 +1374,8 @@ public class CanvasWindow extends VComponent
 //        setPreferredSize(new Dimension(
 //                getSize().width, this.getHeight()));
             revalidate();
-        } else {
-            if (t != null) {
-                t.lastFrameStarted();
-            }
+        } else if (t != null) {
+            t.lastFrameStarted();
         }
     }
 
