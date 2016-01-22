@@ -4,16 +4,13 @@
  */
 package eu.mihosoft.vrl.io;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Observable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Downloads a file from the specified url. This class can be observed (for
@@ -27,7 +24,7 @@ import java.util.logging.Logger;
 public class Download extends Observable implements Runnable {
 
     // Max size of download buffer.
-    private static final int MAX_BUFFER_SIZE = 1024;
+    private static final int MAX_BUFFER_SIZE = 8192;
     // These are the status names.
     public static final String STATUSES[] = {"Downloading",
         "Paused", "Complete", "Cancelled", "Error"};
@@ -37,13 +34,13 @@ public class Download extends Observable implements Runnable {
     public static final int COMPLETE = 2;
     public static final int CANCELLED = 3;
     public static final int ERROR = 4;
-    private URL url; // download URL
+    private final URL url; // download URL
     private int size; // size of download in bytes
     private int downloaded; // number of bytes downloaded
     private int status; // current status of download
     private int connectionTimeout = 5000; // connection timeout in milliseconds
     private int readTimeout = 60 * 1000; // read timeout (max. download duration)
-    private File location; // location (download folder)
+    private final File location; // location (download folder)
 
     /**
      * Constructor.
@@ -64,9 +61,6 @@ public class Download extends Observable implements Runnable {
 
         this.connectionTimeout = connectionTimeout;
         this.readTimeout = readTimeout;
-
-        // Begin the download.
-        download();
     }
 
     /**
@@ -141,9 +135,10 @@ public class Download extends Observable implements Runnable {
     /**
      * Starts or resumes downloading.
      */
-    private void download() {
+    private Thread download() {
         Thread thread = new Thread(this);
         thread.start();
+        return thread;
     }
 
     /**
@@ -159,13 +154,18 @@ public class Download extends Observable implements Runnable {
      */
     @Override
     public void run() {
-        RandomAccessFile file = null;
+//        RandomAccessFile file = null;
+
         InputStream stream = null;
 
-        try {
+        try (BufferedOutputStream file
+                = new BufferedOutputStream(
+                        new FileOutputStream(
+                                new File(location, getFileName(url))))) {
+
             // Open connection to URL.
-            HttpURLConnection connection =
-                    (HttpURLConnection) url.openConnection();
+            HttpURLConnection connection
+                    = (HttpURLConnection) url.openConnection();
 
             // Specify what portion of file to download.
             connection.setRequestProperty("Range",
@@ -198,30 +198,32 @@ public class Download extends Observable implements Runnable {
             }
 
             // Open file and seek to the end of it.
-            file = new RandomAccessFile(new File(location, getFileName(url)), "rw");
-            file.seek(downloaded);
-
+//            file = new RandomAccessFile(new File(location, getFileName(url)), "rw");
+//            file.seek(downloaded);
             stream = connection.getInputStream();
-            while (status == DOWNLOADING) {
-                /* Size buffer according to how much of the
+
+            /* Size buffer according to how much of the
                  file is left to download. */
-                byte buffer[];
-                if (size - downloaded > MAX_BUFFER_SIZE) {
-                    buffer = new byte[MAX_BUFFER_SIZE];
-                } else {
-                    buffer = new byte[size - downloaded];
-                }
+            byte[] buffer = new byte[MAX_BUFFER_SIZE];
+            double prevProgress = 0;
+            while (status == DOWNLOADING) {
 
                 // Read from server into buffer.
-                int read = stream.read(buffer);
+                int read = stream.read(buffer, 0, MAX_BUFFER_SIZE);
                 if (read == -1) {
                     break;
                 }
+                
+//                System.out.println("read: " +read);
 
                 // Write buffer to file.
                 file.write(buffer, 0, read);
                 downloaded += read;
-                stateChanged();
+                double progress = getProgress();
+                if (progress - prevProgress > 0.5) {
+                    stateChanged();
+                    prevProgress = progress;
+                }
             }
 
             /* Change status to complete if this point was
@@ -238,14 +240,6 @@ public class Download extends Observable implements Runnable {
             e.printStackTrace(System.err);
             error();
         } finally {
-            // Close file.
-            if (file != null) {
-                try {
-                    file.close();
-                } catch (Exception e) {
-                    e.printStackTrace(System.err);
-                }
-            }
 
             // Close connection to server.
             if (stream != null) {
