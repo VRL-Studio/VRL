@@ -4,13 +4,14 @@
  */
 package eu.mihosoft.vrl.io;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Downloads a file from the specified url. This class can be observed (for
@@ -134,8 +135,9 @@ public class Download extends Observable implements Runnable {
 
     /**
      * Starts or resumes downloading.
+     * @return download thread
      */
-    private Thread download() {
+    public Thread download() {
         Thread thread = new Thread(this);
         thread.start();
         return thread;
@@ -154,14 +156,11 @@ public class Download extends Observable implements Runnable {
      */
     @Override
     public void run() {
-//        RandomAccessFile file = null;
+        RandomAccessFile file = null;
 
         InputStream stream = null;
 
-        try (BufferedOutputStream file
-                = new BufferedOutputStream(
-                        new FileOutputStream(
-                                new File(location, getFileName(url))))) {
+        try {
 
             // Open connection to URL.
             HttpURLConnection connection
@@ -198,8 +197,8 @@ public class Download extends Observable implements Runnable {
             }
 
             // Open file and seek to the end of it.
-//            file = new RandomAccessFile(new File(location, getFileName(url)), "rw");
-//            file.seek(downloaded);
+            file = new RandomAccessFile(new File(location, getFileName(url)), "rw");
+            file.seek(downloaded);
             stream = connection.getInputStream();
 
             /* Size buffer according to how much of the
@@ -240,6 +239,15 @@ public class Download extends Observable implements Runnable {
             e.printStackTrace(System.err);
             error();
         } finally {
+            
+            if (file!=null) {
+                try{
+                    file.close();
+                } catch(Exception ex) {
+                    Logger.getLogger(Download.class.getName()).
+                            log(Level.SEVERE, null, ex);
+                }
+            }
 
             // Close connection to server.
             if (stream != null) {

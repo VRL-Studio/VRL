@@ -112,6 +112,7 @@ public class VRLUpdater {
             // downloading signature
             repositorySignatureDownload = new Download(
                     updateSignatureURL, updateDir, 5000, 60 * 1000);
+            repositorySignatureDownload.download();
 
             repositorySignatureDownload.addObserver(new Observer() {
                 private long timestamp;
@@ -171,6 +172,7 @@ public class VRLUpdater {
             // downloading repository
             repositoryDownload = new Download(
                     updateURL, updateDir, 5000, 60 * 1000);
+            repositoryDownload.download();
 
             if (action != null) {
                 action.checkForUpdates(this, repositoryDownload, updateURL);
@@ -367,6 +369,7 @@ public class VRLUpdater {
                     downloadLocation,
                     connectionTimeout,
                     readTimeout);
+            updateDownload.download();
 
             updateDownload.addObserver(new Observer() {
                 private long timestamp;
