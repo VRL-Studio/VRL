@@ -463,7 +463,7 @@ public class EffectPane extends JComponent
         Graphics2D g2 = (Graphics2D) g;
 
         VScale scale = TransformingParent.getScale(mainCanvas);
-        
+
         if (!scale.isIdentity()) {
             g2.setTransform(AffineTransform.getScaleInstance(scale.getScaleX(), scale.getScaleY()));
         }
@@ -851,6 +851,8 @@ class LocationIndicator implements Painter {
     private Point previousLocation = null;
     private int radius = 200;
     private boolean enabled = false;
+    // used to indicate wether to repaint if enabled-state changed (29.01.2016)
+    private boolean prevEnabled = false;
     private boolean visible = false;
     private Canvas mainCanvas;
     private int mouseBtn = MouseEvent.NOBUTTON;
@@ -1063,7 +1065,13 @@ class LocationIndicator implements Painter {
                 setLocation(new Point(0, 0));
             }
 
-            VSwingUtil.repaintRequest(mainCanvas);
+            // repaint if enabled-state changed (29.01.2016)
+            if (isEnabled() != prevEnabled || enabled == true) {
+                VSwingUtil.repaintRequest(mainCanvas);
+                if(prevEnabled && !enabled) {
+                    prevEnabled = false;
+                }
+            }
         }
     }
 
@@ -1078,6 +1086,7 @@ class LocationIndicator implements Painter {
      * @param enabled the enabled to set
      */
     public void setEnabled(boolean enabled) {
+        this.prevEnabled = this.enabled;
         this.enabled = enabled;
     }
 

@@ -853,8 +853,8 @@ public class Canvas extends JPanel
 
     /**
      * Refreshes this canvas. This method should only be called when loading a
-     * file or changing style. It involves the animation manager. Therefore do
-     * not call it very often! The revalidation will start with a delay of one
+     * file or changing style. It involves the animation manager. Therefore, do
+     * not call it frequently! The revalidation will start with a delay of one
      * second and will be repeated three seconds.
      *
      * @see JComponent#revalidate()
@@ -2018,7 +2018,6 @@ class CanvasAWTListener implements AWTEventListener {
     public void eventDispatched(AWTEvent event) {
 
         InputEvent inputEvent = (InputEvent) event;
-
 
         if (mainCanvas.isIgnoreInput()) {
 

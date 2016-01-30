@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.visual;
 
 import eu.mihosoft.vrl.system.VSysUtil;
@@ -93,14 +92,14 @@ public class VSwingUtil {
     // singleton instance
 //    private static final WaitController waitController =
 //            new WaitControllerImpl();
-    private static final AWTEventFilter eventFilter =
-            new AWTEventFilter();
-    private static final AWTShortCutListener shortCutListener =
-            new AWTShortCutListener();
+    private static final AWTEventFilter eventFilter
+            = new AWTEventFilter();
+    private static final AWTShortCutListener shortCutListener
+            = new AWTShortCutListener();
     private static WindowListener[] windowListeners;
     private static Window window;
-    private static ArrayList<ActionListener> enableDisableAWTEventListeners =
-            new ArrayList<ActionListener>();
+    private static ArrayList<ActionListener> enableDisableAWTEventListeners
+            = new ArrayList<ActionListener>();
     public static final String EVENT_FILTER_ENABLED_ACTION_CMD = "eventFilter.enable";
     public static final String EVENT_FILTER_DISABLED_ACTION_CMD = "eventFilter.disable";
     /**
@@ -264,33 +263,34 @@ public class VSwingUtil {
 
         return result;
     }
-    
+
     /**
      * Indicates whether the specified component is visible. This is different
      * from {@link Component#isVisible() } as it not only checks this property
      * but also considers visibility of the parent components in the component
      * hierarchy.
+     *
      * @param c component to check
      * @return <code>true</code> if the specified omponent is visible;
-     *         <code>false</code> otherwise
+     * <code>false</code> otherwise
      */
     public static boolean isVisible(Component c) {
-        
+
         // first check wehther the component itself is visible and return
         // if this is not the case (parents have no influence on visibility)
         if (!c.isVisible()) {
             return false;
         }
-        
+
         // c is visible and the visibility of 
         ArrayList<Container> allParents = getAllParents(c, Container.class);
-        
+
         for (Container container : allParents) {
             if (!container.isVisible()) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -377,8 +377,8 @@ public class VSwingUtil {
                     layer--;
                 }
 
-                ArrayList<Component> components =
-                        getAllChildren(container, layer, classes);
+                ArrayList<Component> components
+                        = getAllChildren(container, layer, classes);
 
                 result.addAll(components);
             }
@@ -411,7 +411,6 @@ public class VSwingUtil {
 //                    + ", C: " + c.getClass().getCanonicalName()
 //                    + ": x=" + c.getX() + ", y=" + c.getY()
 //                    + ", w=" + c.getWidth() + ", h=" + c.getHeight());
-
             if (!EffectPane.class.isAssignableFrom(c.getClass())
                     && c.getBounds().contains(location)) {
 //                System.out.println("1-location= " + location
@@ -424,7 +423,7 @@ public class VSwingUtil {
                         || c.getMouseWheelListeners().length == 0)) {
                     Component tmpC = getDeepestReceivingChildAt(
                             (Container) c, SwingUtilities.convertPoint(
-                            parent, location, c));
+                                    parent, location, c));
 
                     if (tmpC != null) {
                         return tmpC;
@@ -439,7 +438,6 @@ public class VSwingUtil {
 
         return parent;
     }
-    
 
     /**
      * Returns position relative to main canvas's upper left corner.
@@ -496,10 +494,11 @@ public class VSwingUtil {
      * Same as {@link SwingUtilities#invokeAndWait(java.lang.Runnable) } but
      * checks whether already running in EDT. In this case no
      * <code>invokeAndWait()</code> call will be performed, i.e., the {@link Runnable#run()
-     * } method will be called directly. <p><b>Note:</b> interrupted exceptions
-     * and {@link InvocationTargetException} will not be thrown to ensure that
-     * Swing and the EDT cannot not crash in case of unexpected interruption
-     * etc. Use {@link SwingUtilities#invokeAndWait(java.lang.Runnable)
+     * } method will be called directly.
+     * <p>
+     * <b>Note:</b> interrupted exceptions and {@link InvocationTargetException}
+     * will not be thrown to ensure that Swing and the EDT cannot not crash in
+     * case of unexpected interruption etc. Use {@link SwingUtilities#invokeAndWait(java.lang.Runnable)
      * }
      * directly if this is a problem.</p>
      *
@@ -670,7 +669,6 @@ public class VSwingUtil {
 
 //            System.out.println("Wait: start = " 
 //                    + Thread.currentThread().getId());
-
             invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
@@ -709,7 +707,6 @@ public class VSwingUtil {
 
 //            System.out.println("Wait: start = "
 //                    + Thread.currentThread().getId());
-
             invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
@@ -880,8 +877,8 @@ class AWTEventFilter implements AWTEventListener {
     @Override
     public void eventDispatched(AWTEvent event) {
 
-        boolean noContainersToBeExcluded =
-                containers == null || containers.isEmpty();
+        boolean noContainersToBeExcluded
+                = containers == null || containers.isEmpty();
 
         if (noContainersToBeExcluded) {
             return;
@@ -897,7 +894,6 @@ class AWTEventFilter implements AWTEventListener {
 
         boolean isComponent = event.getSource() instanceof Component;
 
-
         // remove containers
         for (Container c : containersToRemove) {
             containers.remove(c);
@@ -908,9 +904,9 @@ class AWTEventFilter implements AWTEventListener {
         Window parentContainer = null;
 
         if (isComponent) {
-            parentContainer =
-                    (Window) VSwingUtil.getParent(
-                    (Component) event.getSource(), Window.class);
+            parentContainer
+                    = (Window) VSwingUtil.getParent(
+                            (Component) event.getSource(), Window.class);
         }
 
         boolean parentNotFiltered = true;
@@ -919,7 +915,7 @@ class AWTEventFilter implements AWTEventListener {
 
             boolean eventFromExcludedContainer = c == event.getSource()
                     || (isComponent && VSwingUtil.isChildOf(
-                    (Component) event.getSource(), c));
+                            (Component) event.getSource(), c));
 
             if (eventFromExcludedContainer) {
                 return;
@@ -980,8 +976,8 @@ class AWTShortCutListener implements AWTEventListener {
 
     private Container container;
     public static AWTShortCutListener previousInstance;
-    private Collection<VShortCutAction> actions =
-            new ArrayList<VShortCutAction>();
+    private Collection<VShortCutAction> actions
+            = new ArrayList<VShortCutAction>();
     private Deque<VKey> keyBuffer = new ArrayDeque<VKey>();
     private int maxShortCutLength;
 
@@ -1027,6 +1023,10 @@ class AWTShortCutListener implements AWTEventListener {
             return;
         }
 
+        if (VSwingUtil.isDebug()) {
+            System.out.println("KeyEvent: " + event);
+        }
+
         KeyEvent keyEvent = (KeyEvent) event;
 
         VKey vKey = new VKey(keyEvent);
@@ -1053,6 +1053,7 @@ class AWTShortCutListener implements AWTEventListener {
                     keyBuffer.toArray(new VKey[keyBuffer.size()]));
 
             for (VShortCutAction a : actions) {
+
                 if (a.getShortCut().equals(shortCut)) {
                     a.performAction();
                 }
@@ -1065,8 +1066,11 @@ class AWTShortCutListener implements AWTEventListener {
             System.out.println("Keys: ");
 
             for (VKey vK : keyBuffer) {
-                System.out.println(" --> " + KeyEvent.getKeyText(vK.getKyyCode()));
+                System.out.println(" --> "
+                        + KeyEvent.getKeyText(vK.getKeyCode()));
             }
+
+            System.out.println("------");
         }
     }
 

@@ -323,7 +323,6 @@ public class CanvasWindows extends IDArrayList<CanvasWindow>
         for (CanvasWindow w : this) {
             w.setActive(false);
         }
-        getMainCanvas().repaint();
     }
 
     /**

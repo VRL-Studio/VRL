@@ -82,7 +82,7 @@ public class VKey {
         this.code = keyEvent.getKeyCode();
     }
 
-    public int getKyyCode() {
+    public int getKeyCode() {
         return code;
     }
 
@@ -102,7 +102,7 @@ public class VKey {
 
         VKey other = (VKey) o;
 
-        if (other.getKyyCode() != getKyyCode()) {
+        if (other.getKeyCode() != getKeyCode()) {
             return false;
         }
 
