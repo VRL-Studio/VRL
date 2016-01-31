@@ -217,7 +217,12 @@ public class FileDialogManager {
                 && (filter instanceof FileNameExtensionFilter
                 || filter instanceof VExtensionFileFilter || filter == null);
         if (nativeChooser) {
-            fc = new VNativeFileChooser();
+            if (!VFileChooser.isNativeDialogsEnabled()) {
+                if (VSysUtil.isMacOSX()) {
+                    VSwingUtil.forceAppleLAF(null);
+                }
+            }
+            fc = new VFileChooser();
         } else {
             if (VSysUtil.isMacOSX()) {
                 VSwingUtil.forceAppleLAF(null);

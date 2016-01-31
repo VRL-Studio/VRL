@@ -121,13 +121,19 @@ import javax.swing.filechooser.FileSystemView;
  * @author @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  * @version 1.6.2-HEAD
  */
-public class VNativeFileChooser extends JFileChooser {
+public class VFileChooser extends JFileChooser {
 
     public static final boolean FX_AVAILABLE;
     private List<File> currentFiles;
     private FileChooser fileChooser;
     private File currentFile;
     private DirectoryChooser directoryChooser;
+
+    private static boolean nativeDialogsEnabled = false;
+
+    private boolean nativeDialogsShallBeUsed() {
+        return isNativeDialogsEnabled() && FX_AVAILABLE;
+    }
 
     static {
         boolean isFx;
@@ -142,38 +148,38 @@ public class VNativeFileChooser extends JFileChooser {
         FX_AVAILABLE = isFx;
     }
 
-    public VNativeFileChooser() {
+    public VFileChooser() {
         initFxFileChooser(null);
     }
 
-    public VNativeFileChooser(String currentDirectoryPath) {
+    public VFileChooser(String currentDirectoryPath) {
         super(currentDirectoryPath);
         initFxFileChooser(new File(currentDirectoryPath));
     }
 
-    public VNativeFileChooser(File currentDirectory) {
+    public VFileChooser(File currentDirectory) {
         super(currentDirectory);
         initFxFileChooser(currentDirectory);
     }
 
-    public VNativeFileChooser(FileSystemView fsv) {
+    public VFileChooser(FileSystemView fsv) {
         super(fsv);
         initFxFileChooser(fsv.getDefaultDirectory());
     }
 
-    public VNativeFileChooser(File currentDirectory, FileSystemView fsv) {
+    public VFileChooser(File currentDirectory, FileSystemView fsv) {
         super(currentDirectory, fsv);
         initFxFileChooser(currentDirectory);
     }
 
-    public VNativeFileChooser(String currentDirectoryPath, FileSystemView fsv) {
+    public VFileChooser(String currentDirectoryPath, FileSystemView fsv) {
         super(currentDirectoryPath, fsv);
         initFxFileChooser(new File(currentDirectoryPath));
     }
 
     @Override
     public int showOpenDialog(Component parent) throws HeadlessException {
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             return super.showOpenDialog(parent);
         }
         runAndWait(() -> {
@@ -211,13 +217,13 @@ public class VNativeFileChooser extends JFileChooser {
         try {
             future.get();
         } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(VNativeFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
     public int showSaveDialog(Component parent) throws HeadlessException {
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             return super.showSaveDialog(parent);
         }
 
@@ -242,7 +248,7 @@ public class VNativeFileChooser extends JFileChooser {
 
     @Override
     public int showDialog(Component parent, String approveButtonText) throws HeadlessException {
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             return super.showDialog(parent, approveButtonText);
         }
         return showOpenDialog(parent);
@@ -250,7 +256,7 @@ public class VNativeFileChooser extends JFileChooser {
 
     @Override
     public File[] getSelectedFiles() {
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             return super.getSelectedFiles();
         }
         if (currentFiles == null) {
@@ -261,7 +267,7 @@ public class VNativeFileChooser extends JFileChooser {
 
     @Override
     public File getSelectedFile() {
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             return super.getSelectedFile();
         }
         return currentFile;
@@ -269,7 +275,7 @@ public class VNativeFileChooser extends JFileChooser {
 
     @Override
     public void setSelectedFiles(File[] selectedFiles) {
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             super.setSelectedFiles(selectedFiles);
             return;
         }
@@ -283,7 +289,7 @@ public class VNativeFileChooser extends JFileChooser {
 
     @Override
     public void setSelectedFile(File file) {
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             super.setSelectedFile(file);
             return;
         }
@@ -310,7 +316,7 @@ public class VNativeFileChooser extends JFileChooser {
     @Override
     public void setFileSelectionMode(int mode) {
         super.setFileSelectionMode(mode);
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             return;
         }
         if (mode == DIRECTORIES_ONLY) {
@@ -324,7 +330,7 @@ public class VNativeFileChooser extends JFileChooser {
 
     @Override
     public void setDialogTitle(String dialogTitle) {
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             super.setDialogTitle(dialogTitle);
             return;
         }
@@ -336,7 +342,7 @@ public class VNativeFileChooser extends JFileChooser {
 
     @Override
     public String getDialogTitle() {
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             return super.getDialogTitle();
         }
         return fileChooser.getTitle();
@@ -344,7 +350,7 @@ public class VNativeFileChooser extends JFileChooser {
 
     @Override
     public void changeToParentDirectory() {
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             super.changeToParentDirectory();
             return;
         }
@@ -360,7 +366,7 @@ public class VNativeFileChooser extends JFileChooser {
     @Override
     public void addChoosableFileFilter(FileFilter filter) {
         super.addChoosableFileFilter(filter);
-        if (!FX_AVAILABLE || filter == null) {
+        if (!nativeDialogsShallBeUsed() || filter == null) {
             return;
         }
         if (filter instanceof FileNameExtensionFilter) {
@@ -390,7 +396,7 @@ public class VNativeFileChooser extends JFileChooser {
     public void setAcceptAllFileFilterUsed(boolean bool) {
         boolean differs = isAcceptAllFileFilterUsed() ^ bool;
         super.setAcceptAllFileFilterUsed(bool);
-        if (!FX_AVAILABLE) {
+        if (!nativeDialogsShallBeUsed()) {
             return;
         }
         if (differs) {
@@ -408,11 +414,29 @@ public class VNativeFileChooser extends JFileChooser {
     }
 
     private void initFxFileChooser(File currentFile) {
-        if (FX_AVAILABLE) {
+        if (nativeDialogsShallBeUsed()) {
             fileChooser = new FileChooser();
             this.currentFile = currentFile;
             setSelectedFile(currentFile);
         }
+    }
+
+    /**
+     *
+     * @return {@code true} if native dialogs shall be preferred;{@code false}
+     * otherwise
+     */
+    public static boolean isNativeDialogsEnabled() {
+        return nativeDialogsEnabled;
+    }
+
+    /**
+     * Defines whether native dialogs shall be preferred.
+     *
+     * @param nativeDialogsEnabled the value to set
+     */
+    public static void setNativeDialogsEnabled(boolean nativeDialogsEnabled) {
+        VFileChooser.nativeDialogsEnabled = nativeDialogsEnabled;
     }
 
 }
