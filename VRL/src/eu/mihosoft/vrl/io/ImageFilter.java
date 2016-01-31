@@ -53,13 +53,15 @@
 package eu.mihosoft.vrl.io;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.filechooser.*;
 
 /**
  * File extension filter for image files.
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class ImageFilter extends FileFilter {
+public class ImageFilter extends FileFilter implements VExtensionFileFilter{
 
     @Override
     public boolean accept(File f) {
@@ -74,6 +76,14 @@ public class ImageFilter extends FileFilter {
     @Override
     public String getDescription() {
         return "Image Files (jpg, png, gif, tif)";
+    }
+    
+    
+    @Override
+    public List<String> getExtensions() {
+        
+        return Arrays.asList(
+                new String[]{".jpeg",".jpg",".png",".gif", ".tiff", ".tif"});
     }
 }
 

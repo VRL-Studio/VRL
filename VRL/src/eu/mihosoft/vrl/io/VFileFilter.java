@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.io;
 
 import java.io.File;
@@ -59,12 +58,13 @@ import javax.swing.filechooser.*;
 
 /**
  * File extension filter for files.
+ *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class VFileFilter extends FileFilter implements Serializable {
+public class VFileFilter extends FileFilter implements Serializable, VExtensionFileFilter {
 
     private static final long serialVersionUID = 1L;
-    private ArrayList<String> acceptedEndings = new ArrayList<String>();
+    private ArrayList<String> acceptedEndings = new ArrayList<>();
     private String description = "Files *.*";
 
     @Override
@@ -92,6 +92,7 @@ public class VFileFilter extends FileFilter implements Serializable {
 
     /**
      * Defines the description for this file filter.
+     *
      * @param description the description to set
      */
     public void setDescription(String description) {
@@ -100,6 +101,7 @@ public class VFileFilter extends FileFilter implements Serializable {
 
     /**
      * Returns the endings accepted by this file filter.
+     *
      * @return the accepted endings
      */
     public ArrayList<String> getAcceptedEndings() {
@@ -107,7 +109,18 @@ public class VFileFilter extends FileFilter implements Serializable {
     }
 
     /**
+     * Returns the endings accepted by this file filter.
+     *
+     * @return the accepted endings
+     */
+    @Override
+    public ArrayList<String> getExtensions() {
+        return acceptedEndings;
+    }
+
+    /**
      * Defines the endings accepted by this file filter.
+     *
      * @param acceptedEndings the endings to set
      */
     public void setAcceptedEndings(ArrayList<String> acceptedEndings) {
@@ -116,10 +129,10 @@ public class VFileFilter extends FileFilter implements Serializable {
 
     /**
      * Adds an accepted ending to this file filter, e.g., <code>".jpg"</code>.
+     *
      * @param e the ending to add
      */
     public void addEnding(String e) {
         acceptedEndings.add(e);
     }
 }
-

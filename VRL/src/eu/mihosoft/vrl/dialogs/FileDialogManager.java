@@ -54,6 +54,7 @@ package eu.mihosoft.vrl.dialogs;
 import eu.mihosoft.vrl.io.FileSaver;
 import eu.mihosoft.vrl.io.FileLoader;
 import eu.mihosoft.vrl.io.RestrictedFileSystemView;
+import eu.mihosoft.vrl.io.VExtensionFileFilter;
 import eu.mihosoft.vrl.system.VSysUtil;
 import eu.mihosoft.vrl.visual.Canvas;
 import eu.mihosoft.vrl.visual.VSwingUtil;
@@ -69,6 +70,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * A file dialog manager is responsible for showing a dialog for loading/saving
@@ -87,7 +89,6 @@ public class FileDialogManager {
     public static File getDefaultDir() {
         return CACHED_DIR;
     }
-
 
 //    public static final String FILE_OR_FOLDER_LOADED_ACTION = "file-or-folder-selected";
 //    //
@@ -150,13 +151,9 @@ public class FileDialogManager {
 
         Object result = null;
 
-        if (VSysUtil.isMacOSX()) {
-            VSwingUtil.forceAppleLAF(null);
-        }
-
-        final JFileChooser fc = new JFileChooser();
-
         directory = chooseDefaultDir(directory);
+
+        final JFileChooser fc = createFileChooser(restrict, filter);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -173,7 +170,6 @@ public class FileDialogManager {
             }
         }
 
-        fc.setFileFilter(filter);
         int returnVal = fc.showOpenDialog(parent);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -203,7 +199,6 @@ public class FileDialogManager {
                 FileNotFoundDialog.show(parent);
             }
 
-
         } else {
             System.out.println(
                     ">> Operation \"load file\" cancelled by user." + "\n");
@@ -214,6 +209,27 @@ public class FileDialogManager {
         }
 
         return result;
+    }
+
+    private JFileChooser createFileChooser(boolean restrict, FileFilter filter) {
+        final JFileChooser fc;
+        boolean nativeChooser = !restrict
+                && (filter instanceof FileNameExtensionFilter
+                || filter instanceof VExtensionFileFilter || filter == null);
+        if (nativeChooser) {
+            fc = new VNativeFileChooser();
+        } else {
+            if (VSysUtil.isMacOSX()) {
+                VSwingUtil.forceAppleLAF(null);
+            }
+            fc = new JFileChooser();
+        }
+
+        if (filter != null) {
+            fc.setFileFilter(filter);
+        }
+
+        return fc;
     }
 
     /**
@@ -230,6 +246,7 @@ public class FileDialogManager {
 
     /**
      * Chooses the finally used default dir for all file dialogs in this class.
+     *
      * @param directory the directory (may be <code>null</code>)
      * @return the finally used default dir or <code>null</code>
      */
@@ -242,10 +259,11 @@ public class FileDialogManager {
     }
 
     /**
-     * Defines the default directory that shall be used if no directory has
-     * been specified.
-     * @param fileOrDir the default directory to set
-     * (if it is a file, the parent dir wil be used)
+     * Defines the default directory that shall be used if no directory has been
+     * specified.
+     *
+     * @param fileOrDir the default directory to set (if it is a file, the
+     * parent dir wil be used)
      */
     public static void setDefaultDir(File fileOrDir) {
 
@@ -278,10 +296,7 @@ public class FileDialogManager {
 
         File result = null;
 
-        if (VSysUtil.isMacOSX()) {
-            VSwingUtil.forceAppleLAF(null);
-        }
-        final JFileChooser fc = new JFileChooser();
+        final JFileChooser fc = createFileChooser(restrict, filter);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -290,8 +305,6 @@ public class FileDialogManager {
 
         fc.setCurrentDirectory(directory);
 
-
-        fc.setFileFilter(filter);
         int returnVal = fc.showOpenDialog(parent);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -328,20 +341,15 @@ public class FileDialogManager {
             File directory, FileFilter filter, boolean restrict) {
         File[] result = null;
 
-        if (VSysUtil.isMacOSX()) {
-            VSwingUtil.forceAppleLAF(null);
-        }
-
-        final JFileChooser fc = new JFileChooser();
-
         directory = chooseDefaultDir(directory);
+
+        final JFileChooser fc = createFileChooser(restrict, filter);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
         }
 
         fc.setCurrentDirectory(directory);
-        fc.setFileFilter(filter);
         fc.setMultiSelectionEnabled(true);
         int returnVal = fc.showOpenDialog(parent);
 
@@ -397,15 +405,9 @@ public class FileDialogManager {
             File directory, boolean restrict, int loadType, FileFilter filter) {
         File result = null;
 
-        if (VSysUtil.isMacOSX()) {
-            VSwingUtil.forceAppleLAF(null);
-        }
-
-        final JFileChooser fc = new JFileChooser();
-
         directory = chooseDefaultDir(directory);
 
-        fc.setFileFilter(filter);
+        final JFileChooser fc = createFileChooser(restrict, filter);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -439,7 +441,6 @@ public class FileDialogManager {
 
 //
 //        fireAction(new ActionEvent(this, 0, FILE_OR_FOLDER_LOADED_ACTION));
-
         return result;
     }
 
@@ -459,15 +460,9 @@ public class FileDialogManager {
             File directory, boolean restrict, int saveType, FileFilter filter) {
         File result = null;
 
-        if (VSysUtil.isMacOSX()) {
-            VSwingUtil.forceAppleLAF(null);
-        }
-
-        final JFileChooser fc = new JFileChooser();
-
         directory = chooseDefaultDir(directory);
 
-        fc.setFileFilter(filter);
+        final JFileChooser fc = createFileChooser(restrict, filter);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -501,7 +496,6 @@ public class FileDialogManager {
 
 //
 //        fireAction(new ActionEvent(this, 0, FILE_OR_FOLDER_LOADED_ACTION));
-
         return result;
     }
 
@@ -538,13 +532,9 @@ public class FileDialogManager {
             FileSaver fileSaver, File directory,
             FileFilter filter, boolean restrict) {
 
-        if (VSysUtil.isMacOSX()) {
-            VSwingUtil.forceAppleLAF(null);
-        }
-
-        final JFileChooser fc = new JFileChooser();
-
         directory = chooseDefaultDir(directory);
+
+        final JFileChooser fc = createFileChooser(restrict, filter);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -560,8 +550,6 @@ public class FileDialogManager {
                 fc.setCurrentDirectory(directory);
             }
         }
-
-        fc.setFileFilter(filter);
 
         int returnVal = fc.showSaveDialog(parent);
 
@@ -631,13 +619,9 @@ public class FileDialogManager {
             File directory, FileFilter filter, boolean restrict) {
         File result = null;
 
-        if (VSysUtil.isMacOSX()) {
-            VSwingUtil.forceAppleLAF(null);
-        }
-
-        final JFileChooser fc = new JFileChooser();
-
         directory = chooseDefaultDir(directory);
+
+        final JFileChooser fc = createFileChooser(restrict, filter);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -645,7 +629,7 @@ public class FileDialogManager {
 
         fc.setFileHidingEnabled(true);
         fc.setCurrentDirectory(directory);
-        fc.setFileFilter(filter);
+
         int returnVal = fc.showSaveDialog(parent);
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
@@ -687,19 +671,15 @@ public class FileDialogManager {
             File directory, FileFilter filter, boolean restrict) {
         File[] result = null;
 
-        if (VSysUtil.isMacOSX()) {
-            VSwingUtil.forceAppleLAF(null);
-        }
-
-        final JFileChooser fc = new JFileChooser();
-
         directory = chooseDefaultDir(directory);
+
+        final JFileChooser fc = createFileChooser(restrict, filter);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
         }
 
-        // allow mut liple selections
+        // allow multiple selections
         fc.setMultiSelectionEnabled(true);
         fc.setFileHidingEnabled(true);
         fc.setCurrentDirectory(directory);
@@ -746,13 +726,9 @@ public class FileDialogManager {
             File directory, boolean restrict) {
         File result = null;
 
-        if (VSysUtil.isMacOSX()) {
-            VSwingUtil.forceAppleLAF(null);
-        }
-
-        final JFileChooser fc = new JFileChooser();
-
         directory = chooseDefaultDir(directory);
+
+        final JFileChooser fc = createFileChooser(restrict, null);
 
         if (restrict) {
             fc.setFileSystemView(new RestrictedFileSystemView(directory));
@@ -765,7 +741,7 @@ public class FileDialogManager {
 
         if (returnVal == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
-            
+
             setDefaultDir(file);
 
 //            if (file.exists()) {
@@ -912,7 +888,6 @@ public class FileDialogManager {
         // delete combobox items
         for (Component c : VSwingUtil.getAllChildren(fc, JComboBox.class)) {
             JComboBox box = (JComboBox) c;
-
 
             if (box.getItemCount() == 0) {
                 break;

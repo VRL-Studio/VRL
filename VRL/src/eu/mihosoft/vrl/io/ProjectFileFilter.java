@@ -53,13 +53,15 @@
 package eu.mihosoft.vrl.io;
 
 import java.io.File;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.filechooser.FileFilter;
 
 /**
  * File extension filter for VRL project files.
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public class ProjectFileFilter extends FileFilter {
+public class ProjectFileFilter extends FileFilter implements VExtensionFileFilter{
 
     @Override
     public boolean accept(File f) {
@@ -70,5 +72,10 @@ public class ProjectFileFilter extends FileFilter {
     @Override
     public String getDescription() {
         return "VRL Project Files (.vrlp)";
+    }
+    
+    @Override
+    public List<String> getExtensions() {
+        return Arrays.asList(".vrlp");
     }
 }
