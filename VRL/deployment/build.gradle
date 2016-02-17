@@ -1,54 +1,101 @@
-apply plugin: 'java'
-// apply plugin: 'application'
-// apply plugin: 'idea'
+plugins {
+    id 'application'
+    id 'java'
+    id 'maven-publish'
+    id 'net.nemerosa.versioning' version '1.5.0'
+    id 'com.jfrog.bintray' version '1.6'
+}
 
-//apply plugin: 'maven'
-
-apply from: 'version-info.gradle'
-apply from: 'maven-deployment.gradle'
-//apply from: 'maven-deployment-local.gradle'
+sourceCompatibility = '1.8'
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
 //apply from: 'http://gradle-plugins.mihosoft.eu/latest/vlicenseheader.gradle'
-//repairHeaders.licenseHeaderText = new File(projectDir,'../license-template.txt')
+//repairHeaders.licenseHeaderText = new File(projectDir,'./license-template.txt')
+
+task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper to the current directory.') {
+    gradleVersion = '2.11'
+}
 
 repositories {
-	
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots"
-    }
-    
-    // mavenLocal()
     mavenCentral()
+    jcenter()
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '1.9'
+// javadoc is way too strict for my taste.
+if (JavaVersion.current().isJava8Compatible()) {
+    allprojects {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
 }
 
-// // finding jfxrt.jar for JDK 7as we depend on binding API
-// String jreHome = System.properties.find { it.key == "java.home" }.value + "/lib";
-// project.ext.set("javafx_jar", "$jreHome/jfxrt.jar")
-
-dependencies {
-	//
+def pomConfig = {
+    name 'vrl'
+    description 'Visual Reflection Library'
+    url 'https://github.com/VRL-Studio/VRL/wiki'
+    inceptionYear '2016'
+    licenses {
+        license([:]) {
+            name 'LGPL-3.0'
+            url 'https://github.com/VRL-Studio/VRL/blob/master/VRL/LICENSE'
+            distribution 'repo'
+        }
+    }
+    scm {
+        url 'scm:git@github.com:VRL-Studio/VRL.git'
+        connection 'scm:git@github.com:VRL-Studio/VRL.git'
+        developerConnection 'scm:git@github.com:VRL-Studio/VRL.git'
+    }
+    developers {
+        developer {
+            id 'miho'
+            name 'Michael Hoffer'
+        }
+    }
 }
 
-// sourceSets {
-//     main {
-//         java {
-//             srcDirs = ['../src/']
-//         }
-//         
-//         resources {
-//             srcDirs = ['../src/']
-//         }
-//     }
-// 
-//     test {
-//         java {
-//             srcDirs = ['../test/']
-//         }
-//     }
-// }
+publishing {
+    publications {
+        mavenCustom(MavenPublication) {
+            artifactId 'vrl'
+            groupId group
+            artifact ('releases/v'+version+'/VRL.jar') {
+            
+            }
+            artifact ('releases/v'+version+'/VRL-src.jar') {
+              classifier 'sources'
+            }
+            artifact ('releases/v'+version+'/VRL-API-doc.jar') {
+               classifier 'javadoc'
+            }
+          
+            pom.withXml {
+                def root = asNode()
+                root.appendNode 'description', 'Visual Reflection Library'
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
 
+if (!project.hasProperty('bintrayUsername')) ext.bintrayUsername = ''
+if (!project.hasProperty('bintrayApiKey')) ext.bintrayApiKey = ''
 
+bintray {
+    user = project.bintrayUsername
+    key = project.bintrayApiKey
+    publications = ['mavenCustom']
+    pkg {
+        repo                  = 'VRL'
+        userOrg               = 'miho'
+        name                  = project.name
+        desc                  = 'Visual Reflection Library'
+        licenses              = ['LGPL-3.0']
+        labels                = ['Visual Programming', 'Java',  'Swing',  'JavaFX', 'VRL',  '3D',  'Groovy',  'VRL-Studio', 'IDE']
+        websiteUrl            = 'https://github.com/VRL-Studio/VRL'
+        issueTrackerUrl       = 'https://github.com/VRL-Studio/VRL/issues'
+        vcsUrl                = 'git@github.com:VRL-Studio/VRL.git'
+        publicDownloadNumbers = true
+    }
+}
