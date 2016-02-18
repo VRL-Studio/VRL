@@ -34,10 +34,10 @@ To see what is possible with VRL check out [VRL-Studio](http://vrl-studio.mihoso
 
 # Maven Artifacts
 
-Repository: https://oss.sonatype.org/content/repositories/snapshots
+Repository: maven central (http://repo1.maven.org/maven2)
 
     <dependency>
       <groupId>eu.mihosoft.vrl</groupId>
       <artifactId>vrl</artifactId>
-      <version>0.4.3.0.2-SNAPSHOT</version>
+      <version>0.4.3.0.2</version>
     </dependency>
