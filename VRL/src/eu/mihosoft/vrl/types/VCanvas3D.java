@@ -537,7 +537,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
      * @return <code>true</code> if post render tasks are currently active;
      * <code>false</code> otherwise
      */
-    boolean isPostRender() {
+    public boolean isPostRender() {
         return postRendering;
     }
 
@@ -546,7 +546,7 @@ public class VCanvas3D extends JCanvas3D implements MouseListener,
      *
      * @param postRender the state to set
      */
-    void setPostRender(boolean postRender) {
+    public void setPostRender(boolean postRender) {
         this.postRendering = postRender;
     }
 
