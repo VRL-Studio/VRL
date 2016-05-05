@@ -29,7 +29,9 @@ dependencies {
     
     compile "com.google.guava:guava:14.0"
     
-    compile ( 'eu.mihosoft.vrl.workflow-8.0:vworkflows-core:0.1-r2-SNAPSHOT' ) { changing = true }
+    compile group: 'eu.mihosoft.vrl.workflow', name: 'vworkflows-fx', version: '0.2+', changing: true
+    
+//    compile ( 'eu.mihosoft.vrl.workflow-8.0:vworkflows-core:0.1-r2-SNAPSHOT' ) { changing = true }
 //    compile group: 'eu.mihosoft.vrl.workflow-8.0', name: 'vworkflows-core', version:'0.1-r2-SNAPSHOT', classifier: 'sources'
     
     compile group: 'com.esotericsoftware', name: 'kryo', version: '3.0.3'
@@ -42,7 +44,7 @@ dependencies {
     
     compile project(":vrl-base")
     
-    compile files("C:\\Users\\miho\\Documents\\GitHub\\VWorkflows\\VWorkflows-Core\\build\\libs\\vworkflows-core-0.1-r2-SNAPSHOT.jar");
+    //compile files("C:\\Users\\miho\\Documents\\GitHub\\VWorkflows\\VWorkflows-Core\\build\\libs\\vworkflows-core-0.1-r2-SNAPSHOT.jar");
 
 }
 
