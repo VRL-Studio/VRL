@@ -12,7 +12,7 @@ if (!hasProperty('mainClass')) {
 
 
 dependencies { 
-    compile group: 'eu.mihosoft.vrl.workflow-8.0', name: 'vworkflows-fx', version: '0.1-r2-SNAPSHOT', changing: true
+    compile group: 'eu.mihosoft.vrl.workflow', name: 'vworkflows-fx', version: '0.2+', changing: true
     
     compile group: 'org.reactfx', name: 'reactfx', version: '1.3'
     
