@@ -46,7 +46,8 @@ public class ReplaceOperators implements CodeTransform<CompilationUnitDeclaratio
 
         MethodDeclaration addMethod = createOperatorUtility(cu);
 
-        ReplaceOp op = new ReplaceOp(addMethod);
+        ReplaceOp op = new ReplaceOp(addMethod, Operator.PLUS);
+        ReplaceOp op2 = new ReplaceOp(addMethod, Operator.TIMES);
 
         for (ClassDeclaration cd : result.getDeclaredClasses()) {
             if (cd.getClassType().getShortName().equals("OpUtil")) {
@@ -56,6 +57,7 @@ public class ReplaceOperators implements CodeTransform<CompilationUnitDeclaratio
             List<MethodDeclaration> methods = new ArrayList<>();
             for (MethodDeclaration md : cd.getDeclaredMethods()) {
                 methods.add((MethodDeclaration) op.transform(md));
+                methods.add((MethodDeclaration) op2.transform(md));
             }
             cd.getDeclaredMethods().clear();
             cd.getDeclaredMethods().addAll(methods);
@@ -146,48 +148,60 @@ public class ReplaceOperators implements CodeTransform<CompilationUnitDeclaratio
 
 class ReplaceOp implements CodeTransform<ControlFlowScope> {
 
-    private final MethodDeclaration addMethod;
+    // method that shall replace the specified operator
+    private final MethodDeclaration operatorMethod;
+    // operator that shall be replaced
+    private final Operator op;
 
-    public ReplaceOp(MethodDeclaration addMethod) {
-        this.addMethod = addMethod;
+    public ReplaceOp(MethodDeclaration operatorMethod, Operator op) {
+        this.operatorMethod = operatorMethod;
+        this.op = op;
     }
 
     @Override
     public ControlFlowScope transform(ControlFlowScope ce) {
+
+        // obtain cotrol flow from specified scope
         ControlFlow cf = ce.getControlFlow();
 
+        // create new code builder
         VisualCodeBuilder codeBuilder = new VisualCodeBuilder_Impl();
 
         List<Invocation> prevInvocations
                 = new ArrayList<>(cf.getInvocations());
         List<Invocation> newInvocations = new ArrayList<>();
 
+        // for each invocation check whether it has to be replaced with
+        // invocations of the specified method declaration
         for (Invocation inv : prevInvocations) {
 
+            // skip normal method calls 
             if (!(inv instanceof BinaryOperatorInvocation)) {
                 newInvocations.add(inv);
                 continue;
             }
 
+            // skip operator calls that are not of the specified operator type
             BinaryOperatorInvocation boi = (BinaryOperatorInvocation) inv;
-
-            if (boi.getOperator() != Operator.PLUS) {
+            if (boi.getOperator() != op) {
                 newInvocations.add(inv);
                 continue;
             }
 
+            // for operators of the specified type create a replacement
+            // invocation
             Invocation newInv = codeBuilder.invokeMethod(
                     ce, ObjectProvider.fromClassObject(
-                            addMethod.getClassDeclaration().
+                            operatorMethod.getClassDeclaration().
                             getClassType()),
-                    addMethod,
+                    operatorMethod,
                     boi.getLeftArgument(),
                     boi.getRightArgument());
 
             newInvocations.add(newInv);
 
+            // replace arguments of receiver methods, if present
             Optional<Invocation> receiver = cf.returnInvTargetIfPresent(inv);
-
             if (receiver.isPresent()) {
                 // search argument indices
                 int[] argumentsToReplace = receiver.get().
@@ -204,6 +218,8 @@ class ReplaceOp implements CodeTransform<ControlFlowScope> {
             }
         }
 
+        // replace the invocations in the control-flow with the modified
+        // invocations
         cf.getInvocations().clear();
         cf.getInvocations().addAll(newInvocations);
 

@@ -70,7 +70,7 @@ public class InstrumentCode implements CodeTransform<CompilationUnitDeclaration>
     }
 
     public static void main(String[] args) {
-       // clear model
+        // clear model
         UIBinding.scopes.clear();
 
         // configure groovy compiler with model importer (groovy ast -> model)
@@ -84,12 +84,15 @@ public class InstrumentCode implements CodeTransform<CompilationUnitDeclaration>
         String code = ""
                 + "package mypackage\n"
                 + "\n"
-                + "public class MyClass {\n"
-                + "  public method() {\n"
-                + "    int a = 2 + 3\n"
-                + "    \n"
-                + "  }\n"
-                + "}\n";
+                + "public class Main {\n"
+                + "    public static final void main(String[] args) {\n"
+                + "        java.util.Random random = new java.util.Random(42);\n"
+                + "        int i = 0;\n"
+                + "        while(i < random.nextInt(100)) {\n"
+                + "            i+=random.nextInt(10);\n"
+                + "        }\n"
+                + "    }\n"
+                + "}";
 
         // compile the code and execute model importer
         try {

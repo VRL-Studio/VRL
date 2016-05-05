@@ -84,16 +84,20 @@ public interface CodeEntity extends ObservableCode, EventSender<CodeEvent> {
      */
     public default Scope getRootScope() {
         Scope parent = getParent();
-
-        while (parent != null) {
-            parent = parent.getParent();
-        }
-
-        // if we don't have a parent then we are the root
+        
+        // if we don't have a parent and we are a scope 
+        // then we are the root
         if (parent == null) {
             if (this instanceof Scope) {
                 parent = (Scope) this;
+                return parent;
+            } else {
+                return null;
             }
+        }
+
+        while (parent.getParent()!=null) {
+            parent = parent.getParent();
         }
 
         return parent;
