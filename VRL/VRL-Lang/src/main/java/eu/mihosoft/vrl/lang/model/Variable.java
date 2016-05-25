@@ -84,13 +84,22 @@ public interface Variable extends CodeEntity {
 
 //    public Optional<Invocation> getInvocation();
     
+    void setName(String name);
+    
+    void setType(IType type);
+    
+    void setDeclaration(DeclarationInvocation declarationInvocation);
+    
+    void setScope(Scope scope);
+    
+    
 }
 
 class VariableImpl extends CodeEntityImpl implements Variable {
 
-    private final Scope scope;
-    private final IType type;
-    private final String varName;
+    private  Scope scope;
+    private  IType type;
+    private  String varName;
     private Object value;
     private boolean constant;
 //    private Invocation invocation;
@@ -225,6 +234,7 @@ class VariableImpl extends CodeEntityImpl implements Variable {
     /**
      * @param invocation the invocation to set
      */
+    @Override
     public void setDeclaration(DeclarationInvocation invocation) {
         this.invocation = invocation;
     }
@@ -241,6 +251,21 @@ class VariableImpl extends CodeEntityImpl implements Variable {
     @Override
     public boolean isField() {
         return modifiers !=null;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.varName = name;
+    }
+
+    @Override
+    public void setType(IType type) {
+        this.type = type;
+    }
+
+    @Override
+    public void setScope(Scope scope) {
+        this.scope = scope;
     }
 
 }

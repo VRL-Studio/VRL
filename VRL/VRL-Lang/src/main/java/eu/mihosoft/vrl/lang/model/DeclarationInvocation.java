@@ -3,16 +3,18 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 /**
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface DeclarationInvocation extends Invocation, CodeEntity{
+public interface DeclarationInvocation extends Invocation, CodeEntity {
 
     Variable getDeclaredVariable();
+
     IArgument getInitValue();
-    
+
+    void setDeclaredVariable(Variable variable);
+
 }

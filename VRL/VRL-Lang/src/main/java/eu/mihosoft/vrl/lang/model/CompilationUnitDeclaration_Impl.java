@@ -110,12 +110,22 @@ public class CompilationUnitDeclaration_Impl extends ScopeImpl implements Compil
                 map(it->(ClassDeclaration)it).
                 collect(Collectors.toList());
     }
+
+    @Override
+    public void setFileName(String fileName) {
+        super.setName(fileName);
+    }
+
+    @Override
+    public void setPackageName(String packageName) {
+        metadata.setPackageName(packageName);
+    }
     
     
 }
 
 final class CompilationUnitMetaData {
-    private final String packageName;
+    private String packageName;
 
     public CompilationUnitMetaData(String packageName) {
         this.packageName = packageName;
@@ -126,6 +136,10 @@ final class CompilationUnitMetaData {
      */
     public String getPackageName() {
         return packageName;
+    }
+
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
     }
     
     

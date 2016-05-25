@@ -61,12 +61,14 @@ import javafx.collections.ObservableList;
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-public interface Scope extends CodeEntity {
+  public interface Scope extends CodeEntity {
 
     public ScopeType getType();
 
     public String getName();
-
+    
+    public void setName(String name); // geändert Joanna
+    
     public Object[] getScopeArgs();
 
     public Collection<Variable> getVariables();

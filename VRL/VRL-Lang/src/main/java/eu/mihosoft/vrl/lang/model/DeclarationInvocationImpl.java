@@ -7,20 +7,19 @@ package eu.mihosoft.vrl.lang.model;
 
 public class DeclarationInvocationImpl extends InvocationImpl implements DeclarationInvocation {
 
-    private final Variable declaredVariable;
-    
-    public DeclarationInvocationImpl()
-    {
-    	super();
-    	declaredVariable = null;
+    private Variable declaredVariable; // ++ final
+
+    public DeclarationInvocationImpl() {
+        super();
+        declaredVariable = null;
     }
-    
+
     public DeclarationInvocationImpl(Scope parent, IType type, String varName) {
         super(parent, "", null, "declare " + varName, type, false, true, new IArgument[0]);
         this.declaredVariable = parent.createVariable(type, varName);
         getNode().setTitle("declare " + varName);
     }
-    
+
     public DeclarationInvocationImpl(Scope parent, Variable declaredVariable) {
         super(parent, "declare" + declaredVariable.getId(), declaredVariable.getName(), "declare " + declaredVariable.getName(), declaredVariable.getType(), false, true, new IArgument[0]);
         this.declaredVariable = declaredVariable;
@@ -31,10 +30,16 @@ public class DeclarationInvocationImpl extends InvocationImpl implements Declara
     public Variable getDeclaredVariable() {
         return this.declaredVariable;
     }
-    
-    public IArgument getInitValue() 
-    {
-    	if (getArguments().size()==0) return Argument.NULL;
-    	return getArguments().get(0);
+
+    @Override
+    public void setDeclaredVariable(Variable variable) { // added from Joanna
+        declaredVariable = variable;
+    }
+
+    public IArgument getInitValue() {
+        if (getArguments().size() == 0) {
+            return Argument.NULL;
+        }
+        return getArguments().get(0);
     }
 }

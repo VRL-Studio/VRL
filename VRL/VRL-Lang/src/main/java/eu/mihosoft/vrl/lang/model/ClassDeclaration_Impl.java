@@ -112,66 +112,103 @@ class ClassDeclaration_Impl extends ScopeImpl implements ClassDeclaration {
     public boolean removeScope(Scope s) {
 
         boolean mResult = false;
-        
+
         if (s instanceof MethodDeclaration) {
-            mResult =  getDeclaredMethods().remove((MethodDeclaration) s);
+            mResult = getDeclaredMethods().remove((MethodDeclaration) s);
         }
-        
+
         boolean sResult = super.removeScope(s);
-        
 
         return mResult || sResult;
     }
+
+     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ geändert: Joanna
+    @Override
+    public void setClassModifiers(IModifiers modifiers) {
+       metadata.setModifiers(modifiers);
+    }
+
+    @Override
+    public void setClassType(IType type) {
+         metadata.setType(type);
+    }
+
+    @Override
+    public void setExtends(IExtends extendz) {
+         metadata.setExtendz(extendz);
+    }
+
+    @Override
+    public void setImplements(IExtends implementz) {
+        metadata.setImplementz(implementz);
+    }
 }
+    
+    final class ClassDeclarationMetaData {
 
-final class ClassDeclarationMetaData {
+        private IType type;
+        private IModifiers modifiers;
+        private IExtends extendz;
+        private IExtends implementz;
+        private final ObservableList<MethodDeclaration> declaredMethods = FXCollections.observableArrayList();
 
-    private final IType type;
-    private final IModifiers modifiers;
-    private final IExtends extendz;
-    private final IExtends implementz;
-    private final ObservableList<MethodDeclaration> declaredMethods =FXCollections.observableArrayList();
+        public ClassDeclarationMetaData(IType type, IModifiers modifiers, IExtends extendz, IExtends implementz) {
+            this.type = type;
+            this.modifiers = modifiers;
+            this.extendz = extendz;
+            this.implementz = implementz;
+        }
 
-    public ClassDeclarationMetaData(IType type, IModifiers modifiers, IExtends extendz, IExtends implementz) {
-        this.type = type;
-        this.modifiers = modifiers;
-        this.extendz = extendz;
-        this.implementz = implementz;
+        /**
+         * @return the extendz
+         */
+        public IExtends getExtendz() {
+            return extendz;
+        }
+
+        /**
+         * @return the implementz
+         */
+        public IExtends getImplementz() {
+            return implementz;
+        }
+
+        /**
+         * @return the type
+         */
+        public IType getType() {
+            return type;
+        }
+
+        /**
+         * @return the modifiers
+         */
+        public IModifiers getModifiers() {
+            return modifiers;
+        }
+
+        /**
+         * @return the declaredMethods
+         */
+        public List<MethodDeclaration> getDeclaredMethods() {
+            return declaredMethods;
+        }
+
+        // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ geändert Joanna
+        void setType(IType type) {
+            this.type = type;
+        }
+
+        public void setModifiers(IModifiers modifiers) {
+            this.modifiers = modifiers;
+        }
+
+        public void setExtendz(IExtends extendz) {
+            this.extendz = extendz;
+        }
+
+        public void setImplementz(IExtends implementz) {
+            this.implementz = implementz;
+        }
+        // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ geändert Joanna
     }
-
-    /**
-     * @return the extendz
-     */
-    public IExtends getExtendz() {
-        return extendz;
-    }
-
-    /**
-     * @return the implementz
-     */
-    public IExtends getImplementz() {
-        return implementz;
-    }
-
-    /**
-     * @return the type
-     */
-    public IType getType() {
-        return type;
-    }
-
-    /**
-     * @return the modifiers
-     */
-    public IModifiers getModifiers() {
-        return modifiers;
-    }
-
-    /**
-     * @return the declaredMethods
-     */
-    public List<MethodDeclaration> getDeclaredMethods() {
-        return declaredMethods;
-    }
-
-}

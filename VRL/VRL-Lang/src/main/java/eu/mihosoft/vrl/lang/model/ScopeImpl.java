@@ -49,26 +49,19 @@
  */
 package eu.mihosoft.vrl.lang.model;
 
+import com.sun.javafx.collections.ImmutableObservableList;
 import eu.mihosoft.vrl.workflow.FlowFactory;
-import eu.mihosoft.vrl.workflow.ThruConnector;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
-import eu.mihosoft.vrl.workflow.ValueObject;
-import eu.mihosoft.vrl.workflow.WorkflowUtil;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
-
-import com.sun.javafx.collections.ImmutableObservableList;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.SortedList;
 
 /**
  *
@@ -76,537 +69,548 @@ import javafx.collections.transformation.SortedList;
  */
 class ScopeImpl extends CodeEntityImpl implements Scope {
 
-	ScopeType type;
-	private final String name;
-	Object[] scopeArgs;
-	Map<String, Variable> variables = new HashMap<>();
-	ControlFlow controlFlow;
-	DataFlow dataFlow;
-	private final ObservableList<Scope> scopes = FXCollections
-			.observableArrayList();
-	private final ObservableList<Comment> comments = FXCollections
-			.observableArrayList();
-	private final ScopeInvocation invocation;
+    ScopeType type;
+    String name; // ++ private final Joanna
+    Object[] scopeArgs;
+    Map<String, Variable> variables = new HashMap<>();
+    ControlFlow controlFlow;
+    DataFlow dataFlow;
+    private final ObservableList<Scope> scopes = FXCollections
+            .observableArrayList();
+    private final ObservableList<Comment> comments = FXCollections
+            .observableArrayList();
+    private final ScopeInvocation invocation;
 
-	public ScopeImpl(String id, Scope parent, ScopeType type, String name,
-			VFlow flowParent, Object... scopeArgs) {
-		this.id = id;
-		this.parent = parent;
+    public ScopeImpl(String id, Scope parent, ScopeType type, String name,
+            VFlow flowParent, Object... scopeArgs) {
+        this.id = id;
+        this.parent = parent;
 
-		this.type = type;
-		this.name = name;
+        this.type = type;
+        this.name = name;
 
-		if (flowParent == null) {
+        if (flowParent == null) {
 
-			if (parent != null) {
-				flowParent = parent.getFlow();
-			} else {
-				flowParent = FlowFactory.newFlow();
-			}
-		}
+            if (parent != null) {
+                flowParent = parent.getFlow();
+            } else {
+                flowParent = FlowFactory.newFlow();
+            }
+        }
 
-		flow = flowParent.newSubFlow();
+        flow = flowParent.newSubFlow();
 
-		flow.getModel().setTitle(name);
-		flow.setVisible(true);
-		flow.getModel().getValueObject().setValue(this);
+        flow.getModel().setTitle(name);
+        flow.setVisible(true);
+        flow.getModel().getValueObject().setValue(this);
 
-		initScopeListeners();
+        initScopeListeners();
 
-		this.scopeArgs = scopeArgs;
-		this.controlFlow = new ControlFlowImpl(this);
-		this.dataFlow = new DataFlowImpl();
+        this.scopeArgs = scopeArgs;
+        this.controlFlow = new ControlFlowImpl(this);
+        this.dataFlow = new DataFlowImpl();
 
-		if (parent != null) {
-			if (this.parent instanceof Scope) {
-				parent.addScope(this);
-			} else {
-				throw new UnsupportedOperationException(
-						"Unsupported parent scope specified." + " Only "
-								+ ScopeImpl.class
-								+ " based implementations are supported!");
-			}
+        if (parent != null) {
+            if (this.parent instanceof Scope) {
+                parent.addScope(this);
+            } else {
+                throw new UnsupportedOperationException(
+                        "Unsupported parent scope specified." + " Only "
+                        + ScopeImpl.class
+                        + " based implementations are supported!");
+            }
 
-			if (parent.getType() != ScopeType.CLASS
-					&& parent.getType() != ScopeType.NONE
-					&& parent.getType() != ScopeType.COMPILATION_UNIT) {
-				invocation = parent.getControlFlow().callScope(this);
-			} else {
-				invocation = null;
-			}
+            if (parent.getType() != ScopeType.CLASS
+                    && parent.getType() != ScopeType.NONE
+                    && parent.getType() != ScopeType.COMPILATION_UNIT) {
+                invocation = parent.getControlFlow().callScope(this);
+            } else {
+                invocation = null;
+            }
 
-		} else {
+        } else {
 
-			invocation = null;
+            invocation = null;
 
-		}
-	}
+        }
+    }
 
-	private void initScopeListeners() {
+    private void initScopeListeners() {
 
-		scopes.addListener((ListChangeListener.Change<? extends Scope> c) -> {
-			while (c.next()) {
-				if (c.wasAdded()) {
-					for (Scope s : c.getAddedSubList()) {
-						if (s.getParent() != this) {
-							throw new UnsupportedOperationException(
-									"Todo (21.06.2014): Flow model needs support for adding scopes!"
-											+ "Switching scope parent currently not supported!");
-						}
-					}
-				}
+        scopes.addListener((ListChangeListener.Change<? extends Scope> c) -> {
+            while (c.next()) {
+                if (c.wasAdded()) {
+                    for (Scope s : c.getAddedSubList()) {
+                        if (s.getParent() != this) {
+                            throw new UnsupportedOperationException(
+                                    "Todo (21.06.2014): Flow model needs support for adding scopes!"
+                                    + "Switching scope parent currently not supported!");
+                        }
+                    }
+                }
 
-				if (c.wasRemoved()) {
-					for (Scope s : c.getRemoved()) {
-						flow.getNodes().remove(s.getNode());
-					}
-				}
-			}
+                if (c.wasRemoved()) {
+                    for (Scope s : c.getRemoved()) {
+                        flow.getNodes().remove(s.getNode());
+                    }
+                }
+            }
 
-			fireEvent(new CodeEvent(CodeEventType.CHANGE, this));
-		});
+            fireEvent(new CodeEvent(CodeEventType.CHANGE, this));
+        });
 
-		flow.getNodes()
-				.addListener(
-						(ListChangeListener.Change<? extends VNode> c) -> {
-							while (c.next()) {
-								if (c.wasRemoved()) {
-									c.getRemoved()
-											.stream()
-											.filter(n -> n.getValueObject()
-													.getValue() instanceof ScopeImpl)
-											.map(n -> (ScopeImpl) n
-													.getValueObject()
-													.getValue())
-											.forEach(s -> removeScope(s));
-								}
-							}
-						});
-	}
+        flow.getNodes()
+                .addListener(
+                        (ListChangeListener.Change<? extends VNode> c) -> {
+                            while (c.next()) {
+                                if (c.wasRemoved()) {
+                                    c.getRemoved()
+                                    .stream()
+                                    .filter(n -> n.getValueObject()
+                                            .getValue() instanceof ScopeImpl)
+                                    .map(n -> (ScopeImpl) n
+                                            .getValueObject()
+                                            .getValue())
+                                    .forEach(s -> removeScope(s));
+                                }
+                            }
+                        });
+    }
 
-	public ScopeImpl(String id, Scope parent, ScopeType type, String name,
-			Object... scopeArgs) {
-		this(id, parent, type, name, null, scopeArgs);
-	}
+    public ScopeImpl(String id, Scope parent, ScopeType type, String name,
+            Object... scopeArgs) {
+        this(id, parent, type, name, null, scopeArgs);
+    }
 
-	@Override
-	public ScopeType getType() {
-		return type;
-	}
+    @Override
+    public ScopeType getType() {
+        return type;
+    }
 
-	@Override
-	public Object[] getScopeArgs() {
-		return scopeArgs;
-	}
+    @Override
+    public Object[] getScopeArgs() {
+        return scopeArgs;
+    }
 
-	@Override
-	public Collection<Variable> getVariables() {
-		return variables.values();
-	}
+    @Override
+    public Collection<Variable> getVariables() {
+        return variables.values();
+    }
 
-	@Override
-	public Variable getVariable(String name) {
-		Variable result = variables.get(name);
+    @Override
+    public Variable getVariable(String name) {
+        Variable result = variables.get(name);
 
-		if (result == null && getParent() != null) {
-			result = getParent().getVariable(name);
-		}
+        if (result == null && getParent() != null) {
+            result = getParent().getVariable(name);
+        }
 
-		if (result == null) {
+        if (result == null) {
 
-			String parentName = "<unknown>";
+            String parentName = "<unknown>";
 
-			if (parent != null) {
-				parentName = parent.getName();
-			}
+            if (parent != null) {
+                parentName = parent.getName();
+            }
 
-			// TODO proper handling of possibly undeclared variables (
-			return new DeclarationInvocationDummy(name).getDeclaredVariable();
+            // TODO proper handling of possibly undeclared variables (
+            return new DeclarationInvocationDummy(name).getDeclaredVariable();
 			// throw new IllegalArgumentException(
-			// "Variable '"
-			// + name
-			// + "' does not exist in scope '" + parentName + "'!");
-		}
+            // "Variable '"
+            // + name
+            // + "' does not exist in scope '" + parentName + "'!");
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	private final static class DeclarationInvocationDummy extends
-			CodeEntityImpl implements DeclarationInvocation {
-		String name;
-		Variable var;
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
 
-		public DeclarationInvocationDummy(String name) {
-			this.name = name;
-			this.var = new VariableImpl(null, name, this);
-		}
+    private final static class DeclarationInvocationDummy extends
+            CodeEntityImpl implements DeclarationInvocation {
 
-		@Override
-		public String getVariableName() {
-			return name;
-		}
+        String name;
+        Variable var;
 
-		@Override
-		public String getMethodName() {
-			return "dummy";
-		}
+        public DeclarationInvocationDummy(String name) {
+            this.name = name;
+            this.var = new VariableImpl(null, name, this);
+        }
 
-		@Override
-		public IType getReturnType() {
-			return Type.ANY;
-		}
+        @Override
+        public String getVariableName() {
+            return name;
+        }
 
-		@Override
-		public ObservableList<IArgument> getArguments() {
-			return new ImmutableObservableList<IArgument>();
-		}
+        @Override
+        public String getMethodName() {
+            return "dummy";
+        }
 
-		@Override
-		public boolean isConstructor() {
-			return false;
-		}
+        @Override
+        public IType getReturnType() {
+            return Type.ANY;
+        }
 
-		@Override
-		public boolean isVoid() {
-			return false;
-		}
+        @Override
+        public ObservableList<IArgument> getArguments() {
+            return new ImmutableObservableList<IArgument>();
+        }
 
-		@Override
-		public boolean isScope() {
-			return false;
-		}
+        @Override
+        public boolean isConstructor() {
+            return false;
+        }
 
-		@Override
-		public boolean isStatic() {
-			return true;
-		}
+        @Override
+        public boolean isVoid() {
+            return false;
+        }
 
-		@Override
-		public Variable getDeclaredVariable() {
-			return this.var;
-		}
+        @Override
+        public boolean isScope() {
+            return false;
+        }
 
-		@Override
-		public IArgument getInitValue() {
-			return Argument.NULL;
-		}
+        @Override
+        public boolean isStatic() {
+            return true;
+        }
 
-	}
+        @Override
+        public Variable getDeclaredVariable() {
+            return this.var;
+        }
 
-	@Override
-	public Variable createVariable(IType type, String varName) {
-		DeclarationInvocation inv = getControlFlow().declareVariable(id, type,
-				varName);
-		return inv.getDeclaredVariable();
-	}
+        @Override
+        public IArgument getInitValue() {
+            return Argument.NULL;
+        }
 
-	Variable createParamVariable(IType type, String varName) {
-		return createParamVariable(type, varName, null);
-	}
+        @Override
+        public void setDeclaredVariable(Variable variable) { // added Joanna
+            this.var = variable;
+        }
 
-	Variable createParamVariable(IType type, String varName, ICodeRange range) {
-		DeclarationInvocationImpl inv = (DeclarationInvocationImpl) getControlFlow()
-				.declareVariable(id, type, varName);
-		inv.setTextRenderingEnabled(false);
-		inv.setRange(range);
-		return inv.getDeclaredVariable();
-	}
+    }
 
-	Variable _createVariable(IType type, String varName) {
+    @Override
+    public Variable createVariable(IType type, String varName) {
+        DeclarationInvocation inv = getControlFlow().declareVariable(id, type,
+                varName);
+        return inv.getDeclaredVariable();
+    }
 
-		if (variables.containsKey(varName)) {
-			throw new IllegalArgumentException("Variable '" + varName
-					+ "' does already exist!");
-		}
+    Variable createParamVariable(IType type, String varName) {
+        return createParamVariable(type, varName, null);
+    }
 
-		if (getVariable(varName) != null) {
-			System.err.println("Variable '" + varName
-					+ "' hides variable in enclosing block!");
-		}
+    Variable createParamVariable(IType type, String varName, ICodeRange range) {
+        DeclarationInvocationImpl inv = (DeclarationInvocationImpl) getControlFlow()
+                .declareVariable(id, type, varName);
+        inv.setTextRenderingEnabled(false);
+        inv.setRange(range);
+        return inv.getDeclaredVariable();
+    }
 
-		Variable variable = new VariableImpl(this, type, varName, null, false,
-				null);
-		variables.put(varName, variable);
+    Variable _createVariable(IType type, String varName) {
 
-		return variable;
-	}
+        if (variables.containsKey(varName)) {
+            throw new IllegalArgumentException("Variable '" + varName
+                    + "' does already exist!");
+        }
+
+        if (getVariable(varName) != null) {
+            System.err.println("Variable '" + varName
+                    + "' hides variable in enclosing block!");
+        }
+
+        Variable variable = new VariableImpl(this, type, varName, null, false,
+                null);
+        variables.put(varName, variable);
+
+        return variable;
+    }
 
 	// @Override
-	// public Variable createVariable(IType type) {
-	// String varNamePrefix = "vrlInternalVar";
-	//
-	// int counter = 0;
-	// String varName = varNamePrefix + counter;
-	//
-	// while (getVariable(varName) != null) {
-	// counter++;
-	// varName = varNamePrefix + counter;
-	// }
-	//
-	// return createVariable(type, varName);
-	// }
-	// @Override
-	// public Variable createVariable(Invocation invocation) {
-	// String varNamePrefix = "vrlInvocationVar";
-	//
-	// int counter = 0;
-	// String varName = varNamePrefix + counter;
-	//
-	// while (getVariable(varName) != null) {
-	// counter++;
-	// varName = varNamePrefix + counter;
-	// }
-	//
-	// Variable variable = new VariableImpl(this, varName, invocation);
-	// variables.put(varName, variable);
-	// return variable;
-	// }
-	// @Override
-	// public Variable createStaticVariable(IType type) {
-	//
-	// DeclarationInvocation inv = getControlFlow().declareStaticVariable(id,
-	// type, name);
-	//
-	// return inv.getDeclaredVariable();
-	// }
-	//
-	// Variable _createStaticVariable(IType type) {
-	// Variable variable = VariableImpl.createStaticVar(parent, type, null);
-	// variables.put(variable.getName(), variable);
-	// return variable;
-	// }
-	@Override
-	public BinaryOperatorInvocation assignConstant(String varName,
-			Object constant) {
-		Variable var = getVariable(varName);
+    // public Variable createVariable(IType type) {
+    // String varNamePrefix = "vrlInternalVar";
+    //
+    // int counter = 0;
+    // String varName = varNamePrefix + counter;
+    //
+    // while (getVariable(varName) != null) {
+    // counter++;
+    // varName = varNamePrefix + counter;
+    // }
+    //
+    // return createVariable(type, varName);
+    // }
+    // @Override
+    // public Variable createVariable(Invocation invocation) {
+    // String varNamePrefix = "vrlInvocationVar";
+    //
+    // int counter = 0;
+    // String varName = varNamePrefix + counter;
+    //
+    // while (getVariable(varName) != null) {
+    // counter++;
+    // varName = varNamePrefix + counter;
+    // }
+    //
+    // Variable variable = new VariableImpl(this, varName, invocation);
+    // variables.put(varName, variable);
+    // return variable;
+    // }
+    // @Override
+    // public Variable createStaticVariable(IType type) {
+    //
+    // DeclarationInvocation inv = getControlFlow().declareStaticVariable(id,
+    // type, name);
+    //
+    // return inv.getDeclaredVariable();
+    // }
+    //
+    // Variable _createStaticVariable(IType type) {
+    // Variable variable = VariableImpl.createStaticVar(parent, type, null);
+    // variables.put(variable.getName(), variable);
+    // return variable;
+    // }
+    @Override
+    public BinaryOperatorInvocation assignConstant(String varName,
+            Object constant) {
+        Variable var = getVariable(varName);
 
-		if (var == null) {
-			throw new IllegalArgumentException("Variable " + varName
-					+ " does not exist!");
-		}
+        if (var == null) {
+            throw new IllegalArgumentException("Variable " + varName
+                    + " does not exist!");
+        }
 
-		var.setValue(constant);
-		var.setConstant(true);
+        var.setValue(constant);
+        var.setConstant(true);
 
-		return getControlFlow().assignConstant(
-				id,
-				varName,
-				Argument.constArg(ConstantValueFactory.createConstantValue(
-						constant, Type.fromObject(constant, false))));
-	}
+        return getControlFlow().assignConstant(
+                id,
+                varName,
+                Argument.constArg(ConstantValueFactory.createConstantValue(
+                                constant, Type.fromObject(constant, false))));
+    }
 
-	@Override
-	public BinaryOperatorInvocation assignVariable(String varNameDest,
-			String varNameSrc) {
-		Variable varDest = getVariable(varNameDest);
-		Variable varSrc = getVariable(varNameSrc);
+    @Override
+    public BinaryOperatorInvocation assignVariable(String varNameDest,
+            String varNameSrc) {
+        Variable varDest = getVariable(varNameDest);
+        Variable varSrc = getVariable(varNameSrc);
 
-		if (varDest == null) {
-			throw new IllegalArgumentException("Variable " + varNameDest
-					+ " does not exist!");
-		}
+        if (varDest == null) {
+            throw new IllegalArgumentException("Variable " + varNameDest
+                    + " does not exist!");
+        }
 
-		if (varSrc == null) {
-			throw new IllegalArgumentException("Variable " + varNameSrc
-					+ " does not exist!");
-		}
+        if (varSrc == null) {
+            throw new IllegalArgumentException("Variable " + varNameSrc
+                    + " does not exist!");
+        }
 
-		System.out.println(">> assignment: " + varNameDest + "=" + varNameSrc);
+        System.out.println(">> assignment: " + varNameDest + "=" + varNameSrc);
 
-		System.err.println("WARNING: impl missing!!!");
-		return getControlFlow().assignVariable(id, varNameSrc, null);
-	}
+        System.err.println("WARNING: impl missing!!!");
+        return getControlFlow().assignVariable(id, varNameSrc, null);
+    }
 
-	@Override
-	public BinaryOperatorInvocation assignInvocationResult(String varName,
-			Invocation invocation) {
-		Variable varDest = getVariable(varName);
+    @Override
+    public BinaryOperatorInvocation assignInvocationResult(String varName,
+            Invocation invocation) {
+        Variable varDest = getVariable(varName);
 
-		if (varDest == null) {
-			throw new IllegalArgumentException("Variable " + varName
-					+ " does not exist!");
-		}
+        if (varDest == null) {
+            throw new IllegalArgumentException("Variable " + varName
+                    + " does not exist!");
+        }
 
-		return getControlFlow().assignInvocationResult(id, varName, invocation);
-	}
+        return getControlFlow().assignInvocationResult(id, varName, invocation);
+    }
 
-	@Override
-	public ControlFlow getControlFlow() {
-		return controlFlow;
-	}
+    @Override
+    public ControlFlow getControlFlow() {
+        return controlFlow;
+    }
 
-	/**
-	 * @return the scopes
-	 */
-	@Override
-	public ObservableList<Scope> getScopes() {
+    /**
+     * @return the scopes
+     */
+    @Override
+    public ObservableList<Scope> getScopes() {
 
 		// if (readOnlyScopes == null) {
-		// readOnlyScopes = Collections.unmodifiableList(scopes);
-		// }
-		//
-		// return readOnlyScopes;
-		return scopes;
-	}
+        // readOnlyScopes = Collections.unmodifiableList(scopes);
+        // }
+        //
+        // return readOnlyScopes;
+        return scopes;
+    }
 
-	@Override
-	public String toString() {
-		String result = "Scope:" + type;
-		if (name!=null) result += (", name = " + name);
+    @Override
+    public String toString() {
+        String result = "Scope:" + type;
+        if (name != null) {
+            result += (", name = " + name);
+        }
 
-		result += "\n>> Variables:\n";
+        result += "\n>> Variables:\n";
 
-		for (Variable v : variables.values()) {
-			result += " --> " + v.toString() + "\n";
-		}
+        for (Variable v : variables.values()) {
+            result += " --> " + v.toString() + "\n";
+        }
 
-		result += "\n>> ControlFlow:\n" + controlFlow.toString();
+        result += "\n>> ControlFlow:\n" + controlFlow.toString();
 
-		result += "\n>> SubScopes:\n";
+        result += "\n>> SubScopes:\n";
 
-		for (Scope s : scopes) {
-			result += s.toString() + "\n";
-		}
+        for (Scope s : scopes) {
+            result += s.toString() + "\n";
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	/**
-	 * @return the name
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
+    /**
+     * @return the name
+     */
+    @Override
+    public String getName() {
+        return name;
+    }
 
 	// /**
-	// * @return the code
-	// */
-	// @Override
-	// public String getCode() {
-	// return code;
-	// }
-	//
-	// /**
-	// * @param code the code to set
-	// */
-	// @Override
-	// public void setCode(String code) {
-	// this.code = code;
-	// }
-	@Override
-	public DataFlow getDataFlow() {
-		return dataFlow;
-	}
+    // * @return the code
+    // */
+    // @Override
+    // public String getCode() {
+    // return code;
+    // }
+    //
+    // /**
+    // * @param code the code to set
+    // */
+    // @Override
+    // public void setCode(String code) {
+    // this.code = code;
+    // }
+    @Override
+    public DataFlow getDataFlow() {
+        return dataFlow;
+    }
 
-	@Override
-	public void generateDataFlow() {
+    @Override
+    public void generateDataFlow() {
 
-		System.out.println("DATAFLOW---------------------------------");
+        System.out.println("DATAFLOW---------------------------------");
 
-		getDataFlow().create(controlFlow);
+        getDataFlow().create(controlFlow);
 
 		// for (Invocation i : controlFlow.getInvocations()) {
-		// // System.out.println("invocation: " + i);
-		// for (IArgument a : i.getArguments()) {
-		// System.out.println("--> arg: " + a + ", " + i);
-		// }
-		//
-		// if (i instanceof ScopeInvocation) {
-		// ScopeImpl invocationScope = (ScopeImpl) ((ScopeInvocation)
-		// i).getScope();
-		// invocationScope.generateDataFlow();
-		// }
-		// }
-		//
-		// boolean isClassOrScript = getType() == ScopeType.CLASS || getType()
-		// == ScopeType.NONE || getType() == ScopeType.COMPILATION_UNIT;
-		//
-		// if (isClassOrScript) {
-		// for (Scope s : getScopes()) {
-		// ((ScopeImpl)s).generateDataFlow();
-		// }
-		// }
-	}
+        // // System.out.println("invocation: " + i);
+        // for (IArgument a : i.getArguments()) {
+        // System.out.println("--> arg: " + a + ", " + i);
+        // }
+        //
+        // if (i instanceof ScopeInvocation) {
+        // ScopeImpl invocationScope = (ScopeImpl) ((ScopeInvocation)
+        // i).getScope();
+        // invocationScope.generateDataFlow();
+        // }
+        // }
+        //
+        // boolean isClassOrScript = getType() == ScopeType.CLASS || getType()
+        // == ScopeType.NONE || getType() == ScopeType.COMPILATION_UNIT;
+        //
+        // if (isClassOrScript) {
+        // for (Scope s : getScopes()) {
+        // ((ScopeImpl)s).generateDataFlow();
+        // }
+        // }
+    }
 
-	@Override
-	public Scope createScope(String id, ScopeType type, String name,
-			Object[] args) {
-		Scope scope = new ScopeImpl(id, this, type, name, args);
+    @Override
+    public Scope createScope(String id, ScopeType type, String name,
+            Object[] args) {
+        Scope scope = new ScopeImpl(id, this, type, name, args);
 
-		return scope;
-	}
+        return scope;
+    }
 
-	@Override
-	public Scope getScopeById(String id) {
-		for (Scope s : scopes) {
-			if (s.getId().equals(id)) {
-				return s;
-			}
-		}
-		return null;
-	}
+    @Override
+    public Scope getScopeById(String id) {
+        for (Scope s : scopes) {
+            if (s.getId().equals(id)) {
+                return s;
+            }
+        }
+        return null;
+    }
 
-	public void addScope(Scope s) {
-		scopes.add(s);
-	}
+    public void addScope(Scope s) {
+        scopes.add(s);
+    }
 
-	@Override
-	public List<Comment> getComments() {
-		return comments;
-	}
+    @Override
+    public List<Comment> getComments() {
+        return comments;
+    }
 
-	@Override
-	public void createComment(String id, ICodeRange range, String comment) {
-		this.comments.add(new CommentImpl(id, range, comment));
-	}
+    @Override
+    public void createComment(String id, ICodeRange range, String comment) {
+        this.comments.add(new CommentImpl(id, range, comment));
+    }
 
-	@Override
-	public boolean removeScope(Scope s) {
-		boolean result = scopes.remove(s);
+    @Override
+    public boolean removeScope(Scope s) {
+        boolean result = scopes.remove(s);
 
-		if (result) {
-			flow.getNodes().remove(s.getNode());
-		}
+        if (result) {
+            flow.getNodes().remove(s.getNode());
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	@Override
-	public DeclarationInvocation declareVariable(String id, IType type,
-			String varName) {
-		return getControlFlow().declareVariable(id, type, varName);
-	}
-	
-	@Override
-	public DeclarationInvocation declareVariable(String id, IType type,
-			String varName, IArgument initVal) {
-		return getControlFlow().declareVariable(id, type, varName, initVal);
-	}
+    @Override
+    public DeclarationInvocation declareVariable(String id, IType type,
+            String varName) {
+        return getControlFlow().declareVariable(id, type, varName);
+    }
 
-	
-	/**
-	 * @return the invocation
-	 */
-	@Override
-	public Optional<ScopeInvocation> getInvocation() {
-		return Optional.ofNullable(invocation);
-	}
+    @Override
+    public DeclarationInvocation declareVariable(String id, IType type,
+            String varName, IArgument initVal) {
+        return getControlFlow().declareVariable(id, type, varName, initVal);
+    }
 
-	@Override
-	public VFlow getFlow() {
-		return this.flow;
-	}
+    /**
+     * @return the invocation
+     */
+    @Override
+    public Optional<ScopeInvocation> getInvocation() {
+        return Optional.ofNullable(invocation);
+    }
 
-	@Override
-	public void visitScopeAndAllSubElements(Consumer<CodeEntity> consumer) {
-		consumer.accept(this);
-		getControlFlow().getInvocations().forEach(consumer);
-		getComments().forEach(consumer);
+    @Override
+    public VFlow getFlow() {
+        return this.flow;
+    }
 
-		for (Scope scope : getScopes()) {
-			scope.visitScopeAndAllSubElements(consumer);
-		}
-	}
+    @Override
+    public void visitScopeAndAllSubElements(Consumer<CodeEntity> consumer) {
+        consumer.accept(this);
+        getControlFlow().getInvocations().forEach(consumer);
+        getComments().forEach(consumer);
+        for (Scope scope : getScopes()) {
+            scope.visitScopeAndAllSubElements(consumer);
+        }
+    }
 
 }

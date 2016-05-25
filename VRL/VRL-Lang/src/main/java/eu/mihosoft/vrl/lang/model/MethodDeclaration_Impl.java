@@ -47,15 +47,7 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
-
-import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.IType;
-import eu.mihosoft.vrl.lang.model.MethodDeclaration;
-import eu.mihosoft.vrl.lang.model.IModifiers;
-import eu.mihosoft.vrl.lang.model.IParameters;
-import eu.mihosoft.vrl.lang.model.IParameter;
 
 /**
  *
@@ -70,7 +62,7 @@ class MethodDeclaration_Impl extends ScopeImpl implements MethodDeclaration {
         metadata = (MethodDeclarationMetaData) getScopeArgs()[0];
 
         getNode().setTitle("method " + methodName + "()");
-        
+
         createParamVariables();
     }
 
@@ -79,7 +71,7 @@ class MethodDeclaration_Impl extends ScopeImpl implements MethodDeclaration {
 
             createParamVariable(p.getType(), p.getName(), p.getRange());
         }
-        
+
     }
 
     @Override
@@ -107,16 +99,28 @@ class MethodDeclaration_Impl extends ScopeImpl implements MethodDeclaration {
         return (ClassDeclaration) getParent();
     }
 
+    @Override
+    public void setModifiers(IModifiers modifiers) {
+        metadata.setModifiers(modifiers);
+    }
 
-    
-    
+    @Override
+    public void setParameters(IParameters parameters) {
+        metadata.setParams(parameters);
+    }
+
+    @Override
+    public void setReturnType(IType type) {
+        metadata.setType(type);
+    }
+
 }
 
 final class MethodDeclarationMetaData {
 
-    private final IType type;
-    private final IModifiers modifiers;
-    private final IParameters params;
+    private IType type;
+    private IModifiers modifiers;
+    private IParameters params;
 
     public MethodDeclarationMetaData(IType type, IModifiers modifiers, IParameters params) {
         this.type = type;
@@ -144,5 +148,18 @@ final class MethodDeclarationMetaData {
     public IParameters getParams() {
         return params;
     }
+
+    public void setType(IType type) {
+        this.type = type;
+    }
+
+    public void setModifiers(IModifiers modifiers) {
+        this.modifiers = modifiers;
+    }
+
+    public void setParams(IParameters params) {
+        this.params = params;
+    }
+    
 
 }

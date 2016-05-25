@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 /**
@@ -59,10 +58,16 @@ public interface MethodDeclaration extends ControlFlowScope {
     IModifiers getModifiers();
 
     IParameters getParameters();
+
     Variable getParameterAsVariable(IParameter p);
 
     IType getReturnType();
-    
+
     ClassDeclaration getClassDeclaration();
-    
+
+    void setModifiers(IModifiers modifiers);
+
+    void setParameters(IParameters parameters);
+
+    void setReturnType(IType type);
 }

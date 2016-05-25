@@ -50,8 +50,6 @@
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.base.VClassLoaderUtil;
-import eu.mihosoft.vrl.lang.model.IType;
-import eu.mihosoft.vrl.lang.Patterns;
 import eu.mihosoft.vrl.lang.VLangUtilsNew;
 import java.util.Objects;
 
@@ -62,7 +60,7 @@ import java.util.Objects;
 public final class Type implements IType {
 
     private final String packageName;
-    private final String shortName;
+    private final String shortName; 
     private final boolean isReturnOrParamType;
 
     private final IType componentType;
@@ -172,6 +170,7 @@ public final class Type implements IType {
     public String getShortName() {
         return shortName;
     }
+    
 
     @Override
     public String getFullClassName() {
