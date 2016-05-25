@@ -41,7 +41,7 @@ public class DeleteAction extends Action<CodeEntityList> {
             @Override
             public boolean verify(State<CodeEntityList> s) {
                 s = s.clone();
-                
+
                 index = s.get(0).getIndex();
                 return index < s.get(0).size() && index > -1 && s.get(0).size() > 0;
             }
@@ -63,8 +63,8 @@ public class DeleteAction extends Action<CodeEntityList> {
                     IModelCommands.getInstance().removeClassFromCUD(currentEntity.getParent(), currentEntity);
                 } else if (currentEntity instanceof MethodDeclaration && currentEntity.getParent() instanceof ClassDeclaration) {
                     CodeEntity parent = currentEntity.getParent();
-                    ClassDeclaration cd = 
-                            IModelCommands.getInstance().removeMethodFromClass(parent, currentEntity);
+                    ClassDeclaration cd
+                            = IModelCommands.getInstance().removeMethodFromClass(parent, currentEntity);
                     System.out.println("REMOVE " + SimilarityMetric.getName(currentEntity));
                     for (MethodDeclaration m : cd.getDeclaredMethods()) {
                         System.out.println("Declared Methods " + m.getName());
@@ -76,12 +76,12 @@ public class DeleteAction extends Action<CodeEntityList> {
                         }
                     });
                     System.out.println("++++++++++++++++++END REMOVE+++++++++++++++++++++++");
-                    
-
+                   
                 } else if (currentEntity.getParent() != null) {
                     IModelCommands.getInstance().removeScope(currentEntity.getParent(), currentEntity);
                 }
-                s.get(0).remove(index);
+                 s.get(0).updateList(rootEntity);
+                //s.get(0).remove(index);
             }
 
             @Override

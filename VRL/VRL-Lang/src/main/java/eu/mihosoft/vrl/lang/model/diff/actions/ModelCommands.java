@@ -30,8 +30,8 @@ enum ModelCommands implements IModelCommands {
     public void removeScope(CodeEntity parentScope, CodeEntity scope) {
         Scope parent = (Scope) parentScope;
         Scope child = (Scope) scope;
-        parent.getScopes().remove(child);
-        //parent.removeScope(child);
+        //parent.getScopes().remove(child);
+        parent.removeScope(child);
     }
 
     @Override
@@ -50,10 +50,10 @@ enum ModelCommands implements IModelCommands {
     }
 
     @Override
-    public void setScopeName(CodeEntity ceName, CodeEntity codeEntity) {
+    public void setScopeName(String ceName, CodeEntity codeEntity) {
         Scope scope = (Scope) codeEntity;
-        Scope scopeName = (Scope) ceName;
-        scope.setName(scopeName.getName());
+      //  Scope scopeName = (Scope) ceName;
+        scope.setName(ceName);
     }
 
     @Override

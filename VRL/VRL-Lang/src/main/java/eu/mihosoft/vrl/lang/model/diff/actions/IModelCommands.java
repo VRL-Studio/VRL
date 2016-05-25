@@ -25,7 +25,7 @@ public interface IModelCommands {
         return ModelCommands.INSTANCE;
     }
 
-    void setScopeName(CodeEntity ceName, CodeEntity codeEntity);
+    void setScopeName(String ceName, CodeEntity codeEntity);
 
     void removeScope(CodeEntity parentScope, CodeEntity scope);
 
