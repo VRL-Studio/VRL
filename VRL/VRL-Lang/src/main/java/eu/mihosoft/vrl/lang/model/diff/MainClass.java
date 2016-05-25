@@ -35,8 +35,8 @@ public class MainClass {
 
     public static void main(String[] args) throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
-                + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "class Class {\n"
+                + "package eu.mihosoft.vrl.lang.model.diff1;\n"
+                + "class Class1 {\n"
                 + "void variable(){}\n"
                 + "}"
         );
@@ -44,8 +44,8 @@ public class MainClass {
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
                 + "class Class {\n"
-                + "void variable(){}\n"
-                + "void method(int i){}\n"
+//                + "void variable(){}\n"
+//                + "void method(int i){}\n"
                 //                + "  void method2(int i){}\n"
                 //                + "}\n"
                 //                + "class Class5 {\n"
@@ -116,8 +116,8 @@ public class MainClass {
         ArrayList<Action<CodeEntityList>> allActions = new ArrayList<>();
 
         listOfEntities.stream().forEach((entity) -> {
-//            allActions.add(new RenameAction(entity));
-//            allActions.add(new InsertAction(entity));
+           allActions.add(new RenameAction(entity));
+            allActions.add(new InsertAction(entity));
         });
         allActions.add(increaseIndex);
         allActions.add(decreaseIndex);

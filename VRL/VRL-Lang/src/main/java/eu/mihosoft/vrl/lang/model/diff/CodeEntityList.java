@@ -16,6 +16,8 @@ import static eu.mihosoft.vrl.lang.model.diff.MainClass.fromCode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.codehaus.groovy.control.SourceUnit;
 
 /**
@@ -65,8 +67,17 @@ public class CodeEntityList { // anpassen an CELIST
      */
     public CodeEntityList(CodeEntityList entities, Boolean bool) {
 
-        if (bool) {
-            this.entities = new ArrayList<>(entities.getEntities());
+        if (bool && !entities.getEntities().isEmpty()) {
+            
+            CompilationUnitDeclaration cud = (CompilationUnitDeclaration) getRoot(entities.get(0));         
+            CompilationUnitDeclaration cudClone;
+            try {
+                cudClone = clone(cud);
+                this.entities = convertTreeToList(cudClone);
+            } catch (Exception ex) {
+                Logger.getLogger(CodeEntityList.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            
         } else {
             this.entities = entities.getEntities();
         }
