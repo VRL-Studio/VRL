@@ -65,7 +65,7 @@ public class StateEqualsTest {
 
         CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
         ClassDeclaration cls = targetModel.getDeclaredClasses().get(0);
-        MethodDeclaration meth = targetModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0);
+        MethodDeclaration meth = targetModel.getDeclaredClasses().get(0).getDeclaredMethods().get(1);
 
         commands.removeMethodFromClass(cls, meth);
 
@@ -77,7 +77,53 @@ public class StateEqualsTest {
         System.out.println("source==target: " + source.equals(target));
         System.out.println("");
         System.out.println("UPDATE LIST");
-        target.updateList(targetModel);
+        target.updateCodeEntityList(targetModel);
+        System.out.println("");
+        System.out.println("UPDATE TARGET: ");
+        System.out.println(Scope2Code.getCode((CompilationUnitDeclaration) target.get(0)));
+
+        Assert.assertFalse("States with different names must not be equal:", source.equals(target));
+
+    }
+
+    @Test
+    public void testDeleteClass() throws Exception {
+        CompilationUnitDeclaration sourceModel = groovy2Model(""
+                + "package eu.mihosoft.vrl.lang.model.diff1;\n"
+                + "class Class1 {\n"
+                + "void variable(){}\n"
+                + "void variable1(){}\n"
+                + "}\n"
+                + "class Class2 {\n"
+                + "void variable(){}\n"
+                + "}"
+        );
+
+        CodeEntityList source = new CodeEntityList(sourceModel);
+        CodeEntityList target = new CodeEntityList(source, true);
+
+        IModelCommands commands = IModelCommands.getInstance();
+
+        CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
+        ClassDeclaration cls1 = targetModel.getDeclaredClasses().get(1);
+        ClassDeclaration cls2 = targetModel.getDeclaredClasses().get(0);
+        MethodDeclaration meth1 = cls2.getDeclaredMethods().get(0);
+        MethodDeclaration meth2 = cls2.getDeclaredMethods().get(1);
+
+        commands.removeScope(targetModel, cls1);
+        target.updateCodeEntityList(targetModel);
+        commands.removeMethodFromClass(cls2, meth1);
+        target.updateCodeEntityList(targetModel);
+        commands.removeMethodFromClass(cls2, meth2);
+        System.out.println("SOURCE MODEL: ");
+        System.out.println(Scope2Code.getCode(sourceModel));
+        System.out.println("TARGET MODEL: ");
+        System.out.println(Scope2Code.getCode(targetModel));
+
+        System.out.println("source==target: " + source.equals(target));
+        System.out.println("");
+        target.updateCodeEntityList(targetModel);
+
         System.out.println("");
         System.out.println("UPDATE TARGET: ");
         System.out.println(Scope2Code.getCode((CompilationUnitDeclaration) target.get(0)));
@@ -87,9 +133,18 @@ public class StateEqualsTest {
     }
 
     //@Test
-    public void testDeleteClass() throws Exception {
+    public void testRenameDeleteElem() throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff1;\n"
+                + "class Class1 {\n"
+                + "void variable(){}\n"
+                + "}\n"
+                + "class Class2 {\n"
+                + "void variable(){}\n"
+                + "}"
+        );
+        CompilationUnitDeclaration model = groovy2Model(""
+                + "package eu.mihosoft.vrl.lang.model.diff;\n"
                 + "class Class1 {\n"
                 + "void variable(){}\n"
                 + "}\n"
@@ -105,13 +160,10 @@ public class StateEqualsTest {
 
         CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
         ClassDeclaration cls1 = targetModel.getDeclaredClasses().get(1);
+        ClassDeclaration cls2 = targetModel.getDeclaredClasses().get(0);
+        MethodDeclaration meth2 = cls2.getDeclaredMethods().get(0);
 
-
-        //commands.removeClassFromCUD(targetModel, cls1);
-        commands.removeScope(targetModel, cls1);
-        
-//        ClassDeclaration cls2 = targetModel.getDeclaredClasses().get(0); f
-//        commands.removeScope(targetModel, cls2);
+        commands.setCUDeclPackageName(model, targetModel);
 
         System.out.println("SOURCE MODEL: ");
         System.out.println(Scope2Code.getCode(sourceModel));
@@ -120,55 +172,14 @@ public class StateEqualsTest {
 
         System.out.println("source==target: " + source.equals(target));
         System.out.println("");
-        target.updateList(targetModel);
-        System.out.println("");
-        System.out.println("UPDATE TARGET: ");
-        System.out.println(Scope2Code.getCode((CompilationUnitDeclaration) target.get(0)));
+        target.updateCodeEntityList(CodeEntityList.getRoot(cls1));
+        commands.removeScope(targetModel, cls2);
+        target.updateCodeEntityList(CodeEntityList.getRoot(cls1));
 
-        Assert.assertFalse("States with different names must not be equal:", source.equals(target));
-
-    }
-    
-     @Test
-    public void testInsertClass() throws Exception {
-        CompilationUnitDeclaration sourceMod = groovy2Model(""
-                + "package eu.mihosoft.vrl.lang.model.diff1;\n"
-                + "class Class1 {\n"
-                + "void variable(){}\n"
-                + "}\n"
-                + "class Class2 {\n"
-                + "void method(){}\n"
-                + "}"
-        );
-        
-
-        CodeEntityList source = new CodeEntityList(sourceMod);
-        CodeEntityList target = new CodeEntityList(source, true);
-
-        IModelCommands commands = IModelCommands.getInstance();
-
-        CompilationUnitDeclaration targetCUD = (CompilationUnitDeclaration) target.get(0);
-        CompilationUnitDeclaration sourceCUD = (CompilationUnitDeclaration) source.get(0);
-        ClassDeclaration cls1 = sourceCUD.getDeclaredClasses().get(1);
-
-        //commands.insertClassToCUD(targetCUD, cls1);
-        commands.setScopeName("Class4", cls1);
-        commands.insertScope(targetCUD, cls1);
-       
-
-        System.out.println("SOURCE MODEL: ");
-        System.out.println(Scope2Code.getCode(sourceCUD));
         System.out.println("TARGET MODEL: ");
-        System.out.println(Scope2Code.getCode(targetCUD));
-
-        System.out.println("source==target: " + source.equals(target));
-        System.out.println("");
-        target.updateList(targetCUD);
-        System.out.println("");
-        System.out.println("UPDATE TARGET: ");
-        System.out.println(Scope2Code.getCode((CompilationUnitDeclaration) target.get(0)));
-
+        System.out.println(Scope2Code.getCode(targetModel));
         Assert.assertFalse("States with different names must not be equal:", source.equals(target));
 
     }
+
 }
