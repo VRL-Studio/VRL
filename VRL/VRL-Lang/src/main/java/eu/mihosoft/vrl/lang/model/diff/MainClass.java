@@ -13,7 +13,6 @@ import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import eu.mihosoft.vrl.lang.command.CommandList;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
-import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.diff.actions.DecreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.DeleteAction;
@@ -21,6 +20,7 @@ import eu.mihosoft.vrl.lang.model.diff.actions.IncreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.InsertAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.RenameAction;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import org.codehaus.groovy.control.CompilationUnit;
@@ -35,36 +35,30 @@ public class MainClass {
 
     public static void main(String[] args) throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
-                + "package eu.mihosoft.vrl.lang.model.diff1;\n"
+                + "package eu.mihosoft.vrl.lang.model.diff;\n"
                 + "class Class1 {\n"
-                + "void variable(){}\n"
+                + "}\n"
+                + "class Methode1 {\n"
                 + "}"
         );
 
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "class Class {\n"
-//                + "void variable(){}\n"
-//                + "void method(int i){}\n"
-                //                + "  void method2(int i){}\n"
+                //                + "class Class1 {\n"
+                //                + "void meth(){}\n"
                 //                + "}\n"
-                //                + "class Class5 {\n"
-                //                + "void method1(){}\n"
-                //                + "  void method2(int i){}\n"
+                + "class Methode {\n"
+//                + "}\n"
+//                + "class Node{\n"
                 + "}"
         );
 
-       //0classAStar(sourceModel, targetModel);
+        //classAStar(sourceModel, targetModel);
         classAStar(targetModel, sourceModel);
-        //aStar(new ArrayList<>(sourceModel.getDeclaredClasses().get(0).getDeclaredMethods()), new ArrayList<>(targetModel.getDeclaredClasses().get(0).getDeclaredMethods()));
-        //convertTreeToList(sourceModel);
-        
-        System.out.println("Solution: ");
-        
-        
+
+        // System.out.println("Solution: ");
         // TODO: apply commands to source
-        
-        Scope2Code.getCode(sourceModel);
+        //System.out.println(Scope2Code.getCode(targetModel));
     }
 
     static CompilationUnitDeclaration groovy2Model(String groovyCode) throws Exception {
@@ -82,10 +76,6 @@ public class MainClass {
         return Scope2Code.getCode(cuDecl);
     }
 
-    static CompilationUnitDeclaration clone(CompilationUnitDeclaration input) throws Exception {
-        return groovy2Model(model2Groovy(input));
-    }
-
     /**
      *
      * @param sourceModel
@@ -96,37 +86,43 @@ public class MainClass {
 
         CodeEntityList source = new CodeEntityList(sourceModel);
         CodeEntityList target = new CodeEntityList(targetModel);
-        ArrayList<CodeEntity> listOfEntities = new ArrayList<CodeEntity>(new LinkedHashSet<CodeEntity>(target.getEntities()));
+
+        HashSet set = new LinkedHashSet<>(target.getEntities());
+        ArrayList<CodeEntity> insertList = new ArrayList<>(target.getEntities()); // doppelte Elemente 
+        insertList.remove(0);
 
         System.out.println("");
         System.out.println("####################################################");
         System.out.println("Source List: ");
         for (int i = 0; i < source.size(); i++) {
-            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(source.get(i)));
+            System.out.println(i + ": " + source.getEntityName(i));
         }
         System.out.println("####################################################");
         System.out.println("Target List: ");
         for (int i = 0; i < target.size(); i++) {
-            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(target.get(i)));
+            System.out.println(i + ": " + target.getEntityName(i));
         }
+        System.out.println("####################################################");
 
         IncreaseIndexAction increaseIndex = new IncreaseIndexAction();
         DecreaseIndexAction decreaseIndex = new DecreaseIndexAction();
         DeleteAction delete = new DeleteAction();
         ArrayList<Action<CodeEntityList>> allActions = new ArrayList<>();
 
-        listOfEntities.stream().forEach((entity) -> {
-           allActions.add(new RenameAction(entity));
+        insertList.stream().forEach((entity) -> {
             allActions.add(new InsertAction(entity));
+        });
+        target.getEntities().stream().forEach((entity) -> {
+            allActions.add(new RenameAction(entity));
         });
         allActions.add(increaseIndex);
         allActions.add(decreaseIndex);
         allActions.add(delete);
-        
+
         System.out.println("Actions: ");
-        
+
         for (Action<CodeEntityList> action : allActions) {
-            System.out.println(" -> " + action);
+            System.out.println(" -> " + action.getName());
         }
 
         WorldDescription<CodeEntityList> StringListWD
@@ -191,29 +187,6 @@ public class MainClass {
         compUnit.addSource(sourceUnit);
         compUnit.compile(Phases.CANONICALIZATION);
         return sourceUnit;
-    }
-
-    private static CodeEntity getRootParent(CodeEntity codeEntity) {
-        CodeEntity ce = codeEntity;
-        while (ce.getParent() != null) {
-            ce = ce.getParent();
-        }
-        System.out.println("************************************************");
-        System.out.println("Parent " + ce.toString());
-        return ce;
-    }
-
-    public static ArrayList convertTreeToList(Scope codeEntity) {
-        ArrayList<CodeEntity> codeEntities = new ArrayList();
-        codeEntity.visitScopeAndAllSubElements((e) -> {
-            // System.out.println("Entity -> Id: " + e.getId() + " -- Name: " + SimilarityMetric.getCodeEntityName(e) + " -- Simplename: " + e.getClass().getSimpleName() + "--");
-            codeEntities.add(e);
-
-        });
-        for (int i = 0; i < codeEntities.size(); i++) {
-            System.out.println("Entity -> " + i + " Name: " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)));
-        }
-        return null;
     }
 
 }

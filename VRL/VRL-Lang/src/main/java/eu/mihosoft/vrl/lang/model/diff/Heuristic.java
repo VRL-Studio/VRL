@@ -33,7 +33,6 @@ public class Heuristic implements eu.mihosoft.ai.astar.Heuristic<CodeEntityList>
         double currListSize = currentList.size();
         double max = Math.max(goalListSize, currListSize);
         double min = Math.min(goalListSize, currListSize);
-//        System.out.println("Distanz " + Math.abs(lcsSize - max));
 
         return Math.abs(lcsSize - max);
         //return 0.0;
