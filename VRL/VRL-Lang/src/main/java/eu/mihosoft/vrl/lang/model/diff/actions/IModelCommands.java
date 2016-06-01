@@ -7,11 +7,13 @@ package eu.mihosoft.vrl.lang.model.diff.actions;
 
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
+import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IExtends;
 import eu.mihosoft.vrl.lang.model.IModifiers;
 import eu.mihosoft.vrl.lang.model.IParameters;
 import eu.mihosoft.vrl.lang.model.IType;
+import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Variable;
 
@@ -29,6 +31,8 @@ public interface IModelCommands {
 
     void removeScope(CodeEntity parentScope, CodeEntity scope);
 
+    void removeScope(CodeEntity scope);
+
     void insertScope(CodeEntity parentScope, CodeEntity scope);
 
     void insertScope(CodeEntity parentScope, int pos, CodeEntity scope);
@@ -38,7 +42,7 @@ public interface IModelCommands {
     void removeVariableFromScope(CodeEntity scope, CodeEntity variable);
 
     //COMPILATION UNIT DECLARATION
-    void removeClassFromCUD(CodeEntity cud, CodeEntity cls);
+    CompilationUnitDeclaration removeClassFromCUD(CodeEntity cud, CodeEntity cls);
 
     void insertClassToCUD(CodeEntity cud, CodeEntity cls);
 
@@ -49,7 +53,7 @@ public interface IModelCommands {
     void setCUDeclFileName(String name, CodeEntity codeEntity);
 
     // CLASS
-    ClassDeclaration removeMethodFromClass(CodeEntity cls, CodeEntity method);
+    ClassDeclaration removeMethodFromClass(ClassDeclaration cls, MethodDeclaration method);
 
     void insertMethodToClass(CodeEntity cls, CodeEntity method);
 

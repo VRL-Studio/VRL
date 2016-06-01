@@ -24,7 +24,8 @@ public class DecreaseIndexAction extends Action<CodeEntityList> {
     }
 
     public DecreaseIndexAction() {
-
+        setName("decrease index: i--");
+        
         precond.add(new ConditionPredicate<CodeEntityList>() {
 
             @Override
@@ -32,8 +33,7 @@ public class DecreaseIndexAction extends Action<CodeEntityList> {
 
                 s = s.clone();
                 int index = s.get(0).getIndex() - 1;
-                setName("decrease index to " + index);
-                return s.get(0).getIndex() > 0;
+                return index > 0;
             }
 
             @Override

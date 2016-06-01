@@ -13,9 +13,7 @@ import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
-import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.diff.CodeEntityList;
-import eu.mihosoft.vrl.lang.model.diff.SimilarityMetric;
 
 /**
  *
@@ -30,7 +28,7 @@ public class DeleteAction extends Action<CodeEntityList> {
         return precond.verify(s);
     }
 
-    int index = 0;
+    int index;
 
     public DeleteAction() {
 
@@ -43,7 +41,16 @@ public class DeleteAction extends Action<CodeEntityList> {
                 s = s.clone();
 
                 index = s.get(0).getIndex();
-                return index < s.get(0).size() && index > -1 && s.get(0).size() > 0;
+                boolean bool = true;
+                if (index < s.get(0).size()) {
+                    if (s.get(0).get(index) instanceof MethodDeclaration) {
+                        MethodDeclaration meth = (MethodDeclaration) s.get(0).get(index);
+                        if (meth.getName().equals("this$dist$invoke$1") || meth.getName().equals("this$dist$set$1") || meth.getName().equals("this$dist$get$1")) {
+                            bool = false;
+                        }
+                    }
+                }
+                return bool && index < s.get(0).size() && index > 0 && s.get(0).size() > 0;
             }
 
             @Override
@@ -57,31 +64,20 @@ public class DeleteAction extends Action<CodeEntityList> {
             @Override
             public void apply(State<CodeEntityList> s) {
                 CodeEntity currentEntity = s.get(0).get(index);
-                CodeEntity rootEntity = s.get(0).getRoot(currentEntity);
 
                 if (currentEntity instanceof ClassDeclaration && currentEntity.getParent() instanceof CompilationUnitDeclaration) {
-                    IModelCommands.getInstance().removeClassFromCUD(currentEntity.getParent(), currentEntity);
-                } else if (currentEntity instanceof MethodDeclaration && currentEntity.getParent() instanceof ClassDeclaration) {
-                    CodeEntity parent = currentEntity.getParent();
-                    ClassDeclaration cd
-                            = IModelCommands.getInstance().removeMethodFromClass(parent, currentEntity);
-                    System.out.println("REMOVE " + SimilarityMetric.getName(currentEntity));
-                    for (MethodDeclaration m : cd.getDeclaredMethods()) {
-                        System.out.println("Declared Methods " + m.getName());
+                    CompilationUnitDeclaration cud = (CompilationUnitDeclaration) currentEntity.getParent();
+                    ClassDeclaration cd = (ClassDeclaration) currentEntity;
+                    if (cud.getDeclaredClasses().size() > 1) {
+                        IModelCommands.getInstance().removeScope(cud, cd);
+                        s.get(0).updateCodeEntityList(cud);
                     }
-                    System.out.println("+++++++++++++++++++++++++++++++++++++++++");
-                    cd.visitScopeAndAllSubElements((CodeEntity e) -> {
-                        if (e instanceof MethodDeclaration || e instanceof Variable) {
-                            System.out.println("VISIT " + SimilarityMetric.getName(e));
-                        }
-                    });
-                    System.out.println("++++++++++++++++++END REMOVE+++++++++++++++++++++++");
-                   
-                } else if (currentEntity.getParent() != null) {
-                    IModelCommands.getInstance().removeScope(currentEntity.getParent(), currentEntity);
+                } else if (currentEntity instanceof MethodDeclaration && currentEntity.getParent() instanceof ClassDeclaration) {
+                    ClassDeclaration cd = (ClassDeclaration) currentEntity.getParent();
+                    MethodDeclaration meth = (MethodDeclaration) currentEntity;
+                    IModelCommands.getInstance().removeMethodFromClass(cd, meth);
+                    s.get(0).updateCodeEntityList(cd);
                 }
-                 s.get(0).updateList(rootEntity);
-                //s.get(0).remove(index);
             }
 
             @Override

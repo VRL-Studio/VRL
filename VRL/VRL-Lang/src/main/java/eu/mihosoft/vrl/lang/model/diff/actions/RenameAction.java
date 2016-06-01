@@ -22,102 +22,97 @@ import eu.mihosoft.vrl.lang.model.diff.SimilarityMetric;
  * @author Joanna Pieper <joanna.pieper@gcsc.uni-frankfurt.de>
  */
 public class RenameAction extends Action<CodeEntityList> {
-
+    
     int index = 0;
 
-//    public boolean verify(State<CodeEntityList> s) {
-//        s = s.clone();
-//
-//        effect.apply(s);
-//        return precond.verify(s);
-//    }
-    public RenameAction(CodeEntity entity) {
+    public boolean verify(State<CodeEntityList> s) {
+        s = s.clone();
 
-        setName("Rename to " + "(" + SimilarityMetric.getCodeEntityName(entity) + ")");
-
+        effect.apply(s);
+        return precond.verify(s);
+    }
+    
+    public RenameAction(CodeEntity nameEntity) {
+        
+        setName("Rename to " + '"' + SimilarityMetric.getCodeEntityName(nameEntity) + '"');
+        
         precond.add(new ConditionPredicate<CodeEntityList>() {
-
+            
             @Override
             public boolean verify(State<CodeEntityList> s) {
                 s = s.clone();
                 index = s.get(0).getIndex();
-
+                
                 boolean result = false;
-
+                
                 if (index < s.get(0).size() && index > -1) {
                     CodeEntity currentElement = s.get(0).get(index);
-
+                    
                     double similarity;
-                    if (entity instanceof CompilationUnitDeclaration) {
-                        similarity = SimilarityMetric.packageSimilarity(currentElement, entity);
+                    if (nameEntity instanceof CompilationUnitDeclaration) {
+                        similarity = SimilarityMetric.packageSimilarity(currentElement, nameEntity);
                     } else {
-                        similarity = SimilarityMetric.nameSimilarity(currentElement, entity);
+                        similarity = SimilarityMetric.nameSimilarity(currentElement, nameEntity);
                     }
-
+                    
                     result = similarity > 0.6
-                            && !s.get(0).compNames(currentElement, entity);
+                            && !s.get(0).compareNames(currentElement, nameEntity);
                 }
-
+                
                 System.out.println("RENAME-Precond: " + result);
-
+                
                 return result;
-
+                
             }
-
+            
             @Override
             public String getName() {
                 return "rename";
             }
-
+            
         });
-
+        
         effect.add(new EffectPredicate<CodeEntityList>() {
-
+            
             @Override
             public void apply(State<CodeEntityList> s) {
-
-                CodeEntity codeEnity = s.get(0).get(index);
-
-                if (entity instanceof CompilationUnitDeclaration && codeEnity instanceof CompilationUnitDeclaration) {
+                
+                CodeEntity currentCodeEntity = s.get(0).get(index);
+                
+                if (nameEntity instanceof CompilationUnitDeclaration && currentCodeEntity instanceof CompilationUnitDeclaration) {
                     System.out.println("RENAME CompilationUnitDeclaration");
-                    IModelCommands.getInstance().setCUDeclPackageName(entity, codeEnity);
-                    s.get(0).updateList(s.get(0).getRoot(codeEnity));
-                } else if (entity instanceof ClassDeclaration && codeEnity instanceof ClassDeclaration) {
+                    IModelCommands.getInstance().setCUDeclPackageName(nameEntity, currentCodeEntity);
+                } else if (nameEntity instanceof ClassDeclaration && currentCodeEntity instanceof ClassDeclaration) {
                     System.out.println("RENAME ClassDeclaration");
-                    ClassDeclaration cls = (ClassDeclaration) entity;
-                    IModelCommands.getInstance().setScopeName(cls.getName(), codeEnity);
-                    s.get(0).updateList(s.get(0).getRoot(codeEnity));
-                } else if (entity instanceof MethodDeclaration && codeEnity instanceof MethodDeclaration) {
+                    ClassDeclaration cls = (ClassDeclaration) nameEntity;
+                    IModelCommands.getInstance().setScopeName(cls.getName(), currentCodeEntity);
+                } else if (nameEntity instanceof MethodDeclaration && currentCodeEntity instanceof MethodDeclaration) {
                     System.out.println("RENAME MethodDeclaration");
-                    IModelCommands.getInstance().setMethodName(entity, codeEnity);
-                    s.get(0).updateList(s.get(0).getRoot(codeEnity));
-                } else if (entity instanceof Variable && codeEnity instanceof Variable) {
+                    IModelCommands.getInstance().setMethodName(nameEntity, currentCodeEntity);
+                } else if (nameEntity instanceof Variable && currentCodeEntity instanceof Variable) {
                     System.out.println("RENAME Variable");
-                    IModelCommands.getInstance().setVariableName(entity, codeEnity);
-                    s.get(0).updateList(s.get(0).getRoot(codeEnity));
-                } else {
-                    System.out.println("############################# ELSE ############################");
-                    s.get(0).setOnPos(index, entity);
-                }
-              //  s.get(0).setOnPos(index, entity);
+                    IModelCommands.getInstance().setVariableName(nameEntity, currentCodeEntity);
+                } 
+                s.get(0).updateCodeEntityList(currentCodeEntity);
+                
             }
-
+            
             @Override
             public String getName() {
                 return "rename";
             }
-
+            
         });
     }
-
+    
     @Override
     public double getCosts(State<CodeEntityList> s) {
         return 1;
     }
-
+    
     @Override
     public String toString() {
         return getName();
     }
-
+    
 }

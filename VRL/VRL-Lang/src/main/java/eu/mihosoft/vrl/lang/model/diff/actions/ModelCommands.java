@@ -30,8 +30,13 @@ enum ModelCommands implements IModelCommands {
     public void removeScope(CodeEntity parentScope, CodeEntity scope) {
         Scope parent = (Scope) parentScope;
         Scope child = (Scope) scope;
-        //parent.getScopes().remove(child);
-        parent.removeScope(child);
+        parent.getScopes().remove(child);
+        //parent.removeScope(child);
+    }
+
+    @Override
+    public void removeScope(CodeEntity scope) {
+        Scope cud = (Scope) scope;
     }
 
     @Override
@@ -52,7 +57,7 @@ enum ModelCommands implements IModelCommands {
     @Override
     public void setScopeName(String ceName, CodeEntity codeEntity) {
         Scope scope = (Scope) codeEntity;
-      //  Scope scopeName = (Scope) ceName;
+        //  Scope scopeName = (Scope) ceName;
         scope.setName(ceName);
     }
 
@@ -74,10 +79,11 @@ enum ModelCommands implements IModelCommands {
 
     //COMPILATION UNIT DECLARATION
     @Override
-    public void removeClassFromCUD(CodeEntity cud, CodeEntity cls) {
+    public CompilationUnitDeclaration removeClassFromCUD(CodeEntity cud, CodeEntity cls) {
         CompilationUnitDeclaration cuDecl = (CompilationUnitDeclaration) cud;
         ClassDeclaration classDeclaration = (ClassDeclaration) cls;
         cuDecl.getDeclaredClasses().remove(classDeclaration);
+        return cuDecl;
     }
 
     @Override
@@ -97,8 +103,8 @@ enum ModelCommands implements IModelCommands {
     @Override
     public void setCUDeclPackageName(CodeEntity cudName, CodeEntity codeEntity) {
         CompilationUnitDeclaration cuDecl = (CompilationUnitDeclaration) codeEntity;
-        CompilationUnitDeclaration cud = (CompilationUnitDeclaration) cudName;
-        cuDecl.setPackageName(cud.getPackageName());
+        CompilationUnitDeclaration nameCUD = (CompilationUnitDeclaration) cudName;
+        cuDecl.setPackageName(nameCUD.getPackageName());
     }
 
     @Override
@@ -109,12 +115,11 @@ enum ModelCommands implements IModelCommands {
 
     // CLASS
     @Override
-    public ClassDeclaration removeMethodFromClass(CodeEntity cls, CodeEntity method) {
-        ClassDeclaration classDeclaration = (ClassDeclaration) cls;
-        MethodDeclaration methodDeclaration = (MethodDeclaration) method;
-        classDeclaration.getDeclaredMethods().remove(methodDeclaration);
+    public ClassDeclaration removeMethodFromClass(ClassDeclaration cls, MethodDeclaration method) {
        
-        return classDeclaration;
+        cls.getDeclaredMethods().remove(method);
+
+        return cls;
     }
 
     @Override

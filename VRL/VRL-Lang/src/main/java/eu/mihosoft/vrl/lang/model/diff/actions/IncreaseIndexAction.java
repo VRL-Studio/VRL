@@ -25,7 +25,9 @@ public class IncreaseIndexAction extends Action<CodeEntityList> {
     }
 
     public IncreaseIndexAction() {
-
+        
+        setName("increase index: i++");
+        
         precond.add(new ConditionPredicate<CodeEntityList>() {
 
             @Override
@@ -33,7 +35,6 @@ public class IncreaseIndexAction extends Action<CodeEntityList> {
 
                 s = s.clone();
                 int index = s.get(0).getIndex();
-                setName("increase index  ");// + (index + 1));
                 return index < s.get(0).size();
             }
 
