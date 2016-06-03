@@ -69,6 +69,11 @@ import javax.swing.Box;
 import javax.swing.JTextPane;
 
 /**
+ * TypeRepresentation for <code>java.lang.String</code>.
+ * 
+ * Restricted HTML renderer (Swing HTML, roughly HTML 3.x).
+ * 
+ * Style name: "html"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

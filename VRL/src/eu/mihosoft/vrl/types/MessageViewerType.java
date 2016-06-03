@@ -59,6 +59,9 @@ import eu.mihosoft.vrl.visual.MessageViewer;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.visual.MessageViewer</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=MessageViewer.class, input = true, output = true, style="default")

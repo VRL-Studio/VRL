@@ -57,6 +57,9 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 /**
  * TypeRepresentation for <code>Java.lang.Short</code>.
  * <p><b>Supported value options:</b> see {@link NumberBasedTypeRepresentation}</p>
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Short.class, input = true, output = true, style="default")

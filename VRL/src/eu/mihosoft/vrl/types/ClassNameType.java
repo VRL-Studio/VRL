@@ -58,6 +58,9 @@ import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.visual.MessageType;
 
 /**
+ * TypeRepresentation for <code>java.lang.String</code>.
+ * 
+ * Style name: "class-name"
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */

@@ -62,6 +62,8 @@ import java.awt.Font;
 
 /**
  * TypeRepresentation base class for text field based type representations.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

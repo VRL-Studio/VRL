@@ -66,6 +66,8 @@ import javax.swing.Box;
  * TypeRepresentation for
  * <code>java.awt.Color</code>. <p>Sample:</p> <br/> <img
  * src="doc-files/color-default-01.png"/> <br/>
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */

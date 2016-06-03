@@ -73,7 +73,9 @@ import javax.swing.JTextField;
 
 /**
  * TypeRepresentation for
- * <code>Java.io.File</code>.
+ * <code>Java.lang.String</code>.
+ * 
+ * Style name: "load-dialog"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

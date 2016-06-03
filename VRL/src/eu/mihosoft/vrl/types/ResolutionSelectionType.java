@@ -59,6 +59,9 @@ import java.util.ArrayList;
 
 
 /**
+ * TypeRepresentation for <code>eu.mihosoft.vrl.types.ResolutionSelection</code>.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

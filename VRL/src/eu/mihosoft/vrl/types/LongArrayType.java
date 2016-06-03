@@ -55,6 +55,9 @@ package eu.mihosoft.vrl.types;
 import eu.mihosoft.vrl.annotation.TypeInfo;
 
 /**
+ * TypeRepresentation for <code>java.lang.Long[]</code>.
+ * 
+ * Style name: "array"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

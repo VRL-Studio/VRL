@@ -55,7 +55,10 @@ package eu.mihosoft.vrl.types;
 import eu.mihosoft.vrl.annotation.TypeInfo;
 
 /**
+ * TypeRepresentation for <code>java.lang.Double[]</code>.
  *
+ * Style name: "array"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Double[].class, input = true, output = true, style="array")

@@ -58,6 +58,9 @@ import eu.mihosoft.vrl.math.Function1D;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.types.Function1D</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Function1D.class, input = true, output = true, style="default")

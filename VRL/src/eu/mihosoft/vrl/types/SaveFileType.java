@@ -72,6 +72,8 @@ import javax.swing.JTextField;
 /**
  * TypeRepresentation for
  * <code>java.io.File</code>.
+ * 
+ * Style name: "save-dialog"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

@@ -56,7 +56,10 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 import java.awt.image.BufferedImage;
 
 /**
- *
+ * TypeRepresentation for <code>java.awt.image.BufferedImage</code>.
+ * 
+ * Style name: "array"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=BufferedImage[].class, input = true, output = false, style="array")

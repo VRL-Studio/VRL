@@ -63,6 +63,8 @@ import groovy.lang.Script;
 /**
  * TypeRepresentation for
  * <code>Java.lang.String</code>.
+ * 
+ * Style name: "plugin-version"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

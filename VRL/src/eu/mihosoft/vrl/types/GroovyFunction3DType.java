@@ -64,6 +64,9 @@ import groovy.lang.Script;
 import java.awt.Dimension;
 
 /**
+ * TypeRepresentation for <code>eu.mihosoft.vrl.math.GroovyFunction3D</code>.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

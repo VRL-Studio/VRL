@@ -59,6 +59,9 @@ import javax.media.j3d.Appearance;
 
 /**
  * TypeRepresentation for <code>javax.media.j3d.Appearance</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Appearance.class)

@@ -75,6 +75,8 @@ import javax.swing.event.ChangeListener;
  * <code>java.awt.Color</code>.
  *
  * <p>Sample:</p> <br/> <img src="doc-files/color-chooser-01.png"/> <br/>
+ * 
+ * Style name: "color-chooser"
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */

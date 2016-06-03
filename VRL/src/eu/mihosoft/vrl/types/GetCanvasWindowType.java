@@ -60,6 +60,9 @@ import eu.mihosoft.vrl.reflection.VisualObject;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 
 /**
+ * TypeRepresentation for <code>eu.mihosoft.vrl.types.WindowRequest</code>.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */

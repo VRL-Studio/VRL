@@ -56,6 +56,9 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 import java.awt.Color;
 
 /**
+ * TypeRepresentation for <code>java.awt.Color[]</code>.
+ * 
+ * Style name: "array"
  * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */

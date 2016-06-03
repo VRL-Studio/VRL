@@ -61,6 +61,9 @@ import java.awt.Dimension;
 
 /**
  * TypeRepresentation for <code>Java.lang.Object</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Object.class, input = true, output = true, style="default")

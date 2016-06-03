@@ -58,6 +58,9 @@ import eu.mihosoft.vrl.visual.MessageType;
 import groovy.lang.Script;
 
 /**
+ * TypeRepresentation for <code>java.lang.String</code>.
+ * 
+ * Style name: "method-name"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

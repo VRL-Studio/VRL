@@ -67,6 +67,9 @@ import java.awt.Dimension;
 
 
 /**
+ * TypeRepresentation for <code>eu.mihosoft.vrl.math.GroovyFunction2D</code>.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

@@ -57,6 +57,9 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 import eu.mihosoft.vrl.lang.visual.VRLRequestType;
 
 /**
+ * TypeRepresentation for <code>eu.mihosoft.vrl.types.ObjectRequest</code>.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */

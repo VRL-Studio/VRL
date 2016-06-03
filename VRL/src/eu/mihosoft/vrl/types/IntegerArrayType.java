@@ -54,6 +54,13 @@ package eu.mihosoft.vrl.types;
 
 import eu.mihosoft.vrl.annotation.TypeInfo;
 
+/**
+ * TypeRepresentation for <code>java.lang.Integer[]</code>.
+ * 
+ * Style name: "array"
+ * 
+ * @author Michael Hoffer <info@michaelhoffer.de>
+ */
 @TypeInfo(type=Integer[].class, input = true, output = true, style="array")
 public class IntegerArrayType extends ArrayBaseType {
 

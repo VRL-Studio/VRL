@@ -74,6 +74,8 @@ import groovy.lang.Script;
  * <img src="doc-files/integer-slider-01.png"/>
  * <br/>
  * 
+ * Style name: "slider"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Integer.class, input = true, output = false, style="slider")

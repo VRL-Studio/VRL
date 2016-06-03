@@ -101,7 +101,10 @@ import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 
 /**
+ * TypeRepresentation for <code>java.lang.Object[]</code>.
  *
+ * Style name: "array"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type = Object[].class, style = "array")

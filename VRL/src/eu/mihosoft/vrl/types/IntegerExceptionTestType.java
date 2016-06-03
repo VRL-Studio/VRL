@@ -63,6 +63,8 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
  * <img src="doc-files/integer-default-01.png"/>
  * <br/>
  * 
+ * Style name: "exception"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Integer.class, style="exception")

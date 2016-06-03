@@ -56,7 +56,10 @@ import eu.mihosoft.vrl.reflection.TypeTemplate;
 import eu.mihosoft.vrl.annotation.TypeInfo;
 
 /**
- * Type prepresentation for <code>Java.lang.String</code>.
+ * Type prepresentation for <code>java.lang.String</code>.
+ * 
+ * Style name: "silent"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=String.class, input = true, output = true, style="silent")

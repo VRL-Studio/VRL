@@ -67,7 +67,10 @@ import javax.swing.Box;
 import javax.swing.JComponent;
 
 /**
- * TypeRepresentation for <code>java.awt.image.BufferedImage</code>.
+ * TypeRepresentation for <code>java.awt.Image</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Image.class, input = true, output = true, style="default")

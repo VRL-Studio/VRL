@@ -58,6 +58,9 @@ import eu.mihosoft.vrl.lang.visual.InputValue;
 import javax.swing.Box;
 
 /**
+ * TypeRepresentation for <code>eu.mihosoft.vrl.lang.visual.InputValue</code>.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

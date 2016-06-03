@@ -66,6 +66,9 @@ import java.awt.Dimension;
 
 
 /**
+ * TypeRepresentation for <code>eu.mihosoft.vrl.math.GroovyFunction1D</code>.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

@@ -58,7 +58,10 @@ import java.lang.annotation.Annotation;
 
 
 /**
- *
+ * TypeRepresentation for <code>java.lang.String[]</code>.
+ * 
+ * Style name: "silent-array"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=String[].class, input = true, output = true, style="silent-array")

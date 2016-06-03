@@ -62,6 +62,9 @@ import javax.media.j3d.Appearance;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.v3d.AppearanceArray</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=AppearanceArray.class)

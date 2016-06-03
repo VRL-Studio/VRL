@@ -54,15 +54,16 @@ package eu.mihosoft.vrl.types;
 
 import eu.mihosoft.vrl.annotation.TypeInfo;
 import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
-import eu.mihosoft.vrl.visual.ResizableContainer;
 import eu.mihosoft.vrl.visual.VContainer;
-import eu.mihosoft.vrl.visual.VSwingUtil;
 import java.awt.Dimension;
 import javax.swing.JComponent;
 
 /**
- *
- * @author miho
+ * TypeRepresentation for <code>javax.swing.JComponent</code>.
+ * 
+ * Style name: "container"
+ * 
+ * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type = JComponent.class, input = false, output = true, style = "container")
 public class ContainerOutputType extends TypeRepresentationBase{

@@ -57,6 +57,9 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 
 /**
  * Type prepresentation for <code>Java.lang.Integer</code>.
+ * 
+ * Style name: "silent"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Boolean.class, input = true, output = true, style="silent")

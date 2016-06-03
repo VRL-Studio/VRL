@@ -58,6 +58,9 @@ import eu.mihosoft.vrl.v3d.GeometryList;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.v3d.GeometryList</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=GeometryList.class, input = true, output = true, style="default")

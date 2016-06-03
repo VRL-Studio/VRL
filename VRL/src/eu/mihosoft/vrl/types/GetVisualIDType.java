@@ -57,6 +57,9 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 import eu.mihosoft.vrl.reflection.RepresentationType;
 
 /**
+ * TypeRepresentation for <code>eu.mihosoft.vrl.types.VisualIDRequest</code>.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

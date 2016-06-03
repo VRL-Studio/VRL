@@ -69,6 +69,9 @@ import javax.swing.JButton;
 
 /**
  * TypeRepresentation for <code>java.io.File</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=File.class, input = true, output = true, style="default")

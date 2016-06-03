@@ -62,6 +62,9 @@ import javax.swing.Box;
 
 
 /**
+ * TypeRepresentation for <code>java.lang.String</code>.
+ * 
+ * Style name: "editor"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

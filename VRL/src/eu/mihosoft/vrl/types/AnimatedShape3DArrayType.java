@@ -75,6 +75,9 @@ import javax.swing.event.ChangeListener;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.v3d.Shape3DArray</code>.
+ * 
+ * Style name: "animation"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Shape3D.class, input = false, style = "animation")

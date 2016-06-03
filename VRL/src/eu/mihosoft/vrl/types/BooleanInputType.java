@@ -68,7 +68,9 @@ import javax.swing.event.ChangeListener;
 
 /**
  * TypeRepresentation for
- * <code>Java.lang.Boolean</code>.
+ * <code>java.lang.Boolean</code>.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
