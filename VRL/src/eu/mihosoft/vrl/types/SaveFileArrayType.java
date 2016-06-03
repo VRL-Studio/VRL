@@ -73,6 +73,8 @@ import javax.swing.JButton;
  * <code>java.io.File[]</code>.
  * 
  * Style name: "save-dialog"
+ * 
+ * @see {@link SaveFileType}
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

@@ -77,6 +77,8 @@ import javax.swing.JButton;
  * <code>java.io.File[]</code>.
  * 
  * Style name: "load-dialog"
+ * 
+ * @see {@link LoadFileType}
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

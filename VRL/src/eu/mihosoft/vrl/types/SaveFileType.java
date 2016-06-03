@@ -74,6 +74,28 @@ import javax.swing.JTextField;
  * <code>java.io.File</code>.
  * 
  * Style name: "save-dialog"
+ * 
+ * <p><b>Supported value options:</b><br>
+ * <ul>
+ * <li>value (defines a default value)</li>
+ * <li>endings (defines file types to accept)</li>
+ * <li>description (file type description, e.g., "Image files")</li>
+ * </ul>
+ * <p><b>Example (Groovy code):</b></p>
+ * <code>
+ * <pre>
+ * &#64;ComponentInfo(name="Save file")
+ * class SaveFile implements Serializable {
+ *
+ *   private static final long serialVersionUID=1;
+ *
+ *   public void save(&#64;ParamInfo(style="save-dialog", options="endings=[\".txt\"];description=\"Text files\"") File f){
+ *     f.write("This is a test")
+ *   }
+ * }
+ * </pre>
+ * </code>
+ * </p>
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

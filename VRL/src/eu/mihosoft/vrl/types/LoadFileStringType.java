@@ -76,6 +76,8 @@ import javax.swing.JTextField;
  * <code>Java.lang.String</code>.
  * 
  * Style name: "load-dialog"
+ * 
+ * @see {@link LoadFileType}
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

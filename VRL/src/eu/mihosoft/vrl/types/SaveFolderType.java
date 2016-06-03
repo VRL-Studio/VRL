@@ -71,6 +71,8 @@ import javax.swing.JTextField;
  * <code>java.io.File</code>.
  * 
  * Style name: "save-folder-dialog"
+ * 
+ * @see {@link SaveFileType}
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

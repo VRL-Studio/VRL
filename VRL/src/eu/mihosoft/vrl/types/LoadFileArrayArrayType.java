@@ -62,6 +62,8 @@ import java.lang.annotation.Annotation;
  * <code>java.io.File[][]</code>.
  * 
  * Style name: "load-dialog"
+ * 
+ * @see {@link LoadFileType}
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
