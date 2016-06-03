@@ -72,7 +72,7 @@ import javax.swing.JTextField;
  * 
  * Style name: "save-folder-dialog"
  * 
- * @see {@link SaveFileType}
+ * @see {@link SaveFileType }
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

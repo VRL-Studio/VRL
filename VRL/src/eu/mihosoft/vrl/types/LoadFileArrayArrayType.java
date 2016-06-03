@@ -63,7 +63,7 @@ import java.lang.annotation.Annotation;
  * 
  * Style name: "load-dialog"
  * 
- * @see {@link LoadFileType}
+ * @see {@link LoadFileType }
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

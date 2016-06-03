@@ -77,7 +77,7 @@ import javax.swing.JTextField;
  * 
  * Style name: "save-dialog"
  * 
- * @see {@link SaveFileType}
+ * @see {@link SaveFileType }
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
