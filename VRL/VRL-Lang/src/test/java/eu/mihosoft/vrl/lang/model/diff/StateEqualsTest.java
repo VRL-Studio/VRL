@@ -21,11 +21,12 @@ import org.junit.Test;
 public class StateEqualsTest {
 
     //@Test
-    public void testEquals() throws Exception {
+    public void testRenameClass() throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
-                + "package eu.mihosoft.vrl.lang.model.diff1;\n"
+                + "package eu.mihosoft.vrl.lang.model.diff;\n"
                 + "class Class1 {\n"
-                + "void variable(){}\n"
+                + "void method1(){}\n"
+                + "void method2(){}\n"
                 + "}"
         );
 
@@ -43,18 +44,86 @@ public class StateEqualsTest {
         System.out.println(Scope2Code.getCode(sourceModel));
         System.out.println(Scope2Code.getCode(targetModel));
 
+        target.updateCodeEntityList(targetModel);
+
+        System.out.println("source==target: " + source.equals(target));
+
+        Assert.assertFalse("States with different names must not be equal:", source.equals(target));
+
+    }
+    
+    //@Test
+    public void testRenameCUD() throws Exception {
+        CompilationUnitDeclaration sourceModel = groovy2Model(""
+                + "package eu.mihosoft.vrl.lang.model.diff;\n"
+                + "class Class1 {\n"
+                + "void method1(){}\n"
+                + "void method2(){}\n"
+                + "}"
+        );
+
+        CodeEntityList source = new CodeEntityList(sourceModel);
+
+        CodeEntityList target = new CodeEntityList(source, true);
+
+        IModelCommands commands = IModelCommands.getInstance();
+
+        CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
+
+        commands.setCUDeclPackageName("eu.mihosoft.vrl.lang.model.mit", targetModel);
+
+        System.out.println(Scope2Code.getCode(sourceModel));
+        System.out.println(Scope2Code.getCode(targetModel));
+
+        target.updateCodeEntityList(targetModel);
+
+        System.out.println("source==target: " + source.equals(target));
+
+        Assert.assertFalse("States with different names must not be equal:", source.equals(target));
+
+    }
+    
+//   @Test
+    public void testRenameDefaultMethod() throws Exception { // Probleme!!
+        CompilationUnitDeclaration sourceModel = groovy2Model(""
+                + "package eu.mihosoft.vrl.lang.model.diff;\n"
+                + "class Class1 {\n"
+                + "void method1(){}\n"
+                + "void method2(){}\n"
+                + "}"
+        );
+
+        CodeEntityList source = new CodeEntityList(sourceModel);
+
+        CodeEntityList target = new CodeEntityList(source, true);
+
+        IModelCommands commands = IModelCommands.getInstance();
+
+        CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
+        ClassDeclaration cls = targetModel.getDeclaredClasses().get(0);
+         MethodDeclaration meth = cls.getDeclaredMethods().get(2);
+        
+        commands.setMethodName("method3", meth);
+
+        System.out.println(Scope2Code.getCode(sourceModel));
+        System.out.println(Scope2Code.getCode(targetModel));
+
+        target.updateCodeEntityList(targetModel);
+
         System.out.println("source==target: " + source.equals(target));
 
         Assert.assertFalse("States with different names must not be equal:", source.equals(target));
 
     }
 
-    //@Test
+
+//    @Test
     public void testDeleteMethod() throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff1;\n"
                 + "class Class1 {\n"
-                + "void variable(){}\n"
+                + "void method1(){}\n"
+                + "void method2(){}\n"
                 + "}"
         );
 
@@ -65,7 +134,7 @@ public class StateEqualsTest {
 
         CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
         ClassDeclaration cls = targetModel.getDeclaredClasses().get(0);
-        MethodDeclaration meth = targetModel.getDeclaredClasses().get(0).getDeclaredMethods().get(1);
+        MethodDeclaration meth = cls.getDeclaredMethods().get(0);
 
         commands.removeMethodFromClass(cls, meth);
 
@@ -86,15 +155,11 @@ public class StateEqualsTest {
 
     }
 
-    @Test
-    public void testDeleteClass() throws Exception {
+//   @Test
+    public void testDeleteDefaultMethod() throws Exception { // Nach dem Remove ändert sich die Reihenfolge der Default-Methoden
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff1;\n"
                 + "class Class1 {\n"
-                + "void variable(){}\n"
-                + "void variable1(){}\n"
-                + "}\n"
-                + "class Class2 {\n"
                 + "void variable(){}\n"
                 + "}"
         );
@@ -105,16 +170,11 @@ public class StateEqualsTest {
         IModelCommands commands = IModelCommands.getInstance();
 
         CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
-        ClassDeclaration cls1 = targetModel.getDeclaredClasses().get(1);
-        ClassDeclaration cls2 = targetModel.getDeclaredClasses().get(0);
-        MethodDeclaration meth1 = cls2.getDeclaredMethods().get(0);
-        MethodDeclaration meth2 = cls2.getDeclaredMethods().get(1);
+        ClassDeclaration cls = targetModel.getDeclaredClasses().get(0);
+        MethodDeclaration defaultMeth = cls.getDeclaredMethods().get(1);
 
-        commands.removeScope(targetModel, cls1);
-        target.updateCodeEntityList(targetModel);
-        commands.removeMethodFromClass(cls2, meth1);
-        target.updateCodeEntityList(targetModel);
-        commands.removeMethodFromClass(cls2, meth2);
+        commands.removeMethodFromClass(cls, defaultMeth);
+
         System.out.println("SOURCE MODEL: ");
         System.out.println(Scope2Code.getCode(sourceModel));
         System.out.println("TARGET MODEL: ");
@@ -122,6 +182,49 @@ public class StateEqualsTest {
 
         System.out.println("source==target: " + source.equals(target));
         System.out.println("");
+        System.out.println("UPDATE LIST");
+        target.updateCodeEntityList(targetModel);
+        System.out.println("");
+        System.out.println("UPDATE TARGET: ");
+        System.out.println(Scope2Code.getCode((CompilationUnitDeclaration) target.get(0)));
+
+        Assert.assertFalse("States with different names must not be equal:", source.equals(target));
+
+    }
+
+    //@Test
+    public void testDeleteClass() throws Exception {
+        CompilationUnitDeclaration sourceModel = groovy2Model(""
+                + "package eu.mihosoft.vrl.lang.model.diff1;\n"
+                + "class Class1 {\n"
+                + "void meth1(){}\n"
+                + "void meth11(){}\n"
+                + "}\n"
+                + "class Class2 {\n"
+                + "void meth2(){}\n"
+                + "}"
+        );
+
+        CodeEntityList source = new CodeEntityList(sourceModel);
+        CodeEntityList target = new CodeEntityList(source, true);
+
+        IModelCommands commands = IModelCommands.getInstance();
+
+        CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
+        ClassDeclaration cls = targetModel.getDeclaredClasses().get(0);
+        ClassDeclaration cls1 = targetModel.getDeclaredClasses().get(1);
+
+        //commands.removeScope(targetModel, cls);
+        commands.removeScope(targetModel, cls1); //Problem, wenn keine Klasse existiert!
+
+        System.out.println("SOURCE MODEL: ");
+        System.out.println(Scope2Code.getCode(sourceModel));
+        System.out.println("TARGET MODEL: ");
+        System.out.println(Scope2Code.getCode(targetModel));
+
+        System.out.println("source==target: " + source.equals(target));
+        System.out.println("");
+
         target.updateCodeEntityList(targetModel);
 
         System.out.println("");
@@ -132,24 +235,15 @@ public class StateEqualsTest {
 
     }
 
-    //@Test
+    @Test
     public void testRenameDeleteElem() throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff1;\n"
                 + "class Class1 {\n"
-                + "void variable(){}\n"
+                + "void method1(){}\n"
                 + "}\n"
                 + "class Class2 {\n"
-                + "void variable(){}\n"
-                + "}"
-        );
-        CompilationUnitDeclaration model = groovy2Model(""
-                + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "class Class1 {\n"
-                + "void variable(){}\n"
-                + "}\n"
-                + "class Class2 {\n"
-                + "void variable(){}\n"
+                + "void method2(){}\n"
                 + "}"
         );
 
@@ -159,11 +253,10 @@ public class StateEqualsTest {
         IModelCommands commands = IModelCommands.getInstance();
 
         CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
+        ClassDeclaration cls = targetModel.getDeclaredClasses().get(0);
         ClassDeclaration cls1 = targetModel.getDeclaredClasses().get(1);
-        ClassDeclaration cls2 = targetModel.getDeclaredClasses().get(0);
-        MethodDeclaration meth2 = cls2.getDeclaredMethods().get(0);
 
-        commands.setCUDeclPackageName(model, targetModel);
+        commands.setCUDeclPackageName("eu.mihosoft.vrl.lang.model.diff.newPackage", targetModel);
 
         System.out.println("SOURCE MODEL: ");
         System.out.println(Scope2Code.getCode(sourceModel));
@@ -173,7 +266,7 @@ public class StateEqualsTest {
         System.out.println("source==target: " + source.equals(target));
         System.out.println("");
         target.updateCodeEntityList(CodeEntityList.getRoot(cls1));
-        commands.removeScope(targetModel, cls2);
+        commands.removeScope(targetModel, cls1);
         target.updateCodeEntityList(CodeEntityList.getRoot(cls1));
 
         System.out.println("TARGET MODEL: ");
