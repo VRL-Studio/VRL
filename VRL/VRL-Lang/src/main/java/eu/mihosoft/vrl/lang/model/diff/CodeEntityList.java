@@ -29,8 +29,6 @@ public class CodeEntityList {
     private List<CodeEntity> entities = new ArrayList<>();
     private int index = 0;
 
-    private CompilationUnitDeclaration cud;
-
     /**
      * empty constructor
      */
@@ -39,7 +37,6 @@ public class CodeEntityList {
 
     public CodeEntityList(CompilationUnitDeclaration root) {
         this.entities = convertTreeToList(root);
-        this.cud = root;
     }
 
     /**
@@ -89,7 +86,6 @@ public class CodeEntityList {
             this.entities = entities.getEntities();
         }
         this.index = entities.index;
-        this.cud = entities.cud;
     }
 
     /**
@@ -103,22 +99,6 @@ public class CodeEntityList {
             this.index = index;
         }
 
-    }
-
-    /**
-     *
-     * @return root of the tree - CompilationUnitDeclaration
-     */
-    public CompilationUnitDeclaration getCud() {
-        return cud;
-    }
-
-    /**
-     *
-     * @param cud set root of the tree
-     */
-    public void setCud(CompilationUnitDeclaration cud) {
-        this.cud = cud;
     }
 
     /**
@@ -337,7 +317,7 @@ public class CodeEntityList {
                 codeEntities.add(e);
             }
         });
-        return codeEntities.size() - 1;
+        return codeEntities.size();
 
     }
 
@@ -362,32 +342,6 @@ public class CodeEntityList {
 
         for (int i = 0; i < codeEntities.size(); i++) {
             System.out.println("Update: " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)));
-
-        }
-        setEntities(codeEntities);
-    }
-
-    /**
-     *
-     */
-    public void updateCodeEntityList() {
-        ArrayList<CodeEntity> codeEntities = new ArrayList();
-        CompilationUnitDeclaration cudClone = cud;
-        try {
-            cudClone = clone(cud);
-        } catch (Exception ex) {
-            Logger.getLogger(CodeEntityList.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        cudClone.visitScopeAndAllSubElements((CodeEntity e) -> {
-            if (e instanceof Scope || e instanceof Variable) {
-                codeEntities.add(e);
-            }
-        });
-
-        for (int i = 0; i < codeEntities.size(); i++) {
-            System.out.println("Update_new: " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)));
-
         }
         setEntities(codeEntities);
     }
