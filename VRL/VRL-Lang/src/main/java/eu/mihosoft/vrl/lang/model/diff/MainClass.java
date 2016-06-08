@@ -22,7 +22,6 @@ import eu.mihosoft.vrl.lang.model.diff.actions.RenameAction;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.Phases;
 import org.codehaus.groovy.control.SourceUnit;
@@ -36,25 +35,24 @@ public class MainClass {
     public static void main(String[] args) throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "class Class1 {\n"
+                + "public class Class {\n"
                 + "}\n"
-                + "class Methode1 {\n"
+                + "class Class2 {\n"
+//                + "void node(){}\n"
                 + "}"
         );
 
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                //                + "class Class1 {\n"
-                //                + "void meth(){}\n"
-                //                + "}\n"
-                + "class Methode {\n"
-//                + "}\n"
-//                + "class Node{\n"
+                + "public class Class {\n"
+                 + "void method(){}\n"
+                + "}\n"
+                + "class Class2 {\n"
                 + "}"
         );
 
-        //classAStar(sourceModel, targetModel);
-        classAStar(targetModel, sourceModel);
+        classAStar(sourceModel, targetModel);
+        //classAStar(targetModel, sourceModel);
 
         // System.out.println("Solution: ");
         // TODO: apply commands to source
@@ -88,8 +86,9 @@ public class MainClass {
         CodeEntityList target = new CodeEntityList(targetModel);
 
         HashSet set = new LinkedHashSet<>(target.getEntities());
+
         ArrayList<CodeEntity> insertList = new ArrayList<>(target.getEntities()); // doppelte Elemente 
-        insertList.remove(0);
+        insertList.remove(0); // remove CUD
 
         System.out.println("");
         System.out.println("####################################################");
@@ -107,17 +106,19 @@ public class MainClass {
         IncreaseIndexAction increaseIndex = new IncreaseIndexAction();
         DecreaseIndexAction decreaseIndex = new DecreaseIndexAction();
         DeleteAction delete = new DeleteAction();
+
         ArrayList<Action<CodeEntityList>> allActions = new ArrayList<>();
 
-        insertList.stream().forEach((entity) -> {
-            allActions.add(new InsertAction(entity));
-        });
+        allActions.add(delete);
+
         target.getEntities().stream().forEach((entity) -> {
             allActions.add(new RenameAction(entity));
         });
+        insertList.stream().forEach((entity) -> {
+            allActions.add(new InsertAction(entity));
+        });
         allActions.add(increaseIndex);
         allActions.add(decreaseIndex);
-        allActions.add(delete);
 
         System.out.println("Actions: ");
 
@@ -134,51 +135,6 @@ public class MainClass {
 
         System.out.println("done.");
         return null;
-    }
-
-    /**
-     *
-     * @param sourceList
-     * @param targetList
-     */
-    public static void aStar(List<CodeEntity> sourceList, List<CodeEntity> targetList) {
-
-        ArrayList<CodeEntity> listOfEntities = new ArrayList<CodeEntity>(new LinkedHashSet<CodeEntity>(targetList));
-        System.out.println("");
-        System.out.println("####################################################");
-        System.out.println("Source List: ");
-        for (int i = 0; i < sourceList.size(); i++) {
-            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(sourceList.get(i)));
-        }
-        System.out.println("####################################################");
-
-        System.out.println("Target List: ");
-        for (int i = 0; i < targetList.size(); i++) {
-            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(targetList.get(i)));
-        }
-
-        IncreaseIndexAction increaseIndex = new IncreaseIndexAction();
-        DecreaseIndexAction decreaseIndex = new DecreaseIndexAction();
-        DeleteAction delete = new DeleteAction();
-        ArrayList<Action<CodeEntityList>> allActions = new ArrayList<>();
-        allActions.add(increaseIndex);
-        listOfEntities.stream().forEach((entity) -> {
-            allActions.add(new RenameAction(entity));
-            allActions.add(new InsertAction(entity));
-        });
-
-        allActions.add(delete);
-        allActions.add(decreaseIndex);
-
-        WorldDescription<CodeEntityList> StringListWD
-                = new WorldDescription<>(new CodeEntityListState(new CodeEntityList(sourceList)), new CodeEntityListGoal(new CodeEntityList(targetList)),
-                        allActions, new Heuristic());
-
-        AStar<CodeEntityList> solverOND = new AStar<>(StringListWD);
-        solverOND.run();
-
-        System.out.println("done.");
-
     }
 
     public static SourceUnit fromCode(String code) throws Exception {
