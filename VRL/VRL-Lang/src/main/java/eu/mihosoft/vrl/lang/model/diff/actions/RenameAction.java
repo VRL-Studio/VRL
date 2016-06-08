@@ -22,7 +22,7 @@ import eu.mihosoft.vrl.lang.model.diff.SimilarityMetric;
  * @author Joanna Pieper <joanna.pieper@gcsc.uni-frankfurt.de>
  */
 public class RenameAction extends Action<CodeEntityList> {
-    
+
     int index = 0;
 
     public boolean verify(State<CodeEntityList> s) {
@@ -31,23 +31,24 @@ public class RenameAction extends Action<CodeEntityList> {
         effect.apply(s);
         return precond.verify(s);
     }
-    
+
     public RenameAction(CodeEntity nameEntity) {
-        
+
         setName("Rename to " + '"' + SimilarityMetric.getCodeEntityName(nameEntity) + '"');
-        
+
         precond.add(new ConditionPredicate<CodeEntityList>() {
-            
+
             @Override
             public boolean verify(State<CodeEntityList> s) {
                 s = s.clone();
                 index = s.get(0).getIndex();
-                
+
                 boolean result = false;
-                
-                if (index < s.get(0).size() && index > -1) {
-                    CodeEntity currentElement = s.get(0).get(index);
+
+                if (index > -1 && index < s.get(0).size()) {
                     
+                    CodeEntity currentElement = s.get(0).get(index);
+
                     double similarity;
                     if (nameEntity instanceof CompilationUnitDeclaration) {
                         similarity = SimilarityMetric.packageSimilarity(currentElement, nameEntity);
@@ -55,64 +56,68 @@ public class RenameAction extends Action<CodeEntityList> {
                         similarity = SimilarityMetric.nameSimilarity(currentElement, nameEntity);
                     }
                     
+                    boolean bool = true;
+                    if (nameEntity instanceof MethodDeclaration) {
+                        MethodDeclaration meth = (MethodDeclaration) nameEntity;
+                        if (meth.getName().equals("this$dist$invoke$1") || meth.getName().equals("this$dist$set$1") || meth.getName().equals("this$dist$get$1")) {
+                            bool = false;
+                        }
+                    }
                     result = similarity > 0.6
-                            && !s.get(0).compareNames(currentElement, nameEntity);
+                            && !s.get(0).compareNames(currentElement, nameEntity) && bool;
                 }
-                
-                System.out.println("RENAME-Precond: " + result);
-                
+
                 return result;
-                
+
             }
-            
+
             @Override
             public String getName() {
                 return "rename";
             }
-            
+
         });
-        
+
         effect.add(new EffectPredicate<CodeEntityList>() {
-            
+
             @Override
             public void apply(State<CodeEntityList> s) {
-                
+
                 CodeEntity currentCodeEntity = s.get(0).get(index);
-                
+
                 if (nameEntity instanceof CompilationUnitDeclaration && currentCodeEntity instanceof CompilationUnitDeclaration) {
-                    System.out.println("RENAME CompilationUnitDeclaration");
-                    IModelCommands.getInstance().setCUDeclPackageName(nameEntity, currentCodeEntity);
+                    CompilationUnitDeclaration cud = (CompilationUnitDeclaration) nameEntity;
+                    IModelCommands.getInstance().setCUDeclPackageName(cud.getPackageName(), currentCodeEntity);
                 } else if (nameEntity instanceof ClassDeclaration && currentCodeEntity instanceof ClassDeclaration) {
-                    System.out.println("RENAME ClassDeclaration");
                     ClassDeclaration cls = (ClassDeclaration) nameEntity;
                     IModelCommands.getInstance().setScopeName(cls.getName(), currentCodeEntity);
                 } else if (nameEntity instanceof MethodDeclaration && currentCodeEntity instanceof MethodDeclaration) {
-                    System.out.println("RENAME MethodDeclaration");
-                    IModelCommands.getInstance().setMethodName(nameEntity, currentCodeEntity);
+                    MethodDeclaration methName = (MethodDeclaration) nameEntity;
+                    IModelCommands.getInstance().setMethodName(methName.getName(), currentCodeEntity);
                 } else if (nameEntity instanceof Variable && currentCodeEntity instanceof Variable) {
-                    System.out.println("RENAME Variable");
-                    IModelCommands.getInstance().setVariableName(nameEntity, currentCodeEntity);
-                } 
+                    Variable variable = (Variable) nameEntity;
+                    IModelCommands.getInstance().setVariableName(variable.getName(), currentCodeEntity);
+                } else {
+                    s.get(0).setOnPos(index, nameEntity);
+                }
                 s.get(0).updateCodeEntityList(currentCodeEntity);
-                
             }
-            
+
             @Override
             public String getName() {
                 return "rename";
             }
-            
         });
     }
-    
+
     @Override
     public double getCosts(State<CodeEntityList> s) {
         return 1;
     }
-    
+
     @Override
     public String toString() {
         return getName();
     }
-    
+
 }
