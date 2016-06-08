@@ -701,20 +701,20 @@ public class SimilarityMetric {
             List<String> relationTypes = new ArrayList();
             relationTypes.add("parent");
             if (e1 instanceof Invocation) {
-                relationTypes.add("argument");
+            //    relationTypes.add("argument");
             } else if (e1 instanceof Scope) {
-                relationTypes.add("scope");
+              //  relationTypes.add("scope");
                 if (e1 instanceof CompilationUnitDeclaration) {
                     relationTypes.add("class");
                 } else if (e1 instanceof ClassDeclaration) {
                     relationTypes.add("method");
-                    relationTypes.add("implClass");
+               //     relationTypes.add("implClass");
                 } else if (e1 instanceof MethodDeclaration) {
-                    relationTypes.add("parameter");
-                    relationTypes.add("modifier");
+                 //   relationTypes.add("parameter");
+                   // relationTypes.add("modifier");
                 }
                 relationTypes.add("variable");
-                relationTypes.add("comment");
+                //relationTypes.add("comment");
             }
 
             int N = relationTypes.size();
@@ -725,17 +725,21 @@ public class SimilarityMetric {
             String e2Name = getCodeEntityName(e2);
 
             if (e1 instanceof Scope || e1 instanceof Variable) {
-                nameSimilarity = nameSimilarity(e1Name, e2Name);
-                System.out.println("Name Similarity von " + e1Name + " und " + e2Name + " ist: " + nameSimilarity);
+                if (e1 instanceof CompilationUnitDeclaration) {
+                    nameSimilarity = packageSimilarity(e1, e2);
+                } else {
+                    nameSimilarity = nameSimilarity(e1Name, e2Name);
+                }
+//                System.out.println("Name Similarity von " + e1Name + " und " + e2Name + " ist: " + nameSimilarity);
             } else {
                 nameSimilarity = wordsSimilarity(e1Name, e2Name);
-                System.out.println("Words Similarity von " + e1Name + " und " + e2Name + " ist: " + nameSimilarity);
+//                System.out.println("Words Similarity von " + e1Name + " und " + e2Name + " ist: " + nameSimilarity);
             }
 
             for (String type : relationTypes) {
                 metric += structureSimilarity(e1, e2, type);
-                System.out.println("Metric " + metric);
-                System.out.println("--------------------------------------------");
+//                System.out.println("Metric " + metric);
+//                System.out.println("--------------------------------------------");
             }
             similarity = (nameSimilarity + metric) / (nameSimilarity + N);
         }
