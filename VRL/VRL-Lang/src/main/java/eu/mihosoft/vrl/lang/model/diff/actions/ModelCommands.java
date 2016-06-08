@@ -37,6 +37,10 @@ enum ModelCommands implements IModelCommands {
     @Override
     public void removeScope(CodeEntity scope) {
         Scope cud = (Scope) scope;
+        Scope parent = (Scope) cud.getParent();
+        if (parent != null) {
+            parent.getScopes().remove(cud);
+        }
     }
 
     @Override
@@ -57,7 +61,6 @@ enum ModelCommands implements IModelCommands {
     @Override
     public void setScopeName(String ceName, CodeEntity codeEntity) {
         Scope scope = (Scope) codeEntity;
-        //  Scope scopeName = (Scope) ceName;
         scope.setName(ceName);
     }
 
@@ -79,11 +82,10 @@ enum ModelCommands implements IModelCommands {
 
     //COMPILATION UNIT DECLARATION
     @Override
-    public CompilationUnitDeclaration removeClassFromCUD(CodeEntity cud, CodeEntity cls) {
+    public void removeClassFromCUD(CodeEntity cud, CodeEntity cls) {
         CompilationUnitDeclaration cuDecl = (CompilationUnitDeclaration) cud;
         ClassDeclaration classDeclaration = (ClassDeclaration) cls;
         cuDecl.getDeclaredClasses().remove(classDeclaration);
-        return cuDecl;
     }
 
     @Override
@@ -101,10 +103,9 @@ enum ModelCommands implements IModelCommands {
     }
 
     @Override
-    public void setCUDeclPackageName(CodeEntity cudName, CodeEntity codeEntity) {
+    public void setCUDeclPackageName(String packageName, CodeEntity codeEntity) {
         CompilationUnitDeclaration cuDecl = (CompilationUnitDeclaration) codeEntity;
-        CompilationUnitDeclaration nameCUD = (CompilationUnitDeclaration) cudName;
-        cuDecl.setPackageName(nameCUD.getPackageName());
+        cuDecl.setPackageName(packageName);
     }
 
     @Override
@@ -116,7 +117,7 @@ enum ModelCommands implements IModelCommands {
     // CLASS
     @Override
     public ClassDeclaration removeMethodFromClass(ClassDeclaration cls, MethodDeclaration method) {
-       
+
         cls.getDeclaredMethods().remove(method);
 
         return cls;
@@ -178,10 +179,9 @@ enum ModelCommands implements IModelCommands {
     }
 
     @Override
-    public void setMethodName(CodeEntity methName, CodeEntity codeEntity) {
+    public void setMethodName(String methName, CodeEntity codeEntity) {
         MethodDeclaration methodDeclaration = (MethodDeclaration) codeEntity;
-        MethodDeclaration mName = (MethodDeclaration) methName;
-        methodDeclaration.setName(mName.getName());
+        methodDeclaration.setName(methName);
 
     }
 
@@ -205,10 +205,9 @@ enum ModelCommands implements IModelCommands {
 
     //VARIABLE
     @Override
-    public void setVariableName(CodeEntity varName, CodeEntity codeEntity) {
+    public void setVariableName(String varName, CodeEntity codeEntity) {
         Variable variable = (Variable) codeEntity;
-        Variable vName = (Variable) varName;
-        variable.setName(vName.getName());
+        variable.setName(varName);
     }
 
     @Override

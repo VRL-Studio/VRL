@@ -7,7 +7,6 @@ package eu.mihosoft.vrl.lang.model.diff.actions;
 
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
-import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IExtends;
 import eu.mihosoft.vrl.lang.model.IModifiers;
@@ -42,13 +41,13 @@ public interface IModelCommands {
     void removeVariableFromScope(CodeEntity scope, CodeEntity variable);
 
     //COMPILATION UNIT DECLARATION
-    CompilationUnitDeclaration removeClassFromCUD(CodeEntity cud, CodeEntity cls);
+    void removeClassFromCUD(CodeEntity cud, CodeEntity cls);
 
     void insertClassToCUD(CodeEntity cud, CodeEntity cls);
 
     void insertClassToCUD(CodeEntity cud, int pos, CodeEntity cls);
 
-    void setCUDeclPackageName(CodeEntity cudName, CodeEntity codeEntity);
+    void setCUDeclPackageName(String packageName, CodeEntity codeEntity);
 
     void setCUDeclFileName(String name, CodeEntity codeEntity);
 
@@ -72,7 +71,7 @@ public interface IModelCommands {
 
     void insertVariableToMethod(CodeEntity method, CodeEntity variable);
 
-    void setMethodName(CodeEntity methName, CodeEntity codeEntity);
+    void setMethodName(String methName, CodeEntity codeEntity);
 
     void setMethodModifiers(IModifiers modifiers, CodeEntity codeEntity);
 
@@ -81,7 +80,7 @@ public interface IModelCommands {
     void setMethodReturnType(IType type, CodeEntity codeEntity);
 
     // VARIABLE
-    void setVariableName(CodeEntity varName, CodeEntity codeEntity);
+    void setVariableName(String varName, CodeEntity codeEntity);
 
     void setVariableType(IType type, CodeEntity codeEntity);
 
