@@ -13,6 +13,8 @@ import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.diff.CodeEntityList;
 
 /**
@@ -29,6 +31,7 @@ public class DeleteAction extends Action<CodeEntityList> {
     }
 
     int index;
+    int cost = 1;
 
     public DeleteAction() {
 
@@ -41,6 +44,10 @@ public class DeleteAction extends Action<CodeEntityList> {
                 s = s.clone();
 
                 index = s.get(0).getIndex();
+                if (index < s.get(0).size() && index > 0) {
+                    cost = CodeEntityList.subtreeSize((Scope) s.get(0).get(index));
+                }
+
                 boolean bool = true;
                 if (index < s.get(0).size()) {
                     if (s.get(0).get(index) instanceof MethodDeclaration) {
@@ -68,7 +75,7 @@ public class DeleteAction extends Action<CodeEntityList> {
                 if (currentEntity instanceof ClassDeclaration && currentEntity.getParent() instanceof CompilationUnitDeclaration) {
                     CompilationUnitDeclaration cud = (CompilationUnitDeclaration) currentEntity.getParent();
                     ClassDeclaration cd = (ClassDeclaration) currentEntity;
-                    if (cud.getDeclaredClasses().size() > 1) {
+                    if (cud.getDeclaredClasses().size() > 0) {
                         IModelCommands.getInstance().removeScope(cud, cd);
                         s.get(0).updateCodeEntityList(cud);
                     }
@@ -77,6 +84,12 @@ public class DeleteAction extends Action<CodeEntityList> {
                     MethodDeclaration meth = (MethodDeclaration) currentEntity;
                     IModelCommands.getInstance().removeMethodFromClass(cd, meth);
                     s.get(0).updateCodeEntityList(cd);
+                } else if (currentEntity instanceof Variable) {
+                    if (currentEntity.getParent() instanceof ClassDeclaration) {
+                        System.out.println("Variable and ClassDeclaration");
+                    } else if (currentEntity.getParent() instanceof MethodDeclaration) {
+                        System.out.println("Variable and MethodDeclaration");
+                    }
                 }
             }
 
@@ -85,11 +98,10 @@ public class DeleteAction extends Action<CodeEntityList> {
                 return "delete";
             }
         });
-
     }
 
     @Override
     public double getCosts(State<CodeEntityList> s) {
-        return 1;
+        return cost;
     }
 }
