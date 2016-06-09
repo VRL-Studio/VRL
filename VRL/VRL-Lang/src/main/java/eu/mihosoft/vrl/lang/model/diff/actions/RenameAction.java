@@ -46,7 +46,7 @@ public class RenameAction extends Action<CodeEntityList> {
                 boolean result = false;
 
                 if (index > -1 && index < s.get(0).size()) {
-                    
+
                     CodeEntity currentElement = s.get(0).get(index);
 
                     double similarity;
@@ -55,7 +55,7 @@ public class RenameAction extends Action<CodeEntityList> {
                     } else {
                         similarity = SimilarityMetric.nameSimilarity(currentElement, nameEntity);
                     }
-                    
+
                     boolean bool = true;
                     if (nameEntity instanceof MethodDeclaration) {
                         MethodDeclaration meth = (MethodDeclaration) nameEntity;
@@ -88,19 +88,21 @@ public class RenameAction extends Action<CodeEntityList> {
                 if (nameEntity instanceof CompilationUnitDeclaration && currentCodeEntity instanceof CompilationUnitDeclaration) {
                     CompilationUnitDeclaration cud = (CompilationUnitDeclaration) nameEntity;
                     IModelCommands.getInstance().setCUDeclPackageName(cud.getPackageName(), currentCodeEntity);
+                    s.get(0).updateCodeEntityList(currentCodeEntity);
                 } else if (nameEntity instanceof ClassDeclaration && currentCodeEntity instanceof ClassDeclaration) {
                     ClassDeclaration cls = (ClassDeclaration) nameEntity;
                     IModelCommands.getInstance().setScopeName(cls.getName(), currentCodeEntity);
+                    s.get(0).updateCodeEntityList(currentCodeEntity);
                 } else if (nameEntity instanceof MethodDeclaration && currentCodeEntity instanceof MethodDeclaration) {
                     MethodDeclaration methName = (MethodDeclaration) nameEntity;
                     IModelCommands.getInstance().setMethodName(methName.getName(), currentCodeEntity);
+                    s.get(0).updateCodeEntityList(currentCodeEntity);
                 } else if (nameEntity instanceof Variable && currentCodeEntity instanceof Variable) {
                     Variable variable = (Variable) nameEntity;
                     IModelCommands.getInstance().setVariableName(variable.getName(), currentCodeEntity);
-                } else {
-                    s.get(0).setOnPos(index, nameEntity);
+                    s.get(0).updateCodeEntityList(currentCodeEntity);
                 }
-                s.get(0).updateCodeEntityList(currentCodeEntity);
+
             }
 
             @Override

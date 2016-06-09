@@ -27,7 +27,7 @@ import org.codehaus.groovy.control.SourceUnit;
 public class CodeEntityList {
 
     private List<CodeEntity> entities = new ArrayList<>();
-    private int index = 0;
+    private int index;
 
     /**
      * empty constructor
@@ -36,6 +36,7 @@ public class CodeEntityList {
     }
 
     public CodeEntityList(CompilationUnitDeclaration root) {
+        index = 0;
         this.entities = convertTreeToList(root);
     }
 
@@ -340,10 +341,10 @@ public class CodeEntityList {
             }
         });
 
-        for (int i = 0; i < codeEntities.size(); i++) {
-            System.out.println("Update: " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)));
-        }
-        setEntities(codeEntities);
+//        for (int i = 0; i < codeEntities.size(); i++) {
+//            System.out.println("Update: " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)));
+//        }
+        this.setEntities(codeEntities);
     }
 
     /**

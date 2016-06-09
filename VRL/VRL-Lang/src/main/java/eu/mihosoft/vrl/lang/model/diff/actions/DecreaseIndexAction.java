@@ -25,19 +25,22 @@ public class DecreaseIndexAction extends Action<CodeEntityList> {
 
     public DecreaseIndexAction() {
         setName("decrease index: i--");
-        
+
         precond.add(new ConditionPredicate<CodeEntityList>() {
 
             @Override
             public boolean verify(State<CodeEntityList> s) {
 
                 s = s.clone();
-                int index = s.get(0).getIndex() - 1;
-                return index > 0;
+                int index = s.get(0).getIndex();
+                System.out.println("decrease Index " + index);
+                System.out.println("decrease " + (index > 0));
+                return index > 0;// && s.get(0).size() > 0;
             }
 
             @Override
             public String getName() {
+
                 return "decrease index";
             }
         });
@@ -47,6 +50,7 @@ public class DecreaseIndexAction extends Action<CodeEntityList> {
             @Override
             public void apply(State<CodeEntityList> s) {
                 s.get(0).decreaseIndex();
+                System.out.println("DECREASE INDEX ausgeführt");
             }
 
             @Override

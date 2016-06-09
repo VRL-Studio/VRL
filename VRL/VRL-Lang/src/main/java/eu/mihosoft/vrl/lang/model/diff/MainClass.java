@@ -35,19 +35,22 @@ public class MainClass {
     public static void main(String[] args) throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "public class NewCls {\n"
-                + "void node(){}\n"
+                + "public class Class{\n"
                 + "}\n"
-                + "class Class2 {\n"
+                + "class Methode {\n"
+                + "}\n"
+                + "class Cls {\n"
                 + "}"
         );
 
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "public class NewCls {\n"
+                + "public class Class{\n"
                 + "}\n"
-                + "class Class2 {\n"
-                + "void method(){}\n"
+                + "class Methode {\n"
+                + "}\n"
+                + "class Cls {\n"
+                + "void meth(){}\n"
                 + "}"
         );
 

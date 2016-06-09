@@ -47,6 +47,9 @@ public class InsertAction extends Action<CodeEntityList> {
                 index = s.get(0).getIndex();
                 cost = CodeEntityList.subtreeSize((Scope) entity);
 
+                if(cost == 0){
+                    cost = 1;
+                }
                 boolean bool = true;
                 if (entity instanceof MethodDeclaration) {
                     MethodDeclaration meth = (MethodDeclaration) entity;
@@ -93,11 +96,12 @@ public class InsertAction extends Action<CodeEntityList> {
                     } else if (entity instanceof MethodDeclaration) {
                         MethodDeclaration meth = (MethodDeclaration) entity;
                         IModelCommands.getInstance().insertMethodToClass(class1, 0, meth);
+                        s.get(0).updateCodeEntityList(preCodeEntity);
                     } else if (entity instanceof Variable) {
                         Variable var = (Variable) entity;
                         IModelCommands.getInstance().insertScope(class1, 0, var);
                     }
-                    s.get(0).updateCodeEntityList(class1);
+                    s.get(0).updateCodeEntityList(preCodeEntity);
                 } else if (preCodeEntity instanceof MethodDeclaration) {
                     MethodDeclaration meth1 = (MethodDeclaration) preCodeEntity;
                     ClassDeclaration class1 = (ClassDeclaration) meth1.getParent();

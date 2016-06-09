@@ -33,7 +33,7 @@ public class InsertElementTest {
         );
 
         CodeEntityList source = new CodeEntityList(sourceModel);
-        
+
         CodeEntityList target = new CodeEntityList(source, true);
 
         IModelCommands commands = IModelCommands.getInstance();
@@ -41,15 +41,12 @@ public class InsertElementTest {
         CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
         ClassDeclaration cls = sourceModel.getDeclaredClasses().get(0);
 
-        
-        
-        
         System.out.println("SOURCE MODEL: ");
         System.out.println(Scope2Code.getCode(sourceModel));
-        
+
         commands.setScopeName("InsertedClass", cls);
         commands.insertScope(targetModel, 0, cls);
-        
+
         System.out.println("TARGET MODEL: ");
         System.out.println(Scope2Code.getCode(targetModel));
 
@@ -78,7 +75,7 @@ public class InsertElementTest {
         CodeEntityList target = new CodeEntityList(source, true);
 
         IModelCommands commands = IModelCommands.getInstance();
-        
+
         CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
 
         ClassDeclaration clsTarget = targetModel.getDeclaredClasses().get(0);
@@ -86,10 +83,10 @@ public class InsertElementTest {
 
         System.out.println("SOURCE MODEL: ");
         System.out.println(Scope2Code.getCode(sourceModel));
-        
-         commands.setScopeName("InsertedClass", clsSource);
-        commands.insertScope(targetModel, targetModel.getDeclaredClasses().indexOf(clsTarget)+1, clsSource);
-        
+
+        commands.setScopeName("InsertedClass", clsSource);
+        commands.insertScope(targetModel, targetModel.getDeclaredClasses().indexOf(clsTarget) + 1, clsSource);
+
         System.out.println("TARGET MODEL: ");
         System.out.println(Scope2Code.getCode(targetModel));
 
@@ -101,7 +98,8 @@ public class InsertElementTest {
         Assert.assertFalse("States with different names must not be equal:", source.equals(target));
 
     }
-   //@Test
+
+    //@Test
     public void testInsertClassEndOfList() throws Exception { // (targetModel, ... , cls1, cls2)
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
@@ -117,17 +115,17 @@ public class InsertElementTest {
         CodeEntityList target = new CodeEntityList(source, true);
 
         IModelCommands commands = IModelCommands.getInstance();
-        
+
         CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
 
         ClassDeclaration clsSource = sourceModel.getDeclaredClasses().get(0);
 
         System.out.println("SOURCE MODEL: ");
         System.out.println(Scope2Code.getCode(sourceModel));
-        
-         commands.setScopeName("InsertedClass", clsSource);
+
+        commands.setScopeName("InsertedClass", clsSource);
         commands.insertScope(targetModel, clsSource);
-        
+
         System.out.println("TARGET MODEL: ");
         System.out.println(Scope2Code.getCode(targetModel));
 
@@ -139,16 +137,16 @@ public class InsertElementTest {
         Assert.assertFalse("States with different names must not be equal:", source.equals(target));
 
     }
-    
+
     @Test
     public void testInsertMethod() throws Exception { // (targetModel, cls, ....)
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
                 + "class Class1 {\n"
                 + "void method1(){}\n"
+                + "void method2(){}\n"
                 + "}\n"
                 + "class Class2 {\n"
-                + "void method2(){}\n"
                 + "}"
         );
 
@@ -159,15 +157,15 @@ public class InsertElementTest {
 
         CompilationUnitDeclaration targetModel = (CompilationUnitDeclaration) target.get(0);
         ClassDeclaration class2 = targetModel.getDeclaredClasses().get(1);
-        MethodDeclaration meth1 = sourceModel.getDeclaredClasses().get(1).getDeclaredMethods().get(0);
+        MethodDeclaration meth1 = sourceModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0);
 
         System.out.println("SOURCE MODEL: ");
         System.out.println(Scope2Code.getCode(sourceModel));
-        commands.insertMethodToClass(class2, class2.getDeclaredMethods().size(), meth1);
+        commands.insertMethodToClass(class2, 0, meth1);
         System.out.println("TARGET MODEL: ");
         System.out.println(Scope2Code.getCode(targetModel));
         target.updateCodeEntityList(targetModel);
-             target.updateCodeEntityList(targetModel);
+        target.updateCodeEntityList(targetModel);
         System.out.println("source==target: " + source.equals(target));
         System.out.println("");
 

@@ -47,6 +47,10 @@ public class DeleteAction extends Action<CodeEntityList> {
                 if (index < s.get(0).size() && index > 0) {
                     cost = CodeEntityList.subtreeSize((Scope) s.get(0).get(index));
                 }
+                
+                if(cost == 0){
+                    cost = 1;
+                }
 
                 boolean bool = true;
                 if (index < s.get(0).size()) {
