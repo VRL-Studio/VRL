@@ -9,6 +9,7 @@ import eu.mihosoft.ai.astar.Action;
 import eu.mihosoft.ai.astar.ConditionPredicate;
 import eu.mihosoft.ai.astar.EffectPredicate;
 import eu.mihosoft.ai.astar.State;
+import eu.mihosoft.vrl.lang.VLangUtilsNew;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
@@ -44,31 +45,43 @@ public class RenameAction extends Action<CodeEntityList> {
                 index = s.get(0).getIndex();
 
                 boolean result = false;
+                boolean bool = true;
 
                 if (index > -1 && index < s.get(0).size()) {
 
                     CodeEntity currentElement = s.get(0).get(index);
 
-                    double similarity;
-                    if (nameEntity instanceof CompilationUnitDeclaration) {
-                        similarity = SimilarityMetric.packageSimilarity(currentElement, nameEntity);
-                    } else {
-                        similarity = SimilarityMetric.nameSimilarity(currentElement, nameEntity);
-                    }
-
-                    boolean bool = true;
-                    if (nameEntity instanceof MethodDeclaration) {
+                    if (nameEntity instanceof ClassDeclaration) {
+                        ClassDeclaration cls = (ClassDeclaration) nameEntity;
+                        String name = VLangUtilsNew.shortNameFromFullClassName(cls.getName());
+                        if (s.get(0).getNames().contains(name)) {
+                            int elemPos = s.get(0).getNames().indexOf(name);
+                            if (s.get(0).get(elemPos) instanceof ClassDeclaration) {
+                                bool = false;
+                            }
+                        }
+                    } else if (nameEntity instanceof MethodDeclaration) {
                         MethodDeclaration meth = (MethodDeclaration) nameEntity;
                         if (meth.getName().equals("this$dist$invoke$1") || meth.getName().equals("this$dist$set$1") || meth.getName().equals("this$dist$get$1")) {
                             bool = false;
                         }
                     }
+
+                    double similarity = 0;
+                    if (bool) {
+                        if (nameEntity instanceof CompilationUnitDeclaration) {
+                            similarity = SimilarityMetric.packageSimilarity(currentElement, nameEntity);
+                        } else {
+                            similarity = SimilarityMetric.nameSimilarity(currentElement, nameEntity);
+                        }
+                    }
+
                     result = similarity > 0.6
-                            && !s.get(0).compareNames(currentElement, nameEntity) && bool;
+                            && !s.get(0).compareNames(currentElement, nameEntity);
+
                 }
 
                 return result;
-
             }
 
             @Override
