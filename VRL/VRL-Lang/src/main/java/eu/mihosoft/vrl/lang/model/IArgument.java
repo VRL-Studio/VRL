@@ -18,4 +18,6 @@ public interface IArgument extends CodeEntity {
     public Optional<Invocation> getInvocation();
     public Optional<ConstantValue> getConstant();
     public IType getType();
+    
+    public void setConstType(IType type);
 }

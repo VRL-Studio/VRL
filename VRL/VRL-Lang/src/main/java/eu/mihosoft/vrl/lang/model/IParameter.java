@@ -66,6 +66,8 @@ public interface IParameter {
      */
     IType getType();
     
+    void setType(IType type);
+    
     ICodeRange getRange();
     
 }

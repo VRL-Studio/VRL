@@ -17,7 +17,7 @@ public final class Argument extends CodeEntityImpl implements IArgument {
     private final Variable variable;
     private final ConstantValue constant;
     private final Invocation invocation;
-    private final IType constType;
+    private  IType constType;// final
 
     public static final IArgument NULL = new Argument(ArgumentType.NULL, null, null, null, null);
 
@@ -85,6 +85,11 @@ public final class Argument extends CodeEntityImpl implements IArgument {
     @Override
     public String toString() {
         return "[Argument: argType=" + getArgType() + ", type=" + getType() + "]";
+    }
+
+    @Override
+    public void setConstType(IType type) {
+        this.constType = type;
     }
 
 }

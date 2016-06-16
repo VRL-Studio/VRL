@@ -5,11 +5,15 @@
  */
 package eu.mihosoft.vrl.lang.model.diff.actions;
 
+import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.model.ConstantValue;
 import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.Parameter;
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.Variable;
 
 /**
  *
@@ -24,18 +28,41 @@ public class RefactoringUtils {
                 ClassDeclaration classDecl = (ClassDeclaration) e;
                 if (classDecl.getClassType().equals(from)) {
                     IModelCommands.getInstance().setClassType(to, classDecl);
+                    System.out.println("Class Declaration set Type");
                 }
             } else if (e instanceof MethodDeclaration) {
-                // ...
-            }
+                MethodDeclaration methDecl = (MethodDeclaration) e;
+                if (methDecl.getReturnType().equals(from)) {
+                    IModelCommands.getInstance().setMethodReturnType(to, methDecl);
+                }
+            } else if (e instanceof Argument) {
+                Argument arg = (Argument) e;
+                if (arg.getType().equals(from)) {
+                    IModelCommands.getInstance().setConstTypeInArgument(to, arg);
+                }
+            } else if (e instanceof ConstantValue) {
+                ConstantValue cv = (ConstantValue) e;
+                if (cv.getType().equals(from)) {
+                    IModelCommands.getInstance().setTypeInConstValue(to, cv);
+                }
+            } else if (e instanceof Parameter) {
+                Parameter param = (Parameter) e;
+                if (param.getType().equals(from)) {
+                    IModelCommands.getInstance().setTypeInParameter(to, e);
+                }
+            } else if (e instanceof Variable) {
+                Variable var = (Variable) e;
+                if (var.getType().equals(from)) {
+                    IModelCommands.getInstance().setVariableType(to, var);
+                }
 
-            // ...
+            }
         });
     }
-    
+
     public static void renameMethodRefactoring(MethodDeclaration mDecl, String newName, Scope cDecl) {
         cDecl.visitScopeAndAllSubElements((e) -> {
-            
+
             System.out.println("E: " + e.getId());
 
             if (e instanceof ClassDeclaration) {
@@ -45,11 +72,11 @@ public class RefactoringUtils {
                 }
             } else if (e instanceof MethodDeclaration) {
                 MethodDeclaration mD = (MethodDeclaration) e;
-                      
+
             }
 
             // ...
         });
     }
-    
+
 }

@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.lang.VLangUtilsNew;
@@ -58,7 +57,7 @@ import eu.mihosoft.vrl.lang.VLangUtilsNew;
  */
 public class Parameter implements IParameter {
 
-    private final IType type;
+    private IType type; //final
     private final String name;
     private final ICodeRange range;
 
@@ -69,7 +68,7 @@ public class Parameter implements IParameter {
 
         validate();
     }
-    
+
     public Parameter(IType type, String name, ICodeRange range) {
         this.type = type;
         this.name = name;
@@ -104,9 +103,14 @@ public class Parameter implements IParameter {
     public ICodeRange getRange() {
         return range;
     }
-    
+
     public static IParameter fromParameter(java.lang.reflect.Parameter p) {
         return new Parameter(Type.fromClass(p.getType()), p.getName());
+    }
+
+    @Override
+    public void setType(IType type) {
+        this.type = type;
     }
 
 }

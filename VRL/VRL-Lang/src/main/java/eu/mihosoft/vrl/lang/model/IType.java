@@ -57,6 +57,8 @@ package eu.mihosoft.vrl.lang.model;
 public interface IType {
 
     String getFullClassName();
+    
+    void setFullClassName(String name);
 
     /**
      * @return the packageName

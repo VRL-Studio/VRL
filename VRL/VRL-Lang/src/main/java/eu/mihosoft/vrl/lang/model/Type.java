@@ -59,8 +59,8 @@ import java.util.Objects;
  */
 public final class Type implements IType {
 
-    private final String packageName;
-    private final String shortName; 
+    private  String packageName; //final
+    private  String shortName; //final
     private final boolean isReturnOrParamType;
 
     private final IType componentType;
@@ -245,6 +245,12 @@ public final class Type implements IType {
                 return getFullClassName();
             }
         }
+    }
+
+    @Override
+    public void setFullClassName(String name) {
+        this.packageName = VLangUtilsNew.packageNameFromFullClassName(name);
+        this.shortName = VLangUtilsNew.shortNameFromFullClassName(name);
     }
 
 }

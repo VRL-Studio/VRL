@@ -97,4 +97,13 @@ public interface IModelCommands {
     // DECLARATION INVOCATION 
     void setVariableInDeclInvocation(Variable var, DeclarationInvocation declInv);
 
+    //ARGUMENT
+    void setConstTypeInArgument(IType type, CodeEntity codeEntity);
+
+    //CONSTANT VALUE
+    void setTypeInConstValue(IType type, CodeEntity codeEntity);
+
+    // PARAMETER
+    void setTypeInParameter(IType type, CodeEntity codeEntity);
+
 }

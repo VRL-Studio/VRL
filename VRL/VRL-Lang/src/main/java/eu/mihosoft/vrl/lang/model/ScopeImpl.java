@@ -324,8 +324,8 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
         }
 
         if (getVariable(varName) != null) {
-            System.err.println("Variable '" + varName
-                    + "' hides variable in enclosing block!");
+//            System.err.println("Variable '" + varName
+//                    + "' hides variable in enclosing block!");
         }
 
         Variable variable = new VariableImpl(this, type, varName, null, false,
