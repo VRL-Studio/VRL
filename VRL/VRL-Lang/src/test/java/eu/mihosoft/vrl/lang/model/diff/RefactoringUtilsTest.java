@@ -22,7 +22,10 @@ public class RefactoringUtilsTest {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
                 + "class Class1 {\n"
-                + "void method11(){}\n"
+                + "Class1(){}\n"
+                + "String method11(){\n"
+                + "return null; \n"
+                + "}\n"
                 + "void method12(){}\n"
                 + "}"
         );
@@ -37,11 +40,13 @@ public class RefactoringUtilsTest {
 
         CodeEntityList source = new CodeEntityList(sourceModel);
 
-        CodeEntityList target = new CodeEntityList(targetModel);
+        CodeEntityList target = new CodeEntityList(source, true);
 
         RefactoringUtils.renameClassRefactoring(sourceModel.getDeclaredClasses().get(0).getClassType(), targetModel.getDeclaredClasses().get(0).getClassType(), sourceModel);
-      
-  source.updateCodeEntityList(sourceModel);
+
+        System.out.println("Class Type " + sourceModel.getDeclaredClasses().get(0).getClassType().getFullClassName());
+
+        source.updateCodeEntityList(sourceModel);
 
         System.out.println("source==target: " + source.equals(target));
 

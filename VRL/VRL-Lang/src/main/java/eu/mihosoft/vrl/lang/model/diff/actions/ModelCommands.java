@@ -120,9 +120,7 @@ enum ModelCommands implements IModelCommands {
     // CLASS
     @Override
     public ClassDeclaration removeMethodFromClass(ClassDeclaration cls, MethodDeclaration method) {
-
         cls.getDeclaredMethods().remove(method);
-
         return cls;
     }
 
@@ -144,6 +142,7 @@ enum ModelCommands implements IModelCommands {
     public void setClassType(IType type, CodeEntity codeEntity) {
         ClassDeclaration classDeclaration = (ClassDeclaration) codeEntity;
         classDeclaration.setClassType(type);
+        
     }
 
     @Override

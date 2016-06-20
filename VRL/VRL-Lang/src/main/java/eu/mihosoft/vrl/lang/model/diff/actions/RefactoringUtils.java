@@ -28,32 +28,38 @@ public class RefactoringUtils {
                 ClassDeclaration classDecl = (ClassDeclaration) e;
                 if (classDecl.getClassType().equals(from)) {
                     IModelCommands.getInstance().setClassType(to, classDecl);
+                    IModelCommands.getInstance().setScopeName(to.getShortName(), classDecl);
                     System.out.println("Class Declaration set Type");
                 }
             } else if (e instanceof MethodDeclaration) {
                 MethodDeclaration methDecl = (MethodDeclaration) e;
                 if (methDecl.getReturnType().equals(from)) {
                     IModelCommands.getInstance().setMethodReturnType(to, methDecl);
+                    System.out.println("MethodDeclaration set Type");
                 }
             } else if (e instanceof Argument) {
                 Argument arg = (Argument) e;
                 if (arg.getType().equals(from)) {
                     IModelCommands.getInstance().setConstTypeInArgument(to, arg);
+                    System.out.println("Argument set Type");
                 }
             } else if (e instanceof ConstantValue) {
                 ConstantValue cv = (ConstantValue) e;
                 if (cv.getType().equals(from)) {
                     IModelCommands.getInstance().setTypeInConstValue(to, cv);
+                    System.out.println("ConstantValue set Type");
                 }
             } else if (e instanceof Parameter) {
                 Parameter param = (Parameter) e;
                 if (param.getType().equals(from)) {
                     IModelCommands.getInstance().setTypeInParameter(to, e);
+                    System.out.println("Parameter set Type");
                 }
             } else if (e instanceof Variable) {
                 Variable var = (Variable) e;
                 if (var.getType().equals(from)) {
                     IModelCommands.getInstance().setVariableType(to, var);
+                    System.out.println("Variable set Type");
                 }
 
             }
