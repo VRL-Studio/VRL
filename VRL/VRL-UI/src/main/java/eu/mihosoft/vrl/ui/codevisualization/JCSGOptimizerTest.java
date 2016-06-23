@@ -12,6 +12,7 @@ import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.transform.BooleanJCSGOptimizer;
 import eu.mihosoft.vrl.lang.model.transform.InstrumentCode;
 import groovy.lang.GroovyClassLoader;
+import java.util.Objects;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 
@@ -42,14 +43,20 @@ public class JCSGOptimizerTest {
                 + "         CSG csg1 = new Cube().toCSG();\n"
                 + "         CSG csg2 = new Sphere().toCSG();\n"
                 + "         // case 1 (no side effects)\n"
-                + "         csg1.union(csg2);"
+                + "         csg1.union(csg2);\n"
                 + "         // case 2 (self union)\n"
-                + "         CSG csg3 = csg1.union(csg1);"
+                + "         CSG csg3 = csg1.union(csg1);\n"
                 + "         // case 3 (self intersect)\n"
-                + "         CSG csg4 = csg1.intersect(csg1);"
+                + "         CSG csg4 = csg1.intersect(csg1);\n"
+                + "         // chained case 1\n"
+                + "         CSG csg5 = csg1.union(csg1.intersect(csg1))\n"
+                + "         // chained case 2\n"
+                + "         csg1.union(csg1.intersect(csg2))\n"
+                + "         // chained case 3\n"
+                + "         CSG csg6 = csg3.difference(csg1.union(csg2))\n"
                 + "    }\n"
                 + "}";
-        
+
         System.out.println("old code:\n\n" + code);
 
         // compile the code and execute model importer
@@ -64,11 +71,21 @@ public class JCSGOptimizerTest {
                 = (CompilationUnitDeclaration) UIBinding.scopes.values().
                 iterator().next().get(0);
 
-        // apply transformation
-        cud = new BooleanJCSGOptimizer().transform(cud);
+        String newCode = null;
+        String prevNewCode = null;
+        int counter = 0;
+        while (!Objects.equals(newCode, prevNewCode) || newCode==null) {
+            
+            System.out.println("-- PASS " + ++counter + " --");
+            prevNewCode = newCode;
 
-        // model -> code
-        String newCode = Scope2Code.getCode(cud);
-        System.out.println("\nnew code:\n\n"+ newCode);
+            // apply transformation
+            cud = new BooleanJCSGOptimizer().transform(cud);
+
+            // model -> code
+            newCode = Scope2Code.getCode(cud);
+        }
+
+        System.out.println("\nnew code:\n\n" + newCode);
     }
 }
