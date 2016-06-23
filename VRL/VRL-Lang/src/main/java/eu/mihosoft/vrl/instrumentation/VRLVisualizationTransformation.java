@@ -812,7 +812,8 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         if (s.getObjectExpression() instanceof VariableExpression) {
             VariableExpression ve = (VariableExpression) s.getObjectExpression();
             objectName = ve.getName();
-            objectProvider = ObjectProvider.fromVariable(ve.getName());
+            objectProvider = ObjectProvider.fromVariable(ve.getName(),
+                    new Type(ve.getType().getName()));
         } else if (s.getObjectExpression() instanceof ClassExpression) {
 //            isStatic = true;
             ClassExpression ce = (ClassExpression) s.getObjectExpression();
