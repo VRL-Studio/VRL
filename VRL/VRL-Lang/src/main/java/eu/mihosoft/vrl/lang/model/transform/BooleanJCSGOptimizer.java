@@ -114,7 +114,7 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
     }
 
     private boolean transformSelfUnionAndIntersection(Invocation inv, Invocation nextInv) {
-        if (isArgOfNext(inv, nextInv)) {
+        if (isArgOfNext(inv, nextInv) && objNameEqArgName().test(inv)) {
             System.out.println("-> csg is arg");
             final Invocation nextInvF = nextInv;
             // search argument indices
@@ -124,6 +124,7 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
                             orElse(null), inv)).
                     mapToInt(a -> nextInvF.
                             getArguments().indexOf(a)).toArray();
+            
             // replace args
             for (int aIndex : argumentsToReplace) {
                 System.out.println("-> replace arg " + aIndex);
@@ -133,7 +134,7 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
 
             return true;
 
-        } else if (isObjProviderOfNext(inv, nextInv)) {
+        } else if (isObjProviderOfNext(inv, nextInv) && objNameEqArgName().test(inv)) {
             System.out.println("-> csg is objProvider");
             Variable v = inv.getArguments().get(0).getVariable().get();
             nextInv.setObjectProvider(ObjectProvider.fromVariable(v.getName(),v.getType()));
