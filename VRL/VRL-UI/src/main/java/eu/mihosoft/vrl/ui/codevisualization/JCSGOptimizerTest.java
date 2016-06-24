@@ -43,7 +43,7 @@ public class JCSGOptimizerTest {
                 + "         CSG csg1 = new Cube().toCSG();\n"
                 + "         CSG csg2 = new Sphere().toCSG();\n"
                 + "         // case 1 (no side effects)\n"
-                + "         csg1.union(csg2);\n"
+                + "         csg1.union(csg2)\n"
                 + "         // case 2 (self union)\n"
                 + "         CSG csg3 = csg1.union(csg1);\n"
                 + "         // case 3 (self intersect)\n"
@@ -51,11 +51,13 @@ public class JCSGOptimizerTest {
                 + "         // chained case 1\n"
                 + "         CSG csg5 = csg1.union(csg1.intersect(csg1))\n"
                 + "         // chained case 2\n"
-                + "         csg1.union(csg1.intersect(csg2))\n"
+                + "         csg1.union(csg1.intersect(csg2)).intersect(csg3)\n"
                 + "         // chained case 3\n"
                 + "         CSG csg6 = csg3.difference(csg1.union(csg2))\n"
-                + "         // third rule\n"
+                + "         // third rule as argument\n"
                 + "         CSG csg7 = csg1.intersect(csg1.union(csg2))\n"
+                + "         // third rule as inv-obj provider\n"
+                + "         CSG csg8 = csg1.intersect(csg1.union(csg2)).difference(csg3)\n"
                 + "    }\n"
                 + "}";
 
@@ -76,8 +78,8 @@ public class JCSGOptimizerTest {
         String newCode = null;
         String prevNewCode = null;
         int counter = 0;
-        while (!Objects.equals(newCode, prevNewCode) || newCode==null) {
-            
+        while (!Objects.equals(newCode, prevNewCode) || newCode == null) {
+
             System.out.println("-- PASS " + ++counter + " --");
             prevNewCode = newCode;
 
@@ -86,8 +88,10 @@ public class JCSGOptimizerTest {
 
             // model -> code
             newCode = Scope2Code.getCode(cud);
+            
+             System.out.println("\nnew code:\n\n" + newCode);
         }
 
-        System.out.println("\nnew code:\n\n" + newCode);
+//        System.out.println("\nnew code:\n\n" + newCode);
     }
 }
