@@ -55,6 +55,7 @@ import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
@@ -67,7 +68,8 @@ import javafx.collections.ObservableList;
  */
 class ControlFlowImpl implements ControlFlow {
 
-    private final ObservableList<Invocation> invocations = FXCollections.observableArrayList();
+    private final ObservableList<Invocation> invocations
+            = FXCollections.observableArrayList();
 
     private final Scope parent;
     private final VFlow flow;
@@ -106,13 +108,13 @@ class ControlFlowImpl implements ControlFlow {
         flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().addListener(
                 new ListChangeListener<Connection>() {
 
-                    @Override
-                    public void onChanged(ListChangeListener.Change<? extends Connection> c) {
-                        if (!currentlyUpdatingConnections) {
-                            updateInvocations();
-                        }
-                    }
-                });
+            @Override
+            public void onChanged(ListChangeListener.Change<? extends Connection> c) {
+                if (!currentlyUpdatingConnections) {
+                    updateInvocations();
+                }
+            }
+        });
 
         flow.getNodes().addListener((ListChangeListener.Change<? extends VNode> c) -> {
             if (c.next()) {
@@ -245,7 +247,6 @@ class ControlFlowImpl implements ControlFlow {
 
     }
 
-
     @Override
     public ScopeInvocation callScope(Scope scope) {
         ScopeInvocation result = new ScopeInvocationImpl(scope);
@@ -300,6 +301,26 @@ class ControlFlowImpl implements ControlFlow {
                     if (arg.getInvocation().get().equals(invocation)) {
                         return Optional.of(inv);
                     }
+                }
+            }
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<Invocation> returnInvocationObjectReceiverIfPresent(Invocation inv) {
+
+        if (!getInvocations().contains(inv)) {
+            throw new IllegalArgumentException(
+                    "Invocation must be contained in this control-flow");
+        }
+
+        for (int i = getInvocations().indexOf(inv); i < getInvocations().size(); i++) {
+            Invocation receiver = getInvocations().get(i);
+            if (receiver.getObjectProvider().getInvocation().isPresent()) {
+                if (Objects.equals(inv,
+                        receiver.getObjectProvider().getInvocation().get())) {
+                    return Optional.of(receiver);
                 }
             }
         }
@@ -367,12 +388,12 @@ class ControlFlowImpl implements ControlFlow {
 
         return invocation;
     }
-    
-        @Override
+
+    @Override
     public DeclareAndAssignInvocation declareAndAssignVariable(String id, IType type, String varName, Argument assignArg) {
         VariableImpl var = (VariableImpl) ((ScopeImpl) parent)._createVariable(type, varName);
 
-        DeclareAndAssignInvocation_Impl invocation 
+        DeclareAndAssignInvocation_Impl invocation
                 = new DeclareAndAssignInvocation_Impl(id, parent, var, assignArg);
 
         var.setDeclaration(invocation);
