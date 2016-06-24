@@ -125,6 +125,7 @@ import org.codehaus.groovy.ast.expr.PostfixExpression;
 import org.codehaus.groovy.ast.expr.PrefixExpression;
 import org.codehaus.groovy.ast.expr.PropertyExpression;
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression;
+import org.codehaus.groovy.ast.expr.UnaryMinusExpression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.BreakStatement;
 import org.codehaus.groovy.ast.stmt.ContinueStatement;
@@ -135,6 +136,7 @@ import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.ast.stmt.WhileStatement;
 import org.codehaus.groovy.control.messages.LocatedMessage;
+import org.codehaus.groovy.control.messages.WarningMessage;
 import org.codehaus.groovy.syntax.Token;
 import org.codehaus.groovy.transform.stc.StaticTypesMarker;
 
@@ -1280,14 +1282,82 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             }
 
             stateMachine.setBoolean("for-loop:incExpression", true);
+        } else {
+
+            boolean isMinusOne = "--".equals(s.getOperation().getText());
+            boolean isPlusOne = "++".equals(s.getOperation().getText());
+
+            if (isPlusOne || isMinusOne) {
+                handleUnaryOperator(s, isMinusOne, isPlusOne);
+            } else {
+                super.visitPostfixExpression(s);
+            }
         }
 
-        super.visitPostfixExpression(s);
+    }
+
+    private void handleUnaryOperator(Expression s,
+            boolean isMinusOne, boolean isPlusOne) {
+
+        Expression e = null;
+        Argument arg = null;
+        Token operation = null;
+
+        if (s instanceof PrefixExpression) {
+            PrefixExpression pE = (PrefixExpression) s;
+            e = pE.getExpression();
+            arg = convertExpressionToArgument(pE.getExpression());
+            operation = pE.getOperation();
+        } else if (s instanceof PostfixExpression) {
+            PostfixExpression pE = (PostfixExpression) s;
+            e = pE.getExpression();
+            arg = convertExpressionToArgument(pE.getExpression());
+            operation = pE.getOperation();
+        } else {
+            throw new IllegalArgumentException(
+                    "Only post and prefix expr. are supported: " + s);
+        }
+
+        if (!arg.getVariable().isPresent()) {
+            throwErrorMessage(
+                    "Operator can only be applied to variables", e);
+        }
+
+        Operator op = null;
+
+        if (isMinusOne) {
+            op = Operator.MINUS_ASSIGN;
+        } else if (isPlusOne) {
+            op = Operator.PLUS_ASSIGN;
+        } else {
+            throwErrorMessage(
+                    "Operator not supported: '"
+                    + operation.getText()
+                    + "'", e);
+        }
+
+        throwWarningMessage(
+                "'--' and '++' operators are not supported. "
+                + "Trying to rewrite them "
+                + "(might cause errors if used as argument).", s);
+
+        codeBuilder.invokeOperator(currentScope,
+                arg,
+                Argument.constArg(Type.INT, 1),
+                op);
     }
 
     @Override
-    public void visitPrefixExpression(PrefixExpression expression) {
-        super.visitPrefixExpression(expression);
+    public void visitPrefixExpression(PrefixExpression s) {
+
+        boolean isMinusOne = "--".equals(s.getOperation().getText());
+        boolean isPlusOne = "++".equals(s.getOperation().getText());
+
+        if (isPlusOne || isMinusOne) {
+            handleUnaryOperator(s, isMinusOne, isPlusOne);
+        } else {
+            super.visitPrefixExpression(s);
+        }
     }
 
     /**
@@ -1308,6 +1378,22 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
         sourceUnit
                 .getErrorCollector()
                 .addError(message);
+    }
+
+    private void throwWarningMessage(String text, ASTNode node) {
+
+        // thanks to http://grails.io/post/15965611310/lessons-learnt-developing-groovy-ast-transformations
+        Token token = Token.newString(
+                node.getText(),
+                node.getLineNumber(),
+                node.getColumnNumber());
+        WarningMessage message = new WarningMessage(
+                WarningMessage.LIKELY_ERRORS, text, token, sourceUnit);
+        sourceUnit
+                .getErrorCollector()
+                .addWarning(message);
+
+        System.err.println("WARNING: " + token + " : " + text);
     }
 
 //    /**
@@ -1468,15 +1554,15 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
             visitNotExpression((NotExpression) e);
             result = Argument.invArg(returnVariables.get((NotExpression) e));
         } else // if nothing worked so far, we assumen null arg
-        if (e instanceof EmptyExpression) {
-            EmptyExpression empty = (EmptyExpression) e;
-            System.err.println(" -> EMPTY-ARG: " + e + " : " + e.getLineNumber());
-            result = Argument.nullArg();
-        } else // if nothing worked so far, we assumen null arg
-        if (result == null) {
-            System.err.println(" -> UNSUPPORTED-ARG: " + e);
-            result = Argument.nullArg();
-        }
+         if (e instanceof EmptyExpression) {
+                EmptyExpression empty = (EmptyExpression) e;
+                System.err.println(" -> EMPTY-ARG: " + e + " : " + e.getLineNumber());
+                result = Argument.nullArg();
+            } else // if nothing worked so far, we assumen null arg
+             if (result == null) {
+                    System.err.println(" -> UNSUPPORTED-ARG: " + e);
+                    result = Argument.nullArg();
+                }
 
         stateMachine.pop();
 
@@ -1564,7 +1650,7 @@ class VGroovyCodeVisitor extends org.codehaus.groovy.ast.ClassCodeVisitorSupport
 
         int lineFrom = astNode.getLineNumber() - 1;
         int lineTo = astNode.getLastLineNumber() - 1;
-        
+
         int columnStart = astNode.getColumnNumber() - 1;
         int columnStop = astNode.getLastColumnNumber() - 1;
 

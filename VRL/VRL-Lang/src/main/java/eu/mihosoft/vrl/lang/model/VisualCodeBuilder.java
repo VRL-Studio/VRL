@@ -55,6 +55,10 @@ package eu.mihosoft.vrl.lang.model;
  */
 public interface VisualCodeBuilder {
 
+    public static VisualCodeBuilder newInstance() {
+        return new VisualCodeBuilder_Impl();
+    }
+
     CompilationUnitDeclaration declareCompilationUnit(String name, String packageName);
     
     BinaryOperatorInvocation assign(Scope scope, String varName, Argument arg);

@@ -21,6 +21,7 @@ import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.Parameter;
 import eu.mihosoft.vrl.lang.model.Parameters;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
+import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
@@ -155,6 +156,11 @@ class ReplaceOp implements CodeTransform<ControlFlowScope> {
         List<Invocation> newInvocations = new ArrayList<>();
 
         for (Invocation inv : prevInvocations) {
+
+            if (inv instanceof ScopeInvocation) {
+                ScopeInvocation sInv = (ScopeInvocation) inv;
+                transform((ControlFlowScope) sInv.getScope());
+            }
 
             if (!(inv instanceof BinaryOperatorInvocation)) {
                 newInvocations.add(inv);
