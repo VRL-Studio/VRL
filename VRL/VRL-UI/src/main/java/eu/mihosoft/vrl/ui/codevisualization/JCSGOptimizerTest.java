@@ -54,6 +54,8 @@ public class JCSGOptimizerTest {
                 + "         csg1.union(csg1.intersect(csg2))\n"
                 + "         // chained case 3\n"
                 + "         CSG csg6 = csg3.difference(csg1.union(csg2))\n"
+                + "         // third rule\n"
+                + "         CSG csg7 = csg1.intersect(csg1.union(csg2))\n"
                 + "    }\n"
                 + "}";
 
