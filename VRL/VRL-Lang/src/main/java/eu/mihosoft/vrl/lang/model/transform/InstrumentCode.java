@@ -16,18 +16,17 @@ import eu.mihosoft.vrl.lang.model.ControlFlow;
 import eu.mihosoft.vrl.lang.model.ControlFlowScope;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.Argument;
+import eu.mihosoft.vrl.lang.model.IType;
 import eu.mihosoft.vrl.lang.model.IfDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.ObjectProvider;
-import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.ReturnStatementInvocation;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.UIBinding;
-import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
 import eu.mihosoft.vrl.lang.model.VisualCodeBuilder_Impl;
 import eu.mihosoft.vrl.lang.model.WhileDeclaration;
@@ -47,6 +46,31 @@ import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class InstrumentCode implements CodeTransform<CompilationUnitDeclaration> {
+
+    /**
+     * Indicates whether the return value of the current invocation is the
+     * invocation object of the next invocation.
+     *
+     * @param nextI next invocation
+     * @return {@code true} if the return value if this invocation is the
+     * invocation object of the next invocation; {@code false} otherwise
+     */
+    static boolean isRetValObjectOfNextInv(Invocation inv, Invocation nextInv) {
+        return InstrumentControlFlowScope.isRetValObjectOfNextInv(inv, nextInv);
+    }
+    
+    /**
+     * Indicates whether the specified invocation is used as argument inside the
+     * specified controflow. Returns the target invocation if the target exists.
+     *
+     * @param inv invocation to check
+     * @param cf controlflow
+     * @return target invocation or an empty optional if the target does not
+     * exist
+     */
+    static Optional<Invocation> isInvArg(Invocation inv, ControlFlow cf) {
+        return cf.returnInvTargetIfPresent(inv);
+    }
 
     @Override
     public CompilationUnitDeclaration transform(
@@ -70,38 +94,47 @@ public class InstrumentCode implements CodeTransform<CompilationUnitDeclaration>
     }
 
     public static void main(String[] args) {
+        // clear model
         UIBinding.scopes.clear();
 
+        // configure groovy compiler with model importer (groovy ast -> model)
         CompilerConfiguration ccfg = new CompilerConfiguration();
         ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
                 new VRLVisualizationTransformation()));
         GroovyClassLoader gcl = new GroovyClassLoader(
                 new GroovyClassLoader(), ccfg);
 
+        // code to compile
         String code = ""
                 + "package mypackage\n"
                 + "\n"
-                + "public class MyClass {\n"
-                + "  public method() {\n"
-                + "    int a = 2 + 3 * 4\n"
-                + "    int b = a + 7\n"
-                + "  }\n"
-                + "}\n";
+                + "public class Main {\n"
+                + "    public static final void main(String[] args) {\n"
+                + "        java.util.Random random = new java.util.Random(42);\n"
+                + "        int i = 0;\n"
+                + "        while(i < random.nextInt(100)) {\n"
+                + "            i+=random.nextInt(10);\n"
+                + "        }\n"
+                + "    }\n"
+                + "}";
 
+        // compile the code and execute model importer
         try {
             gcl.parseClass(code, "Script");
         } catch (Exception ex) {
             ex.printStackTrace(System.err);
         }
 
+        // obtain compilation unit (e.g., .groovy file)
         CompilationUnitDeclaration cud
                 = (CompilationUnitDeclaration) UIBinding.scopes.values().
                 iterator().next().get(0);
 
+        // apply transformation
         cud = new InstrumentCode().transform(cud);
 
+        // model -> code
         String newCode = Scope2Code.getCode(cud);
-
         System.out.println(newCode);
     }
 }
@@ -449,6 +482,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
 
             // creates and assigns tmp variable
             String varName = newVarName();
+            IType varType = inv.getReturnType();
             resultInvs.add(cf.declareVariable("", inv.getReturnType(), varName));
             resultInvs.add(cf.assignVariable("", varName, Argument.invArg(inv)));
 
@@ -477,7 +511,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
                 // invocation object then we need to call the next invocation
                 // on the previously defined tmp variable that stores the return
                 // value of the current invocation
-                nextI.setObjectProvider(ObjectProvider.fromVariable(varName));
+                nextI.setObjectProvider(ObjectProvider.fromVariable(varName, varType));
             }
 
             retValArg = Argument.varArg(result.getVariable(varName));
@@ -518,7 +552,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
      * @return {@code true} if the return value if this invocation is the
      * invocation object of the next invocation; {@code false} otherwise
      */
-    private boolean isRetValObjectOfNextInv(Invocation inv, Invocation nextI) {
+    static boolean isRetValObjectOfNextInv(Invocation inv, Invocation nextI) {
 
         boolean retValIsObjectOfNextI
                 = nextI.getObjectProvider().getInvocation().isPresent()
@@ -535,7 +569,7 @@ class InstrumentControlFlowScope implements CodeTransform<ControlFlowScope> {
      * @return target invocation or an empty optional if the target does not
      * exist
      */
-    private Optional<Invocation> isInvArg(Invocation inv, ControlFlow cf) {
+    static Optional<Invocation> isInvArg(Invocation inv, ControlFlow cf) {
         return cf.returnInvTargetIfPresent(inv);
     }
 

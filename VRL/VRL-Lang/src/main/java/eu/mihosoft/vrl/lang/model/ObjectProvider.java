@@ -19,13 +19,15 @@ public interface ObjectProvider {
     Optional<Invocation> getInvocation();
 
     Optional<IType> getClassObject();
+    
+    Optional<IType> getType();
 
     default boolean isEmpty() {
         return !getVariableName().isPresent() && !getInvocation().isPresent();
     }
 
-    static ObjectProvider fromVariable(String varName) {
-        return new ObjectProvider_Impl(varName);
+    static ObjectProvider fromVariable(String varName, IType type) {
+        return new ObjectProvider_Impl(varName, type);
     }
 
     static ObjectProvider fromInvocation(Invocation inv) {
@@ -45,6 +47,7 @@ public interface ObjectProvider {
 class ObjectProvider_Impl implements ObjectProvider {
 
     private final Optional<String> variableName;
+    private final Optional<IType> variableType;
     private final Optional<Invocation> invocation;
     private final Optional<IType> classObject;
     
@@ -52,12 +55,14 @@ class ObjectProvider_Impl implements ObjectProvider {
 
     public ObjectProvider_Impl() {
         this.variableName = Optional.empty();
+        this.variableType = Optional.empty();
         this.invocation = Optional.empty();
         this.classObject = Optional.empty();
     }
 
-    public ObjectProvider_Impl(String varName) {
+    public ObjectProvider_Impl(String varName, IType type) {
         this.variableName = Optional.of(varName);
+        this.variableType = Optional.of(type);
         this.invocation = Optional.empty();
         this.classObject = Optional.empty();
     }
@@ -65,12 +70,14 @@ class ObjectProvider_Impl implements ObjectProvider {
     public ObjectProvider_Impl(Invocation invocation) {
         this.invocation = Optional.of(invocation);
         this.variableName = Optional.empty();
+        this.variableType = Optional.empty();
         this.classObject = Optional.empty();
     }
 
     public ObjectProvider_Impl(IType type) {
         this.invocation = Optional.empty();
         this.variableName = Optional.empty();
+        this.variableType = Optional.empty();
         this.classObject = Optional.of(type);
     }
 
@@ -130,6 +137,13 @@ class ObjectProvider_Impl implements ObjectProvider {
     @Override
     public Optional<IType> getClassObject() {
         return classObject;
+    }
+
+    @Override
+    public Optional<IType> getType() {
+        return Optional.ofNullable(getClassObject().
+                orElse(getInvocation().map(inv->inv.getReturnType()).
+                        orElse(variableType.orElse(null))));
     }
 
 }
