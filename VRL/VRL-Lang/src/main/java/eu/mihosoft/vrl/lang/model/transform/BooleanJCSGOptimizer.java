@@ -29,20 +29,20 @@ import java.util.stream.Collectors;
  * @author miho
  */
 public class BooleanJCSGOptimizer implements CodeTransform<CompilationUnitDeclaration> {
-    
+
     private final ExpressionOptimizer optimizer = new ExpressionOptimizer();
 
     @Override
     public CompilationUnitDeclaration transform(CompilationUnitDeclaration ce) {
-        for(ClassDeclaration cD : ce.getDeclaredClasses()) {
-            for(MethodDeclaration mD : cD.getDeclaredMethods()) {
+        for (ClassDeclaration cD : ce.getDeclaredClasses()) {
+            for (MethodDeclaration mD : cD.getDeclaredMethods()) {
                 optimizer.transform(mD);
             }
         }
-        
+
         return ce;
     }
-    
+
 }
 
 class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
@@ -56,7 +56,7 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
 
         Invocation prevInv = null;
         Invocation nextInv = null;
-        
+
         List<Invocation> invocationsToDelete = new ArrayList<>();
 
         for (int i = 0; i < cf.getInvocations().size(); i++) {
@@ -102,10 +102,16 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
                 invocationsToDelete.add(inv);
                 continue;
             }
-              
+
+            if (transformCombinedAndOr(inv, nextInv)) {
+                invocationsToDelete.add(inv);
+                invocationsToDelete.add(nextInv);
+                continue;
+            }
+
         } // end for each invocation
-        
-        for(Invocation invToDel : invocationsToDelete) {
+
+        for (Invocation invToDel : invocationsToDelete) {
             System.out.println("-> rem: " + invToDel);
             cf.getInvocations().remove(invToDel);
         }
@@ -124,7 +130,7 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
                             orElse(null), inv)).
                     mapToInt(a -> nextInvF.
                             getArguments().indexOf(a)).toArray();
-            
+
             // replace args
             for (int aIndex : argumentsToReplace) {
                 System.out.println("-> replace arg " + aIndex);
@@ -137,11 +143,80 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
         } else if (isObjProviderOfNext(inv, nextInv) && objNameEqArgName().test(inv)) {
             System.out.println("-> csg is objProvider");
             Variable v = inv.getArguments().get(0).getVariable().get();
-            nextInv.setObjectProvider(ObjectProvider.fromVariable(v.getName(),v.getType()));
+            nextInv.setObjectProvider(ObjectProvider.fromVariable(v.getName(), v.getType()));
             return true;
         }
 
         return false;
+    }
+
+    private boolean transformCombinedAndOr(Invocation inv, Invocation nextInv) {
+        if (!isCombinedAndOr(inv, nextInv)) {
+            return false;
+        }
+        
+        System.out.println("-> combined and or");
+
+        ControlFlow cf = nextInv.getParent().getControlFlow();
+
+        if (cf.isUsedAsInput(inv)) {
+            System.out.println("-> csg is arg");
+            final Invocation receiver = cf.
+                    returnInvTargetIfPresent(inv).get();
+            System.out.println(" -> in " + receiver);
+            // search argument indices
+            int[] argumentsToReplace = receiver.
+                    getArguments().stream().
+                    filter(a -> Objects.equals(a.getInvocation().
+                            orElse(null), inv)).
+                    mapToInt(a -> receiver.
+                            getArguments().indexOf(a)).toArray();
+
+            // replace args
+            for (int aIndex : argumentsToReplace) {
+                System.out.println("-> replace arg " + aIndex);
+                receiver.getArguments().set(aIndex,Argument.varArg(
+                        cf.getParent().getVariable(inv.getObjectProvider().
+                                getVariableName().get())));
+            }
+
+            return true;
+
+        } else if (cf.returnInvocationObjectReceiverIfPresent(nextInv).isPresent()) {
+            Variable v = nextInv.getArguments().get(0).getVariable().get();
+            cf.returnInvocationObjectReceiverIfPresent(nextInv).get().
+                    setObjectProvider(ObjectProvider.fromVariable(v.getName(),
+                            v.getType()));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isCombinedAndOr(Invocation inv, Invocation nextInv) {
+        if (!"union".equals(inv.getMethodName())) {
+            return false;
+        }
+        if (!"intersect".equals(nextInv.getMethodName())) {
+            return false;
+        }
+        if (!isArgOfNext(inv, nextInv)) {
+            return false;
+        }
+
+        if (!inv.getObjectProvider().getVariableName().isPresent()) {
+            return false;
+        }
+
+        if (!nextInv.getObjectProvider().getVariableName().isPresent()) {
+            return false;
+        }
+
+        if (Objects.equals(inv.getObjectProvider().getVariableName().get(),
+                nextInv.getObjectProvider().getVariableName().get())) {
+
+        }
+
+        return true;
     }
 
     static Predicate<Invocation> selfUnion() {
@@ -153,28 +228,25 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
     }
 
     static Predicate<Invocation> objNameEqArgName() {
-        return new Predicate<Invocation>() {
-            @Override
-            public boolean test(Invocation i) {
-                // check for arg 0
-                if (i.getArguments().isEmpty()) {
-                    return false;
-                }
-                Argument arg = i.getArguments().get(0);
-                if (arg.getArgType() != ArgumentType.VARIABLE) {
-                    return false;
-                }
-                String argName = arg.getVariable().get().getName();
-
-                // check for caller obj
-                if (!i.getObjectProvider().getVariableName().isPresent()) {
-                    return false;
-                }
-
-                String objName = i.getObjectProvider().getVariableName().get();
-
-                return Objects.equals(objName, argName);
+        return (Invocation i) -> {
+            // check for arg 0
+            if (i.getArguments().isEmpty()) {
+                return false;
             }
+            Argument arg = i.getArguments().get(0);
+            if (arg.getArgType() != ArgumentType.VARIABLE) {
+                return false;
+            }
+            String argName = arg.getVariable().get().getName();
+
+            // check for caller obj
+            if (!i.getObjectProvider().getVariableName().isPresent()) {
+                return false;
+            }
+
+            String objName = i.getObjectProvider().getVariableName().get();
+
+            return Objects.equals(objName, argName);
         };
     }
 
