@@ -10,7 +10,6 @@ import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.transform.BooleanJCSGOptimizer;
-import eu.mihosoft.vrl.lang.model.transform.InstrumentCode;
 import groovy.lang.GroovyClassLoader;
 import java.util.Objects;
 import org.codehaus.groovy.control.CompilerConfiguration;
