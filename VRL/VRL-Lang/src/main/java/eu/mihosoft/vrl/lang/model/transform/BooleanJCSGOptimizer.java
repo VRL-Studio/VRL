@@ -18,30 +18,200 @@ import eu.mihosoft.vrl.lang.model.ObjectProvider;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.Variable;
+import eu.mihosoft.vrl.lang.model.VisualCodeBuilder;
+import static eu.mihosoft.vrl.lang.model.transform.OptUtils.isArgOfNext;
+import static eu.mihosoft.vrl.lang.model.transform.OptUtils.isObjProviderOfNext;
+import static eu.mihosoft.vrl.lang.model.transform.OptUtils.objNameEqArgName;
+import static eu.mihosoft.vrl.lang.model.transform.OptUtils.ofName;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import static eu.mihosoft.vrl.lang.model.transform.OptUtils.csgAPIMethod;
+import java.util.stream.Collectors;
 
 /**
  *
- * @author miho
+ * @author Michael Hoffer <info@michaelhoffer.de>
  */
 public class BooleanJCSGOptimizer implements CodeTransform<CompilationUnitDeclaration> {
 
-    private final ExpressionOptimizer optimizer = new ExpressionOptimizer();
+    private final ExpressionOptimizer exprOptimizer
+            = new ExpressionOptimizer();
+    private final TransformationOptimizer transformOptimizer
+            = new TransformationOptimizer();
 
     @Override
     public CompilationUnitDeclaration transform(CompilationUnitDeclaration ce) {
         for (ClassDeclaration cD : ce.getDeclaredClasses()) {
             for (MethodDeclaration mD : cD.getDeclaredMethods()) {
-                optimizer.transform(mD);
+                exprOptimizer.transform(mD);
+                transformOptimizer.transform(mD);
             }
         }
 
         return ce;
     }
 
+}
+
+class TransformationOptimizer implements CodeTransform<ControlFlowScope> {
+
+    @Override
+    public ControlFlowScope transform(ControlFlowScope cfs) {
+        // TODO 01.08.2015 add clone()
+        ControlFlowScope result = cfs;
+        ControlFlow cf = cfs.getControlFlow();
+
+        Invocation prevInv = null;
+        Invocation nextInv = null;
+
+        List<Invocation> invocationsToDelete = new ArrayList<>();
+
+        // search for transformed() invocation chains and simplify them
+        for (int i = 0; i < cf.getInvocations().size(); i++) {
+
+            Invocation inv = cf.getInvocations().get(i);
+
+            if (i - 1 >= 0) {
+                prevInv = cf.getInvocations().get(i - 1);
+            }
+
+            if (i + 1 < cf.getInvocations().size()) {
+                nextInv = cf.getInvocations().get(i + 1);
+            }
+
+            // apply transformation to sub-scopes
+            if (inv instanceof ScopeInvocation) {
+                ScopeInvocation sInv = (ScopeInvocation) inv;
+                if (sInv.getScope() instanceof ControlFlowScope) {
+                    transform((ControlFlowScope) sInv.getScope());
+                }
+                continue;
+            }
+
+            // if the current method is no csg method, continue
+            if (!csgAPIMethod().test(inv)) {
+                continue;
+            }
+
+            // optimizing boolean expressions is only possible with 
+            // union() and intersect()
+            if (!"transformed".equals(inv.getMethodName())) {
+                continue;
+            }
+
+            // find transformed() method execution chain
+            List<Invocation> transformedChain = new ArrayList<>();
+            Invocation invI1 = inv;
+            while (cf.returnInvocationObjectReceiverIfPresent(invI1).isPresent()) {
+                transformedChain.add(invI1);
+                invI1 = cf.returnInvocationObjectReceiverIfPresent(invI1).get();
+            }
+            transformedChain.add(invI1);
+
+            // only optimize real chains (#elements >=2)
+            if (transformedChain.size() < 2) {
+                continue;
+            }
+
+            // transformed() invocation chain found
+            System.out.println(" -> opt: transformed() -> transformed()");
+
+            Invocation firstTransformedChainInv
+                    = transformedChain.get(0);
+            Invocation lastTransformedChainInv
+                    = transformedChain.get(transformedChain.size() - 1);
+
+            // find arguments
+            List<Argument> args
+                    = transformedChain.stream().flatMap(
+                            m -> m.getArguments().stream()).
+                    collect(Collectors.toList());
+
+            // add transform.apply() calls before first invocation in
+            // the transformedChain
+            int firstTransformPos = cf.getInvocations().
+                    indexOf(firstTransformedChainInv);
+            int lastTransformPos = cf.getInvocations().
+                    indexOf(lastTransformedChainInv);
+
+            // move current invocations, clear cf and add them again,
+            // including modifications
+            List<Invocation> origInvs = new ArrayList<>(cf.getInvocations());
+            cf.getInvocations().clear();
+
+            // apply() invocations are temporarily created in current cf
+            List<Invocation> applyInvocations = new ArrayList<>();
+            VisualCodeBuilder builder = VisualCodeBuilder.newInstance();
+
+            // check whether arg is a valid variable
+            Argument firstArg = args.get(0);
+            if (!firstArg.getVariable().isPresent()) {
+                System.out.println("   -> aborting opt: arg0 is no variable!");
+                continue;
+            }
+
+            // create first object provider of apply() invocation chain
+            ObjectProvider iop = ObjectProvider.fromVariable(
+                    firstArg.getVariable().get().getName(),
+                    firstArg.getVariable().get().getType());
+
+            // finally, build apply() invocation chain
+            boolean argsAreValid = true;
+            for (int argI = 1; argI < args.size(); argI++) {
+                Argument a = args.get(argI);
+
+                if (!a.getVariable().isPresent()) {
+                    argsAreValid = false;
+                    System.out.println(
+                            "   -> aborting opt: arg" + argI
+                            + " is no variable!");
+                    break;
+                }
+
+                // create next object provider of apply() invocation chain
+                Variable v = a.getVariable().get();
+                Invocation iopInv = builder.invokeMethod(cfs,
+                        iop,
+                        "apply",
+                        new Type("eu.mihosoft.vrl.v3d.jcsg.Transform"),
+                        a);
+
+                iop = ObjectProvider.fromInvocation(iopInv);
+                applyInvocations.add(iopInv);
+            }
+
+            if (!argsAreValid) {
+                continue;
+            }
+
+            // remove temporary invocations from cf and move
+            // the original invocations to their previous location
+            cf.getInvocations().clear();
+            cf.getInvocations().addAll(origInvs);
+            cf.getInvocations().addAll(firstTransformPos, applyInvocations);
+
+            // use apply() invocation chain as argument
+            lastTransformedChainInv.getArguments().set(0,
+                    Argument.invArg(applyInvocations.
+                            get(applyInvocations.size() - 1)));
+
+            // delete unused transformed() invocations
+            System.out.println(" -> opt: deleting original invocations");
+            for (int transI = 0; transI < transformedChain.size() - 1; transI++) {
+                cf.getInvocations().remove(transformedChain.get(transI));
+            }
+
+            // set the object provider to the previous one
+            lastTransformedChainInv.setObjectProvider(
+                    firstTransformedChainInv.getObjectProvider());
+
+            break; // indices are messed up, will be continued in next pass
+        } // end for
+
+        return result;
+    }
 }
 
 class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
@@ -78,7 +248,7 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
                 continue;
             }
 
-            if (!csgMethod().test(inv)) {
+            if (!csgAPIMethod().test(inv)) {
                 continue;
             }
 
@@ -160,6 +330,7 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
     }
 
     private boolean transformCombinedAndOr(Invocation inv, Invocation nextInv) {
+
         if (!isCombinedAndOr(inv, nextInv)) {
             return false;
         }
@@ -223,12 +394,16 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
         return true;
     }
 
+}
+
+class OptUtils {
+
     static Predicate<Invocation> selfUnion() {
-        return csgMethod().and(ofName("union").and(objNameEqArgName()));
+        return csgAPIMethod().and(ofName("union").and(objNameEqArgName()));
     }
 
     static Predicate<Invocation> selfIntersect() {
-        return csgMethod().and(ofName("intersection").and(objNameEqArgName()));
+        return csgAPIMethod().and(ofName("intersection").and(objNameEqArgName()));
     }
 
     static Predicate<Invocation> objNameEqArgName() {
@@ -285,8 +460,12 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
         };
     }
 
-    static Predicate<Invocation> csgMethod() {
+    static Predicate<Invocation> csgAPIMethod() {
         return ofType(new Type("eu.mihosoft.vrl.v3d.jcsg.CSG"));
+    }
+
+    static Predicate<Invocation> transformAPIMethod() {
+        return ofType(new Type("eu.mihosoft.vrl.v3d.jcsg.Transform"));
     }
 
     static Predicate<Invocation> objectMethod() {
@@ -309,11 +488,11 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
         };
     }
 
-    private boolean isObjProviderOfNext(Invocation inv, Invocation nextInv) {
+    static boolean isObjProviderOfNext(Invocation inv, Invocation nextInv) {
         return InstrumentCode.isRetValObjectOfNextInv(inv, nextInv);
     }
 
-    private boolean isArgOfNext(Invocation inv, Invocation nextInv) {
+    static boolean isArgOfNext(Invocation inv, Invocation nextInv) {
         return nextInv.
                 getArguments().stream().
                 filter(a -> Objects.equals(a.getInvocation().
