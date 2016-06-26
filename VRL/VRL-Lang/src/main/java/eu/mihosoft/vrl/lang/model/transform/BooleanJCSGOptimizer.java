@@ -146,20 +146,28 @@ class TransformationOptimizer implements CodeTransform<ControlFlowScope> {
             VisualCodeBuilder builder = VisualCodeBuilder.newInstance();
 
             // check whether arg is a valid variable
-            Argument firstArg = args.get(0);
-            if (!firstArg.getVariable().isPresent()) {
-                System.out.println("   -> aborting opt: arg0 is no variable!");
-                continue;
-            }
+//            Argument firstArg = args.get(0);
+//            if (!firstArg.getVariable().isPresent()) {
+//                System.out.println("   -> aborting opt: arg0 is no variable!");
+//                continue;
+//            }
+//
+//            // create first object provider of apply() invocation chain
+//            ObjectProvider iop = ObjectProvider.fromVariable(
+//                    firstArg.getVariable().get().getName(),
+//                    firstArg.getVariable().get().getType());
+            applyInvocations.add(
+                    builder.invokeMethod(cfs,
+                            ObjectProvider.fromClassObject(
+                                    OptUtils.TRANSFORM_TYPE),
+                            "unity", OptUtils.TRANSFORM_TYPE));
 
-            // create first object provider of apply() invocation chain
-            ObjectProvider iop = ObjectProvider.fromVariable(
-                    firstArg.getVariable().get().getName(),
-                    firstArg.getVariable().get().getType());
+            ObjectProvider iop = ObjectProvider.
+                    fromInvocation(applyInvocations.get(0));
 
             // finally, build apply() invocation chain
             boolean argsAreValid = true;
-            for (int argI = 1; argI < args.size(); argI++) {
+            for (int argI = 0; argI < args.size(); argI++) {
                 Argument a = args.get(argI);
 
                 if (!a.getVariable().isPresent()) {
@@ -175,7 +183,7 @@ class TransformationOptimizer implements CodeTransform<ControlFlowScope> {
                 Invocation iopInv = builder.invokeMethod(cfs,
                         iop,
                         "apply",
-                        new Type("eu.mihosoft.vrl.v3d.jcsg.Transform"),
+                        OptUtils.TRANSFORM_TYPE,
                         a);
 
                 iop = ObjectProvider.fromInvocation(iopInv);
@@ -398,6 +406,9 @@ class ExpressionOptimizer implements CodeTransform<ControlFlowScope> {
 
 class OptUtils {
 
+    static IType TRANSFORM_TYPE = new Type("eu.mihosoft.vrl.v3d.jcsg.Transform");
+    static IType CSG_TYPE = new Type("eu.mihosoft.vrl.v3d.jcsg.CSG");
+
     static Predicate<Invocation> selfUnion() {
         return csgAPIMethod().and(ofName("union").and(objNameEqArgName()));
     }
@@ -461,11 +472,11 @@ class OptUtils {
     }
 
     static Predicate<Invocation> csgAPIMethod() {
-        return ofType(new Type("eu.mihosoft.vrl.v3d.jcsg.CSG"));
+        return ofType(CSG_TYPE);
     }
 
     static Predicate<Invocation> transformAPIMethod() {
-        return ofType(new Type("eu.mihosoft.vrl.v3d.jcsg.Transform"));
+        return ofType(TRANSFORM_TYPE);
     }
 
     static Predicate<Invocation> objectMethod() {
