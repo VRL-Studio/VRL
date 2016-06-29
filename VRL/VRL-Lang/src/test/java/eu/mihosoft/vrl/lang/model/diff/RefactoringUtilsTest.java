@@ -8,7 +8,7 @@ package eu.mihosoft.vrl.lang.model.diff;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import static eu.mihosoft.vrl.lang.model.diff.CodeEntityListTestClass.groovy2Model;
 import eu.mihosoft.vrl.lang.model.diff.actions.RefactoringUtils;
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
 
 /**
@@ -41,12 +41,13 @@ public class RefactoringUtilsTest {
         CodeEntityList source = new CodeEntityList(sourceModel);
 
         CodeEntityList target = new CodeEntityList(source, true);
-
+        System.out.println(sourceModel);
+        System.out.println("####################################################");
         RefactoringUtils.renameClassRefactoring(sourceModel.getDeclaredClasses().get(0).getClassType(), targetModel.getDeclaredClasses().get(0).getClassType(), sourceModel);
-
-        System.out.println("Class Type " + sourceModel.getDeclaredClasses().get(0).getClassType().getFullClassName());
-
-        source.updateCodeEntityList(sourceModel);
+       
+//        System.out.println("Class Type " + sourceModel.getDeclaredClasses().get(0).getClassType().getFullClassName());
+        source.updateCodeEntityListAllEntities(sourceModel);
+         System.out.println(sourceModel);
 
         System.out.println("source==target: " + source.equals(target));
 

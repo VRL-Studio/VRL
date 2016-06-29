@@ -341,10 +341,34 @@ public class CodeEntityList {
             }
         });
 
-//        for (int i = 0; i < codeEntities.size(); i++) {
-//            System.out.println("Update: " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)));
-//        }
+        for (int i = 0; i < codeEntities.size(); i++) {
+            System.out.println("Update: " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)));
+        }
         this.setEntities(codeEntities);
+    }
+
+    /**
+     *
+     * @param codeEntity code entity
+     */
+    public void updateCodeEntityListAllEntities(CodeEntity codeEntity) {
+        ArrayList<CodeEntity> codeEntities = new ArrayList();
+        CompilationUnitDeclaration cudClone = (CompilationUnitDeclaration) getRoot(codeEntity);
+        try {
+            cudClone = clone(cudClone);
+        } catch (Exception ex) {
+            Logger.getLogger(CodeEntityList.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        cudClone.visitScopeAndAllSubElements((CodeEntity e) -> {
+            codeEntities.add(e);
+        });
+
+        for (int i = 0; i < codeEntities.size(); i++) {
+            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)));
+            System.out.println("Type: " + codeEntities.get(i).getClass());
+        }
+        //this.setEntities(codeEntities);
     }
 
     /**

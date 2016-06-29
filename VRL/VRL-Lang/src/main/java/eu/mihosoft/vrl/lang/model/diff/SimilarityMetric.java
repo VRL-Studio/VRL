@@ -16,6 +16,7 @@ import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IfDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.ReturnStatementInvocation;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
@@ -159,24 +160,27 @@ public class SimilarityMetric {
         String codeFragment = "default";
 
         if (codeEntity instanceof Invocation) {
-            System.out.println("Debug - Invocation: ");
+            // System.out.println("Debug - Invocation: ");
             Invocation invocationEntity = (Invocation) codeEntity;
             if (invocationEntity instanceof ScopeInvocation == false) { //?
-                codeFragment = Scope2Code.getCode(invocationEntity);
+                codeFragment = invocationEntity.getMethodName();;
+            } else if (invocationEntity instanceof ReturnStatementInvocation) {
+                ReturnStatementInvocation rsi = (ReturnStatementInvocation) invocationEntity;
+                codeFragment = rsi.getMethodName();
             }
         } else if (codeEntity instanceof IArgument) {
-            System.out.println("Debug - Argument");
+            //  System.out.println("Debug - Argument");
             IArgument argumentEntity = (IArgument) codeEntity;
             Invocation invocationEntity = argumentEntity.getInvocation().get();
             if (invocationEntity instanceof ScopeInvocation == false) { //?
                 codeFragment = Scope2Code.getCode(invocationEntity);
             }
         } else if (codeEntity instanceof ConstantValue) {
-            System.out.println("Debug - ConstantValue");
+            //System.out.println("Debug - ConstantValue");
             ConstantValue constantValueEntity = (ConstantValue) codeEntity;
             codeFragment = constantValueEntity.getValue(Object.class).toString();
         } else if (codeEntity instanceof Comment) {
-            System.out.println("Debug - Comment");
+            //System.out.println("Debug - Comment");
             Comment commentEntity = (Comment) codeEntity;
             codeFragment = commentEntity.getComment();
         }
@@ -701,17 +705,17 @@ public class SimilarityMetric {
             List<String> relationTypes = new ArrayList();
             relationTypes.add("parent");
             if (e1 instanceof Invocation) {
-            //    relationTypes.add("argument");
+                //    relationTypes.add("argument");
             } else if (e1 instanceof Scope) {
-              //  relationTypes.add("scope");
+                //  relationTypes.add("scope");
                 if (e1 instanceof CompilationUnitDeclaration) {
                     relationTypes.add("class");
                 } else if (e1 instanceof ClassDeclaration) {
                     relationTypes.add("method");
-               //     relationTypes.add("implClass");
+                    //     relationTypes.add("implClass");
                 } else if (e1 instanceof MethodDeclaration) {
-                 //   relationTypes.add("parameter");
-                   // relationTypes.add("modifier");
+                    //   relationTypes.add("parameter");
+                    // relationTypes.add("modifier");
                 }
                 relationTypes.add("variable");
                 //relationTypes.add("comment");

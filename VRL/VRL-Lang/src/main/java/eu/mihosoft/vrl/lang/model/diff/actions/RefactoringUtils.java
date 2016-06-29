@@ -5,6 +5,7 @@
  */
 package eu.mihosoft.vrl.lang.model.diff.actions;
 
+import eu.mihosoft.vrl.lang.VLangUtilsNew;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
@@ -24,11 +25,19 @@ public class RefactoringUtils {
     public static void renameClassRefactoring(IType from, IType to, CompilationUnitDeclaration cDecl) {
         cDecl.visitScopeAndAllSubElements((e) -> {
 
-            if (e instanceof ClassDeclaration) {
+            if (e instanceof CompilationUnitDeclaration) {
+                CompilationUnitDeclaration CUD = (CompilationUnitDeclaration) e;
+
+            } else if (e instanceof ClassDeclaration) {
                 ClassDeclaration classDecl = (ClassDeclaration) e;
                 if (classDecl.getClassType().equals(from)) {
                     IModelCommands.getInstance().setClassType(to, classDecl);
-                    IModelCommands.getInstance().setScopeName(to.getShortName(), classDecl);
+                    IModelCommands.getInstance().setScopeName(to.getFullClassName(), classDecl);
+                    if (cDecl.getDeclaredClasses().get(0).equals(classDecl)) {
+                        String ending = VLangUtilsNew.shortNameFromFullClassName(cDecl.getFileName());
+                        IModelCommands.getInstance().setCUDeclFileName(to.getFullClassName() + "." + ending, cDecl);
+                    }
+
                     System.out.println("Class Declaration set Type");
                 }
             } else if (e instanceof MethodDeclaration) {
