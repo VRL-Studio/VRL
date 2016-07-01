@@ -20,19 +20,20 @@ public class RefactoringUtilsTest {
     @Test
     public void testRefactoringClass() throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
-                + "package eu.mihosoft.vrl.lang.model.diff;\n"
+                + "package eu.mihosoft1.vrl1.lang1.model1.diff1;\n"
                 + "class Class1 {\n"
                 + "Class1(){}\n"
                 + "String method11(){\n"
                 + "return null; \n"
                 + "}\n"
-                + "void method12(){}\n"
+                + "void method12(){\n"
+                + "}\n"
                 + "}"
         );
 
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "class Class2 {\n"
+                + "class Class3 {\n"
                 + "void method21(){}\n"
                 + "void method22(){}\n"
                 + "}"

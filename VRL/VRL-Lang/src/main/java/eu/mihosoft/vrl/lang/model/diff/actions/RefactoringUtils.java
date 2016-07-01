@@ -22,8 +22,8 @@ import eu.mihosoft.vrl.lang.model.Variable;
  */
 public class RefactoringUtils {
 
-    public static void renameClassRefactoring(IType from, IType to, CompilationUnitDeclaration cDecl) {
-        cDecl.visitScopeAndAllSubElements((e) -> {
+    public static void renameClassRefactoring(IType from, IType to, CompilationUnitDeclaration cuDecl) {
+        cuDecl.visitScopeAndAllSubElements((e) -> {
 
             if (e instanceof CompilationUnitDeclaration) {
                 CompilationUnitDeclaration CUD = (CompilationUnitDeclaration) e;
@@ -33,12 +33,13 @@ public class RefactoringUtils {
                 if (classDecl.getClassType().equals(from)) {
                     IModelCommands.getInstance().setClassType(to, classDecl);
                     IModelCommands.getInstance().setScopeName(to.getFullClassName(), classDecl);
-                    if (cDecl.getDeclaredClasses().get(0).equals(classDecl)) {
-                        String ending = VLangUtilsNew.shortNameFromFullClassName(cDecl.getFileName());
-                        IModelCommands.getInstance().setCUDeclFileName(to.getFullClassName() + "." + ending, cDecl);
+                    if (cuDecl.getDeclaredClasses().get(0).equals(classDecl)) {
+                        String ending = VLangUtilsNew.shortNameFromFullClassName(cuDecl.getFileName());
+                        IModelCommands.getInstance().setCUDeclFileName(to.getFullClassName() + "." + ending, cuDecl);
                     }
-
-                    System.out.println("Class Declaration set Type");
+                    classDecl.getVariable("this").setType(to);
+                    
+                    System.out.println("Class Declaration set Type #################################################");
                 }
             } else if (e instanceof MethodDeclaration) {
                 MethodDeclaration methDecl = (MethodDeclaration) e;
@@ -68,7 +69,7 @@ public class RefactoringUtils {
                 Variable var = (Variable) e;
                 if (var.getType().equals(from)) {
                     IModelCommands.getInstance().setVariableType(to, var);
-                    System.out.println("Variable set Type");
+                    System.out.println("Variable set Type ");
                 }
 
             }
