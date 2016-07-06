@@ -345,7 +345,8 @@ class InvocationImpl implements Invocation {
 	 * @param returnType
 	 *            the returnType to set
 	 */
-	protected void setReturnType(IType returnType) {
+    
+	protected void setReturnType(IType returnType) { 
 
 		this.Void = Type.VOID.equals(returnType);
 
@@ -411,5 +412,10 @@ class InvocationImpl implements Invocation {
 	public void setTextRenderingEnabled(boolean textRenderingEnabled) {
 		this.textRenderingEnabled = textRenderingEnabled;
 	}
+
+    @Override
+    public void setReturnType1(IType type) {
+        this.returnType = type;
+    }
 
 }

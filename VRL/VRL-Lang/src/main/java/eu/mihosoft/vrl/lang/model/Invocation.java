@@ -66,7 +66,7 @@ public interface Invocation extends CodeEntity {
     
     public IType getReturnType();
     
-//    public void setReturnType(IType type);
+    public void setReturnType1(IType type);
 
     public ObservableList<IArgument> getArguments();
 

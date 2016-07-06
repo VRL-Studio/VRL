@@ -11,30 +11,28 @@ package eu.mihosoft.vrl.lang.model;
  */
 public class ReturnStatementInvocationImpl extends InvocationImpl implements ReturnStatementInvocation {
 
-    public ReturnStatementInvocationImpl(Scope parent, IArgument arg ) {
+    public ReturnStatementInvocationImpl(Scope parent, IArgument arg) {
 
         super(parent, "return " + parent.getId(), null, "return", Type.ANY, false, true, arg);
 
         getNode().setTitle("return ");
     }
-    
+
     public ReturnStatementInvocationImpl(Scope parent) {
-		super(parent, "", null, "return", null, false, true, new IArgument[0]);
-	}
-    
+        super(parent, "", null, "return", null, false, true, new IArgument[0]);
+    }
+
     @Override
     public IArgument getArgument() {
         return getArguments().get(0);
     }
-    
-    public void setArgument(IArgument arg)
-    {
-    	getArguments().add(arg);
-    }
-    
-    @Override
-    public IType getReturnType() {
-    	return getArgument().getType();
+
+    public void setArgument(IArgument arg) {
+        getArguments().add(arg);
     }
 
+    @Override
+    public IType getReturnType() {
+        return getArgument().getType();
+    }
 }

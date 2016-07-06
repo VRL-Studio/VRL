@@ -295,6 +295,11 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
             this.var = variable;
         }
 
+        @Override
+        public void setReturnType1(IType type) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+
     }
 
     @Override

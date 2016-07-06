@@ -13,10 +13,11 @@ import eu.mihosoft.vrl.lang.model.ConstantValue;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IExtends;
 import eu.mihosoft.vrl.lang.model.IModifiers;
+import eu.mihosoft.vrl.lang.model.IParameter;
 import eu.mihosoft.vrl.lang.model.IParameters;
 import eu.mihosoft.vrl.lang.model.IType;
+import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
-import eu.mihosoft.vrl.lang.model.Parameter;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Variable;
 
@@ -270,8 +271,17 @@ enum ModelCommands implements IModelCommands {
 
     // PARAMETER
     @Override
-    public void setTypeInParameter(IType type, CodeEntity codeEntity) {
-        Parameter param = (Parameter) codeEntity;
+    public void setTypeInParameter(IType type, IParameter param) {
         param.setType(type);
     }
+    
+    // INVOCATION
+
+    @Override
+    public void setReturnTypeInInvocation(IType type, Invocation invocation) {
+        invocation.setReturnType1(type);
+    }
+    
+    
+    
 }

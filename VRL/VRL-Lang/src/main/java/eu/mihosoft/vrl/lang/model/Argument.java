@@ -17,7 +17,7 @@ public final class Argument extends CodeEntityImpl implements IArgument {
     private final Variable variable;
     private final ConstantValue constant;
     private final Invocation invocation;
-    private  IType constType;// final
+    private  IType constType;
 
     public static final IArgument NULL = new Argument(ArgumentType.NULL, null, null, null, null);
 

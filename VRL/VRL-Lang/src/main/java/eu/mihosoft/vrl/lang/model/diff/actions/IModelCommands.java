@@ -10,8 +10,10 @@ import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IExtends;
 import eu.mihosoft.vrl.lang.model.IModifiers;
+import eu.mihosoft.vrl.lang.model.IParameter;
 import eu.mihosoft.vrl.lang.model.IParameters;
 import eu.mihosoft.vrl.lang.model.IType;
+import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Variable;
@@ -104,6 +106,9 @@ public interface IModelCommands {
     void setTypeInConstValue(IType type, CodeEntity codeEntity);
 
     // PARAMETER
-    void setTypeInParameter(IType type, CodeEntity codeEntity);
+    void setTypeInParameter(IType type, IParameter codeEntity);
+    
+    //INVOCATION
+    void setReturnTypeInInvocation(IType type, Invocation invocation);
 
 }

@@ -6,13 +6,14 @@
 package eu.mihosoft.vrl.lang.model.diff.actions;
 
 import eu.mihosoft.vrl.lang.VLangUtilsNew;
-import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.ConstantValue;
+import eu.mihosoft.vrl.lang.model.IArgument;
+import eu.mihosoft.vrl.lang.model.IParameter;
 import eu.mihosoft.vrl.lang.model.IType;
+import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
-import eu.mihosoft.vrl.lang.model.Parameter;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Variable;
 
@@ -25,10 +26,16 @@ public class RefactoringUtils {
     public static void renameClassRefactoring(IType from, IType to, CompilationUnitDeclaration cuDecl) {
         cuDecl.visitScopeAndAllSubElements((e) -> {
 
-            if (e instanceof CompilationUnitDeclaration) {
-                CompilationUnitDeclaration CUD = (CompilationUnitDeclaration) e;
+            if (e instanceof Scope) {
+                Scope s = (Scope) e;
+                for (Variable v : s.getVariables()) {
+                    if (v.getType().equals(from)) {
+                        IModelCommands.getInstance().setVariableType(to, v);
+                    }
+                }
+            }
 
-            } else if (e instanceof ClassDeclaration) {
+            if (e instanceof ClassDeclaration) {
                 ClassDeclaration classDecl = (ClassDeclaration) e;
                 if (classDecl.getClassType().equals(from)) {
                     IModelCommands.getInstance().setClassType(to, classDecl);
@@ -36,40 +43,33 @@ public class RefactoringUtils {
                     if (cuDecl.getDeclaredClasses().get(0).equals(classDecl)) {
                         String ending = VLangUtilsNew.shortNameFromFullClassName(cuDecl.getFileName());
                         IModelCommands.getInstance().setCUDeclFileName(to.getFullClassName() + "." + ending, cuDecl);
+                        IModelCommands.getInstance().setCUDeclPackageName(to.getPackageName(), cuDecl);
                     }
-                    classDecl.getVariable("this").setType(to);
-                    
-                    System.out.println("Class Declaration set Type #################################################");
                 }
             } else if (e instanceof MethodDeclaration) {
                 MethodDeclaration methDecl = (MethodDeclaration) e;
                 if (methDecl.getReturnType().equals(from)) {
                     IModelCommands.getInstance().setMethodReturnType(to, methDecl);
-                    System.out.println("MethodDeclaration set Type");
                 }
-            } else if (e instanceof Argument) {
-                Argument arg = (Argument) e;
-                if (arg.getType().equals(from)) {
-                    IModelCommands.getInstance().setConstTypeInArgument(to, arg);
-                    System.out.println("Argument set Type");
+                for (IParameter p : methDecl.getParameters().getParamenters()) {
+                    if (p.getType().equals(from)) {
+                        IModelCommands.getInstance().setTypeInParameter(to, p);
+                    }
                 }
             } else if (e instanceof ConstantValue) {
                 ConstantValue cv = (ConstantValue) e;
                 if (cv.getType().equals(from)) {
                     IModelCommands.getInstance().setTypeInConstValue(to, cv);
-                    System.out.println("ConstantValue set Type");
                 }
-            } else if (e instanceof Parameter) {
-                Parameter param = (Parameter) e;
-                if (param.getType().equals(from)) {
-                    IModelCommands.getInstance().setTypeInParameter(to, e);
-                    System.out.println("Parameter set Type");
+            } else if (e instanceof Invocation) {
+                Invocation inv = (Invocation) e;
+                if (inv.getReturnType().equals(from)) {
+                    IModelCommands.getInstance().setReturnTypeInInvocation(to, inv);
                 }
-            } else if (e instanceof Variable) {
-                Variable var = (Variable) e;
-                if (var.getType().equals(from)) {
-                    IModelCommands.getInstance().setVariableType(to, var);
-                    System.out.println("Variable set Type ");
+                for (IArgument a : inv.getArguments()) {
+                    if (a.getType().equals(from)) {
+                        IModelCommands.getInstance().setConstTypeInArgument(to, a);
+                    }
                 }
 
             }
