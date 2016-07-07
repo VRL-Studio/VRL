@@ -11,6 +11,7 @@ import eu.mihosoft.ai.astar.WorldDescription;
 import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupport;
 import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import eu.mihosoft.vrl.lang.command.CommandList;
+import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
@@ -18,7 +19,7 @@ import eu.mihosoft.vrl.lang.model.diff.actions.DecreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.DeleteAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.IncreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.InsertAction;
-import eu.mihosoft.vrl.lang.model.diff.actions.RenameAction;
+import eu.mihosoft.vrl.lang.model.diff.actions.RefactoringClassAction;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -35,22 +36,22 @@ public class MainClass {
     public static void main(String[] args) throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "public class Class{\n"
-                + "}\n"
-                + "class Methode {\n"
-                + "}\n"
-                + "class Cls {\n"
+                + "public class Class1{\n"
+                //                + "}\n"
+                //                + "class NewClass {\n"
+                //                + "}\n"
+                //                + "class Cls {\n"
                 + "}"
         );
 
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "public class Class{\n"
-                + "}\n"
-                + "class Methode {\n"
-                + "}\n"
-                + "class Cls {\n"
-                + "void meth(){}\n"
+                + "public class Class2{\n"
+                //                + "}\n"
+                //                + "class NewClass {\n"
+                //                + "}\n"
+                //                + "class Cls {\n"
+                + "void method2(){}\n"
                 + "}"
         );
 
@@ -92,6 +93,7 @@ public class MainClass {
 
         ArrayList<CodeEntity> insertList = new ArrayList<>(target.getEntities()); // doppelte Elemente 
         insertList.remove(0); // remove CUD
+        ArrayList<CodeEntity> refactoringList = new ArrayList<>();
 
         System.out.println("");
         System.out.println("####################################################");
@@ -103,6 +105,9 @@ public class MainClass {
         System.out.println("Target List: ");
         for (int i = 0; i < target.size(); i++) {
             System.out.println(i + ": " + target.getEntityName(i));
+            if (target.get(i) instanceof ClassDeclaration) {
+                refactoringList.add(target.get(i));
+            }
         }
         System.out.println("####################################################");
 
@@ -114,12 +119,18 @@ public class MainClass {
 
         allActions.add(delete);
 
-        target.getEntities().stream().forEach((entity) -> {
-            allActions.add(new RenameAction(entity));
-        });
+//        target.getEntities().stream().forEach((entity) -> {
+//            allActions.add(new RenameAction(entity));
+//        });
+        
         insertList.stream().forEach((entity) -> {
             allActions.add(new InsertAction(entity));
         });
+        
+        refactoringList.stream().forEach((entity) -> {
+            allActions.add(new RefactoringClassAction(entity));
+        });
+        
         allActions.add(increaseIndex);
         allActions.add(decreaseIndex);
 

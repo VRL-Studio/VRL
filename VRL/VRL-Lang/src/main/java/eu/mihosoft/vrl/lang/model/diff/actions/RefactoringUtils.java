@@ -71,7 +71,6 @@ public class RefactoringUtils {
                         IModelCommands.getInstance().setConstTypeInArgument(to, a);
                     }
                 }
-
             }
         });
     }
