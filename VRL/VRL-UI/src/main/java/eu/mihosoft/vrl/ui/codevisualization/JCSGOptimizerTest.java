@@ -46,20 +46,16 @@ public class JCSGOptimizerTest {
                 + "    public static final void main(String[] args) {\n"
                 + "         // prepare multiple translation\n"
                 + "         CSG csg1 = new Cube().toCSG();\n"
-                + "         double x1 = 1.5; double x2 = 2.5; double x3 = 3.5\n"
-                + "         Vector3d v1 = Vector3d.x(x1)\n"
-                + "         Vector3d v2 = Vector3d.x(x2)\n"
-                + "         Vector3d v3 = Vector3d.x(x3)\n"
                 + "         // case 1 (prepare transform objects)\n"
-                + "         Transform t1 = Transform.unity().translateX(x1)\n"
-                + "         Transform t2 = Transform.unity().translateX(x2)\n"
-                + "         Transform t3 = Transform.unity().translateX(x3)\n"
+                + "         Transform t1 = Transform.unity().translateX(1.5)\n"
+                + "         Transform t2 = Transform.unity().translateX(2.5)\n"
+                + "         Transform t3 = Transform.unity().translateX(3.5)\n"
                 + "         // case 1 (multiple translates)\n"
                 + "         csg1 = csg1.transformed(t1).transformed(t2).transformed(t3)\n"
                 + "    }\n"
                 + "}";
 
-        System.out.println("old code:\n\n" + code);
+        System.out.println("original code:\n\n" + code);
 
         // compile the code and execute model importer
         try {
@@ -73,21 +69,25 @@ public class JCSGOptimizerTest {
                 = (CompilationUnitDeclaration) UIBinding.scopes.values().
                 iterator().next().get(0);
 
+        code = Scope2Code.getCode(cud);
+
+        System.out.println("pre transform code:\n\n" + code);
+
         String newCode = null;
         String prevNewCode = null;
         int counter = 0;
 //        while (!Objects.equals(newCode, prevNewCode) || newCode == null) {
 
-            System.out.println("-- PASS " + ++counter + " --");
-            prevNewCode = newCode;
+        System.out.println("-- PASS " + ++counter + " --");
+        prevNewCode = newCode;
 
-            // apply transformation
-            cud = new BooleanJCSGOptimizer().transform(cud);
+        // apply transformation
+        cud = new BooleanJCSGOptimizer().transform(cud);
 
-            // model -> code
-            newCode = Scope2Code.getCode(cud);
+        // model -> code
+        newCode = Scope2Code.getCode(cud);
 
-            System.out.println("\nnew code:\n\n" + newCode);
+        System.out.println("\nnew code:\n\n" + newCode);
 //        }
 
 //        System.out.println("\nnew code:\n\n" + newCode);

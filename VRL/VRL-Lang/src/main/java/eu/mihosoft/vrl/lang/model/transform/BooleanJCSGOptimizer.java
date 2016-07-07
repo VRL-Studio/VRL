@@ -116,7 +116,7 @@ class TransformationOptimizer implements CodeTransform<ControlFlowScope> {
             }
 
             // transformed() invocation chain found
-            System.out.println(" -> opt: transformed() -> transformed()");
+            System.out.println(" -> opt: multi-transformed() -> single-transformed() + apply()");
 
             Invocation firstTransformedChainInv
                     = transformedChain.get(0);
