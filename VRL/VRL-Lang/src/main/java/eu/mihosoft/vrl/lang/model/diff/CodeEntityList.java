@@ -9,6 +9,7 @@ import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupport;
 import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.Variable;
@@ -311,6 +312,32 @@ public class CodeEntityList {
         return codeEntities;
     }
 
+    /**
+     *
+     * @param scope root element
+     * @return list of all code entities
+     */
+    public static ArrayList<CodeEntity> convertTreeToListAllElems(Scope scope) {
+        ArrayList<CodeEntity> codeEntities = new ArrayList();
+        scope.visitScopeAndAllSubElements((CodeEntity e) -> {
+            codeEntities.add(e);
+            if (e instanceof Scope) {
+                Scope s = (Scope) e;
+                codeEntities.addAll(s.getVariables());
+            }
+            if (e instanceof Invocation) {
+                Invocation inv = (Invocation) e;
+                codeEntities.addAll(inv.getArguments());
+            }
+        });
+
+        for (int i = 0; i < codeEntities.size(); i++) {
+            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)) + " ---> Type: " + codeEntities.get(i).getClass().getSimpleName());
+        }
+
+        return codeEntities;
+    }
+
     public static int subtreeSize(Scope root) {
         ArrayList<CodeEntity> codeEntities = new ArrayList();
         root.visitScopeAndAllSubElements((CodeEntity e) -> {
@@ -368,7 +395,7 @@ public class CodeEntityList {
             System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)));
             System.out.println("Type: " + codeEntities.get(i).getClass());
         }
-        //this.setEntities(codeEntities);
+        this.setEntities(codeEntities);
     }
 
     /**

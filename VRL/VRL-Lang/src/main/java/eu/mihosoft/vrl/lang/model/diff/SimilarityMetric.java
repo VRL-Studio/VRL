@@ -6,11 +6,13 @@
 package eu.mihosoft.vrl.lang.model.diff;
 
 import eu.mihosoft.vrl.lang.VLangUtilsNew;
+import eu.mihosoft.vrl.lang.model.ArgumentType;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.ConstantValue;
+import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.ElseIfDeclaration;
 import eu.mihosoft.vrl.lang.model.IArgument;
 import eu.mihosoft.vrl.lang.model.IfDeclaration;
@@ -18,7 +20,6 @@ import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.ReturnStatementInvocation;
 import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.SimpleForDeclaration;
 import eu.mihosoft.vrl.lang.model.Variable;
@@ -160,21 +161,29 @@ public class SimilarityMetric {
         String codeFragment = "default";
 
         if (codeEntity instanceof Invocation) {
-            // System.out.println("Debug - Invocation: ");
             Invocation invocationEntity = (Invocation) codeEntity;
             if (invocationEntity instanceof ScopeInvocation == false) { //?
-                codeFragment = invocationEntity.getMethodName();;
-            } else if (invocationEntity instanceof ReturnStatementInvocation) {
-                ReturnStatementInvocation rsi = (ReturnStatementInvocation) invocationEntity;
-                codeFragment = rsi.getMethodName();
+                if (invocationEntity instanceof ReturnStatementInvocation) {
+                    ReturnStatementInvocation rsi = (ReturnStatementInvocation) invocationEntity;
+                    codeFragment = rsi.getMethodName() + " " + rsi.getVariableName();
+                } else if (invocationEntity instanceof DeclarationInvocation) {
+                    codeFragment = invocationEntity.getMethodName();
+                } else {
+                    codeFragment = invocationEntity.getMethodName() + " " + invocationEntity.getVariableName();
+                }
             }
         } else if (codeEntity instanceof IArgument) {
-            //  System.out.println("Debug - Argument");
             IArgument argumentEntity = (IArgument) codeEntity;
-            Invocation invocationEntity = argumentEntity.getInvocation().get();
-            if (invocationEntity instanceof ScopeInvocation == false) { //?
-                codeFragment = Scope2Code.getCode(invocationEntity);
+            String name = "";
+            if (argumentEntity.getArgType().equals(ArgumentType.CONSTANT)) {
+                name = argumentEntity.getConstant().get().getType().getShortName();
+            } else if (argumentEntity.getArgType().equals(ArgumentType.VARIABLE)) {
+                name = argumentEntity.getVariable().get().getName();
+            } else if (argumentEntity.getArgType().equals(ArgumentType.INVOCATION)) {
+                name = argumentEntity.getInvocation().get().getMethodName();
+            } else {
             }
+            codeFragment = argumentEntity.getArgType() + " " + name;
         } else if (codeEntity instanceof ConstantValue) {
             //System.out.println("Debug - ConstantValue");
             ConstantValue constantValueEntity = (ConstantValue) codeEntity;
