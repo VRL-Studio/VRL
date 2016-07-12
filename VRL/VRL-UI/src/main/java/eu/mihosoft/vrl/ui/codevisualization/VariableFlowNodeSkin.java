@@ -30,6 +30,7 @@ import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
 import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
+import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.function.Function;
@@ -39,6 +40,7 @@ import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -52,6 +54,8 @@ import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -647,6 +651,16 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 //            viewGroup.getChildren().add(new AmbientLight(ambient));
 
             outputs.getChildren().addAll(subScene);
+        } else if (retVal instanceof BufferedImage) {
+
+            BufferedImage bImg = (BufferedImage) retVal;
+            WritableImage image = SwingFXUtils.toFXImage(
+                    (BufferedImage) retVal, null);
+            ImageView view = new ImageView(image);
+            view.setPreserveRatio(true);
+            view.setFitWidth(300);
+
+            outputs.getChildren().add(view);
         } else if (retVal != null) {
             Label l = new Label(retVal.toString());
             l.setTextFill(Color.LIGHTBLUE);
