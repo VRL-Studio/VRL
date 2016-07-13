@@ -148,3 +148,18 @@
 .scroll-pane {
    -fx-background-color: transparent;
 }
+
+.vtextfield {
+    -fx-background-color: rgba(30,100,140,0.45);
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: rgba(40,180,255,0.52);
+    -fx-text-fill: rgba(120,255,255,0.9);
+}
+
+.vtextfield:focused {
+    -fx-background-color:
+        radial-gradient(focus-distance 0% , center 50% 50% , radius 95% , rgba(60,180,255,0.5), rgba(60,180,255,0.1));
+    -fx-border-color: rgba(125,255,255,0.95);
+    -fx-text-fill: rgba(180,255,255,0.9);
+}
