@@ -25,6 +25,8 @@ import eu.mihosoft.vrl.v3d.jcsg.MeshContainer;
 import eu.mihosoft.vrl.v3d.jcsg.VFX3DUtil;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
+import eu.mihosoft.vrl.workflow.WorkflowUtil;
+import eu.mihosoft.vrl.workflow.fx.ConnectorShape;
 import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkinBase;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
@@ -33,8 +35,10 @@ import eu.mihosoft.vrl.workflow.fx.VCanvas;
 import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
@@ -43,6 +47,7 @@ import javafx.collections.ListChangeListener;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
@@ -252,6 +257,16 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
         canvas.setTranslateBehavior(TranslateBehavior.ALWAYS);
     }
 
+    private List<ConnectorShape> getConnectorShapes() {
+        List<ConnectorShape> connectorShapes
+                = getModel().getInputs().stream().
+                filter(c -> c.getType().equals(WorkflowUtil.DATA_FLOW)).
+                map(c -> getConnectorShape(c)).
+                collect(Collectors.toList());
+
+        return connectorShapes;
+    }
+
     private boolean isInvocation() {
         return getModel().getValueObject().getValue() instanceof Invocation;
     }
@@ -303,11 +318,8 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                     Operator.TIMES,
                     Operator.DIV);
 
-            if (opInv.getOperator().equals(Operator.PLUS)
-                    || opInv.getOperator().equals(Operator.MINUS)
-                    || opInv.getOperator().equals(Operator.TIMES)
-                    || opInv.getOperator().equals(Operator.DIV)) {
-                opInv.setOperator((Operator) opInv.getOperator());
+            if (box.getItems().contains(opInv.getOperator())) {
+                box.getSelectionModel().select(opInv.getOperator());
             }
 
             box.getSelectionModel().selectedItemProperty().
@@ -325,6 +337,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 //        box.setVisible(!invocation.getArguments().isEmpty());
         VBox inputs = new VBox();
         inputs.setAlignment(Pos.CENTER);
+
         outputs = new VBox();
         outputs.setAlignment(Pos.CENTER);
         HBox hbox = new HBox(inputs, outputs);
@@ -585,10 +598,72 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                 }
             }
 
+            Node argNode = inputs.getChildren().get(argIndex);
+
+            List<ConnectorShape> connectorShapes = getConnectorShapes();
+
+            if (connectorShapes.size() <= argIndex || argNode == null) {
+                continue;
+            }
+
+            final ConnectorShape connectorShape = connectorShapes.get(argIndex);
+
+            updateConnectorPos(connectorShape, argNode);
+
+            connectorShape.getNode().layoutYProperty().addListener(observable -> {
+                if (argNode.getParent() == null
+                        || argNode.getParent().getScene() == null) {
+                    return;
+                }
+                if (connectorShape.getNode().getParent() == null
+                        || connectorShape.getNode().getParent().getScene() == null) {
+                    return;
+                }
+                updateConnectorPos(connectorShape, argNode);
+            });
+
+            getNode().boundsInLocalProperty().addListener(observable -> {
+                if (argNode.getParent() == null
+                        || argNode.getParent().getScene() == null) {
+                    return;
+                }
+                if (connectorShape.getNode().getParent() == null
+                        || connectorShape.getNode().getParent().getScene() == null) {
+                    return;
+                }
+                updateConnectorPos(connectorShape, argNode);
+            });
+
             argIndex++;
         } // end for
 
         updating = false;
+    }
+
+    private void updateConnectorPos(ConnectorShape connectorShape, Node argNode) {
+        
+        Node connectorNode = connectorShape.getNode();
+
+        Point2D global1 = argNode.getParent().localToScene(
+                argNode.getLayoutX(),
+                argNode.getLayoutY()
+        );
+
+        Point2D global2 = connectorNode.getParent().localToScene(
+                connectorNode.getLayoutX(),
+                connectorNode.getLayoutY()
+        );
+        double diffX = global2.getX() - global1.getX()
+                - argNode.getLayoutBounds().getWidth()*0.5 
+                + connectorShape.getRadius();
+        double diffY = global2.getY() - global1.getY()
+                - argNode.getLayoutBounds().getHeight()*0.5
+                + connectorShape.getRadius();
+        
+        Point2D diff = new Point2D(diffX, diffY);
+
+//                connectorNode.setTranslateX(+30);
+        connectorNode.setTranslateY(-diff.getY());
     }
 
     private void setMeshScale(MeshContainer meshContainer,
