@@ -17,6 +17,7 @@ import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.UIBinding;
@@ -63,12 +64,16 @@ import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
+import javafx.scene.text.TextAlignment;
 import jfxtras.scene.control.window.Window;
 import jfxtras.scene.control.window.WindowUtil;
+import org.fxmisc.richtext.CodeArea;
 import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
@@ -83,9 +88,9 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
     private VBox outputs;
     private final ObjectProperty<Object[]> args = new SimpleObjectProperty<>();
 
-    private static TextArea editor;
+    private static CodeArea editor;
 
-    public static void setEditor(TextArea editor, VFlow flow) {
+    public static void setEditor(CodeArea editor, VFlow flow) {
         VariableFlowNodeSkin.editor = editor;
 
         Function<CodeEntity, Stream< ? extends Window>> mapFlatToWindow = (cE) -> {
@@ -320,6 +325,8 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
             if (box.getItems().contains(opInv.getOperator())) {
                 box.getSelectionModel().select(opInv.getOperator());
+            } else {
+                box.setVisible(false);
             }
 
             box.getSelectionModel().selectedItemProperty().
@@ -340,7 +347,9 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
         outputs = new VBox();
         outputs.setAlignment(Pos.CENTER);
-        HBox hbox = new HBox(inputs, outputs);
+        Pane boxPane = new Pane();
+        boxPane.setMinWidth(30);
+        HBox hbox = new HBox(inputs, boxPane, outputs);
         hbox.setPadding(new Insets(0, 15, 0, 15));
 
         createArgView(invocation, inputs, false);
@@ -558,6 +567,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             } else if (a.getArgType() == ArgumentType.VARIABLE) {
                 Label label = new Label();
                 a.getVariable().ifPresent(v -> label.setText(v.getName()));
+                label.setMinHeight(15);
                 label.setTextFill(Color.LIGHTBLUE);
                 if (update) {
                     inputs.getChildren().set(argIndex, label);
@@ -579,6 +589,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             } else if (a.getArgType() == ArgumentType.INVOCATION) {
                 Label label = new Label();
                 label.setTextFill(Color.LIGHTBLUE);
+                label.setMinHeight(15);
                 a.getInvocation().ifPresent(i -> label.setText(i.getMethodName()));
                 if (update) {
                     inputs.getChildren().set(argIndex, label);
@@ -734,8 +745,6 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
             outputs.getChildren().addAll(subScene);
         } else if (retVal instanceof BufferedImage) {
-
-            BufferedImage bImg = (BufferedImage) retVal;
             WritableImage image = SwingFXUtils.toFXImage(
                     (BufferedImage) retVal, null);
             ImageView view = new ImageView(image);
@@ -749,11 +758,12 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             outputs.getChildren().add(l);
         } else {
             Label l = new Label();
+            l.setTextAlignment(TextAlignment.CENTER);
             if (isInvocation()) {
                 Invocation invocation = getInvocation();
                 if (!invocation.isVoid()
                         && !(invocation instanceof DeclarationInvocation)) {
-                    l.setText("null");
+                    l.setText(" ");
                 }
             }
             l.setTextFill(Color.LIGHTBLUE);

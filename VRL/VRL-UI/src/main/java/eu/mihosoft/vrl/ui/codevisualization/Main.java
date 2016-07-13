@@ -112,4 +112,11 @@ public class Main extends Application {
         scene.getStylesheets().add("/eu/mihosoft/vrl/ui/codevisualization/default_blue_grid_background.css");
     }
 
+    @Override
+    public void stop() throws Exception {
+        System.exit(0);
+    }
+    
+    
+
 }
