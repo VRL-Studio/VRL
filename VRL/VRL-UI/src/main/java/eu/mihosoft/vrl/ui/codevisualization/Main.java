@@ -109,7 +109,7 @@ public class Main extends Application {
         controller.loadTextFile(new File("InstrumentationMain.groovy"), true);
 
 //        scene.getStylesheets().add("/eu/mihosoft/vrl/ui/codevisualization/default.css");
-        scene.getStylesheets().add("/eu/mihosoft/vrl/ui/codevisualization/default-pre13.03.2014.css");
+        scene.getStylesheets().add("/eu/mihosoft/vrl/ui/codevisualization/default_blue_grid_background.css");
     }
 
 }
