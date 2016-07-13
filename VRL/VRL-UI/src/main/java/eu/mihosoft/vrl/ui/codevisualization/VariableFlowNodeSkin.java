@@ -303,6 +303,13 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                     Operator.TIMES,
                     Operator.DIV);
 
+            if (opInv.getOperator().equals(Operator.PLUS)
+                    || opInv.getOperator().equals(Operator.MINUS)
+                    || opInv.getOperator().equals(Operator.TIMES)
+                    || opInv.getOperator().equals(Operator.DIV)) {
+                opInv.setOperator((Operator) opInv.getOperator());
+            }
+
             box.getSelectionModel().selectedItemProperty().
                     addListener((ov, oldV, newV) -> {
                         opInv.setOperator((Operator) newV);
