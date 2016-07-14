@@ -55,6 +55,7 @@ import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
@@ -468,6 +469,40 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                 });
     }
 
+    private void setCBListener(int argIndex, CheckBox field,
+            Invocation invocation, Argument a) {
+
+        field.selectedProperty().addListener((ov, oldv, newv) -> {
+
+            if (a.getArgType() == ArgumentType.CONSTANT) {
+
+                parseBool(field.isSelected(), invocation, argIndex);
+
+                System.out.println("param-type: " + a.getType());
+            }
+
+        });
+
+    }
+
+    private void parseBool(Boolean b, Invocation invocation, int argIndex) {
+        try {
+            invocation.getArguments().set(argIndex,
+                    Argument.constArg(Type.BOOLEAN, b));
+            invocation.getParent().fireEvent(new CodeEvent(
+                    CodeEventType.CHANGE,
+                    invocation.getParent()));
+
+            if (invocation instanceof ScopeInvocation) {
+                ScopeInvocation scopeInv
+                        = (ScopeInvocation) invocation;
+                Scope scope = scopeInv.getScope();
+            }
+        } catch (Exception ex) {
+
+        }
+    }
+
     private void parseInt(Change<String> newV, Invocation invocation, int argIndex) {
         try {
             Integer intValue = Integer.parseInt(newV.getNewValue());
@@ -536,7 +571,36 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
         int argIndex = 0;
         for (Argument a : invocation.getArguments()) {
+
             if (a.getArgType() == ArgumentType.CONSTANT
+                    && a.getType().getFullClassName()
+                    .equals("java.lang.Boolean")
+                    || a.getType().getFullClassName()
+                    .equals("boolean")) {
+                CheckBox cb;
+                if (update
+                        && inputs.getChildren().get(argIndex) instanceof CheckBox) {
+                    cb = (CheckBox) inputs.getChildren().get(argIndex);
+                } else {
+                    cb = new CheckBox("");
+
+                    setCBListener(argIndex, cb, invocation, a);
+
+                    if (update) {
+                        inputs.getChildren().set(argIndex, cb);
+
+                    } else {
+                        inputs.getChildren().add(cb);
+                    }
+                }
+
+                a.getConstant().ifPresent(o -> {
+
+                    if (!o.equals(cb.isSelected())) {
+                        cb.setSelected((boolean) o);
+                    }
+                });
+            } else if (a.getArgType() == ArgumentType.CONSTANT
                     || a.getArgType() == ArgumentType.NULL) {
                 TextField field;
 
@@ -614,6 +678,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             List<ConnectorShape> connectorShapes = getConnectorShapes();
 
             if (connectorShapes.size() <= argIndex || argNode == null) {
+                argIndex++;
                 continue;
             }
 
@@ -652,7 +717,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
     }
 
     private void updateConnectorPos(ConnectorShape connectorShape, Node argNode) {
-        
+
         Node connectorNode = connectorShape.getNode();
 
         Point2D global1 = argNode.getParent().localToScene(
@@ -665,12 +730,14 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                 connectorNode.getLayoutY()
         );
         double diffX = global2.getX() - global1.getX()
-                - argNode.getLayoutBounds().getWidth()*0.5 
-                + connectorShape.getRadius();
+                //                ;
+                - argNode.getLayoutBounds().getWidth() * 0.5
+                + connectorShape.getRadius() * 0.75;
         double diffY = global2.getY() - global1.getY()
-                - argNode.getLayoutBounds().getHeight()*0.5
-                + connectorShape.getRadius();
-        
+                //                ;
+                - argNode.getLayoutBounds().getHeight() * 0.5
+                + connectorShape.getRadius() * 0.75;
+
         Point2D diff = new Point2D(diffX, diffY);
 
 //                connectorNode.setTranslateX(+30);
