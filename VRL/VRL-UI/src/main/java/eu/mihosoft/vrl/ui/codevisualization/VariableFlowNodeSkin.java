@@ -333,6 +333,9 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             box.getSelectionModel().selectedItemProperty().
                     addListener((ov, oldV, newV) -> {
                         opInv.setOperator((Operator) newV);
+                        opInv.getParent().fireEvent(new CodeEvent(
+                                CodeEventType.CHANGE,
+                                opInv.getParent()));
                     });
 
         } else {
