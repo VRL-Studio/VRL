@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToolBar?>
+
+
+<ToolBar prefHeight="40.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.mihosoft.vworkflows.sample.MainWindowFXMLController">
+  <items>
+    <Button fx:id="generateBtn" disable="true" minWidth="100.0" mnemonicParsing="false" onAction="#onGenerateAction" text="Layout" />
+      <ToggleButton fx:id="freezeBtn" minWidth="100.0" mnemonicParsing="false" onAction="#onFreezeAction" text="Freeze" />
+      <Slider fx:id="zoomSlider" max="5.0" min="0.1" value="1.0" />
+      <CheckBox fx:id="minEqMaxCheckBox" layoutX="362.0" layoutY="15.0" mnemonicParsing="false" text="Min==Max" />
+      <CheckBox fx:id="expandCanvasCheckBox" mnemonicParsing="false" text="Expand Canvas (Left/Top)" />
+  </items>
+</ToolBar>
