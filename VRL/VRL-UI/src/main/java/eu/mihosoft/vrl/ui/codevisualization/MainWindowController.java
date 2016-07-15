@@ -113,9 +113,12 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination.Modifier;
@@ -180,6 +183,22 @@ public class MainWindowController implements Initializable {
 
     private CodeArea editor;
 
+    @FXML
+    private ToggleButton freezeBtn;
+
+//    @FXML
+//    private Button generateBtn;
+    @FXML
+    private Slider zoomSlider;
+
+    @FXML
+    private CheckBox expandCanvasCheckBox;
+
+    @FXML
+    private CheckBox minEqMaxCheckBox;
+
+    private final double minScale = 0.3;
+
     /**
      * Initializes the controller class.
      *
@@ -190,8 +209,8 @@ public class MainWindowController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 
         editor = new CodeArea();
-        VirtualizedScrollPane editorScrollPane = 
-                new VirtualizedScrollPane<>(editor);
+        VirtualizedScrollPane editorScrollPane
+                = new VirtualizedScrollPane<>(editor);
         AddSyntaxHighlighting.add(editor);
         AnchorPane.setTopAnchor(editorScrollPane, 0.0);
         AnchorPane.setBottomAnchor(editorScrollPane, 0.0);
@@ -200,12 +219,48 @@ public class MainWindowController implements Initializable {
         editorParent.getChildren().add(editorScrollPane);
 
         VCanvas canvas = new VCanvas();
-//        canvas.setStyle("-fx-background-color: rgb(0,0, 0)");
 
         canvas.setMinScaleX(0.2);
         canvas.setMinScaleY(0.2);
         canvas.setMaxScaleX(1);
         canvas.setMaxScaleY(1);
+
+        canvas.setMinScaleX(minScale);
+        canvas.setMinScaleY(minScale);
+        canvas.setMaxScaleX(1.0);
+        canvas.setMaxScaleY(1.0);
+
+        // dragging nodes to the left or top border expands the canvas
+        canvas.translateToMinNodePosProperty().bind(
+                expandCanvasCheckBox.selectedProperty());
+
+        // zoom (min=max)
+        zoomSlider.valueProperty().addListener((ov) -> {
+            double value = zoomSlider.getValue();
+
+            if (minEqMaxCheckBox.isSelected()) {
+                canvas.setMinScaleX(value);
+                canvas.setMinScaleY(value);
+            } else {
+                canvas.setMinScaleX(minScale);
+                canvas.setMinScaleY(minScale);
+            }
+
+            canvas.setMaxScaleX(value);
+            canvas.setMaxScaleY(value);
+        });
+
+        // minScale == maxScale
+        minEqMaxCheckBox.selectedProperty().
+                addListener((ov, oldValue, newValue) -> {
+                    if (newValue) {
+                        canvas.setMinScaleX(canvas.getMaxScaleX());
+                        canvas.setMinScaleY(canvas.getMaxScaleY());
+                    } else {
+                        canvas.setMinScaleX(minScale);
+                        canvas.setMinScaleY(minScale);
+                    }
+                });
 
         canvas.setOnMouseClicked((evt) -> {
             WindowUtil.getDefaultClipboard().deselectAll();
@@ -273,6 +328,16 @@ public class MainWindowController implements Initializable {
         menuCloseItem.setAccelerator(new KeyCodeCombination(KeyCode.Q, cmdModifier));
         menuLoadItem.setAccelerator(new KeyCodeCombination(KeyCode.L, cmdModifier));
         menuRunItem.setAccelerator(new KeyCodeCombination(KeyCode.R, cmdModifier));
+    }
+
+    @FXML
+    public void onFreezeAction(ActionEvent e) {
+        flow.getModel().getVisualizationRequest().set(
+                VisualizationRequest.KEY_DISABLE_EDITING,
+                freezeBtn.isSelected());
+        flow.getModel().getVisualizationRequest().set(
+                VisualizationRequest.KEY_NODE_NOT_REMOVABLE,
+                freezeBtn.isSelected());
     }
 
     @FXML
