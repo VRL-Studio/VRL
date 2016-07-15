@@ -10,7 +10,6 @@ import eu.mihosoft.ai.astar.Action;
 import eu.mihosoft.ai.astar.WorldDescription;
 import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupport;
 import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
-import eu.mihosoft.vrl.lang.command.CommandList;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
@@ -19,10 +18,10 @@ import eu.mihosoft.vrl.lang.model.diff.actions.DecreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.DeleteAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.IncreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.InsertAction;
-import eu.mihosoft.vrl.lang.model.diff.actions.RefactoringClassAction;
+import eu.mihosoft.vrl.lang.model.diff.actions.RenameAction;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
+import java.util.HashMap;
+import java.util.Map;
 import org.codehaus.groovy.control.CompilationUnit;
 import org.codehaus.groovy.control.Phases;
 import org.codehaus.groovy.control.SourceUnit;
@@ -47,14 +46,19 @@ public class MainClass {
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
                 + "public class Class2{\n"
-                //                + "}\n"
-                //                + "class NewClass {\n"
+//                + "}\n"
+//                + "class NewClass {\n"
                 //                + "}\n"
                 //                + "class Cls {\n"
-                + "void method2(){}\n"
+                + "void method1(){\n"
+                + "int Class2;\n"
+                + "}\n"
                 + "}"
         );
 
+        System.out.println("");
+        System.out.println("");
+        //CodeEntityList.convertTreeToListAllElems(sourceModel);
         classAStar(sourceModel, targetModel);
         //classAStar(targetModel, sourceModel);
 
@@ -84,16 +88,27 @@ public class MainClass {
      * @param targetModel
      * @return list of changes
      */
-    private static CommandList classAStar(CompilationUnitDeclaration sourceModel, CompilationUnitDeclaration targetModel) {
+    private static void classAStar(CompilationUnitDeclaration sourceModel, CompilationUnitDeclaration targetModel) {
 
         CodeEntityList source = new CodeEntityList(sourceModel);
         CodeEntityList target = new CodeEntityList(targetModel);
 
-        HashSet set = new LinkedHashSet<>(target.getEntities());
-
         ArrayList<CodeEntity> insertList = new ArrayList<>(target.getEntities()); // doppelte Elemente 
         insertList.remove(0); // remove CUD
         ArrayList<CodeEntity> refactoringList = new ArrayList<>();
+
+        Map<String, CodeEntity> renameMap = new HashMap<>();
+        for (CodeEntity codeEntity : target.getEntities()) {
+            String name = SimilarityMetric.getCodeEntityName(codeEntity);
+            if (!renameMap.containsKey(name)) {
+                renameMap.put(name, codeEntity);
+            } else if (!renameMap.get(name).getClass().equals(codeEntity.getClass())) {
+                name = name + codeEntity.getClass().getSimpleName();
+                renameMap.put(name, codeEntity);
+            }
+        }
+        
+        ArrayList<CodeEntity> renameList = new ArrayList<>(renameMap.values());
 
         System.out.println("");
         System.out.println("####################################################");
@@ -119,18 +134,16 @@ public class MainClass {
 
         allActions.add(delete);
 
-//        target.getEntities().stream().forEach((entity) -> {
-//            allActions.add(new RenameAction(entity));
-//        });
-        
+        renameList.stream().forEach((entity) -> {
+            allActions.add(new RenameAction(entity));
+        });
         insertList.stream().forEach((entity) -> {
             allActions.add(new InsertAction(entity));
         });
-        
-        refactoringList.stream().forEach((entity) -> {
-            allActions.add(new RefactoringClassAction(entity));
-        });
-        
+
+//        refactoringList.stream().forEach((entity) -> {
+//            allActions.add(new RefactoringClassAction(entity));
+//        });
         allActions.add(increaseIndex);
         allActions.add(decreaseIndex);
 
@@ -148,7 +161,6 @@ public class MainClass {
         solverOND.run();
 
         System.out.println("done.");
-        return null;
     }
 
     public static SourceUnit fromCode(String code) throws Exception {
