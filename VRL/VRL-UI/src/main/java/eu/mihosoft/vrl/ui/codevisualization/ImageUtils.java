@@ -10,6 +10,12 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -28,5 +34,21 @@ public class ImageUtils {
                 Transparency.TRANSLUCENT);
 
         return bimage;
+    }
+
+    public static BufferedImage loadImageFromURL(String url) {
+
+        try {
+            URL path = new URL(url);
+            return ImageIO.read(path);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(ImageUtils.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ImageUtils.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        }
+
+        return null;
     }
 }
