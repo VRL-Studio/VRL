@@ -16,18 +16,6 @@
             <MenuItem fx:id="menuCloseItem" mnemonicParsing="false" onAction="#onCloseAction" text="Close" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Layout">
-            <Menu mnemonicParsing="false" text="Smart Layout">
-                <MenuItem mnemonicParsing="false" onAction="#onLayoutSmartAction" text="Apply Layout" />
-                <MenuItem mnemonicParsing="false" onAction="#onLayoutSmartOptionsAction" text="Customize" />
-            </Menu>
-            <Menu mnemonicParsing="false" text="Naive Layout">
-                <MenuItem mnemonicParsing="false" onAction="#onLayoutNaiveAction" text="Apply Layout" />
-                <MenuItem mnemonicParsing="false" onAction="#onLayoutNaiveOptionsAction" text="Customize" />
-            </Menu>
-            <CheckMenuItem fx:id="checkLayoutDebug" mnemonicParsing="false" text="Debugging Enabled" />
-            <MenuItem mnemonicParsing="false"  onAction="#onLayoutSnapshotAction" text="Save Snapshot" />
-        </Menu>
         <Menu mnemonicParsing="false" text="Help">
           <items>
             <MenuItem mnemonicParsing="false" text="About" />
