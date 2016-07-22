@@ -82,6 +82,8 @@ import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkin;
 import eu.mihosoft.vrl.workflow.fx.FXValueSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
+import eu.mihosoft.vrl.workflow.incubating.LayoutGeneratorNaive;
+import eu.mihosoft.vrl.workflow.incubating.LayoutGeneratorSmart;
 import eu.mihosoft.vrl.workflow.skin.VNodeSkin;
 import groovy.lang.GroovyClassLoader;
 import java.io.File;
@@ -92,7 +94,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -110,13 +114,20 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination.Modifier;
@@ -124,10 +135,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooserBuilder;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javax.imageio.ImageIO;
 import jfxtras.scene.control.window.WindowUtil;
 import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
@@ -174,6 +187,18 @@ public class MainWindowController implements Initializable {
     private Stage mainWindow;
 
     private String uiData;
+    
+    @FXML
+    private CheckMenuItem checkLayoutDebug;
+    
+    private LayoutGeneratorSmart layoutSmart;
+    private FXMLLoader fxmlLoaderSmart;
+    private OptionsWindowSmartFXMLController controllerSmart;
+    private Stage stageSmart;
+    private LayoutGeneratorNaive layoutNaive;
+    private FXMLLoader fxmlLoaderNaive;
+    private OptionsWindowNaiveFXMLController controllerNaive;
+    private Stage stageNaive;
 
     /**
      * Initializes the controller class.
@@ -258,6 +283,36 @@ public class MainWindowController implements Initializable {
         menuCloseItem.setAccelerator(new KeyCodeCombination(KeyCode.Q, cmdModifier));
         menuLoadItem.setAccelerator(new KeyCodeCombination(KeyCode.L, cmdModifier));
         menuRunItem.setAccelerator(new KeyCodeCombination(KeyCode.R, cmdModifier));
+        
+        layoutSmart = new LayoutGeneratorSmart();
+        fxmlLoaderSmart = new FXMLLoader(getClass()
+                .getResource("OptionsWindowSmartFXML.fxml"));
+        stageSmart = new Stage();
+        stageSmart.setTitle("Smart Layout Options");
+        try {
+            Parent p = (Parent) fxmlLoaderSmart.load();
+            stageSmart.setScene(new Scene(p));
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        controllerSmart = fxmlLoaderSmart.getController();
+        controllerSmart.setGenerator(layoutSmart);
+        controllerSmart.setStage(stageSmart);
+        
+        layoutNaive = new LayoutGeneratorNaive();
+        fxmlLoaderNaive = new FXMLLoader(getClass()
+                .getResource("OptionsWindowNaiveFXML.fxml"));
+        stageNaive = new Stage();
+        stageNaive.setTitle("Naive Layout Options");
+        try {
+            Parent p = (Parent) fxmlLoaderNaive.load();
+            stageNaive.setScene(new Scene(p));
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        controllerNaive = fxmlLoaderNaive.getController();
+        controllerNaive.setGenerator(layoutNaive);
+        controllerNaive.setStage(stageNaive);
     }
 
     @FXML
@@ -342,6 +397,60 @@ public class MainWindowController implements Initializable {
     @FXML
     public void onRunCodeAction(ActionEvent e) {
         runCode();
+    }
+    
+    @FXML
+    public void onLayoutSmartAction(ActionEvent e) {
+        this.layoutSmart.setWorkflow(this.flow.getModel());
+        this.layoutSmart.generateLayout();
+    }
+    
+    @FXML
+    public void onLayoutSmartOptionsAction(ActionEvent e) {
+        controllerSmart.setWorkflow(this.flow);
+        layoutSmart.setDebug(this.checkLayoutDebug.isSelected());
+        controllerSmart.set();
+        stageSmart.show();
+    }
+    
+    @FXML
+    public void onLayoutNaiveAction(ActionEvent e) {
+        this.layoutNaive.setWorkflow(this.flow.getModel());
+        this.layoutNaive.generateLayout();
+    }
+    
+    @FXML
+    public void onLayoutNaiveOptionsAction(ActionEvent e) {
+        controllerNaive.setWorkflow(this.flow);
+        layoutNaive.setDebug(this.checkLayoutDebug.isSelected());
+        controllerNaive.set();
+        stageNaive.show();
+    }
+    
+    @FXML
+    public void onLayoutSnapshotAction(ActionEvent e) {
+        String abspath = new File(".").getAbsolutePath();
+        String path = abspath.substring(0, abspath.length()-1);
+        File dir = new File(path + "snapshots");
+        if(!dir.exists()) {
+            System.out.println("Creating directory: " + dir.getAbsolutePath());
+            dir.mkdir();
+        }
+        path += "snapshots/";
+        WritableImage wim = new WritableImage((int) Math.round(this.view.getWidth()), (int) Math.round(this.view.getHeight()));
+        SnapshotParameters param = new SnapshotParameters();
+        param.setTransform(new Translate(0, 200));
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        String now = format.format(calendar.getTime());
+        try {
+            view.snapshot(param, wim);
+            dir = new File(path + now + ".png");
+            ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", dir);
+            System.out.println("snapshot " + now + ".png saved.");
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void loadTextFile(File f, boolean loadUIData) {
