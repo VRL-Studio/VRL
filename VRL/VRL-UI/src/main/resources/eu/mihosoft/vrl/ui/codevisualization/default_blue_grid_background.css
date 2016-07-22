@@ -1,0 +1,165 @@
+/**
+ * Copyright 2012-2016 Michael Hoffer <info@michaelhoffer.de>. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without modification, are
+ * permitted provided that the following conditions are met:
+ *
+ *    1. Redistributions of source code must retain the above copyright notice, this list of
+ *       conditions and the following disclaimer.
+ *
+ *    2. Redistributions in binary form must reproduce the above copyright notice, this list
+ *       of conditions and the following disclaimer in the documentation and/or other materials
+ *       provided with the distribution.
+ *
+ * Please cite the following publication(s):
+ *
+ * M. Hoffer, C.Poliwoda, G.Wittum. Visual Reflection Library -
+ * A Framework for Declarative GUI Programming on the Java Platform.
+ * Computing and Visualization in Science, 2011, in press.
+ *
+ * THIS SOFTWARE IS PROVIDED BY Michael Hoffer <info@michaelhoffer.de> "AS IS" AND ANY EXPRESS OR IMPLIED
+ * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
+ * FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL Michael Hoffer <info@michaelhoffer.de> OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * The views and conclusions contained in the software and documentation are those of the
+ * authors and should not be interpreted as representing official policies, either expressed
+ * or implied, of Michael Hoffer <info@michaelhoffer.de>.
+ */
+/* 
+    Document   : default.css
+    Created on : 08.10.2012, 10:17:51
+    Author     : Michael Hoffer  &lt;info@michaelhoffer.de&gt;
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+/*.vflow-background {
+    -fx-background-color: linear-gradient(to bottom, rgb(10,32,60), rgb(42,52,120));
+}*/
+
+.vflow-background {
+    /*-fx-background-color: linear-gradient(to bottom, rgb(10,32,60), rgb(42,52,120));*/
+/*-fx-background-color: rgb(0,30,50);*/
+    -fx-background-color: 
+        /*linear-gradient(to bottom, rgb(0,40,60), rgb(0,10,10)),*/
+        radial-gradient(focus-distance 0% , center 50% 50% , radius 95% , rgb(0,50,80), rgb(0,20,40)),
+        /*grid*/
+        linear-gradient(from 0.0px 0px to 30.0px 0px, repeat, rgba(120,140,255,0.04) 3%, transparent 3%),
+        linear-gradient(from 0px 0.0px to 0px 30.0px, repeat, rgba(120,140,255,0.04) 3%, transparent 3%),
+        linear-gradient(from 0.0px 0px to 15.0px 0px, repeat, rgba(120,140,255,0.04) 5%, transparent 5%),
+        linear-gradient(from 0px 0.0px to 0px 15.0px, repeat, rgba(120,140,255,0.04) 5%, transparent 5%);
+}
+
+.window {
+    -fx-background-color: rgba(40,100,140,0.2);
+    -fx-border-color: rgba(40,180,255,0.52);
+    -fx-border-radius: 10px;
+    -fx-border-width: 3;
+    -fx-background-insets: 2;
+}
+
+.window-titlebar {
+
+    -fx-background-color: rgba(20,20,45,0.4);
+    -fx-border-color: rgba(120,140,255,0.0);
+    -fx-border-width: 6;
+    -fx-background-radius: 8px;
+    -fx-padding: 6 4 0 4;
+    -fx-background-insets: 3 3 0 3;
+    
+    -fx-alignment: center;
+    -fx-fill: rgba(255,255,255,50);
+}
+
+/*.window {
+    -fx-background-color: rgba(120,140,255,0.2);
+    -fx-border-color: rgba(120,140,255,0.42);
+    -fx-border-width: 2;
+}*/
+
+.vnode-connector {
+    -fx-background-color: rgba(0,0,0,0.75);
+    -fx-stroke: rgba(120, 140, 255, 0.42);
+    -fx-border-width: 2px; 
+    -fx-border-color: rgba(120, 140, 255, 0.72);
+    -fx-shape: "m 187.92089,378.88528 a 12.94066,12.94066 0 0 1 -12.94067,12.94066 12.94066,12.94066 0 0 1 -12.94066,-12.94066 12.94066,12.94066 0 0 1 12.94066,-12.94066 12.94066,12.94066 0 0 1 12.94067,12.94066 z"
+}
+
+.vnode-connector-control {
+    -fx-background-color: rgba(255,255,0,0.75);
+    -fx-stroke: rgba(120, 140, 255, 0.42);
+    -fx-stroke-width: 3px; 
+    -fx-border-color: rgba(255,255,0,0.75);
+}
+
+.vnode-connector-event {
+    -fx-background-color: rgba(255,100,255,0.75);
+    -fx-stroke: rgba(120, 140, 255, 0.42);
+    /*-fx-border-color: rgba(255,100,255,0.75);*/
+}
+
+.vnode-connector-data {
+    -fx-background-color: rgba(20,255,255,0.45);
+    -fx-stroke: rgba(120, 140, 255, 0.42);
+    -fx-stroke-width: 3px; 
+    -fx-border-color: rgba(20,255,255,0.75);
+}
+
+.vnode-connection {
+    -fx-stroke: rgba(120,140,255,0.2);
+    -fx-stroke-width: 5px;
+}
+
+.vnode-new-connection {
+    -fx-stroke: rgba(120,140,255,0.2);
+    -fx-stroke-width: 8px;
+}
+
+.vnode-connection-data {
+    -fx-stroke: rgba(80,100,255,0.25);
+    -fx-stroke-width: 8px;
+}
+
+.vnode-connection-control {
+    -fx-stroke: rgba(255, 255, 10, 0.55);
+    -fx-stroke-width: 15px; 
+    -fx-stroke-line-cap: round;
+
+    /*    -fx-effect: dropshadow(one-pass-box,
+            rgba(0, 0, 0, 0.9),
+            7, 0.0, 0, 0);*/
+}
+
+.vnode-new-connection {
+    -fx-stroke: rgba(120,140,255,0.2);
+    -fx-stroke-width: 5px;
+}
+
+.scroll-pane .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-pane {
+   -fx-background-color: transparent;
+}
+
+.vtextfield {
+    -fx-background-color: rgba(30,100,140,0.45);
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    -fx-border-color: rgba(40,180,255,0.52);
+    -fx-text-fill: rgba(120,255,255,0.9);
+}
+
+.vtextfield:focused {
+    -fx-background-color:
+        radial-gradient(focus-distance 0% , center 50% 50% , radius 95% , rgba(60,180,255,0.5), rgba(60,180,255,0.1));
+    -fx-border-color: rgba(125,255,255,0.95);
+    -fx-text-fill: rgba(180,255,255,0.9);
+}

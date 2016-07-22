@@ -5,14 +5,24 @@
  */
 package eu.mihosoft.vrl.ui.codevisualization;
 
+import java.time.Duration;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.concurrent.ExecutorService;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.concurrent.Task;
 import javafx.scene.CacheHint;
 import javafx.scene.Node;
-import javafx.scene.control.TextArea;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.Region;
 import jfxtras.scene.control.window.CloseIcon;
 import jfxtras.scene.control.window.Window;
+import org.fxmisc.richtext.CodeArea;
+import org.fxmisc.richtext.LineNumberFactory;
+import org.fxmisc.richtext.StyleSpans;
+import org.fxmisc.richtext.StyleSpansBuilder;
 
 /**
  *
@@ -21,7 +31,7 @@ import jfxtras.scene.control.window.Window;
 public class VCodeEditor {
 
     private Window window;
-    private TextArea textArea;
+    private CodeArea codeArea;
 
     private static final String[] KEYWORDS = new String[]{
         "abstract", "assert", "boolean", "break", "byte",
@@ -36,7 +46,65 @@ public class VCodeEditor {
         "transient", "try", "void", "volatile", "while"
     };
 
-    private static final Pattern KEYWORD_PATTERN = Pattern.compile("\\b(" + String.join("|", KEYWORDS) + ")\\b");
+    private static final String KEYWORD_PATTERN = "\\b(" + String.join("|", KEYWORDS) + ")\\b";
+    private static final String PAREN_PATTERN = "\\(|\\)";
+    private static final String BRACE_PATTERN = "\\{|\\}";
+    private static final String BRACKET_PATTERN = "\\[|\\]";
+    private static final String SEMICOLON_PATTERN = "\\;";
+    private static final String STRING_PATTERN = "\"([^\"\\\\]|\\\\.)*\"";
+    private static final String COMMENT_PATTERN = "//[^\n]*" + "|" + "/\\*(.|\\R)*?\\*/";
+
+    private static final Pattern PATTERN = Pattern.compile(
+            "(?<KEYWORD>" + KEYWORD_PATTERN + ")"
+            + "|(?<PAREN>" + PAREN_PATTERN + ")"
+            + "|(?<BRACE>" + BRACE_PATTERN + ")"
+            + "|(?<BRACKET>" + BRACKET_PATTERN + ")"
+            + "|(?<SEMICOLON>" + SEMICOLON_PATTERN + ")"
+            + "|(?<STRING>" + STRING_PATTERN + ")"
+            + "|(?<COMMENT>" + COMMENT_PATTERN + ")"
+    );
+
+    private ExecutorService executor;
+
+    private Task<StyleSpans<Collection<String>>> computeHighlightingAsync() {
+        String text = codeArea.getText();
+        Task<StyleSpans<Collection<String>>> task = new Task<StyleSpans<Collection<String>>>() {
+            @Override
+            protected StyleSpans<Collection<String>> call() throws Exception {
+                return computeHighlighting(text);
+            }
+        };
+        executor.execute(task);
+        return task;
+    }
+
+    private void applyHighlighting(StyleSpans<Collection<String>> highlighting) {
+        codeArea.setStyleSpans(0, highlighting);
+    }
+
+    private static StyleSpans<Collection<String>> computeHighlighting(String text) {
+        Matcher matcher = PATTERN.matcher(text);
+        int lastKwEnd = 0;
+        StyleSpansBuilder<Collection<String>> spansBuilder
+                = new StyleSpansBuilder<>();
+        while (matcher.find()) {
+            String styleClass
+                    = matcher.group("KEYWORD") != null ? "keyword"
+                    : matcher.group("PAREN") != null ? "paren"
+                    : matcher.group("BRACE") != null ? "brace"
+                    : matcher.group("BRACKET") != null ? "bracket"
+                    : matcher.group("SEMICOLON") != null ? "semicolon"
+                    : matcher.group("STRING") != null ? "string"
+                    : matcher.group("COMMENT") != null ? "comment"
+                    : null;
+            /* never happens */ assert styleClass != null;
+            spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
+            spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());
+            lastKwEnd = matcher.end();
+        }
+        spansBuilder.add(Collections.emptyList(), text.length() - lastKwEnd);
+        return spansBuilder.create();
+    }
 
     public VCodeEditor(String code) {
         init(code);
@@ -48,15 +116,29 @@ public class VCodeEditor {
         };
         window.getLeftIcons().add(new CloseIcon(window));
 
-        textArea = new TextArea(code);
-        textArea.setCacheHint(CacheHint.SPEED);
+        codeArea = new CodeArea(code);
+        codeArea.setCacheHint(CacheHint.SPEED);
 
-//        textArea.setBackground(Background.EMPTY);
-//        textArea.s
-        textArea.setStyle(".txtarea .scroll-pane .content{-fx-background-color: red; -fx-text-fill: white;}");
+        codeArea.setParagraphGraphicFactory(LineNumberFactory.get(codeArea));
+        codeArea.richChanges()
+                .filter(ch -> !ch.getInserted().equals(ch.getRemoved())) // XXX
+                .successionEnds(Duration.ofMillis(500))
+                .supplyTask(this::computeHighlightingAsync)
+                .awaitLatest(codeArea.richChanges())
+                .filterMap(t -> {
+                    if (t.isSuccess()) {
+                        return Optional.of(t.get());
+                    } else {
+                        t.getFailure().printStackTrace();
+                        return Optional.empty();
+                    }
+                })
+                .subscribe(this::applyHighlighting);
 
-        Node content = textArea.lookup("scroll-pane");
-        if (content !=null) {
+        codeArea.setStyle(".txtarea .scroll-pane .content{-fx-background-color: red; -fx-text-fill: white;}");
+
+        Node content = codeArea.lookup("scroll-pane");
+        if (content != null) {
             ((Region) content).setBackground(Background.EMPTY);
             System.out.println("CONTENT");
             System.exit(0);
@@ -93,7 +175,7 @@ public class VCodeEditor {
 //            }
 //        });
 //        window.setContentPane(new AnchorPane());
-        window.getContentPane().getChildren().add(textArea);
+        window.getContentPane().getChildren().add(codeArea);
 
     }
 
@@ -101,7 +183,7 @@ public class VCodeEditor {
         return window;
     }
 
-    public TextArea getTextArea() {
-        return textArea;
+    public CodeArea getTextArea() {
+        return codeArea;
     }
 }

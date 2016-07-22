@@ -117,6 +117,15 @@ public class Scope2Code {
         return new InvocationCodeRenderer().render(invocation);
     }
 
+    public static String getCode(Operator op) {
+        
+        CodeBuilder cb = new CodeBuilder();
+
+        InvocationCodeRenderer.renderOperator(op, cb);
+        
+        return cb.getCode();
+    }
+
 }
 
 final class Utils {
@@ -270,7 +279,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         render(i, cb, false);
     }
 
-    private void renderOperator(Operator operator, CodeBuilder cb) {
+    public static void renderOperator(Operator operator, CodeBuilder cb) {
         switch (operator) {
             case PLUS:
                 cb.append("+");
@@ -662,7 +671,7 @@ class InvocationCodeRenderer implements CodeRenderer<Invocation> {
         return cf.getInvocations().stream().
                 filter(i -> i.getObjectProvider().getInvocation().isPresent()).
                 filter(i -> Objects.equals(i.getObjectProvider().
-                                getInvocation().orElse(null), inv)).
+                        getInvocation().orElse(null), inv)).
                 findAny();
     }
 

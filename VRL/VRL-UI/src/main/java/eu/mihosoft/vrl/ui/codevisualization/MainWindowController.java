@@ -113,15 +113,18 @@ import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Slider;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination.Modifier;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
@@ -135,6 +138,8 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
+import org.fxmisc.flowless.VirtualizedScrollPane;
+import org.fxmisc.richtext.CodeArea;
 
 /**
  * FXML Controller class
@@ -145,7 +150,8 @@ public class MainWindowController implements Initializable {
 
     private File currentDocument;
     @FXML
-    private TextArea editor;
+    private AnchorPane editorParent;
+
     @FXML
     private Pane view;
 
@@ -175,6 +181,24 @@ public class MainWindowController implements Initializable {
 
     private String uiData;
 
+    private CodeArea editor;
+
+    @FXML
+    private ToggleButton freezeBtn;
+
+//    @FXML
+//    private Button generateBtn;
+    @FXML
+    private Slider zoomSlider;
+
+    @FXML
+    private CheckBox expandCanvasCheckBox;
+
+    @FXML
+    private CheckBox minEqMaxCheckBox;
+
+    private final double minScale = 0.3;
+
     /**
      * Initializes the controller class.
      *
@@ -184,13 +208,59 @@ public class MainWindowController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
+        editor = new CodeArea();
+        VirtualizedScrollPane editorScrollPane
+                = new VirtualizedScrollPane<>(editor);
+        AddSyntaxHighlighting.add(editor);
+        AnchorPane.setTopAnchor(editorScrollPane, 0.0);
+        AnchorPane.setBottomAnchor(editorScrollPane, 0.0);
+        AnchorPane.setLeftAnchor(editorScrollPane, 0.0);
+        AnchorPane.setRightAnchor(editorScrollPane, 0.0);
+        editorParent.getChildren().add(editorScrollPane);
+
         VCanvas canvas = new VCanvas();
-//        canvas.setStyle("-fx-background-color: rgb(0,0, 0)");
 
         canvas.setMinScaleX(0.2);
         canvas.setMinScaleY(0.2);
         canvas.setMaxScaleX(1);
         canvas.setMaxScaleY(1);
+
+        canvas.setMinScaleX(minScale);
+        canvas.setMinScaleY(minScale);
+        canvas.setMaxScaleX(1.0);
+        canvas.setMaxScaleY(1.0);
+
+        // dragging nodes to the left or top border expands the canvas
+        canvas.translateToMinNodePosProperty().bind(
+                expandCanvasCheckBox.selectedProperty());
+
+        // zoom (min=max)
+        zoomSlider.valueProperty().addListener((ov) -> {
+            double value = zoomSlider.getValue();
+
+            if (minEqMaxCheckBox.isSelected()) {
+                canvas.setMinScaleX(value);
+                canvas.setMinScaleY(value);
+            } else {
+                canvas.setMinScaleX(minScale);
+                canvas.setMinScaleY(minScale);
+            }
+
+            canvas.setMaxScaleX(value);
+            canvas.setMaxScaleY(value);
+        });
+
+        // minScale == maxScale
+        minEqMaxCheckBox.selectedProperty().
+                addListener((ov, oldValue, newValue) -> {
+                    if (newValue) {
+                        canvas.setMinScaleX(canvas.getMaxScaleX());
+                        canvas.setMinScaleY(canvas.getMaxScaleY());
+                    } else {
+                        canvas.setMinScaleX(minScale);
+                        canvas.setMinScaleY(minScale);
+                    }
+                });
 
         canvas.setOnMouseClicked((evt) -> {
             WindowUtil.getDefaultClipboard().deselectAll();
@@ -258,6 +328,16 @@ public class MainWindowController implements Initializable {
         menuCloseItem.setAccelerator(new KeyCodeCombination(KeyCode.Q, cmdModifier));
         menuLoadItem.setAccelerator(new KeyCodeCombination(KeyCode.L, cmdModifier));
         menuRunItem.setAccelerator(new KeyCodeCombination(KeyCode.R, cmdModifier));
+    }
+
+    @FXML
+    public void onFreezeAction(ActionEvent e) {
+        flow.getModel().getVisualizationRequest().set(
+                VisualizationRequest.KEY_DISABLE_EDITING,
+                freezeBtn.isSelected());
+        flow.getModel().getVisualizationRequest().set(
+                VisualizationRequest.KEY_NODE_NOT_REMOVABLE,
+                freezeBtn.isSelected());
     }
 
     @FXML
@@ -368,7 +448,7 @@ public class MainWindowController implements Initializable {
             String loadedText = new String(Files.readAllBytes(
                     Paths.get(currentDocument.getAbsolutePath())), "UTF-8");
 
-            editor.setText(loadedText);
+            editor.replaceText(loadedText);
 
             if (loadUIData) {
                 uiData = loadedText;
@@ -567,8 +647,7 @@ public class MainWindowController implements Initializable {
 
         cu.visitScopeAndAllSubElements((cE) -> {
             Object durationObj = cE.getMetaData().get("VRL:duration");
-            
-            
+
             if (durationObj instanceof Long
                     && !(cE instanceof ScopeInvocation)
                     && !(cE instanceof Scope)) {
@@ -921,7 +1000,7 @@ public class MainWindowController implements Initializable {
         removeUIDataComment(cud);
         String code = Scope2Code.getCode(cud);
 
-        editor.setText(code);
+        editor.replaceText(code);
     }
 
     private Scope getRootScope(Scope s) {
@@ -1046,9 +1125,9 @@ public class MainWindowController implements Initializable {
             Color maxColor = Color.rgb(255, 0, 0);
             Color midColor = Color.rgb(255, 255, 0);
             Color minColor = Color.rgb(0, 255, 0);
-            
-            double t = (double) (duration-minDuration)
-                    / (double) (maxDuration-minDuration);
+
+            double t = (double) (duration - minDuration)
+                    / (double) (maxDuration - minDuration);
 
             Color c;
 

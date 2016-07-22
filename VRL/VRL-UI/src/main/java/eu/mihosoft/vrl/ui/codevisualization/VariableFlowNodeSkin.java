@@ -17,6 +17,7 @@ import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Operator;
 import eu.mihosoft.vrl.lang.model.Scope;
+import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
 import eu.mihosoft.vrl.lang.model.Type;
 import eu.mihosoft.vrl.lang.model.UIBinding;
@@ -25,41 +26,55 @@ import eu.mihosoft.vrl.v3d.jcsg.MeshContainer;
 import eu.mihosoft.vrl.v3d.jcsg.VFX3DUtil;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
+import eu.mihosoft.vrl.workflow.WorkflowUtil;
+import eu.mihosoft.vrl.workflow.fx.ConnectorShape;
 import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkinBase;
 import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.ScaleBehavior;
 import eu.mihosoft.vrl.workflow.fx.TranslateBehavior;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
+import java.awt.image.BufferedImage;
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.beans.Observable;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ListChangeListener;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.SceneAntialiasing;
 import javafx.scene.SubScene;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
+import javafx.scene.text.TextAlignment;
 import jfxtras.scene.control.window.Window;
 import jfxtras.scene.control.window.WindowUtil;
+import org.fxmisc.richtext.CodeArea;
 import org.reactfx.Change;
 import org.reactfx.EventStream;
 import org.reactfx.EventStreams;
@@ -74,9 +89,9 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
     private VBox outputs;
     private final ObjectProperty<Object[]> args = new SimpleObjectProperty<>();
 
-    private static TextArea editor;
+    private static CodeArea editor;
 
-    public static void setEditor(TextArea editor, VFlow flow) {
+    public static void setEditor(CodeArea editor, VFlow flow) {
         VariableFlowNodeSkin.editor = editor;
 
         Function<CodeEntity, Stream< ? extends Window>> mapFlatToWindow = (cE) -> {
@@ -248,6 +263,16 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
         canvas.setTranslateBehavior(TranslateBehavior.ALWAYS);
     }
 
+    private List<ConnectorShape> getConnectorShapes() {
+        List<ConnectorShape> connectorShapes
+                = getModel().getInputs().stream().
+                filter(c -> c.getType().equals(WorkflowUtil.DATA_FLOW)).
+                map(c -> getConnectorShape(c)).
+                collect(Collectors.toList());
+
+        return connectorShapes;
+    }
+
     private boolean isInvocation() {
         return getModel().getValueObject().getValue() instanceof Invocation;
     }
@@ -299,9 +324,18 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                     Operator.TIMES,
                     Operator.DIV);
 
+            if (box.getItems().contains(opInv.getOperator())) {
+                box.getSelectionModel().select(opInv.getOperator());
+            } else {
+                box.setVisible(false);
+            }
+
             box.getSelectionModel().selectedItemProperty().
                     addListener((ov, oldV, newV) -> {
                         opInv.setOperator((Operator) newV);
+                        opInv.getParent().fireEvent(new CodeEvent(
+                                CodeEventType.CHANGE,
+                                opInv.getParent()));
                     });
 
         } else {
@@ -314,9 +348,12 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 //        box.setVisible(!invocation.getArguments().isEmpty());
         VBox inputs = new VBox();
         inputs.setAlignment(Pos.CENTER);
+
         outputs = new VBox();
         outputs.setAlignment(Pos.CENTER);
-        HBox hbox = new HBox(inputs, outputs);
+        Pane boxPane = new Pane();
+        boxPane.setMinWidth(30);
+        HBox hbox = new HBox(inputs, boxPane, outputs);
         hbox.setPadding(new Insets(0, 15, 0, 15));
 
         createArgView(invocation, inputs, false);
@@ -435,6 +472,40 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                 });
     }
 
+    private void setCBListener(int argIndex, CheckBox field,
+            Invocation invocation, Argument a) {
+
+        field.selectedProperty().addListener((ov, oldv, newv) -> {
+
+            if (a.getArgType() == ArgumentType.CONSTANT) {
+
+                parseBool(field.isSelected(), invocation, argIndex);
+
+                System.out.println("param-type: " + a.getType());
+            }
+
+        });
+
+    }
+
+    private void parseBool(Boolean b, Invocation invocation, int argIndex) {
+        try {
+            invocation.getArguments().set(argIndex,
+                    Argument.constArg(Type.BOOLEAN, b));
+            invocation.getParent().fireEvent(new CodeEvent(
+                    CodeEventType.CHANGE,
+                    invocation.getParent()));
+
+            if (invocation instanceof ScopeInvocation) {
+                ScopeInvocation scopeInv
+                        = (ScopeInvocation) invocation;
+                Scope scope = scopeInv.getScope();
+            }
+        } catch (Exception ex) {
+
+        }
+    }
+
     private void parseInt(Change<String> newV, Invocation invocation, int argIndex) {
         try {
             Integer intValue = Integer.parseInt(newV.getNewValue());
@@ -503,7 +574,36 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 
         int argIndex = 0;
         for (Argument a : invocation.getArguments()) {
+
             if (a.getArgType() == ArgumentType.CONSTANT
+                    && a.getType().getFullClassName()
+                    .equals("java.lang.Boolean")
+                    || a.getType().getFullClassName()
+                    .equals("boolean")) {
+                CheckBox cb;
+                if (update
+                        && inputs.getChildren().get(argIndex) instanceof CheckBox) {
+                    cb = (CheckBox) inputs.getChildren().get(argIndex);
+                } else {
+                    cb = new CheckBox("");
+
+                    setCBListener(argIndex, cb, invocation, a);
+
+                    if (update) {
+                        inputs.getChildren().set(argIndex, cb);
+
+                    } else {
+                        inputs.getChildren().add(cb);
+                    }
+                }
+
+                a.getConstant().ifPresent(o -> {
+
+                    if (!o.equals(cb.isSelected())) {
+                        cb.setSelected((boolean) o);
+                    }
+                });
+            } else if (a.getArgType() == ArgumentType.CONSTANT
                     || a.getArgType() == ArgumentType.NULL) {
                 TextField field;
 
@@ -534,6 +634,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             } else if (a.getArgType() == ArgumentType.VARIABLE) {
                 Label label = new Label();
                 a.getVariable().ifPresent(v -> label.setText(v.getName()));
+                label.setMinHeight(15);
                 label.setTextFill(Color.LIGHTBLUE);
                 if (update) {
                     inputs.getChildren().set(argIndex, label);
@@ -555,6 +656,7 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
             } else if (a.getArgType() == ArgumentType.INVOCATION) {
                 Label label = new Label();
                 label.setTextFill(Color.LIGHTBLUE);
+                label.setMinHeight(15);
                 a.getInvocation().ifPresent(i -> label.setText(i.getMethodName()));
                 if (update) {
                     inputs.getChildren().set(argIndex, label);
@@ -574,10 +676,75 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
                 }
             }
 
+            Node argNode = inputs.getChildren().get(argIndex);
+
+            List<ConnectorShape> connectorShapes = getConnectorShapes();
+
+            if (connectorShapes.size() <= argIndex || argNode == null) {
+                argIndex++;
+                continue;
+            }
+
+            final ConnectorShape connectorShape = connectorShapes.get(argIndex);
+
+            updateConnectorPos(connectorShape, argNode);
+
+            connectorShape.getNode().layoutYProperty().addListener(observable -> {
+                if (argNode.getParent() == null
+                        || argNode.getParent().getScene() == null) {
+                    return;
+                }
+                if (connectorShape.getNode().getParent() == null
+                        || connectorShape.getNode().getParent().getScene() == null) {
+                    return;
+                }
+                updateConnectorPos(connectorShape, argNode);
+            });
+
+            getNode().boundsInLocalProperty().addListener(observable -> {
+                if (argNode.getParent() == null
+                        || argNode.getParent().getScene() == null) {
+                    return;
+                }
+                if (connectorShape.getNode().getParent() == null
+                        || connectorShape.getNode().getParent().getScene() == null) {
+                    return;
+                }
+                updateConnectorPos(connectorShape, argNode);
+            });
+
             argIndex++;
         } // end for
 
         updating = false;
+    }
+
+    private void updateConnectorPos(ConnectorShape connectorShape, Node argNode) {
+
+        Node connectorNode = connectorShape.getNode();
+
+        Point2D global1 = argNode.getParent().localToScene(
+                argNode.getLayoutX(),
+                argNode.getLayoutY()
+        );
+
+        Point2D global2 = connectorNode.getParent().localToScene(
+                connectorNode.getLayoutX(),
+                connectorNode.getLayoutY()
+        );
+        double diffX = global2.getX() - global1.getX()
+                //                ;
+                - argNode.getLayoutBounds().getWidth() * 0.5
+                + connectorShape.getRadius() * 0.75;
+        double diffY = global2.getY() - global1.getY()
+                //                ;
+                - argNode.getLayoutBounds().getHeight() * 0.5
+                + connectorShape.getRadius() * 0.75;
+
+        Point2D diff = new Point2D(diffX, diffY);
+
+//                connectorNode.setTranslateX(+30);
+        connectorNode.setTranslateY(-diff.getY());
     }
 
     private void setMeshScale(MeshContainer meshContainer,
@@ -647,17 +814,26 @@ public class VariableFlowNodeSkin extends CustomFlowNodeSkin {
 //            viewGroup.getChildren().add(new AmbientLight(ambient));
 
             outputs.getChildren().addAll(subScene);
+        } else if (retVal instanceof BufferedImage) {
+            WritableImage image = SwingFXUtils.toFXImage(
+                    (BufferedImage) retVal, null);
+            ImageView view = new ImageView(image);
+            view.setPreserveRatio(true);
+            view.setFitWidth(300);
+
+            outputs.getChildren().add(view);
         } else if (retVal != null) {
             Label l = new Label(retVal.toString());
             l.setTextFill(Color.LIGHTBLUE);
             outputs.getChildren().add(l);
         } else {
             Label l = new Label();
+            l.setTextAlignment(TextAlignment.CENTER);
             if (isInvocation()) {
                 Invocation invocation = getInvocation();
                 if (!invocation.isVoid()
                         && !(invocation instanceof DeclarationInvocation)) {
-                    l.setText("null");
+                    l.setText(" ");
                 }
             }
             l.setTextFill(Color.LIGHTBLUE);
