@@ -52,7 +52,6 @@ package eu.mihosoft.vrl.lang.model;
 //import org.stringtemplate.v4.ST;
 import eu.mihosoft.vrl.lang.CodeRenderer;
 import eu.mihosoft.vrl.lang.VLangUtils;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -238,12 +237,16 @@ enum TypeRenderer implements CodeRenderer<IType> {
         Predicate<IType> isNoArrayType = t -> !t.isArray();
         Predicate<IType> isNoJavaLangType
                 = t -> !t.getPackageName().equals("java.lang");
+        // we don't support direct member access, but for sout we introduced a
+        // hack to allow standard output via System.out.println(...);
+        Predicate<IType> isNoJavaSystemType
+                = t -> !t.getPackageName().equals("System");
         Predicate<IType> isNoPrimitive = t -> !t.isPrimitive();
         Predicate<IType> isNoVoid = t -> !t.equals(Type.VOID);
 
         Predicate<IType> typesToImport = notTypeOfCurrentPackage.
                 and(isNoVoid).and(isNoArrayType).and(isNoVoid).
-                and(isNoJavaLangType).and(isNoPrimitive);
+                and(isNoJavaLangType).and(isNoPrimitive).and(isNoJavaSystemType);
 
         List<IType> typesToImportList = ScopeUtils.getUsedTypes(e).stream().
                 filter(typesToImport).
