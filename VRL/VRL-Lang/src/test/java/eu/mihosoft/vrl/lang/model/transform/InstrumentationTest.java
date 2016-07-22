@@ -49,9 +49,9 @@ public class InstrumentationTest {
 
     @Test
     public void instrumentationTest() {
-//        createInstrumentationTest("Instrumentation01.groovy");
-//        createInstrumentationTest("Instrumentation02.groovy");
-        createInstrumentationTest("Instrumentation05.groovy");
+        createInstrumentationTest("Instrumentation01.groovy");
+        createInstrumentationTest("Instrumentation02.groovy");
+        createInstrumentationTest("Instrumentation03.groovy");
     }
    
     public void createInstrumentationTest(String fileName) {
