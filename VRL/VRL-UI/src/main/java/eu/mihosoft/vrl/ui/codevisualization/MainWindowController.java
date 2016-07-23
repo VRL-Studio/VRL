@@ -82,8 +82,6 @@ import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkin;
 import eu.mihosoft.vrl.workflow.fx.FXValueSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
-import eu.mihosoft.vrl.workflow.incubating.LayoutGeneratorNaive;
-import eu.mihosoft.vrl.workflow.incubating.LayoutGeneratorSmart;
 import eu.mihosoft.vrl.workflow.skin.VNodeSkin;
 import groovy.lang.GroovyClassLoader;
 import java.io.File;
@@ -114,12 +112,13 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -134,9 +133,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
@@ -213,16 +211,17 @@ public class MainWindowController implements Initializable {
     private final double minScale = 0.3;
     
     @FXML
-    private CheckMenuItem checkLayoutDebug;
+    private Button layoutBtn;
     
-    private LayoutGeneratorSmart layoutSmart;
-    private FXMLLoader fxmlLoaderSmart;
-    private OptionsWindowSmartFXMLController controllerSmart;
-    private Stage stageSmart;
-    private LayoutGeneratorNaive layoutNaive;
-    private FXMLLoader fxmlLoaderNaive;
-    private OptionsWindowNaiveFXMLController controllerNaive;
-    private Stage stageNaive;
+    private FXMLLoader layoutFXMLLoader;
+    private LayoutPaneFXMLController layoutPaneController;
+    
+    private enum editorParentMode {
+        EDITOR, LAYOUT
+    }
+    private editorParentMode epm;
+    
+    private VirtualizedScrollPane editorScrollPane;
 
     /**
      * Initializes the controller class.
@@ -234,8 +233,7 @@ public class MainWindowController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
 
         editor = new CodeArea();
-        VirtualizedScrollPane editorScrollPane
-                = new VirtualizedScrollPane<>(editor);
+        editorScrollPane = new VirtualizedScrollPane<>(editor);
         AddSyntaxHighlighting.add(editor);
         AnchorPane.setTopAnchor(editorScrollPane, 0.0);
         AnchorPane.setBottomAnchor(editorScrollPane, 0.0);
@@ -354,35 +352,16 @@ public class MainWindowController implements Initializable {
         menuLoadItem.setAccelerator(new KeyCodeCombination(KeyCode.L, cmdModifier));
         menuRunItem.setAccelerator(new KeyCodeCombination(KeyCode.R, cmdModifier));
         
-        layoutSmart = new LayoutGeneratorSmart();
-        fxmlLoaderSmart = new FXMLLoader(getClass()
-                .getResource("OptionsWindowSmartFXML.fxml"));
-        stageSmart = new Stage();
-        stageSmart.setTitle("Smart Layout Options");
+        this.layoutFXMLLoader = new FXMLLoader(getClass()
+                .getResource("LayoutPane.fxml"));
         try {
-            Parent p = (Parent) fxmlLoaderSmart.load();
-            stageSmart.setScene(new Scene(p));
+            this.layoutFXMLLoader.load();
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        controllerSmart = fxmlLoaderSmart.getController();
-        controllerSmart.setGenerator(layoutSmart);
-        controllerSmart.setStage(stageSmart);
-        
-        layoutNaive = new LayoutGeneratorNaive();
-        fxmlLoaderNaive = new FXMLLoader(getClass()
-                .getResource("OptionsWindowNaiveFXML.fxml"));
-        stageNaive = new Stage();
-        stageNaive.setTitle("Naive Layout Options");
-        try {
-            Parent p = (Parent) fxmlLoaderNaive.load();
-            stageNaive.setScene(new Scene(p));
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        controllerNaive = fxmlLoaderNaive.getController();
-        controllerNaive.setGenerator(layoutNaive);
-        controllerNaive.setStage(stageNaive);
+        this.layoutPaneController = layoutFXMLLoader.getController();
+        this.layoutPaneController.setFlow(this.flow.getModel());
+        this.epm = editorParentMode.EDITOR;
     }
 
     @FXML
@@ -480,37 +459,51 @@ public class MainWindowController implements Initializable {
     }
     
     @FXML
-    public void onLayoutSmartAction(ActionEvent e) {
-        this.layoutSmart.setWorkflow(this.flow.getModel());
-        this.layoutSmart.generateLayout();
+    public void onLayoutAction(ActionEvent e) {
+        ObservableList<Node> children;
+        switch(this.epm) {
+            case EDITOR:
+                children = this.layoutPaneController.layoutMenuParent.getChildren();
+                children.remove(0);
+                switch(this.layoutPaneController.layoutSelected) {
+                    case SMART:
+                        children.add(this.layoutPaneController.layoutSmartFXMLController.contentPane);
+                        this.layoutPaneController.layoutSmartFXMLController.set();
+                        break;
+                    case NAIVE:
+                        children.add(this.layoutPaneController.layoutNaiveFXMLController.contentPane);
+                        this.layoutPaneController.layoutNaiveFXMLController.set();
+                        break;
+                }
+                children = this.editorParent.getChildren();
+                children.remove(0);
+                children.add(this.layoutPaneController.contentPane);
+                this.epm = editorParentMode.LAYOUT;
+                this.layoutBtn.setText("Editor");
+                break;
+            case LAYOUT:
+                switch(this.layoutPaneController.layoutSelected) {
+                    case SMART:
+                        this.layoutPaneController.layoutSmartFXMLController.accept();
+                        break;
+                    case NAIVE:
+                        this.layoutPaneController.layoutNaiveFXMLController.accept();
+                        break;
+                }
+                children = this.editorParent.getChildren();
+                children.remove(0);
+                children.add(this.editorScrollPane);
+                this.epm = editorParentMode.EDITOR;
+                this.layoutBtn.setText("Layout");
+                break;
+        }
+        this.layoutPaneController.setFlow(this.flow.getModel());
     }
     
     @FXML
-    public void onLayoutSmartOptionsAction(ActionEvent e) {
-        controllerSmart.setWorkflow(this.flow);
-        layoutSmart.setDebug(this.checkLayoutDebug.isSelected());
-        controllerSmart.set();
-        stageSmart.show();
-    }
-    
-    @FXML
-    public void onLayoutNaiveAction(ActionEvent e) {
-        this.layoutNaive.setWorkflow(this.flow.getModel());
-        this.layoutNaive.generateLayout();
-    }
-    
-    @FXML
-    public void onLayoutNaiveOptionsAction(ActionEvent e) {
-        controllerNaive.setWorkflow(this.flow);
-        layoutNaive.setDebug(this.checkLayoutDebug.isSelected());
-        controllerNaive.set();
-        stageNaive.show();
-    }
-    
-    @FXML
-    public void onLayoutSnapshotAction(ActionEvent e) {
+    public void onSnapshotAction(ActionEvent e) {
         String abspath = new File(".").getAbsolutePath();
-        String path = abspath.substring(0, abspath.length()-1);
+        String path = abspath.substring(0, abspath.length() - 1);
         File dir = new File(path + "snapshots");
         if(!dir.exists()) {
             System.out.println("Creating directory: " + dir.getAbsolutePath());
@@ -524,10 +517,10 @@ public class MainWindowController implements Initializable {
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         String now = format.format(calendar.getTime());
         try {
-            view.snapshot(param, wim);
+            this.view.snapshot(param, wim);
             dir = new File(path + now + ".png");
             ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", dir);
-            System.out.println("snapshot " + now + ".png saved.");
+            System.out.println("snapshot " + now + ".png saved");
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }

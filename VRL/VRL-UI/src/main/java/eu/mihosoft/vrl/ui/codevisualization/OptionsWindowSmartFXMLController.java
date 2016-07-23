@@ -49,23 +49,16 @@
  */
 package eu.mihosoft.vrl.ui.codevisualization;
 
-import edu.uci.ics.jung.graph.DirectedGraph;
-import eu.mihosoft.vrl.workflow.Connection;
 import eu.mihosoft.vrl.workflow.incubating.LayoutGeneratorSmart;
-import eu.mihosoft.vrl.workflow.VFlow;
-import eu.mihosoft.vrl.workflow.VNode;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.LinkedList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,8 +75,6 @@ public class OptionsWindowSmartFXMLController implements Initializable {
     public Pane contentPane;
     
     private LayoutGeneratorSmart generator;
-    private Stage optionsstage;
-    private VFlow workflow;
     private final String[] layouts = new String[4];
     private final String[] graphmodes = new String[3];
 
@@ -178,76 +169,13 @@ public class OptionsWindowSmartFXMLController implements Initializable {
     public void setGenerator(LayoutGeneratorSmart pgenerator) {
         this.generator = pgenerator;
     }
-    
-    public void setStage(Stage poptionsstage) {
-        this.optionsstage = poptionsstage;
-    }
-    
-    public void setWorkflow(VFlow pworkflow) {
-        this.workflow = pworkflow;
-    }
     // </editor-fold>
     
     // <editor-fold defaultstate="collapsed" desc="Getter">
     public LayoutGeneratorSmart getGenerator() {
         return this.generator;
     }
-    
-    public Stage getStage() {
-        return this.optionsstage;
-    }
-    
-    public VFlow getWorkflow() {
-        return this.workflow;
-    }
     // </editor-fold>
-
-    @FXML
-    void onOkPress(ActionEvent e) {
-        accept();
-        this.optionsstage.close();
-    }
-
-    @FXML
-    void onCancelPress(ActionEvent e) {
-        set();
-        this.optionsstage.close();
-    }
-    
-    @FXML
-    void onShowPress(ActionEvent e) {
-        int i;
-        accept();
-        switch(this.generator.getGraphmode()) {
-            case 0:
-                this.generator.setWorkflow(this.workflow.getModel());
-                this.generator.generateLayout();
-                break;
-            case 1:
-                LayoutGeneratorSmart altlay = new LayoutGeneratorSmart();
-                altlay.setWorkflow(this.workflow.getModel());
-                altlay.generateLayout();
-                DirectedGraph<VNode, Connection> jgraph = 
-                        altlay.getModelGraph();
-                this.generator.setModelGraph(jgraph);
-                this.generator.generateLayout();
-                break;
-            case 2:
-                ObservableList<VNode> obsnodes = workflow.getNodes();
-                LinkedList<VNode> nodelist = new LinkedList<>();
-                for(i = 0; i < obsnodes.size(); i++) {
-                    VNode curr = obsnodes.get(i);
-                    if(curr.isSelected()) {
-                        nodelist.add(curr);
-                    }
-                }
-                if(!nodelist.isEmpty()) {
-                    this.generator.setNodelist(nodelist);
-                    this.generator.generateLayout();
-                }
-                break;
-        }
-    }
     
     /**
      * Sets the values of all menu items to the current values of the layout 
@@ -292,7 +220,7 @@ public class OptionsWindowSmartFXMLController implements Initializable {
      * Sets the values of all parameters of the layout generator to the current 
      * values of the menu items.
      */
-    private void accept() {
+    public void accept() {
         int i;
         double j;
         String temp;

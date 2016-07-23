@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane fx:id="contentPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="474.0" prefWidth="356.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.mihosoft.vrl.ui.codevisualization.OptionsWindowSmartFXMLController">
+<AnchorPane fx:id="contentPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="474.0" prefWidth="650.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.mihosoft.vrl.ui.codevisualization.OptionsWindowSmartFXMLController">
    <children>
       <CheckBox fx:id="checkRecursive" layoutX="201.0" layoutY="14.0" mnemonicParsing="false" text="recursive" />
       <CheckBox fx:id="checkAutoscaleNodes" layoutX="201.0" layoutY="41.0" mnemonicParsing="false" text="autoscaleNodes" />
@@ -25,8 +25,6 @@
       <Label layoutX="14.0" layoutY="167.0" text="maxiterations:" />
       <Label layoutX="14.0" layoutY="218.0" text="scaling:" />
       <Label layoutX="14.0" layoutY="269.0" text="subflowscale:" />
-      <Button layoutX="47.0" layoutY="427.0" mnemonicParsing="false" onAction="#onOkPress" prefHeight="25.0" prefWidth="82.0" text="Ok" />
-      <Button layoutX="216.0" layoutY="427.0" mnemonicParsing="false" onAction="#onCancelPress" prefHeight="25.0" prefWidth="82.0" text="Cancel" />
       <Label layoutX="14.0" layoutY="116.0" text="graphmode:" />
       <ComboBox fx:id="selGraphmode" layoutX="14.0" layoutY="138.0" prefWidth="150.0" />
       <Label layoutX="14.0" layoutY="320.0" text="direction:" />
@@ -34,7 +32,6 @@
       <Label layoutX="14.0" layoutY="371.0" text="alignmentThreshold:" />
       <TextField fx:id="tfAlignmentThreshold" layoutX="14.0" layoutY="393.0" />
       <CheckBox fx:id="checkJungLayout" layoutX="201.0" layoutY="149.0" mnemonicParsing="false" text="jungLayout" />
-      <Button layoutX="216.0" layoutY="371.0" mnemonicParsing="false" onAction="#onShowPress" prefHeight="25.0" prefWidth="82.0" text="Generate" />
       <CheckBox fx:id="checkSeparateEdgeTypes" layoutX="201.0" layoutY="122.0" mnemonicParsing="false" text="separateEdgeTypes" />
    </children>
 </AnchorPane>
