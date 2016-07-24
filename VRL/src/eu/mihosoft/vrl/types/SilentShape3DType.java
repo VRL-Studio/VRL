@@ -57,7 +57,10 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 import javax.media.j3d.Shape3D;
 
 /**
- *
+ * TypeRepresentation for <code>javax.media.j3d.Shape3D</code>.
+ * 
+ * Style name: "silent"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Shape3D.class, input = true, output = true, style="silent")

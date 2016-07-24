@@ -59,6 +59,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
+ * TypeRepresentation for <code>java.lang.Object[]</code>.
+ * 
+ * Style name: "group"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

@@ -68,6 +68,8 @@ import eu.mihosoft.vrl.v3d.VTriangleArray;
  * <b>Note:</b> the memory footprint of VGeometry3D based geometries is
  * significantly higher than using Shape3D. Therefore, do not use it for highly
  * complex geometries (#Triangles > 10^5)</p>
+ * 
+ * Style name: "default"
  *
  * <p>
  * <b>Example (Groovy code):</b></p>

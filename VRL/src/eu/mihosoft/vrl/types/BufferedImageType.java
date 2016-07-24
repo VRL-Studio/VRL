@@ -79,6 +79,9 @@ import javax.swing.JPanel;
 
 /**
  * TypeRepresentation for <code>java.awt.image.BufferedImage</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=BufferedImage.class, input = true, output = true, style="default")

@@ -59,7 +59,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- *
+ * TypeRepresentation for <code>java.lang.Object[]</code>.
+ * 
+ * Style name: "multi-out"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type = Object[].class, style = "multi-out", input = false, output = true)

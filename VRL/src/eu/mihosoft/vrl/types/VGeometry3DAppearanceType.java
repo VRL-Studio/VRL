@@ -57,6 +57,9 @@ import eu.mihosoft.vrl.reflection.TypeTemplate;
 import eu.mihosoft.vrl.v3d.VGeometry3DAppearance;
 
 /**
+ * TypeRepresentation for <code>eu.mihosoft.vrl.v3d.VGeometry3DAppearance</code>.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

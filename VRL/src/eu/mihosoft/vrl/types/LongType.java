@@ -57,6 +57,9 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 /**
  * TypeRepresentation for <code>Java.lang.Long</code>.
  * <p><b>Supported value options:</b> see {@link NumberBasedTypeRepresentation}</p>
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Long.class, input = true, output = true, style="default")

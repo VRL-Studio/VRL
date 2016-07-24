@@ -381,7 +381,7 @@ public class DefaultMethodRepresentation extends VComponent
 
             BasicStroke stroke
                     = new BasicStroke(style.getBaseValues().getFloat(
-                                    CanvasWindow.BORDER_THICKNESS_KEY));
+                            CanvasWindow.BORDER_THICKNESS_KEY));
 
             g2.setStroke(stroke);
             g2.setColor(style.getBaseValues().getColor(
@@ -1072,6 +1072,10 @@ public class DefaultMethodRepresentation extends VComponent
         try {
             returnTypeRepresentation.setValue(getDescription().getReturnValue());
         } catch (Exception ex) {
+
+            Logger.getLogger(DefaultMethodRepresentation.class.getName()).
+                    log(Level.SEVERE, null, ex);
+
             MessageBox mBox
                     = getParentObject().getMainCanvas().getMessageBox();
 //	    String message = "unknown error!";

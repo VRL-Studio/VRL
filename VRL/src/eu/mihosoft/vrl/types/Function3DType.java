@@ -60,6 +60,9 @@ import eu.mihosoft.vrl.types.ObjectSilentType;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.types.Function2D</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Function3D.class, input = true, output = true, style="default")

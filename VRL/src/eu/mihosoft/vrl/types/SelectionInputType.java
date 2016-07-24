@@ -65,6 +65,8 @@ import javax.swing.JComboBox;
 /**
  * JComboBox based type representation for
  * {@link eu.mihosoft.vrl.types.Selection}.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

@@ -70,7 +70,11 @@ import javax.swing.JButton;
 
 /**
  * TypeRepresentation for
- * <code>java.io.File</code>.
+ * <code>java.io.File[]</code>.
+ * 
+ * Style name: "save-dialog"
+ * 
+ * @see {@link SaveFileType }
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

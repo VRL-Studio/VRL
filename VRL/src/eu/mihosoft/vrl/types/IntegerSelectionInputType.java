@@ -59,10 +59,15 @@ import java.awt.Component;
 import java.util.ArrayList;
 
 /**
+ * TypeRepresentation for <code>java.lang.Integer</code>.
+ * 
  * <p>
  * Selection Type for integers. To define possible selections set the value
  * property of the param info.
  * </p>
+ * 
+ * Style name: "selection"
+ * 
  * <p><b>Example (Groovy code):</b><?p>
  * <code>
  * <pre>

@@ -68,6 +68,8 @@ import java.awt.Color;
  * <code>java.lang.String</code>.
  *
  * <p>Sample:</p> <br/> <img src="doc-files/string-text-01.png"/> <br/>
+ * 
+ * Style name: "editor"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

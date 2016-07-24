@@ -58,6 +58,9 @@ import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.types.Selection</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Selection.class, input = false, output = true, style="default")

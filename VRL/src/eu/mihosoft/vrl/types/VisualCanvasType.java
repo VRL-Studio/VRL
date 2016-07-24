@@ -58,6 +58,9 @@ import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 
 /**
+ * TypeRepresentation for {@link eu.mihosoft.vrl.reflection.VisualCanvas}.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

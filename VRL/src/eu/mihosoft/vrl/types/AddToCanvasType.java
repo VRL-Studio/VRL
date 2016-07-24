@@ -57,7 +57,10 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 
 /**
+ * TypeRepresentation for <code>java.lang.Object</code>.
  *
+ * Style name: "canvas"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Object.class, input=false, style="canvas")

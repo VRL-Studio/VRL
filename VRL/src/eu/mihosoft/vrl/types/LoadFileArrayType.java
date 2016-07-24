@@ -74,7 +74,11 @@ import javax.swing.JButton;
 
 /**
  * TypeRepresentation for
- * <code>java.io.File</code>.
+ * <code>java.io.File[]</code>.
+ * 
+ * Style name: "load-dialog"
+ * 
+ * @see {@link LoadFileType }
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

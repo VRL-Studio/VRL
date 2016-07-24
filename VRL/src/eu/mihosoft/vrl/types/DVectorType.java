@@ -63,6 +63,8 @@ import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.types.DVector</code>.
+ * 
+ * Style name: "default"
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */

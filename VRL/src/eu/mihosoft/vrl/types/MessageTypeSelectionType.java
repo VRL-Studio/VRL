@@ -61,6 +61,9 @@ import java.util.ArrayList;
 
 /**
  * TypeRepresentation for {@link MessageTypeSelection}.
+ * 
+ * Style name: "selection"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @ComponentInfo(name="MessageSelectionType")

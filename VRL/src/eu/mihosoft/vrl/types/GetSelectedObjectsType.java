@@ -61,6 +61,9 @@ import eu.mihosoft.vrl.visual.Selectable;
 import java.util.ArrayList;
 
 /**
+ * TypeRepresentation for <code>java.lang.Object[]</code>.
+ * 
+ * Style name: "selection"
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

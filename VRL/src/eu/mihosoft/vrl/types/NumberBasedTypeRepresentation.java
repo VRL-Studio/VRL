@@ -55,6 +55,7 @@ package eu.mihosoft.vrl.types;
 import groovy.lang.Script;
 
 /**
+ * 
  * <p>TypeRepresentation base class for number based type representations.</p>
  * <p><b>Supported value options:</b><br>
  * <ul>

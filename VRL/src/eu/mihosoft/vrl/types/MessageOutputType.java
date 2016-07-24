@@ -58,7 +58,8 @@ import eu.mihosoft.vrl.visual.MessageType;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 
 /**
- *
+ * Style name: "message"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=String.class, input = false, output = true, style="message")

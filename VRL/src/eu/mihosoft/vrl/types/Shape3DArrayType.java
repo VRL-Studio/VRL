@@ -94,6 +94,8 @@ import javax.swing.JMenuItem;
  *
  * <p>
  * Sample:</p> <br/> <img src="doc-files/shape3d-default-01.png"/> <br/>
+ * 
+ * Style name: "default"
  *
  * @see eu.mihosoft.vrl.v3d.VTriangleArray
  * @see eu.mihosoft.vrl.v3d.Shape3DArray

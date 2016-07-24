@@ -76,6 +76,8 @@ import javax.swing.BoxLayout;
 /**
  * TypeRepresentation for
  * <code>java.lang.String</code>.
+ * 
+ * Style name: "code"
  *
  * <p>Sample:</p> <br/> <img src="doc-files/string-text-01.png"/> <br/>
  *

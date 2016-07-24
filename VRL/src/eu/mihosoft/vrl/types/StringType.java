@@ -57,7 +57,10 @@ import eu.mihosoft.vrl.lang.VLangUtils;
 import groovy.lang.Script;
 
 /**
- * TypeRepresentation for <code>Java.lang.String</code>.
+ * TypeRepresentation for <code>java.lang.String</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=String.class, input = true, output = true, style="default")

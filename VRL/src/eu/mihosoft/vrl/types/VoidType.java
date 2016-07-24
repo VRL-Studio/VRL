@@ -57,7 +57,10 @@ import eu.mihosoft.vrl.reflection.RepresentationType;
 import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
 
 /**
- * TypeRepresentation for <code>void</code>.
+ * TypeRepresentation for <code>java.lang.Void</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=void.class, input = true, output = true, style="default")

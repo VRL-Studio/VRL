@@ -68,6 +68,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 /**
+ * TypeRepresentation for <code>java.lang.Integer</code>.
+ * 
+ * Style name: "slider+text"
  *
  * @author David Wittum
  */

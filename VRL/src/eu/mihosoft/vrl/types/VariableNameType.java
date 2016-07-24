@@ -57,7 +57,10 @@ import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.visual.MessageType;
 
 /**
- *
+ * TypeRepresentation for <code>java.lang.String</code>.
+ * 
+ * Style name: "variable-name"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=String.class, input = true, output = false, style="variable-name")

@@ -60,7 +60,10 @@ import eu.mihosoft.vrl.reflection.RepresentationType;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 
 /**
+ * TypeRepresentation for <code>eu.mihosoft.vrl.types.MethodRequest</code>.
  *
+ * Style name: "default"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=MethodRequest.class, input = true, output = false, style="default")

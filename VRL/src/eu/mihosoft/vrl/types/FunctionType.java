@@ -61,6 +61,9 @@ import eu.mihosoft.vrl.reflection.TypeRepresentationBase;
 
 /**
  * TypeRepresentation for <code>eu.mihosoft.vrl.types.Function</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @TypeInfo(type=Function.class, input = true, output = true, style="default")

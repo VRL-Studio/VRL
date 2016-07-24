@@ -62,6 +62,9 @@ import eu.mihosoft.vrl.visual.VTextField;
 
 /**
  * TypeRepresentation for <code>Java.lang.Integer</code>.
+ * 
+ * Style name: "debug"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Integer.class, input = true, output = true, style="debug")

@@ -60,7 +60,10 @@ import javax.swing.SwingUtilities;
 // FIXME causes crashes without error message, complete studio freeze
 
 /**
- *
+ * TypeRepresentation for <code>javax.media.j3d.Shape3D[]</code>.
+ * 
+ * Style name: "default"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Shape3D[].class, input = false, output = true, style="default")

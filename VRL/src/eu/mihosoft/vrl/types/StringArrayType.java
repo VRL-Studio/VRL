@@ -55,7 +55,10 @@ package eu.mihosoft.vrl.types;
 import eu.mihosoft.vrl.annotation.TypeInfo;
 
 /**
- *
+ * TypeRepresentation for <code>java.lang.String</code>.
+ * 
+ * Style name: "array"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=String[].class, input = true, output = true, style="array")

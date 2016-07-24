@@ -74,6 +74,10 @@ import javax.swing.JTextField;
 /**
  * TypeRepresentation for
  * <code>Java.io.File</code>.
+ * 
+ * Style name: "load-folder-dialog"
+ * 
+ * @see {@link LoadFileType}
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

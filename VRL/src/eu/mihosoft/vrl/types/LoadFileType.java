@@ -74,6 +74,30 @@ import javax.swing.JTextField;
 /**
  * TypeRepresentation for
  * <code>Java.io.File</code>.
+ * 
+ * Style name: "load-dialog"
+ * 
+ * <p><b>Supported value options:</b><br>
+ * <ul>
+ * <li>value (defines a default value)</li>
+ * <li>endings (defines file types to accept)</li>
+ * <li>description (file type description, e.g., "Image files")</li>
+ * </ul>
+ * <p><b>Example (Groovy code):</b></p>
+ * <code>
+ * <pre>
+ * &#64;ComponentInfo(name="Load file")
+ * class LoadFile implements Serializable {
+ *
+ *   private static final long serialVersionUID=1;
+ *
+ *   public String add(&#64;ParamInfo(style="load-dialog", options="endings=[\".txt\"];description=\"Text files\"") File f){
+ *     return f.getText("UTF-8")
+ *   }
+ * }
+ * </pre>
+ * </code>
+ * </p>
  *
  * @author Michael Hoffer <info@michaelhoffer.de>
  */

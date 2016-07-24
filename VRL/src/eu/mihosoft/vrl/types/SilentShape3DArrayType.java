@@ -57,7 +57,10 @@ import eu.mihosoft.vrl.annotation.TypeInfo;
 import eu.mihosoft.vrl.v3d.Shape3DArray;
 
 /**
- *
+ * TypeRepresentation for <code>eu.mihosoft.vrl.v3d.Shape3DArray</code>.
+ * 
+ * Style name: "silent"
+ * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
 @TypeInfo(type=Shape3DArray.class, input = true, output = true, style="silent")
