@@ -74,7 +74,7 @@ public class InputObject implements Serializable {
     private String paramInfo;
 
     @MethodInfo(name = " ", interactive = false,
-    valueStyle = "default", valueName = " ", hideCloseIcon=true)
+    valueStyle = "default", valueName = " ", hideCloseIcon=true, num=1)
     public InputValue info(
             //@ParamInfo(name = "Param-Info:", style = "silent",
             //           options = "hideConnector=true")
