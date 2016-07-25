@@ -558,12 +558,6 @@ public class MainWindowController implements Initializable {
                             
                             Scene subscene = new Scene(subcanvas, 800, 800);
                             subscene.getStylesheets().setAll(style);
-                            Stage substage = new Stage();
-                            substage.setWidth(800);
-                            substage.setHeight(800);
-                            substage.setTitle(title);
-                            substage.setScene(subscene);
-                            //Pane subpane = subcanvas.getContent();
                             WritableImage wim = new WritableImage((int) Math.round(subscene.getWidth()), (int) Math.round(subscene.getHeight()));
                             try {
                                 subscene.snapshot(wim);
