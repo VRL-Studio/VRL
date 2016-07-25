@@ -80,7 +80,11 @@ import eu.mihosoft.vrl.workflow.VNode;
 import eu.mihosoft.vrl.workflow.VisualizationRequest;
 import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import eu.mihosoft.vrl.workflow.fx.FXFlowNodeSkin;
+import eu.mihosoft.vrl.workflow.fx.FXSkinFactory;
 import eu.mihosoft.vrl.workflow.fx.FXValueSkinFactory;
+import eu.mihosoft.vrl.workflow.fx.FlowNodeWindow;
+import eu.mihosoft.vrl.workflow.fx.InnerCanvas;
+import eu.mihosoft.vrl.workflow.fx.NodeUtil;
 import eu.mihosoft.vrl.workflow.fx.VCanvas;
 import eu.mihosoft.vrl.workflow.skin.VNodeSkin;
 import groovy.lang.GroovyClassLoader;
@@ -139,6 +143,7 @@ import javafx.scene.SnapshotParameters;
 import javafx.scene.transform.Translate;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooserBuilder;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import javax.imageio.ImageIO;
@@ -524,8 +529,60 @@ public class MainWindowController implements Initializable {
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
+        subSnaps((InnerCanvas) rootPane, path, now);
     }
-
+    
+    private void subSnaps(InnerCanvas inner, String path, String now) {
+        ObservableList<Node> childnodes = inner.getChildrenUnmodifiable();
+        for(Node n : childnodes) {
+            if((n instanceof FlowNodeWindow) && (n.isManaged())) {
+                FlowNodeWindow w = (FlowNodeWindow) n;
+                List<String> style = NodeUtil.getStylesheetsOfAncestors(w);
+                FXFlowNodeSkin wskin = w.nodeSkinProperty().get();
+                VFlow cont = wskin.getController();
+                Collection<VFlow> subconts = cont.getSubControllers();
+                for(VFlow currsub : subconts) {
+                    if(currsub.getModel().equals(wskin.getModel())) {
+                        String title = currsub.getModel().getId().replace(':', '-');
+                        if((currsub.getNodes().size() > 0) && (currsub.isVisible())) {
+                            VCanvas subcanvas = new VCanvas();
+                            FlowNodeWindow.addResetViewMenu(subcanvas);
+                            subcanvas.setMinScaleX(0.2);
+                            subcanvas.setMinScaleY(0.2);
+                            subcanvas.setMaxScaleX(1);
+                            subcanvas.setMaxScaleY(1);
+                            subcanvas.setTranslateToMinNodePos(true);
+                            
+                            FXSkinFactory fxSkinFactory = wskin.getSkinFactory().newInstance(subcanvas.getContent(), null);
+                            currsub.addSkinFactories(fxSkinFactory);
+                            
+                            Scene subscene = new Scene(subcanvas, 800, 800);
+                            subscene.getStylesheets().setAll(style);
+                            Stage substage = new Stage();
+                            substage.setWidth(800);
+                            substage.setHeight(800);
+                            substage.setTitle(title);
+                            substage.setScene(subscene);
+                            //Pane subpane = subcanvas.getContent();
+                            WritableImage wim = new WritableImage((int) Math.round(subscene.getWidth()), (int) Math.round(subscene.getHeight()));
+                            try {
+                                subscene.snapshot(wim);
+                                File dir = new File(path + now + "_" + title + ".png");
+                                ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", dir);
+                                System.out.println("snapshot " + now + "_" + title + ".png saved");
+                            } catch (IOException ex) {
+                                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                            if(w.getWorkflowContentPane() instanceof InnerCanvas) {
+                                subSnaps((InnerCanvas) w.getWorkflowContentPane(), path, now);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     public void loadTextFile(File f, boolean loadUIData) {
 
         try {
