@@ -45,10 +45,14 @@ public class DeleteAction extends Action<CodeEntityList> {
 
                 index = s.get(0).getIndex();
                 if (index < s.get(0).size() && index > 0) {
-                    cost = CodeEntityList.subtreeSize((Scope) s.get(0).get(index));
+                    if (s.get(0).get(index) instanceof Scope) {
+                        cost = s.get(0).subtreeSize((Scope) s.get(0).get(index));
+                    } else {
+                        cost = 1;
+                    }
                 }
-                
-                if(cost == 0){
+
+                if (cost == 0) {
                     cost = 1;
                 }
 
@@ -79,7 +83,7 @@ public class DeleteAction extends Action<CodeEntityList> {
                 if (currentEntity instanceof ClassDeclaration && currentEntity.getParent() instanceof CompilationUnitDeclaration) {
                     CompilationUnitDeclaration cud = (CompilationUnitDeclaration) currentEntity.getParent();
                     ClassDeclaration cd = (ClassDeclaration) currentEntity;
-                    if (cud.getDeclaredClasses().size() > 0) {
+                    if (cud.getDeclaredClasses().size() > 1) {
                         IModelCommands.getInstance().removeScope(cud, cd);
                         s.get(0).updateCodeEntityList(cud);
                     }
