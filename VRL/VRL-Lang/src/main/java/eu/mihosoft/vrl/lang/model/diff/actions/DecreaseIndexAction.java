@@ -63,7 +63,7 @@ public class DecreaseIndexAction extends Action<CodeEntityList> {
 
     @Override
     public double getCosts(State<CodeEntityList> s) {
-        return 1;
+        return 0.1;
     }
 
 }

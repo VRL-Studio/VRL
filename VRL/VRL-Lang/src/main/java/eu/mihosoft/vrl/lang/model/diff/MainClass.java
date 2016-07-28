@@ -35,32 +35,32 @@ public class MainClass {
     public static void main(String[] args) throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "public class Class1{\n"
+                //                + "public class Class1{\n"
                 //                + "}\n"
-                //                + "class NewClass {\n"
-                //                + "}\n"
-                //                + "class Cls {\n"
+                + "class Class2 {\n"
+                + "}\n"
+                + "class Method {\n"
+//                + "void method1(){\n"
+                //                + "Class1 cls;\n"
+//                + "}\n"
                 + "}"
         );
 
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
                 + "public class Class2{\n"
-//                + "}\n"
-//                + "class NewClass {\n"
                 //                + "}\n"
-                //                + "class Cls {\n"
-                + "void method1(){\n"
-                + "int Class2;\n"
+                //                + "class NewClass {\n"
                 + "}\n"
+                + "class Cls1 {\n"
                 + "}"
         );
 
         System.out.println("");
         System.out.println("");
         //CodeEntityList.convertTreeToListAllElems(sourceModel);
-        classAStar(sourceModel, targetModel);
-        //classAStar(targetModel, sourceModel);
+      classAStar(sourceModel, targetModel);
+       // classAStar(targetModel, sourceModel);
 
         // System.out.println("Solution: ");
         // TODO: apply commands to source
@@ -78,7 +78,7 @@ public class MainClass {
         return model;
     }
 
-    static String model2Groovy(CompilationUnitDeclaration cuDecl) throws Exception {
+    static String model2Groovy(CompilationUnitDeclaration cuDecl) {
         return Scope2Code.getCode(cuDecl);
     }
 
@@ -88,7 +88,7 @@ public class MainClass {
      * @param targetModel
      * @return list of changes
      */
-    private static void classAStar(CompilationUnitDeclaration sourceModel, CompilationUnitDeclaration targetModel) {
+    private static void classAStar(CompilationUnitDeclaration sourceModel, CompilationUnitDeclaration targetModel) throws Exception {
 
         CodeEntityList source = new CodeEntityList(sourceModel);
         CodeEntityList target = new CodeEntityList(targetModel);
@@ -107,7 +107,7 @@ public class MainClass {
                 renameMap.put(name, codeEntity);
             }
         }
-        
+
         ArrayList<CodeEntity> renameList = new ArrayList<>(renameMap.values());
 
         System.out.println("");
@@ -132,15 +132,13 @@ public class MainClass {
 
         ArrayList<Action<CodeEntityList>> allActions = new ArrayList<>();
 
-        allActions.add(delete);
-
         renameList.stream().forEach((entity) -> {
             allActions.add(new RenameAction(entity));
         });
         insertList.stream().forEach((entity) -> {
             allActions.add(new InsertAction(entity));
         });
-
+        allActions.add(delete);
 //        refactoringList.stream().forEach((entity) -> {
 //            allActions.add(new RefactoringClassAction(entity));
 //        });
@@ -159,6 +157,12 @@ public class MainClass {
 
         AStar<CodeEntityList> solverOND = new AStar<>(StringListWD);
         solverOND.run();
+
+        System.out.println("++++++++++++++++++++++++++++++++");
+        System.out.println(model2Groovy(sourceModel));
+
+        System.out.println("++++++++++++++++++++++++++++++++");
+        System.out.println(model2Groovy(targetModel));
 
         System.out.println("done.");
     }

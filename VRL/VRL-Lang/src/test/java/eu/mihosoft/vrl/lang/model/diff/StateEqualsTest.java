@@ -192,7 +192,7 @@ public class StateEqualsTest {
 
     }
 
-    //@Test
+    @Test
     public void testDeleteClass() throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff1;\n"
@@ -214,7 +214,7 @@ public class StateEqualsTest {
         ClassDeclaration cls = targetModel.getDeclaredClasses().get(0);
         ClassDeclaration cls1 = targetModel.getDeclaredClasses().get(1);
 
-        //commands.removeScope(targetModel, cls);
+        commands.removeScope(targetModel, cls);
         commands.removeScope(targetModel, cls1); //Problem, wenn keine Klasse existiert!
 
         System.out.println("SOURCE MODEL: ");
@@ -235,7 +235,7 @@ public class StateEqualsTest {
 
     }
 
-    @Test
+   // @Test
     public void testRenameDeleteElem() throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff1;\n"

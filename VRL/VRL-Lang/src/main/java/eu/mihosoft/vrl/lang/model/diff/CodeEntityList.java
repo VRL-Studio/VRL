@@ -12,7 +12,6 @@ import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
-import eu.mihosoft.vrl.lang.model.Variable;
 import static eu.mihosoft.vrl.lang.model.diff.MainClass.fromCode;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ import org.codehaus.groovy.control.SourceUnit;
 public class CodeEntityList {
 
     private List<CodeEntity> entities = new ArrayList<>();
-    private int index;
+    private int index = 0;
 
     /**
      * empty constructor
@@ -36,8 +35,11 @@ public class CodeEntityList {
     public CodeEntityList() {
     }
 
+    /**
+     *
+     * @param root compilation unit declaration as root of the code
+     */
     public CodeEntityList(CompilationUnitDeclaration root) {
-        index = 0;
         this.entities = convertTreeToList(root);
     }
 
@@ -51,36 +53,17 @@ public class CodeEntityList {
 
     /**
      *
-     * @param entities list of CodeEntities
-     * @param index index of current CodeEntity
-     */
-    public CodeEntityList(List<CodeEntity> entities, int index) {
-        this.entities = new ArrayList<>(entities);
-
-        if (index > -1 && index < entities.size()) {
-            this.index = index;
-        }
-    }
-
-    /**
-     *
      * @param entities CodeEntityList with CodeEntities and index
-     * @param bool ?
+     * @param bool false if increase or decrease index action
      */
     public CodeEntityList(CodeEntityList entities, Boolean bool) {
 
         if (bool && !entities.getEntities().isEmpty()) {
 
-            CompilationUnitDeclaration cuDecl;
-            if (entities.get(0) instanceof CompilationUnitDeclaration) {
-                cuDecl = (CompilationUnitDeclaration) entities.get(0);
-            } else {
-                cuDecl = (CompilationUnitDeclaration) getRoot(entities.get(0));
-            }
-            CompilationUnitDeclaration cudClone;
+            CompilationUnitDeclaration cuDecl = (CompilationUnitDeclaration) getRoot(entities.get(0));
             try {
-                cudClone = clone(cuDecl);
-                this.entities = convertTreeToList(cudClone);
+                cuDecl = clone(cuDecl);
+                this.entities = convertTreeToList(cuDecl);
             } catch (Exception ex) {
                 Logger.getLogger(CodeEntityList.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -100,7 +83,6 @@ public class CodeEntityList {
         if (index > -1 && index < entities.size()) {
             this.index = index;
         }
-
     }
 
     /**
@@ -180,11 +162,17 @@ public class CodeEntityList {
         }
     }
 
+    /**
+     * increase current entity index
+     */
     public void increaseIndex() {
         this.index++;
 
     }
 
+    /**
+     * decrease current entity index
+     */
     public void decreaseIndex() {
         this.index--;
     }
@@ -221,13 +209,12 @@ public class CodeEntityList {
         Boolean bool = true;
 
         for (int i = 0; i < this.size(); i++) {
-            if (!compareNames(this.get(i), other.get(i))) {
+            if (!compareNamesAndType(this.get(i), other.get(i))) {
                 bool = false;
                 break;
             } else {
             }// TODO: Struktur des Objektes überpüren compareStructure()
         }
-
         return bool;
     }
 
@@ -238,10 +225,9 @@ public class CodeEntityList {
     public ArrayList<String> getNames() {
         ArrayList<String> names = new ArrayList<>();
 
-        for (CodeEntity codeEntity : getEntities()) {
+        for (CodeEntity codeEntity : this.entities) {
             names.add(getEntityName(codeEntity));
         }
-
         return names;
     }
 
@@ -278,7 +264,7 @@ public class CodeEntityList {
      * @return true if entity names are equal and the code entities are from the
      * same type
      */
-    public boolean compareNames(CodeEntity codeEntity1, CodeEntity codeEntity2) {
+    public boolean compareNamesAndType(CodeEntity codeEntity1, CodeEntity codeEntity2) {
 
         if (codeEntity1 == null || codeEntity2 == null || codeEntity1.getClass() != codeEntity2.getClass()) {
             return false;
@@ -304,11 +290,18 @@ public class CodeEntityList {
     private ArrayList<CodeEntity> convertTreeToList(Scope scope) {
         ArrayList<CodeEntity> codeEntities = new ArrayList();
         scope.visitScopeAndAllSubElements((CodeEntity e) -> {
-            if (e instanceof Scope || e instanceof Variable) {
+            if (e instanceof Scope) {
                 codeEntities.add(e);
             }
+//            if (e instanceof Invocation) {
+//                Invocation inv = (Invocation) e;
+//                codeEntities.addAll(inv.getArguments());
+//            }
         });
 
+//         for (int i = 0; i < codeEntities.size(); i++) {
+//            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)) + " ---> Type: " + codeEntities.get(i).getClass().getSimpleName());
+//        }
         return codeEntities;
     }
 
@@ -338,20 +331,20 @@ public class CodeEntityList {
         return codeEntities;
     }
 
-    public static int subtreeSize(Scope root) {
-        ArrayList<CodeEntity> codeEntities = new ArrayList();
-        root.visitScopeAndAllSubElements((CodeEntity e) -> {
-            if (e instanceof Scope || e instanceof Variable) {
-                codeEntities.add(e);
-            }
-        });
+    /**
+     *
+     * @param root subtree's root
+     * @return subtree's size
+     */
+    public int subtreeSize(Scope root) {
+        ArrayList<CodeEntity> codeEntities = convertTreeToList(root);
         return codeEntities.size();
 
     }
 
     /**
      *
-     * @param codeEntity code entity
+     * @param codeEntity code entity in the updated tree
      */
     public void updateCodeEntityList(CodeEntity codeEntity) {
         ArrayList<CodeEntity> codeEntities = new ArrayList();
@@ -363,14 +356,20 @@ public class CodeEntityList {
         }
 
         cudClone.visitScopeAndAllSubElements((CodeEntity e) -> {
-            if (e instanceof Scope || e instanceof Variable) {
+            if (e instanceof Scope) {
                 codeEntities.add(e);
             }
+//            if (e instanceof Invocation) {
+//                Invocation inv = (Invocation) e;
+//                codeEntities.addAll(inv.getArguments());
+//            }
         });
-
-        for (int i = 0; i < codeEntities.size(); i++) {
-            System.out.println("Update: " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)));
-        }
+//
+        System.out.println("Update: ");
+//
+//        for (int i = 0; i < codeEntities.size(); i++) {
+//            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)) + " ---> Type: " + codeEntities.get(i).getClass().getSimpleName());
+//        }
         this.setEntities(codeEntities);
     }
 
@@ -401,7 +400,7 @@ public class CodeEntityList {
     /**
      *
      * @param codeEntity child node
-     * @return root of the tree
+     * @return tree's root
      */
     public static CodeEntity getRoot(CodeEntity codeEntity) {
         CodeEntity ce = codeEntity;

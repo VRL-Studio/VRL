@@ -42,18 +42,15 @@ public class DeleteAction extends Action<CodeEntityList> {
             @Override
             public boolean verify(State<CodeEntityList> s) {
                 s = s.clone();
-
                 index = s.get(0).getIndex();
+
                 if (index < s.get(0).size() && index > 0) {
                     if (s.get(0).get(index) instanceof Scope) {
                         cost = s.get(0).subtreeSize((Scope) s.get(0).get(index));
-                    } else {
+                    }
+                    if (cost == 0) {
                         cost = 1;
                     }
-                }
-
-                if (cost == 0) {
-                    cost = 1;
                 }
 
                 boolean bool = true;
@@ -65,7 +62,7 @@ public class DeleteAction extends Action<CodeEntityList> {
                         }
                     }
                 }
-                return bool && index < s.get(0).size() && index > 0 && s.get(0).size() > 0;
+                return bool && index < s.get(0).size() && index > 0;
             }
 
             @Override
@@ -79,11 +76,10 @@ public class DeleteAction extends Action<CodeEntityList> {
             @Override
             public void apply(State<CodeEntityList> s) {
                 CodeEntity currentEntity = s.get(0).get(index);
-
                 if (currentEntity instanceof ClassDeclaration && currentEntity.getParent() instanceof CompilationUnitDeclaration) {
                     CompilationUnitDeclaration cud = (CompilationUnitDeclaration) currentEntity.getParent();
                     ClassDeclaration cd = (ClassDeclaration) currentEntity;
-                    if (cud.getDeclaredClasses().size() > 1) {
+                    if (cud.getDeclaredClasses().size() > 0) {
                         IModelCommands.getInstance().removeScope(cud, cd);
                         s.get(0).updateCodeEntityList(cud);
                     }

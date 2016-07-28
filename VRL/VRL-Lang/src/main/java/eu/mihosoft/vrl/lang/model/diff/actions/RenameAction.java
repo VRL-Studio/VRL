@@ -67,17 +67,17 @@ public class RenameAction extends Action<CodeEntityList> {
                         }
                     }
 
-                    double similarity = 0;
-                    if (bool) {
-                        if (nameEntity instanceof CompilationUnitDeclaration) {
-                            similarity = SimilarityMetric.packageSimilarity(currentElement, nameEntity);
-                        } else {
-                            similarity = SimilarityMetric.nameSimilarity(currentElement, nameEntity);
-                        }
+//                        if (nameEntity instanceof CompilationUnitDeclaration) {
+//                            similarity = SimilarityMetric.packageSimilarity(currentElement, nameEntity);
+//                        } 
+                    double similarity = 1;
+                    if (nameEntity instanceof MethodDeclaration) {
+                        similarity = SimilarityMetric.nameSimilarity(currentElement, nameEntity);
                     }
 
                     result = similarity > 0.6
-                            && !s.get(0).compareNames(currentElement, nameEntity);
+                            && !s.get(0).compNames(currentElement, nameEntity)
+                            && currentElement.getClass().equals(nameEntity.getClass()) && bool;
 
                 }
 
@@ -102,7 +102,7 @@ public class RenameAction extends Action<CodeEntityList> {
                     CompilationUnitDeclaration cud = (CompilationUnitDeclaration) nameEntity;
                     IModelCommands.getInstance().setCUDeclPackageName(cud.getPackageName(), currentCodeEntity);
                     s.get(0).updateCodeEntityList(currentCodeEntity);
-                } else if (nameEntity instanceof ClassDeclaration && currentCodeEntity instanceof ClassDeclaration) {
+                } else if (nameEntity instanceof ClassDeclaration && currentCodeEntity instanceof ClassDeclaration) { // Refactoring Utils 
                     ClassDeclaration cls = (ClassDeclaration) nameEntity;
                     IModelCommands.getInstance().setScopeName(cls.getName(), currentCodeEntity);
                     s.get(0).updateCodeEntityList(currentCodeEntity);
@@ -115,7 +115,6 @@ public class RenameAction extends Action<CodeEntityList> {
                     IModelCommands.getInstance().setVariableName(variable.getName(), currentCodeEntity);
                     s.get(0).updateCodeEntityList(currentCodeEntity);
                 }
-
             }
 
             @Override

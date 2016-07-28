@@ -85,7 +85,7 @@ public class InsertElementTest {
         System.out.println(Scope2Code.getCode(sourceModel));
 
         commands.setScopeName("InsertedClass", clsSource);
-        commands.insertScope(targetModel, targetModel.getDeclaredClasses().indexOf(clsTarget) + 1, clsSource);
+        commands.insertScope(targetModel, targetModel.getDeclaredClasses().indexOf(clsTarget) + 2, clsSource);
 
         System.out.println("TARGET MODEL: ");
         System.out.println(Scope2Code.getCode(targetModel));
@@ -138,7 +138,7 @@ public class InsertElementTest {
 
     }
 
-    @Test
+   // @Test
     public void testInsertMethod() throws Exception { // (targetModel, cls, ....)
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
@@ -172,6 +172,41 @@ public class InsertElementTest {
         System.out.println("");
 
         Assert.assertFalse("States with different names must not be equal:", source.equals(target));
+
+    }
+    @Test
+    public void testInsertDeleteClass() throws Exception { 
+        CompilationUnitDeclaration sourceModel = groovy2Model(""
+                + "package eu.mihosoft.vrl.lang.model.diff;\n"
+                + "class Class1 {\n"
+                + "}"
+        );
+        CompilationUnitDeclaration targetModel = groovy2Model(""
+                + "package eu.mihosoft.vrl.lang.model.diff;\n"
+                + "class Class2 {\n"
+                + "}"
+        );
+
+        CodeEntityList source = new CodeEntityList(sourceModel);
+        CodeEntityList target = new CodeEntityList(targetModel);
+
+        IModelCommands commands = IModelCommands.getInstance();
+        ClassDeclaration class1 = sourceModel.getDeclaredClasses().get(0);
+        ClassDeclaration class2 = targetModel.getDeclaredClasses().get(0);
+        commands.insertScope(sourceModel,1, class2);
+        source.updateCodeEntityList(sourceModel);
+        commands.removeScope(sourceModel, class1);
+        source.updateCodeEntityList(sourceModel);
+        System.out.println("SOURCE MODEL: ");
+        System.out.println(Scope2Code.getCode(sourceModel));
+        System.out.println("TARGET MODEL: ");
+        System.out.println(Scope2Code.getCode(targetModel));
+        System.out.println("source==target: " + source.equals(target));
+        System.out.println("");
+
+        System.out.println("");
+
+        Assert.assertTrue("States equal:", source.equals(target));
 
     }
 

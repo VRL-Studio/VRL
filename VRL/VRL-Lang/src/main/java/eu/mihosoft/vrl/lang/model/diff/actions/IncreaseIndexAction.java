@@ -35,10 +35,7 @@ public class IncreaseIndexAction extends Action<CodeEntityList> {
 
                 s = s.clone();
                 int index = s.get(0).getIndex();
-                System.out.println("Index increase " + index);
-                System.out.println("increase " + (index < s.get(0).size()));
-                System.out.println("list size " + s.get(0).size());
-                return index < s.get(0).size();// && s.get(0).size() > 0;
+                return index < s.get(0).size();
             }
 
             @Override
@@ -52,7 +49,6 @@ public class IncreaseIndexAction extends Action<CodeEntityList> {
             @Override
             public void apply(State<CodeEntityList> s) {
                 s.get(0).increaseIndex();
-                System.out.println("INCREASE INDEX");
             }
 
             @Override
@@ -64,7 +60,7 @@ public class IncreaseIndexAction extends Action<CodeEntityList> {
 
     @Override
     public double getCosts(State<CodeEntityList> s) {
-        return 1;
+        return 0.1;
     }
 
 }

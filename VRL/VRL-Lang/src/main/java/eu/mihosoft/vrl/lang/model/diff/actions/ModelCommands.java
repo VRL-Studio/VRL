@@ -30,7 +30,7 @@ enum ModelCommands implements IModelCommands {
     INSTANCE;
 
     //SCOPE
-    @Override
+    @Override 
     public void removeScope(CodeEntity parentScope, CodeEntity scope) {
         Scope parent = (Scope) parentScope;
         Scope child = (Scope) scope;

@@ -173,8 +173,9 @@ public class SimilarityMetric {
                 }
             }
         } else if (codeEntity instanceof IArgument) {
+            
             IArgument argumentEntity = (IArgument) codeEntity;
-            String name = "";
+            String name = "default";
             if (argumentEntity.getArgType().equals(ArgumentType.CONSTANT)) {
                 name = argumentEntity.getConstant().get().getType().getShortName();
             } else if (argumentEntity.getArgType().equals(ArgumentType.VARIABLE)) {
@@ -183,7 +184,7 @@ public class SimilarityMetric {
                 name = argumentEntity.getInvocation().get().getMethodName();
             } else {
             }
-            codeFragment = argumentEntity.getArgType() + " " + name;
+            codeFragment = name;//argumentEntity.getArgType() + " " + name;
         } else if (codeEntity instanceof ConstantValue) {
             //System.out.println("Debug - ConstantValue");
             ConstantValue constantValueEntity = (ConstantValue) codeEntity;

@@ -39,7 +39,7 @@ public class RefactoringUtilsTest {
                 + "}"
         );
 
-        createClassRefactoringTest(sourceModel, targetModel);
+//        createClassRefactoringTest(sourceModel, targetModel);
 
         sourceModel = groovy2Model(""
                 + "package eu.mihosoft1.vrl1.lang1.model1.diff1;\n"
@@ -82,7 +82,7 @@ public class RefactoringUtilsTest {
         System.out.println("####################################################");
         RefactoringUtils.renameClassRefactoring(sourceModel.getDeclaredClasses().get(0).getClassType(), targetModel.getDeclaredClasses().get(0).getClassType(), sourceModel);
 
-        source.updateCodeEntityListAllEntities(sourceModel);
+       // source.updateCodeEntityList(sourceModel);
         System.out.println(sourceModel);
 
         String newCode = Scope2Code.getCode(sourceModel);

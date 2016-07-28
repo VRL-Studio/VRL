@@ -25,7 +25,7 @@ import eu.mihosoft.vrl.lang.model.diff.SimilarityMetric;
  */
 public class InsertAction extends Action<CodeEntityList> {
 
-    int index = 0;
+    int index;
     int cost = 1;
 
     public boolean verify(State<CodeEntityList> s) {
@@ -44,17 +44,19 @@ public class InsertAction extends Action<CodeEntityList> {
             public boolean verify(State<CodeEntityList> s) {
 
                 s = s.clone();
-
                 index = s.get(0).getIndex();
-                cost = CodeEntityList.subtreeSize((Scope) entity);
+                
+                if (entity instanceof Scope) {
+                    cost = s.get(0).subtreeSize((Scope) entity);
+                    if (cost == 0) {
+                        cost = 1;
+                    }
+                } 
 
-                if (cost == 0) {
-                    cost = 1;
-                }
                 boolean bool = true;
                 if (entity instanceof ClassDeclaration) {
                     ClassDeclaration cls = (ClassDeclaration) entity;
-                    String name = VLangUtilsNew.shortNameFromFullClassName(cls.getName());
+                    String name = VLangUtilsNew.shortNameFromFullClassName(cls.getName()); 
                     if (s.get(0).getNames().contains(name)) {
                         int elemPos = s.get(0).getNames().indexOf(name);
                         if (s.get(0).get(elemPos) instanceof ClassDeclaration) {
@@ -67,8 +69,8 @@ public class InsertAction extends Action<CodeEntityList> {
                         bool = false;
                     }
                 }
+                
                 boolean result = bool && index < s.get(0).size() + 1 && index > 0;
-
                 return result;
             }
 
@@ -90,11 +92,10 @@ public class InsertAction extends Action<CodeEntityList> {
                     CompilationUnitDeclaration cud = (CompilationUnitDeclaration) preCodeEntity;
                     ClassDeclaration cd = (ClassDeclaration) entity;
                     IModelCommands.getInstance().insertScope(cud, 0, cd);
-                    s.get(0).updateCodeEntityList(cud);
-
+                    s.get(0).updateCodeEntityList(preCodeEntity);
                 } else if (preCodeEntity instanceof ClassDeclaration) {
                     ClassDeclaration class1 = (ClassDeclaration) preCodeEntity;
-                    if (entity instanceof ClassDeclaration && class1.getDeclaredMethods().isEmpty()) { // two classes 
+                    if (entity instanceof ClassDeclaration && class1.getDeclaredMethods().isEmpty()) { //solange es die default Groovy-Methoden gibt wird dieser Fall nie auftreten
                         ClassDeclaration class2 = (ClassDeclaration) entity;
                         CompilationUnitDeclaration class1Parent = (CompilationUnitDeclaration) class1.getParent();
                         int class1Pos = class1Parent.getDeclaredClasses().indexOf(class1);
@@ -106,7 +107,6 @@ public class InsertAction extends Action<CodeEntityList> {
                     } else if (entity instanceof MethodDeclaration) {
                         MethodDeclaration meth = (MethodDeclaration) entity;
                         IModelCommands.getInstance().insertMethodToClass(class1, 0, meth);
-                        s.get(0).updateCodeEntityList(preCodeEntity);
                     } else if (entity instanceof Variable) {
                         Variable var = (Variable) entity;
                         IModelCommands.getInstance().insertScope(class1, 0, var);
@@ -182,7 +182,7 @@ public class InsertAction extends Action<CodeEntityList> {
 
             @Override
             public String getName() {
-                return "rename";
+                return "insert";
             }
 
         });

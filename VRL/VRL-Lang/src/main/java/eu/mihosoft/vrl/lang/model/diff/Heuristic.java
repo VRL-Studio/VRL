@@ -35,7 +35,7 @@ public class Heuristic implements eu.mihosoft.ai.astar.Heuristic<CodeEntityList>
         double min = Math.min(goalListSize, currListSize);
 
       return Math.abs(lcsSize - max);
-       // return 0.0;
+    //return 0.0;
     }
 
 }
