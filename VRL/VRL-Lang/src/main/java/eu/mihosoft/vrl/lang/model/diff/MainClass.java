@@ -13,12 +13,14 @@ import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.diff.actions.DecreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.DeleteAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.IncreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.InsertAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.RenameAction;
+import eu.mihosoft.vrl.lang.model.diff.actions.SetReturnTypeAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,32 +37,37 @@ public class MainClass {
     public static void main(String[] args) throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                //                + "public class Class1{\n"
-                //                + "}\n"
-                + "class Class2 {\n"
+                + "class Class1{\n"
+                + "int method(int i){"
+                + "return null;\n"
                 + "}\n"
-                + "class Method {\n"
-//                + "void method1(){\n"
-                //                + "Class1 cls;\n"
-//                + "}\n"
+                //                + "Class1 method(Class1 param){\n"
+                //                + "}\n"
                 + "}"
         );
 
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "public class Class2{\n"
-                //                + "}\n"
-                //                + "class NewClass {\n"
+                + "class Class2{\n"
+                + "double method(double i){"
+                + "return null;\n"
                 + "}\n"
-                + "class Cls1 {\n"
+                //                + "Class2 method(Class2 param){\n"
+                //                + "}\n"
                 + "}"
         );
 
         System.out.println("");
         System.out.println("");
-        //CodeEntityList.convertTreeToListAllElems(sourceModel);
-      classAStar(sourceModel, targetModel);
-       // classAStar(targetModel, sourceModel);
+
+        classAStar(sourceModel, targetModel);
+        // classAStar(targetModel, sourceModel);
+
+        System.out.println("+++++++++++++++ Source Model +++++++++++++++++");
+        System.out.println(model2Groovy(sourceModel));
+
+        System.out.println("+++++++++++++++ Target Model +++++++++++++++++");
+        System.out.println(model2Groovy(targetModel));
 
         // System.out.println("Solution: ");
         // TODO: apply commands to source
@@ -96,6 +103,7 @@ public class MainClass {
         ArrayList<CodeEntity> insertList = new ArrayList<>(target.getEntities()); // doppelte Elemente 
         insertList.remove(0); // remove CUD
         ArrayList<CodeEntity> refactoringList = new ArrayList<>();
+        ArrayList<CodeEntity> methodList = new ArrayList<>();
 
         Map<String, CodeEntity> renameMap = new HashMap<>();
         for (CodeEntity codeEntity : target.getEntities()) {
@@ -122,6 +130,11 @@ public class MainClass {
             System.out.println(i + ": " + target.getEntityName(i));
             if (target.get(i) instanceof ClassDeclaration) {
                 refactoringList.add(target.get(i));
+            } else if (target.get(i) instanceof MethodDeclaration) {
+                MethodDeclaration currentMethod = (MethodDeclaration) target.get(i);
+                if (!currentMethod.getName().equals("this$dist$invoke$1") && !currentMethod.getName().equals("this$dist$set$1") && !currentMethod.getName().equals("this$dist$get$1")) {
+                    methodList.add(target.get(i));
+                }
             }
         }
         System.out.println("####################################################");
@@ -132,16 +145,25 @@ public class MainClass {
 
         ArrayList<Action<CodeEntityList>> allActions = new ArrayList<>();
 
+        //++++++++++++++++++++++++++++++++++++++++++++++++++
+        methodList.stream().forEach((entity) -> {
+            allActions.add(new SetReturnTypeAction(entity));
+        });
+
         renameList.stream().forEach((entity) -> {
             allActions.add(new RenameAction(entity));
         });
+        //++++++++++++++++++++++++++++++++++++++++++++++++++
+
+        //        refactoringList.stream().forEach((entity) -> {
+//            allActions.add(new RefactoringClassAction(entity));
+//        });
+        //++++++++++++++++++++++++++++++++++++++++++++++++++
         insertList.stream().forEach((entity) -> {
             allActions.add(new InsertAction(entity));
         });
         allActions.add(delete);
-//        refactoringList.stream().forEach((entity) -> {
-//            allActions.add(new RefactoringClassAction(entity));
-//        });
+
         allActions.add(increaseIndex);
         allActions.add(decreaseIndex);
 
@@ -157,12 +179,6 @@ public class MainClass {
 
         AStar<CodeEntityList> solverOND = new AStar<>(StringListWD);
         solverOND.run();
-
-        System.out.println("++++++++++++++++++++++++++++++++");
-        System.out.println(model2Groovy(sourceModel));
-
-        System.out.println("++++++++++++++++++++++++++++++++");
-        System.out.println(model2Groovy(targetModel));
 
         System.out.println("done.");
     }

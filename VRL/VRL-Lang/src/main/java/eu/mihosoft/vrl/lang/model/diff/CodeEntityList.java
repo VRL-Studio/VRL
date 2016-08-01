@@ -10,6 +10,7 @@ import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
+import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import static eu.mihosoft.vrl.lang.model.diff.MainClass.fromCode;
@@ -269,7 +270,17 @@ public class CodeEntityList {
         if (codeEntity1 == null || codeEntity2 == null || codeEntity1.getClass() != codeEntity2.getClass()) {
             return false;
         }
-        return getEntityName(codeEntity1).equals(getEntityName(codeEntity2));
+        boolean bool = true;
+
+        if (codeEntity1 instanceof MethodDeclaration) {
+            MethodDeclaration meth1 = (MethodDeclaration) codeEntity1;
+            MethodDeclaration meth2 = (MethodDeclaration) codeEntity2;
+            if (!meth1.getReturnType().equals(meth2.getReturnType())) {
+                bool = false;
+            }
+        }
+
+        return getEntityName(codeEntity1).equals(getEntityName(codeEntity2)) && bool;
     }
 
     /**
