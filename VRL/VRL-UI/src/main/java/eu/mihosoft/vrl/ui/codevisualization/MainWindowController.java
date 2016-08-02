@@ -547,8 +547,8 @@ public class MainWindowController implements Initializable {
                         if((currsub.getNodes().size() > 0) && (currsub.isVisible())) {
                             VCanvas subcanvas = new VCanvas();
                             FlowNodeWindow.addResetViewMenu(subcanvas);
-                            subcanvas.setMinScaleX(0.2);
-                            subcanvas.setMinScaleY(0.2);
+                            subcanvas.setMinScaleX(0.1);
+                            subcanvas.setMinScaleY(0.1);
                             subcanvas.setMaxScaleX(1);
                             subcanvas.setMaxScaleY(1);
                             subcanvas.setTranslateToMinNodePos(true);
@@ -556,7 +556,7 @@ public class MainWindowController implements Initializable {
                             FXSkinFactory fxSkinFactory = wskin.getSkinFactory().newInstance(subcanvas.getContent(), null);
                             currsub.addSkinFactories(fxSkinFactory);
                             
-                            Scene subscene = new Scene(subcanvas, 800, 800);
+                            Scene subscene = new Scene(subcanvas, (int) Math.round(this.view.getWidth()), (int) Math.round(this.view.getHeight()));
                             subscene.getStylesheets().setAll(style);
                             WritableImage wim = new WritableImage((int) Math.round(subscene.getWidth()), (int) Math.round(subscene.getHeight()));
                             try {
