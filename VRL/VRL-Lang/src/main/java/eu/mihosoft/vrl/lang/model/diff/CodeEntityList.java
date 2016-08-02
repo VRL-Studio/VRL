@@ -272,12 +272,10 @@ public class CodeEntityList {
         }
         boolean bool = true;
 
-        if (codeEntity1 instanceof MethodDeclaration) {
+        if (codeEntity1 instanceof MethodDeclaration && codeEntity2 instanceof MethodDeclaration) {
             MethodDeclaration meth1 = (MethodDeclaration) codeEntity1;
             MethodDeclaration meth2 = (MethodDeclaration) codeEntity2;
-            if (!meth1.getReturnType().equals(meth2.getReturnType())) {
-                bool = false;
-            }
+            bool = meth1.getReturnType().equals(meth2.getReturnType());
         }
 
         return getEntityName(codeEntity1).equals(getEntityName(codeEntity2)) && bool;
@@ -377,10 +375,10 @@ public class CodeEntityList {
         });
 //
         System.out.println("Update: ");
-//
-//        for (int i = 0; i < codeEntities.size(); i++) {
-//            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)) + " ---> Type: " + codeEntities.get(i).getClass().getSimpleName());
-//        }
+
+        for (int i = 0; i < codeEntities.size(); i++) {
+            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)) + " ---> Type: " + codeEntities.get(i).getClass().getSimpleName());
+        }
         this.setEntities(codeEntities);
     }
 

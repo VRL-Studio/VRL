@@ -23,7 +23,7 @@ public class SetReturnTypeAction extends Action<CodeEntityList> {
     int index = 0;
 
     public SetReturnTypeAction(CodeEntity codeEntityType) {
-        setName("Set Return Type from " + '"' + SimilarityMetric.getCodeEntityName(codeEntityType) + '"');
+        setName("Set Return Type in " + '"' + SimilarityMetric.getCodeEntityName(codeEntityType) + '"');
 
         precond.add(new ConditionPredicate<CodeEntityList>() {
 
@@ -32,15 +32,17 @@ public class SetReturnTypeAction extends Action<CodeEntityList> {
                 s = s.clone();
                 index = s.get(0).getIndex();
                 boolean result = false;
+
                 if (index > -1 && index < s.get(0).size()) {
 
                     CodeEntity currentElement = s.get(0).get(index);
                     if (currentElement instanceof MethodDeclaration && codeEntityType instanceof MethodDeclaration) {
                         MethodDeclaration currentMethod = (MethodDeclaration) currentElement;
                         MethodDeclaration methodType = (MethodDeclaration) codeEntityType;
-                        if (!currentMethod.getReturnType().equals(methodType.getReturnType())) {
+                        if (!currentMethod.getName().equals("this$dist$invoke$1") && !currentMethod.getName().equals("this$dist$set$1") && !currentMethod.getName().equals("this$dist$get$1") && !currentMethod.getReturnType().equals(methodType.getReturnType())) {
                             result = true;
                         }
+
                     }
                 }
 

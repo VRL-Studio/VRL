@@ -104,6 +104,7 @@ public class RenameAction extends Action<CodeEntityList> {
                     s.get(0).updateCodeEntityList(currentCodeEntity);
                 } else if (nameEntity instanceof ClassDeclaration && currentCodeEntity instanceof ClassDeclaration) { // Refactoring Utils 
                     ClassDeclaration cls = (ClassDeclaration) nameEntity;
+                    IModelCommands.getInstance().setClassType(cls.getClassType(), currentCodeEntity);
                     IModelCommands.getInstance().setScopeName(cls.getName(), currentCodeEntity);
                     s.get(0).updateCodeEntityList(currentCodeEntity);
                 } else if (nameEntity instanceof MethodDeclaration && currentCodeEntity instanceof MethodDeclaration) {
