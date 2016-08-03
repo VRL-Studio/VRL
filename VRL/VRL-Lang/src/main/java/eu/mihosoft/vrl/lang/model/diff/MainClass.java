@@ -20,6 +20,7 @@ import eu.mihosoft.vrl.lang.model.diff.actions.DeleteAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.IncreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.InsertAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.RenameAction;
+import eu.mihosoft.vrl.lang.model.diff.actions.SetParametersAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.SetReturnTypeAction;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,8 +38,8 @@ public class MainClass {
     public static void main(String[] args) throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "class Class1{\n"
-                + "int method(int i){"
+                + "class Class2{\n"
+                + "double method(int i1){"
                 + "return null;\n"
                 + "}\n"
                 //                + "Class1 method(Class1 param){\n"
@@ -48,8 +49,8 @@ public class MainClass {
 
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "class Class2{\n"
-                + "double method(double i){"
+                + "class Class1{\n"
+                + "int method(double i2){"
                 + "return null;\n"
                 + "}\n"
                 //                + "Class2 method(Class2 param){\n"
@@ -59,15 +60,17 @@ public class MainClass {
 
         System.out.println("");
         System.out.println("");
-
-        classAStar(sourceModel, targetModel);
-        // classAStar(targetModel, sourceModel);
+//        System.out.println("Class " + sourceModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getReturnType().getFullClassName());
+//        IModelCommands.getInstance().setMethodReturnType(targetModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getReturnType(), sourceModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0));
+//        System.out.println("Class " + sourceModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getReturnType().getFullClassName());
+       classAStar(sourceModel, targetModel);
+//        classAStar(targetModel, sourceModel);
 
         System.out.println("+++++++++++++++ Source Model +++++++++++++++++");
-        System.out.println(model2Groovy(sourceModel));
+        System.out.println(Scope2Code.getCode(sourceModel));
 
         System.out.println("+++++++++++++++ Target Model +++++++++++++++++");
-        System.out.println(model2Groovy(targetModel));
+        System.out.println(Scope2Code.getCode(targetModel));
 
         // System.out.println("Solution: ");
         // TODO: apply commands to source
@@ -134,6 +137,7 @@ public class MainClass {
                 MethodDeclaration currentMethod = (MethodDeclaration) target.get(i);
                 if (!currentMethod.getName().equals("this$dist$invoke$1") && !currentMethod.getName().equals("this$dist$set$1") && !currentMethod.getName().equals("this$dist$get$1")) {
                     methodList.add(target.get(i));
+                    System.out.println("MethodList " + target.getEntityName(i));
                 }
             }
         }
@@ -147,25 +151,26 @@ public class MainClass {
 
         //++++++++++++++++++++++++++++++++++++++++++++++++++
         methodList.stream().forEach((entity) -> {
-            allActions.add(new SetReturnTypeAction(entity));
+            allActions.add(new SetReturnTypeAction(entity)); //returnType
+            allActions.add(new SetParametersAction(entity)); //param
         });
 
         renameList.stream().forEach((entity) -> {
-            allActions.add(new RenameAction(entity));
+            allActions.add(new RenameAction(entity)); // rename
         });
         //++++++++++++++++++++++++++++++++++++++++++++++++++
 
         //        refactoringList.stream().forEach((entity) -> {
-//            allActions.add(new RefactoringClassAction(entity));
+//            allActions.add(new RefactoringClassAction(entity)); //refactor = retunrType + rename (Class and Type)
 //        });
         //++++++++++++++++++++++++++++++++++++++++++++++++++
         insertList.stream().forEach((entity) -> {
-            allActions.add(new InsertAction(entity));
+            allActions.add(new InsertAction(entity)); //insert
         });
-        allActions.add(delete);
+        allActions.add(delete); //delete
 
-        allActions.add(increaseIndex);
-        allActions.add(decreaseIndex);
+        allActions.add(increaseIndex); // ++
+        allActions.add(decreaseIndex); // --
 
         System.out.println("Actions: ");
 

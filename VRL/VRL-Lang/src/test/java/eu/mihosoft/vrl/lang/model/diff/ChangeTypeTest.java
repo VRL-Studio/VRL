@@ -23,7 +23,7 @@ public class ChangeTypeTest {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
                 + "class Class1{\n"
-                + "Class1 method(Class1 i1){"
+                + "Class1 method(double i1){"
                 + "return null;\n"
                 + "}\n"
                 + "}"
@@ -32,7 +32,25 @@ public class ChangeTypeTest {
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu2.mihosoft2;\n"
                 + "class Class2{\n"
-                + "Class2 method(Class2 i2, Class2 i22){"
+                + "Class2 method(int i22){"
+                + "return null;\n"
+                + "}\n"
+                + "}"
+        );
+
+        sourceModel = groovy2Model(""
+                + "package eu.mihosoft.vrl.lang.model.diff;\n"
+                + "class Class1{\n"
+                + "int method(int i1){"
+                + "return null;\n"
+                + "}\n"
+                + "}"
+        );
+
+        targetModel = groovy2Model(""
+                + "package eu.mihosoft.vrl.lang.model.diff;\n"
+                + "class Class1{\n"
+                + "int method(double i2){"
                 + "return null;\n"
                 + "}\n"
                 + "}"
@@ -64,16 +82,26 @@ public class ChangeTypeTest {
 
         Assert.assertFalse("States with different names must not be equal:", source.equals(target));
     }
-    
-      private void createSetParameterTest(CompilationUnitDeclaration sourceModel, CompilationUnitDeclaration targetModel) {
-           CodeEntityList source = new CodeEntityList(sourceModel);
+
+    private void createSetParameterTest(CompilationUnitDeclaration sourceModel, CompilationUnitDeclaration targetModel) {
+        CodeEntityList source = new CodeEntityList(sourceModel);
         CodeEntityList target = new CodeEntityList(source, true);
+        CodeEntityList targetMod = new CodeEntityList(targetModel);
+        
 
         System.out.println(Scope2Code.getCode(sourceModel));
         System.out.println("####################################################");
         IModelCommands.getInstance().setMethodParameters(targetModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getParameters(), sourceModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0));
+        source.updateCodeEntityList(sourceModel);
         System.out.println(Scope2Code.getCode(sourceModel));
-          
-      }
+        System.out.println("source==target: " + source.equals(target));
+        //Assert.assertFalse("States with different names must not be equal:", source.equals(target));
+        CompilationUnitDeclaration targetCud = (CompilationUnitDeclaration) target.get(0);
+        System.out.println("Parameters " + targetCud.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getParameters().getParamenters().equals(sourceModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getParameters().getParamenters()));
+        System.out.println("sourceModel == targetModel " + source.equals(targetMod));
+        System.out.println(Scope2Code.getCode(targetModel));
+        System.out.println("Paramteters "+ targetCud.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getParameters());
+        System.out.println("Paramteters "+ sourceModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getParameters());
+    }
 
 }

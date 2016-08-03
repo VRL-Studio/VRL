@@ -276,6 +276,21 @@ public class CodeEntityList {
             MethodDeclaration meth1 = (MethodDeclaration) codeEntity1;
             MethodDeclaration meth2 = (MethodDeclaration) codeEntity2;
             bool = meth1.getReturnType().equals(meth2.getReturnType());
+            if (bool) // && meth1.getParameters().equals(meth2.getParameters()) ;
+            {
+                if (meth1.getParameters().getParamenters().size() != meth1.getParameters().getParamenters().size()) {
+                    bool = false;
+                } else {
+                    for (int i = 0; i < meth1.getParameters().getParamenters().size(); i++) {
+                        if (!meth1.getParameters().getParamenters().get(i).getType().equals(meth2.getParameters().getParamenters().get(i).getType()) 
+                                || !meth1.getParameters().getParamenters().get(i).getName().equals(meth2.getParameters().getParamenters().get(i).getName())) {
+                            bool = false;
+                            break;
+                        }
+                    }
+
+                }
+            }
         }
 
         return getEntityName(codeEntity1).equals(getEntityName(codeEntity2)) && bool;
