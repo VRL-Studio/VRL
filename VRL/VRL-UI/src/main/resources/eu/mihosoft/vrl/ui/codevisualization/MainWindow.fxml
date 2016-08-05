@@ -26,18 +26,6 @@
             <MenuItem fx:id="menuCloseItem" mnemonicParsing="false" onAction="#onCloseAction" text="Close" />
           </items>
         </Menu>
-        <Menu mnemonicParsing="false" text="Layout">
-            <Menu mnemonicParsing="false" text="Smart Layout">
-                <MenuItem mnemonicParsing="false" onAction="#onLayoutSmartAction" text="Apply Layout" />
-                <MenuItem mnemonicParsing="false" onAction="#onLayoutSmartOptionsAction" text="Customize" />
-            </Menu>
-            <Menu mnemonicParsing="false" text="Naive Layout">
-                <MenuItem mnemonicParsing="false" onAction="#onLayoutNaiveAction" text="Apply Layout" />
-                <MenuItem mnemonicParsing="false" onAction="#onLayoutNaiveOptionsAction" text="Customize" />
-            </Menu>
-            <CheckMenuItem fx:id="checkLayoutDebug" mnemonicParsing="false" text="Debugging Enabled" />
-            <MenuItem mnemonicParsing="false"  onAction="#onLayoutSnapshotAction" text="Save Snapshot" />
-        </Menu>
         <Menu mnemonicParsing="false" text="Help">
           <items>
             <MenuItem mnemonicParsing="false" text="About" />
@@ -47,10 +35,11 @@
     </MenuBar>
       <ToolBar prefHeight="40.0" prefWidth="650.0">
         <items>
-          <Button disable="true" minWidth="100.0" mnemonicParsing="false" text="Layout" />
+          <Button fx:id="layoutBtn" minWidth="100.0" mnemonicParsing="false" onAction="#onLayoutAction" text="Layout" />
+            <Button minWidth="100.0" mnemonicParsing="false" onAction="#onSnapshotAction" text="Save Snapshot" />
             <ToggleButton fx:id="freezeBtn" minWidth="100.0" mnemonicParsing="false" onAction="#onFreezeAction" text="Freeze" />
             <Slider fx:id="zoomSlider" max="5.0" min="0.1" value="1.0" />
-            <CheckBox fx:id="minEqMaxCheckBox" layoutX="362.0" layoutY="15.0" mnemonicParsing="false" text="Min==Max" />
+            <CheckBox fx:id="minEqMaxCheckBox" layoutX="462.0" layoutY="15.0" mnemonicParsing="false" text="Min==Max" />
             <CheckBox fx:id="expandCanvasCheckBox" mnemonicParsing="false" text="Expand Canvas (Left/Top)" />
         </items>
       </ToolBar>

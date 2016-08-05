@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<VBox fx:id="contentPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="eu.mihosoft.vrl.ui.codevisualization.LayoutPaneFXMLController">
+    <children>
+        <ToolBar prefHeight="40.0" prefWidth="650.0">
+            <items>
+                <ComboBox fx:id="selLayout" minWidth="100.0" />
+                <Button minWidth="100.0" mnemonicParsing="false" text="Apply Layout" onAction="#onLayoutApplyAction" />
+                <Button disable="true"  minWidth="100.0" mnemonicParsing="false" text="Reset Options" onAction="#onResetAction" />
+                <CheckBox fx:id="checkLayoutDebug" mnemonicParsing="false" text="Enable Debugging" />
+            </items>
+        </ToolBar>
+        <AnchorPane fx:id="layoutMenuParent" minHeight="0.0" minWidth="0.0" prefHeight="120.0" prefWidth="650.0" />
+    </children>
+</VBox>
