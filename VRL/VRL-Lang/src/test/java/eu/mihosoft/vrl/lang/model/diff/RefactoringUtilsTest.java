@@ -40,33 +40,39 @@ public class RefactoringUtilsTest {
         );
 
 //        createClassRefactoringTest(sourceModel, targetModel);
+    
 
         sourceModel = groovy2Model(""
-                + "package eu.mihosoft1.vrl1.lang1.model1.diff1;\n"
+                + "package eu1.mihosoft1.vrl1.lang1.model1.diff1;\n"
                 + "class Class1 {\n"
-                + "Class1 method11(Class1 param1){\n"
-                + "while(2 < 3) { Class1 vInWhile = param1;}\n"
-                + "if(2 < 3) { Class1 vInIf = param1;}\n"
-                + "method11(param1);\n"
-                + "Class1 variable1 = param1;"
-                + "return param1; \n"
+                + "private static final Class1 NAME;\n"
+                + "Class1 method(Class1 param){\n"
+                + "while(true) {\n"
+                + "Class1 vInWhile = param;\n"
                 + "}\n"
-                + "void method12(){\n"
+                + "if(2 > 0) {\n"
+                + "Class1 vInIf = param;}\n"
+                + "Class1 variable = param;\n"
+                + "method(param)\n"
+                + "return param;\n"
                 + "}\n"
                 + "}"
         );
 
         targetModel = groovy2Model(""
-                + "package eu.mihosoft.vrl.lang.model.diff;\n"
+                + "package eu3.mihosoft3.vrl3.lang3.model3.diff3;\n"
                 + "class Class3 {\n"
-                + "Class3 method11(Class3 param1){\n"
-                + "while(2 < 3) { Class3 vInWhile = param1;}\n"
-                + "if(2 < 3) { Class3 vInIf = param1;}\n"
-                + "method11(param1);\n"
-                + "Class3 variable1 = param1;"
-                + "return param1; \n"
+                + "private static final Class3 NAME;\n"
+                + "Class3 method(Class3 param){\n"
+                + "while(true) {\n"
+                + "Class3 vInWhile = param;\n"
                 + "}\n"
-                + "void method22(){}\n"
+                + "if(2 > 0) {\n"
+                + "Class3 vInIf = param;}\n"
+                + "Class3 variable = param;"
+                + "method(param)\n"
+                + "return param; \n"
+                + "}\n"
                 + "}"
         );
 
@@ -82,7 +88,7 @@ public class RefactoringUtilsTest {
         System.out.println("####################################################");
         RefactoringUtils.renameClassRefactoring(sourceModel.getDeclaredClasses().get(0).getClassType(), targetModel.getDeclaredClasses().get(0).getClassType(), sourceModel);
 
-       // source.updateCodeEntityList(sourceModel);
+        // source.updateCodeEntityList(sourceModel);
         System.out.println(sourceModel);
 
         String newCode = Scope2Code.getCode(sourceModel);
