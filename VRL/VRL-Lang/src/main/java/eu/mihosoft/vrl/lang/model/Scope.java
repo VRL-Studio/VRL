@@ -53,6 +53,7 @@ package eu.mihosoft.vrl.lang.model;
 import eu.mihosoft.vrl.workflow.VFlow;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import javafx.collections.ObservableList;
@@ -67,11 +68,15 @@ import javafx.collections.ObservableList;
 
     public String getName();
     
-    public void setName(String name); // geändert Joanna
+    public void setName(String name); // changed Joanna
     
     public Object[] getScopeArgs();
 
     public Collection<Variable> getVariables();
+    
+    public Map<String, Variable> getVariablesAsMap(); // changed Joanna
+    
+    public void setVariables(Map<String, Variable> variables); // changed Joanna
 
     public Variable getVariable(String name);
 

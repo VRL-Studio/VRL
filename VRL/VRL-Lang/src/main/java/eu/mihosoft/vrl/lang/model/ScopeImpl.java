@@ -198,6 +198,16 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
     }
 
     @Override
+    public Map<String, Variable> getVariablesAsMap() {
+        return variables;
+    }
+
+    @Override
+    public void setVariables(Map<String, Variable> variables) {
+        this.variables = variables;
+    }
+
+    @Override
     public Variable getVariable(String name) {
         Variable result = variables.get(name);
 
@@ -215,7 +225,7 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
 
             // TODO proper handling of possibly undeclared variables (
             return new DeclarationInvocationDummy(name).getDeclaredVariable();
-			// throw new IllegalArgumentException(
+            // throw new IllegalArgumentException(
             // "Variable '"
             // + name
             // + "' does not exist in scope '" + parentName + "'!");
@@ -227,6 +237,7 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
     @Override
     public void setName(String name) {
         this.name = name;
+
     }
 
     private final static class DeclarationInvocationDummy extends
@@ -340,7 +351,7 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
         return variable;
     }
 
-	// @Override
+    // @Override
     // public Variable createVariable(IType type) {
     // String varNamePrefix = "vrlInternalVar";
     //
@@ -450,7 +461,7 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
     @Override
     public ObservableList<Scope> getScopes() {
 
-		// if (readOnlyScopes == null) {
+        // if (readOnlyScopes == null) {
         // readOnlyScopes = Collections.unmodifiableList(scopes);
         // }
         //
@@ -490,7 +501,7 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
         return name;
     }
 
-	// /**
+    // /**
     // * @return the code
     // */
     // @Override
@@ -517,7 +528,7 @@ class ScopeImpl extends CodeEntityImpl implements Scope {
 
         getDataFlow().create(controlFlow);
 
-		// for (Invocation i : controlFlow.getInvocations()) {
+        // for (Invocation i : controlFlow.getInvocations()) {
         // // System.out.println("invocation: " + i);
         // for (IArgument a : i.getArguments()) {
         // System.out.println("--> arg: " + a + ", " + i);

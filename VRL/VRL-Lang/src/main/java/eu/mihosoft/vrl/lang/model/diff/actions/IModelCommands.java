@@ -95,6 +95,8 @@ public interface IModelCommands {
     void setVariableDeclarationInvocation(DeclarationInvocation invocation, CodeEntity codeEntity);
 
     void setVariableScope(Scope scope, CodeEntity codeEntity);
+    
+    void setVariables(Scope scope, Scope scopeVar);
 
     // DECLARATION INVOCATION 
     void setVariableInDeclInvocation(Variable var, DeclarationInvocation declInv);

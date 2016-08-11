@@ -14,6 +14,7 @@ import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.diff.actions.DecreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.DeleteAction;
@@ -22,6 +23,7 @@ import eu.mihosoft.vrl.lang.model.diff.actions.InsertAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.RenameAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.SetParametersAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.SetReturnTypeAction;
+import eu.mihosoft.vrl.lang.model.diff.actions.SetVariablesAction;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,8 +40,9 @@ public class MainClass {
     public static void main(String[] args) throws Exception {
         CompilationUnitDeclaration sourceModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "class Class2{\n"
+                + "class Class1{\n"
                 + "double method(int i1){"
+                + "int j1 = i1;\n"
                 + "return null;\n"
                 + "}\n"
                 //                + "Class1 method(Class1 param){\n"
@@ -50,7 +53,8 @@ public class MainClass {
         CompilationUnitDeclaration targetModel = groovy2Model(""
                 + "package eu.mihosoft.vrl.lang.model.diff;\n"
                 + "class Class1{\n"
-                + "int method(double i2){"
+                + "double method(int i1){"
+                + "double j1 = i1;\n"
                 + "return null;\n"
                 + "}\n"
                 //                + "Class2 method(Class2 param){\n"
@@ -60,10 +64,7 @@ public class MainClass {
 
         System.out.println("");
         System.out.println("");
-//        System.out.println("Class " + sourceModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getReturnType().getFullClassName());
-//        IModelCommands.getInstance().setMethodReturnType(targetModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getReturnType(), sourceModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0));
-//        System.out.println("Class " + sourceModel.getDeclaredClasses().get(0).getDeclaredMethods().get(0).getReturnType().getFullClassName());
-       classAStar(sourceModel, targetModel);
+        classAStar(sourceModel, targetModel);
 //        classAStar(targetModel, sourceModel);
 
         System.out.println("+++++++++++++++ Source Model +++++++++++++++++");
@@ -153,6 +154,13 @@ public class MainClass {
         methodList.stream().forEach((entity) -> {
             allActions.add(new SetReturnTypeAction(entity)); //returnType
             allActions.add(new SetParametersAction(entity)); //param
+        });
+
+        target.getEntities().stream().forEach((entity) -> {
+            Scope scope = (Scope) entity;
+            if (!scope.getVariables().isEmpty()) {
+                allActions.add(new SetVariablesAction(entity)); // set variables
+            }
         });
 
         renameList.stream().forEach((entity) -> {

@@ -13,6 +13,7 @@ import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
+import eu.mihosoft.vrl.lang.model.Variable;
 import static eu.mihosoft.vrl.lang.model.diff.MainClass.fromCode;
 import java.util.ArrayList;
 import java.util.List;
@@ -270,30 +271,41 @@ public class CodeEntityList {
         if (codeEntity1 == null || codeEntity2 == null || codeEntity1.getClass() != codeEntity2.getClass()) {
             return false;
         }
-        boolean bool = true;
 
-        if (codeEntity1 instanceof MethodDeclaration && codeEntity2 instanceof MethodDeclaration) {
-            MethodDeclaration meth1 = (MethodDeclaration) codeEntity1;
-            MethodDeclaration meth2 = (MethodDeclaration) codeEntity2;
-            bool = meth1.getReturnType().equals(meth2.getReturnType());
-            if (bool) // && meth1.getParameters().equals(meth2.getParameters()) ;
-            {
-                if (meth1.getParameters().getParamenters().size() != meth1.getParameters().getParamenters().size()) {
-                    bool = false;
-                } else {
-                    for (int i = 0; i < meth1.getParameters().getParamenters().size(); i++) {
-                        if (!meth1.getParameters().getParamenters().get(i).getType().equals(meth2.getParameters().getParamenters().get(i).getType()) 
-                                || !meth1.getParameters().getParamenters().get(i).getName().equals(meth2.getParameters().getParamenters().get(i).getName())) {
-                            bool = false;
-                            break;
-                        }
+        if (codeEntity1 instanceof Scope && codeEntity2 instanceof Scope) {
+            Scope s1 = (Scope) codeEntity1;
+            Scope s2 = (Scope) codeEntity2;
+
+            if (s1.getVariables().size() != s2.getVariables().size()) {
+                return false;
+            } else {
+                List<Variable> list1 = new ArrayList<>(s1.getVariables());
+                List<Variable> list2 = new ArrayList<>(s2.getVariables());
+                for (int i = 0; i < list1.size(); i++) {
+                    if (!list1.get(i).getType().equals(list2.get(i).getType())) {
+                        return false;
                     }
-
                 }
             }
         }
 
-        return getEntityName(codeEntity1).equals(getEntityName(codeEntity2)) && bool;
+        if (codeEntity1 instanceof MethodDeclaration && codeEntity2 instanceof MethodDeclaration) {
+            MethodDeclaration meth1 = (MethodDeclaration) codeEntity1;
+            MethodDeclaration meth2 = (MethodDeclaration) codeEntity2;
+            if (meth1.getReturnType().equals(meth2.getReturnType())) {
+                if (meth1.getParameters().getParamenters().size() != meth2.getParameters().getParamenters().size()) {
+                    return false;
+                } else {
+                    for (int i = 0; i < meth1.getParameters().getParamenters().size(); i++) {
+                        if (!meth1.getParameters().getParamenters().get(i).getType().equals(meth2.getParameters().getParamenters().get(i).getType())) {
+                            return false;
+                        }
+                    }
+                }
+            }
+        }
+
+        return getEntityName(codeEntity1).equals(getEntityName(codeEntity2));
     }
 
     /**
@@ -348,10 +360,9 @@ public class CodeEntityList {
             }
         });
 
-        for (int i = 0; i < codeEntities.size(); i++) {
-            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)) + " ---> Type: " + codeEntities.get(i).getClass().getSimpleName());
-        }
-
+//        for (int i = 0; i < codeEntities.size(); i++) {
+//            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)) + " ---> Type: " + codeEntities.get(i).getClass().getSimpleName());
+//        }
         return codeEntities;
     }
 
@@ -391,9 +402,9 @@ public class CodeEntityList {
 //
         System.out.println("Update: ");
 
-        for (int i = 0; i < codeEntities.size(); i++) {
-            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)) + " ---> Type: " + codeEntities.get(i).getClass().getSimpleName());
-        }
+//        for (int i = 0; i < codeEntities.size(); i++) {
+//            System.out.println(i + ": " + SimilarityMetric.getCodeEntityName(codeEntities.get(i)) + " ---> Type: " + codeEntities.get(i).getClass().getSimpleName());
+//        }
         this.setEntities(codeEntities);
     }
 

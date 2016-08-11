@@ -281,6 +281,11 @@ enum ModelCommands implements IModelCommands {
     public void setReturnTypeInInvocation(IType type, Invocation invocation) {
         invocation.setReturnType1(type);
     }
+
+    @Override
+    public void setVariables(Scope scope, Scope scopeVar) {
+        scope.setVariables(scopeVar.getVariablesAsMap());
+    }
     
     
     
