@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package eu.mihosoft.vrl.lang.model.diff.actions;
 
 import eu.mihosoft.ai.astar.Action;
@@ -40,10 +39,18 @@ public class SetParametersAction extends Action<CodeEntityList> {
                     if (currentElement instanceof MethodDeclaration && codeEntity instanceof MethodDeclaration) {
                         MethodDeclaration currentMethod = (MethodDeclaration) currentElement;
                         MethodDeclaration methodType = (MethodDeclaration) codeEntity;
-                        if (!currentMethod.getName().equals("this$dist$invoke$1") && !currentMethod.getName().equals("this$dist$set$1") && !currentMethod.getName().equals("this$dist$get$1") && !currentMethod.getParameters().equals(methodType.getParameters())) {
-                            result = true;
+                        if (!currentMethod.getName().equals("this$dist$invoke$1") && !currentMethod.getName().equals("this$dist$set$1") && !currentMethod.getName().equals("this$dist$get$1")) {
+                            if (currentMethod.getParameters().getParamenters().size() != methodType.getParameters().getParamenters().size()) {
+                                result = true;
+                            } else {
+                                for (int i = 0; i < currentMethod.getParameters().getParamenters().size(); i++) {
+                                    if (!currentMethod.getParameters().getParamenters().get(i).getType().equals(methodType.getParameters().getParamenters().get(i).getType())) {
+                                        result = true;
+                                        break;
+                                    }
+                                }
+                            }
                         }
-
                     }
                 }
 
@@ -84,5 +91,5 @@ public class SetParametersAction extends Action<CodeEntityList> {
     public String toString() {
         return getName();
     }
-    
+
 }
