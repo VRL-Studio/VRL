@@ -288,18 +288,20 @@ public class CodeEntityList {
                 }
             }
         }
-
+        
         if (codeEntity1 instanceof MethodDeclaration && codeEntity2 instanceof MethodDeclaration) {
             MethodDeclaration meth1 = (MethodDeclaration) codeEntity1;
             MethodDeclaration meth2 = (MethodDeclaration) codeEntity2;
-            if (meth1.getReturnType().equals(meth2.getReturnType())) {
-                if (meth1.getParameters().getParamenters().size() != meth2.getParameters().getParamenters().size()) {
-                    return false;
-                } else {
-                    for (int i = 0; i < meth1.getParameters().getParamenters().size(); i++) {
-                        if (!meth1.getParameters().getParamenters().get(i).getType().equals(meth2.getParameters().getParamenters().get(i).getType())) {
-                            return false;
-                        }
+            if (!meth1.getReturnType().equals(meth2.getReturnType())) {
+                return false;
+            }
+
+            if (meth1.getParameters().getParamenters().size() != meth2.getParameters().getParamenters().size()) {
+                return false;
+            } else {
+                for (int i = 0; i < meth1.getParameters().getParamenters().size(); i++) {
+                    if (!meth1.getParameters().getParamenters().get(i).getType().equals(meth2.getParameters().getParamenters().get(i).getType())) {
+                        return false;
                     }
                 }
             }

@@ -47,7 +47,8 @@ public class InsertAction extends Action<CodeEntityList> {
                 index = s.get(0).getIndex();
                 
                 if (entity instanceof Scope) {
-                    cost = s.get(0).subtreeSize((Scope) entity);
+                    Scope scope = (Scope) entity;
+                    cost = s.get(0).subtreeSize(scope)+ scope.getVariables().size();
                     if (cost == 0) {
                         cost = 1;
                     }
