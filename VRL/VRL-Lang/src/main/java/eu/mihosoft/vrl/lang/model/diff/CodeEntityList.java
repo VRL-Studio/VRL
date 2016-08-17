@@ -246,7 +246,7 @@ public class CodeEntityList {
      * @param entity code entity
      * @return name as string
      */
-    private String getEntityName(CodeEntity entity) {
+    public static String getEntityName(CodeEntity entity) {
         return SimilarityMetric.getCodeEntityName(entity);
     }
 
@@ -266,7 +266,7 @@ public class CodeEntityList {
      * @return true if entity names are equal and the code entities are from the
      * same type
      */
-    public boolean compareNamesAndType(CodeEntity codeEntity1, CodeEntity codeEntity2) {
+    public static boolean compareNamesAndType(CodeEntity codeEntity1, CodeEntity codeEntity2) {
 
         if (codeEntity1 == null || codeEntity2 == null || codeEntity1.getClass() != codeEntity2.getClass()) {
             return false;
@@ -393,13 +393,13 @@ public class CodeEntityList {
         }
 
         cudClone.visitScopeAndAllSubElements((CodeEntity e) -> {
+            
+           // System.out.println("Code Entity "+ SimilarityMetric.getCodeEntityName(e));
+            
             if (e instanceof Scope) {
                 codeEntities.add(e);
             }
-//            if (e instanceof Invocation) {
-//                Invocation inv = (Invocation) e;
-//                codeEntities.addAll(inv.getArguments());
-//            }
+            
         });
 //
         System.out.println("Update: ");

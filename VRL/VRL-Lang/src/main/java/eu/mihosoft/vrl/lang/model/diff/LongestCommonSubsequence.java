@@ -35,8 +35,8 @@ public class LongestCommonSubsequence {
     }
 
     static boolean compareEntities(CodeEntity codeEntity1, CodeEntity codeEntity2) {
-        return SimilarityMetric.getCodeEntityName(codeEntity1).equals(SimilarityMetric.getCodeEntityName(codeEntity2));
-
+       // return SimilarityMetric.getCodeEntityName(codeEntity1).equals(SimilarityMetric.getCodeEntityName(codeEntity2));
+        return CodeEntityList.compareNamesAndType(codeEntity1, codeEntity2);
     }
 
 }

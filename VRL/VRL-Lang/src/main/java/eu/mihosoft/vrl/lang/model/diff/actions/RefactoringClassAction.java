@@ -33,7 +33,7 @@ public class RefactoringClassAction extends Action<CodeEntityList> {
 
     public RefactoringClassAction(CodeEntity entity) {
 
-        setName("Refactoring Typ " + '"' + SimilarityMetric.getCodeEntityName(entity) + '"');
+        setName("Refactoring Class in " + '"' + SimilarityMetric.getCodeEntityName(entity) + '"');
 
         precond.add(new ConditionPredicate<CodeEntityList>() {
 
