@@ -75,7 +75,7 @@ public class RefactoringUtilsTest {
         );
 
         sourceModel = groovy2Model(""
-                + "package eu.mihosoft.vrl.lang.model.diffSource;\n"
+                + "package sourcePackage;\n"
                 + "public class SourceClass {\n"
                 + "SourceClass variable1;\n"
                 + "int count;\n"
@@ -89,15 +89,17 @@ public class RefactoringUtilsTest {
                 + "if (variable1.count < 20) {\n"
                 + "variable1.count = variable1.count + i;\n"
                 + "} else if (variable1.count < 30) {\n"
-                + "variable1.count = variable1.count + 2 * i;\n"
+                + "if (variable2.count > 1) {\n"
+                + "variable1.count = variable1.count * variable2.count;\n"
+                + "}\n"
                 + "}\n"
                 + "}\n"
                 + "return variable1;\n"
                 + "}\n"
                 + "}");
-        
-         targetModel = groovy2Model(""
-                + "package eu.mihosoft.vrl.lang.model.diffTarget;\n"
+
+        targetModel = groovy2Model(""
+                + "package targetPackage;\n"
                 + "public class TargetClass {\n"
                 + "TargetClass variable1;\n"
                 + "int count;\n"
@@ -111,15 +113,16 @@ public class RefactoringUtilsTest {
                 + "if (variable1.count < 20) {\n"
                 + "variable1.count = variable1.count + i;\n"
                 + "} else if (variable1.count < 30) {\n"
-                + "variable1.count = variable1.count + 2 * i;\n"
+                + "if (variable2.count > 1) {\n"
+                + "variable1.count = variable1.count * variable2.count;\n"
+                + "}\n"
                 + "}\n"
                 + "}\n"
                 + "return variable1;\n"
                 + "}\n"
                 + "}");
 
-
-       createClassRefactoringTest(sourceModel, targetModel);
+        createClassRefactoringTest(sourceModel, targetModel);
 
     }
 
