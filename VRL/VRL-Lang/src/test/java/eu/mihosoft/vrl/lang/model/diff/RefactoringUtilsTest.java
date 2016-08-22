@@ -40,19 +40,17 @@ public class RefactoringUtilsTest {
         );
 
 //        createClassRefactoringTest(sourceModel, targetModel);
-    
-
         sourceModel = groovy2Model(""
-                + "package eu1.mihosoft1.vrl1.lang1.model1.diff1;\n"
-                + "class Class1 {\n"
-                + "private static final Class1 NAME;\n"
-                + "Class1 method(Class1 param){\n"
+                + "package eu.mihosoft.vrl.lang.model.diffSource;\n"
+                + "class SourceClass {\n"
+                + "private static final SourceClass NAME;\n"
+                + "SourceClass method(SourceClass param){\n"
                 + "while(true) {\n"
-                + "Class1 vInWhile = param;\n"
+                + "SourceClass vInWhile = param;\n"
                 + "}\n"
                 + "if(2 > 0) {\n"
-                + "Class1 vInIf = param;}\n"
-                + "Class1 variable = param;\n"
+                + "SourceClass vInIf = param;}\n"
+                + "SourceClass variable = param;\n"
                 + "method(param)\n"
                 + "return param;\n"
                 + "}\n"
@@ -60,23 +58,68 @@ public class RefactoringUtilsTest {
         );
 
         targetModel = groovy2Model(""
-                + "package eu3.mihosoft3.vrl3.lang3.model3.diff3;\n"
-                + "class Class3 {\n"
-                + "private static final Class3 NAME;\n"
-                + "Class3 method(Class3 param){\n"
+                + "package eu.mihosoft.vrl.lang.model.diffTarget;\n"
+                + "class TargetClass {\n"
+                + "private static final TargetClass NAME;\n"
+                + "TargetClass method(TargetClass param){\n"
                 + "while(true) {\n"
-                + "Class3 vInWhile = param;\n"
+                + "TargetClass vInWhile = param;\n"
                 + "}\n"
                 + "if(2 > 0) {\n"
-                + "Class3 vInIf = param;}\n"
-                + "Class3 variable = param;"
+                + "TargetClass vInIf = param;}\n"
+                + "TargetClass variable = param;"
                 + "method(param)\n"
                 + "return param; \n"
                 + "}\n"
                 + "}"
         );
 
-        createClassRefactoringTest(sourceModel, targetModel);
+        sourceModel = groovy2Model(""
+                + "package eu.mihosoft.vrl.lang.model.diffSource;\n"
+                + "public class SourceClass {\n"
+                + "SourceClass variable1;\n"
+                + "int count;\n"
+                + "SourceClass method (SourceClass param) {\n"
+                + "count = 1;\n"
+                + "SourceClass variable2 = param;\n"
+                + "while (variable1.count < variable2.count) {\n"
+                + "variable1.count = variable1.count + variable2.count;\n"
+                + "}\n"
+                + "for (int i = 0; i < 10; i++) {\n"
+                + "if (variable1.count < 20) {\n"
+                + "variable1.count = variable1.count + i;\n"
+                + "} else if (variable1.count < 30) {\n"
+                + "variable1.count = variable1.count + 2 * i;\n"
+                + "}\n"
+                + "}\n"
+                + "return variable1;\n"
+                + "}\n"
+                + "}");
+        
+         targetModel = groovy2Model(""
+                + "package eu.mihosoft.vrl.lang.model.diffTarget;\n"
+                + "public class TargetClass {\n"
+                + "TargetClass variable1;\n"
+                + "int count;\n"
+                + "TargetClass method (TargetClass param) {\n"
+                + "count = 1;\n"
+                + "TargetClass variable2 = param;\n"
+                + "while (variable1.count < variable2.count) {\n"
+                + "variable1.count = variable1.count + variable2.count;\n"
+                + "}\n"
+                + "for (int i = 0; i < 10; i++) {\n"
+                + "if (variable1.count < 20) {\n"
+                + "variable1.count = variable1.count + i;\n"
+                + "} else if (variable1.count < 30) {\n"
+                + "variable1.count = variable1.count + 2 * i;\n"
+                + "}\n"
+                + "}\n"
+                + "return variable1;\n"
+                + "}\n"
+                + "}");
+
+
+       createClassRefactoringTest(sourceModel, targetModel);
 
     }
 
