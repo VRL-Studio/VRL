@@ -112,25 +112,44 @@ class ClassDeclaration_Impl extends ScopeImpl implements ClassDeclaration {
     public boolean removeScope(Scope s) {
 
         boolean mResult = false;
-        
+
         if (s instanceof MethodDeclaration) {
-            mResult =  getDeclaredMethods().remove((MethodDeclaration) s);
+            mResult = getDeclaredMethods().remove((MethodDeclaration) s);
         }
-        
+
         boolean sResult = super.removeScope(s);
-        
 
         return mResult || sResult;
+    }
+
+    @Override
+    public void setClassModifiers(IModifiers modifiers) {
+        metadata.setModifiers(modifiers);
+    }
+
+    @Override
+    public void setClassType(IType type) {
+        metadata.setType(type);
+    }
+
+    @Override
+    public void setExtends(IExtends extendz) {
+        metadata.setExtendz(extendz);
+    }
+
+    @Override
+    public void setImplements(IExtends implementz) {
+        metadata.setImplementz(implementz);
     }
 }
 
 final class ClassDeclarationMetaData {
 
-    private final IType type;
-    private final IModifiers modifiers;
-    private final IExtends extendz;
-    private final IExtends implementz;
-    private final ObservableList<MethodDeclaration> declaredMethods =FXCollections.observableArrayList();
+    private IType type;//final
+    private IModifiers modifiers;//final
+    private IExtends extendz;//final
+    private IExtends implementz;//final
+    private final ObservableList<MethodDeclaration> declaredMethods = FXCollections.observableArrayList();
 
     public ClassDeclarationMetaData(IType type, IModifiers modifiers, IExtends extendz, IExtends implementz) {
         this.type = type;
@@ -172,6 +191,22 @@ final class ClassDeclarationMetaData {
      */
     public List<MethodDeclaration> getDeclaredMethods() {
         return declaredMethods;
+    }
+
+    void setType(IType type) {
+        this.type = type;
+    }
+
+    public void setModifiers(IModifiers modifiers) {
+        this.modifiers = modifiers;
+    }
+
+    public void setExtendz(IExtends extendz) {
+        this.extendz = extendz;
+    }
+
+    public void setImplementz(IExtends implementz) {
+        this.implementz = implementz;
     }
 
 }

@@ -118,10 +118,19 @@ public class CompilationUnitDeclaration_Impl extends ScopeImpl implements Compil
     public List<ImportDeclaration> getImports() {
         return this.metadata.getImportDeclarations();
     }
+    @Override
+    public void setFileName(String fileName) {
+        super.setName(fileName);
+    }
+
+    @Override
+    public void setPackageName(String packageName) {
+        metadata.setPackageName(packageName);
+    }
 }
 
 final class CompilationUnitMetaData {
-    private final String packageName;
+    private String packageName;// final
     private final ObservableList<ImportDeclaration> importDeclarations =
             FXCollections.observableArrayList();
 
@@ -136,6 +145,9 @@ final class CompilationUnitMetaData {
         return packageName;
     }
 
+    public void setPackageName(String packageName) {
+        this.packageName = packageName;
+    }
     /**
      * @return the importDeclarations
      */

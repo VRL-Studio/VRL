@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import java.util.List;
@@ -56,14 +55,18 @@ import java.util.List;
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface CompilationUnitDeclaration extends Scope{
+public interface CompilationUnitDeclaration extends Scope {
 //    public String getLocation();
-    
+
     public String getFileName();
-    
+
+    public void setFileName(String fileName);
+
     public List<ClassDeclaration> getDeclaredClasses();
-    
+
     public String getPackageName();
-    
+
+    public void setPackageName(String packName);
+
     public List<ImportDeclaration> getImports();
 }

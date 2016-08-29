@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import javafx.collections.ObservableList;
@@ -59,11 +58,14 @@ import javafx.collections.ObservableList;
 public interface Invocation extends CodeEntity {
 
     public ObjectProvider getObjectProvider();
+
     public void setObjectProvider(ObjectProvider objProvider);
 
     public String getMethodName();
-    
+
     public IType getReturnType();
+
+    public void setReturnType1(IType type);
 
     public ObservableList<Argument> getArguments();
 
@@ -75,4 +77,3 @@ public interface Invocation extends CodeEntity {
 
     public boolean isStatic();
 }
-

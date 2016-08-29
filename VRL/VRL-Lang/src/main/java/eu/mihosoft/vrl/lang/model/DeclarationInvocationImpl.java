@@ -7,7 +7,7 @@ package eu.mihosoft.vrl.lang.model;
 
 public class DeclarationInvocationImpl extends InvocationImpl implements DeclarationInvocation {
 
-    private final Variable declaredVariable;
+    private Variable declaredVariable;//final
     
     public DeclarationInvocationImpl(String id, Scope parent, IType type, String varName) {
         super(parent, id, ObjectProvider.empty(), "declare " + varName, type, false, true, new Argument[0]);
@@ -24,5 +24,9 @@ public class DeclarationInvocationImpl extends InvocationImpl implements Declara
     @Override
     public Variable getDeclaredVariable() {
         return this.declaredVariable;
+    }
+     @Override
+    public void setDeclaredVariable(Variable variable) { // added  Joanna
+        declaredVariable = variable;
     }
 }

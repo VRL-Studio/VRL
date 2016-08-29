@@ -38,5 +38,9 @@ public class DeclareAndAssignInvocation_Impl extends BinaryOperatorInvocationImp
         return declInv.getDeclaredVariable();
     }
 
+     @Override
+    public void setDeclaredVariable(Variable variable) { // added  Joanna
+        declInv.setDeclaredVariable(variable);
+    }
 
 }

@@ -7,9 +7,7 @@ package eu.mihosoft.vrl.lang.model.diff.actions;
 
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
-import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
-import eu.mihosoft.vrl.lang.model.ConstantValue;
 import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.IExtends;
 import eu.mihosoft.vrl.lang.model.IModifiers;
@@ -31,90 +29,71 @@ enum ModelCommands implements IModelCommands {
 
     //SCOPE
     @Override 
-    public void removeScope(CodeEntity parentScope, CodeEntity scope) {
-        Scope parent = (Scope) parentScope;
-        Scope child = (Scope) scope;
-        parent.getScopes().remove(child);
-        //parent.removeScope(child);
+    public void removeScope(Scope parent, Scope scope) {
+        parent.getScopes().remove(scope);
+        //parent.removeScope(scope);
     }
 
     @Override
-    public void removeScope(CodeEntity scope) {
-        Scope cud = (Scope) scope;
-        Scope parent = (Scope) cud.getParent();
+    public void removeScope(Scope scope) {
+        Scope parent = scope.getParent();
         if (parent != null) {
-            parent.getScopes().remove(cud);
+            parent.getScopes().remove(scope);
         }
     }
 
     @Override
-    public void insertScope(CodeEntity parentScope, CodeEntity scope) {
-        Scope parent = (Scope) parentScope;
-        Scope child = (Scope) scope;
-        parent.getScopes().add(child);
-        // parent.addScope(child);
+    public void insertScope(Scope parent, Scope scope) {
+        parent.getScopes().add(scope);
+        // parent.addScope(scope);
     }
 
     @Override
-    public void insertScope(CodeEntity parentScope, int pos, CodeEntity scope) {
-        Scope parent = (Scope) parentScope;
-        Scope child = (Scope) scope;
-        parent.getScopes().add(pos, child);
+    public void insertScope(Scope parent, int pos, Scope scope) {
+        parent.getScopes().add(pos, scope);
     }
 
     @Override
-    public void setScopeName(String ceName, CodeEntity codeEntity) {
-        Scope scope = (Scope) codeEntity;
+    public void setScopeName(String ceName, Scope scope) {
         scope.setName(ceName);
     }
 
     @Override
-    public void insertVariableToScope(CodeEntity scope, Variable variable) {
-        Scope scope1 = (Scope) scope;
-        scope1.getVariables().add(variable);
+    public void insertVariableToScope(Scope scope, Variable variable) {
+        scope.getVariables().add(variable);
     }
 
     @Override
-    public void removeVariableFromScope(CodeEntity scope, Variable variable) {
-        Scope scope1 = (Scope) scope;
- 
-        if (scope1.getVariables().contains(variable)) {
-            scope1.getVariables().remove(variable);
+    public void removeVariableFromScope(Scope scope, Variable variable) {
+        if (scope.getVariables().contains(variable)) {
+            scope.getVariables().remove(variable);
         }
     }
 
     //COMPILATION UNIT DECLARATION
     @Override
-    public void removeClassFromCUD(CodeEntity cud, CodeEntity cls) {
-        CompilationUnitDeclaration cuDecl = (CompilationUnitDeclaration) cud;
-        ClassDeclaration classDeclaration = (ClassDeclaration) cls;
-        cuDecl.getDeclaredClasses().remove(classDeclaration);
+    public void removeClassFromCUD(CompilationUnitDeclaration cud, ClassDeclaration cls) {
+        cud.getDeclaredClasses().remove(cls);
     }
 
     @Override
-    public void insertClassToCUD(CodeEntity cud, CodeEntity cls) {
-        CompilationUnitDeclaration cuDecl = (CompilationUnitDeclaration) cud;
-        ClassDeclaration classDeclaration = (ClassDeclaration) cls;
-        cuDecl.getDeclaredClasses().add(classDeclaration);
+    public void insertClassToCUD(CompilationUnitDeclaration cud, ClassDeclaration cls) {
+        cud.getDeclaredClasses().add(cls);
     }
 
     @Override
-    public void insertClassToCUD(CodeEntity cud, int pos, CodeEntity cls) {
-        CompilationUnitDeclaration cuDecl = (CompilationUnitDeclaration) cud;
-        ClassDeclaration classDeclaration = (ClassDeclaration) cls;
-        cuDecl.getDeclaredClasses().add(pos, classDeclaration);
+    public void insertClassToCUD(CompilationUnitDeclaration cud, int pos, ClassDeclaration cls) {
+        cud.getDeclaredClasses().add(pos, cls);
     }
 
     @Override
-    public void setCUDeclPackageName(String packageName, CodeEntity codeEntity) {
-        CompilationUnitDeclaration cuDecl = (CompilationUnitDeclaration) codeEntity;
-        cuDecl.setPackageName(packageName);
+    public void setCUDeclPackageName(String packageName, CompilationUnitDeclaration cud) {
+        cud.setPackageName(packageName);
     }
 
     @Override
-    public void setCUDeclFileName(String fileName, CodeEntity codeEntity) {
-        CompilationUnitDeclaration cuDecl = (CompilationUnitDeclaration) codeEntity;
-        cuDecl.setFileName(fileName);
+    public void setCUDeclFileName(String fileName, CompilationUnitDeclaration cud) {
+        cud.setFileName(fileName);
     }
 
     // CLASS
@@ -125,126 +104,104 @@ enum ModelCommands implements IModelCommands {
     }
 
     @Override
-    public void insertMethodToClass(CodeEntity cls, CodeEntity method) {
+    public void insertMethodToClass(ClassDeclaration cls, MethodDeclaration method) {
         ClassDeclaration classDeclaration = (ClassDeclaration) cls;
         MethodDeclaration methodDeclaration = (MethodDeclaration) method;
         classDeclaration.getDeclaredMethods().add(methodDeclaration);
     }
 
     @Override
-    public void insertMethodToClass(CodeEntity cls, int pos, CodeEntity method) {
-        ClassDeclaration classDeclaration = (ClassDeclaration) cls;
-        MethodDeclaration methodDeclaration = (MethodDeclaration) method;
-        classDeclaration.getDeclaredMethods().add(pos, methodDeclaration);
+    public void insertMethodToClass(ClassDeclaration cls, int pos, MethodDeclaration method) {
+        cls.getDeclaredMethods().add(pos, method);
     }
 
     @Override
-    public void setClassType(IType type, CodeEntity codeEntity) {
-        ClassDeclaration classDeclaration = (ClassDeclaration) codeEntity;
+    public void setClassType(IType type, ClassDeclaration classDeclaration) {
         classDeclaration.setClassType(type);
         
     }
 
     @Override
-    public void setClassModifiers(IModifiers modifiers, CodeEntity codeEntity) {
-        ClassDeclaration classDeclaration = (ClassDeclaration) codeEntity;
+    public void setClassModifiers(IModifiers modifiers, ClassDeclaration classDeclaration) {
         classDeclaration.setClassModifiers(modifiers);
     }
 
     @Override
-    public void setClassImplements(IExtends implementz, CodeEntity codeEntity) {
-        ClassDeclaration classDeclaration = (ClassDeclaration) codeEntity;
+    public void setClassImplements(IExtends implementz, ClassDeclaration classDeclaration) {
         classDeclaration.setImplements(implementz);
     }
 
     @Override
-    public void setClassExtends(IExtends extendz, CodeEntity codeEntity) {
-        ClassDeclaration classDeclaration = (ClassDeclaration) codeEntity;
+    public void setClassExtends(IExtends extendz, ClassDeclaration classDeclaration) {
         classDeclaration.setExtends(extendz);
     }
 
     // METHOD
     @Override
-    public void removeVariableFromMethod(CodeEntity method, Variable variable) {
-        MethodDeclaration methodDeclaration = (MethodDeclaration) method;
-
+    public void removeVariableFromMethod(MethodDeclaration methodDeclaration, Variable variable) {
         if (methodDeclaration.getVariables().contains(variable)) {
             methodDeclaration.getVariables().remove(variable);
         }
     }
 
     @Override
-    public void insertVariableToMethod(CodeEntity method, Variable variable) {
-        MethodDeclaration methodDeclaration = (MethodDeclaration) method;
- 
+    public void insertVariableToMethod(MethodDeclaration methodDeclaration, Variable variable) {
         methodDeclaration.getVariables().add(variable);
     }
 
     @Override
-    public void setMethodName(String methName, CodeEntity codeEntity) {
-        MethodDeclaration methodDeclaration = (MethodDeclaration) codeEntity;
+    public void setMethodName(String methName, MethodDeclaration methodDeclaration) {
         methodDeclaration.setName(methName);
-
     }
 
     @Override
-    public void setMethodModifiers(IModifiers modifiers, CodeEntity codeEntity) {
-        MethodDeclaration methodDeclaration = (MethodDeclaration) codeEntity;
+    public void setMethodModifiers(IModifiers modifiers, MethodDeclaration methodDeclaration) {
         methodDeclaration.setModifiers(modifiers);
     }
 
     @Override
-    public void setMethodParameters(IParameters parameters, CodeEntity codeEntity) {
-        MethodDeclaration methodDeclaration = (MethodDeclaration) codeEntity;
+    public void setMethodParameters(IParameters parameters, MethodDeclaration methodDeclaration) {
         methodDeclaration.setParameters(parameters);
     }
 
     @Override
-    public void setMethodReturnType(IType type, CodeEntity codeEntity) {
-        MethodDeclaration methodDeclaration = (MethodDeclaration) codeEntity;
+    public void setMethodReturnType(IType type, MethodDeclaration methodDeclaration) {
         methodDeclaration.setReturnType(type);
     }
 
     //VARIABLE
     @Override
-    public void setVariableName(String varName, CodeEntity codeEntity) {
-        Variable variable = (Variable) codeEntity;
+    public void setVariableName(String varName, Variable variable) {
         variable.setName(varName);
     }
 
     @Override
-    public void setVariableType(IType type, Variable codeEntity) {
-        Variable variable = (Variable) codeEntity;
+    public void setVariableType(IType type, Variable variable) {
         variable.setType(type);
     }
 
     @Override
-    public void setVariableValue(Object value, CodeEntity codeEntity) {
-        Variable variable = (Variable) codeEntity;
+    public void setVariableValue(Object value, Variable variable) {
         variable.setValue(value);
     }
 
     @Override
-    public void setVariableConstant(Boolean constant, CodeEntity codeEntity) {
-        Variable variable = (Variable) codeEntity;
+    public void setVariableConstant(Boolean constant, Variable variable) {
         variable.setConstant(constant);
     }
 
     @Override
-    public void setVariableModifiers(IModifiers modifiers, CodeEntity codeEntity) {
-        Variable variable = (Variable) codeEntity;
+    public void setVariableModifiers(IModifiers modifiers, Variable variable) {
         variable.setModifiers(modifiers);
     }
 
     @Override
-    public void setVariableDeclarationInvocation(DeclarationInvocation invocation, CodeEntity codeEntity) {
-        Variable variable = (Variable) codeEntity;
+    public void setVariableDeclarationInvocation(DeclarationInvocation invocation, Variable variable) {
         variable.setDeclaration(invocation);
     }
 
     @Override
-    public void setVariableScope(Scope scope, CodeEntity codeEntity) {
-        Variable variable = (Variable) codeEntity;
+    public void setVariableScope(Scope scope, Variable variable) {
         variable.setScope(scope);
     }
 
@@ -256,17 +213,10 @@ enum ModelCommands implements IModelCommands {
 
     // Argument
     @Override
-    public void setConstTypeInArgument(IType type, Argument codeEntity) {
-        Argument arg = (Argument) codeEntity;
+    public void setConstTypeInArgument(IType type, Argument arg) {
         arg.setConstType(type);
     }
 
-    // Constant Value
-    @Override
-    public void setTypeInConstValue(IType type, CodeEntity codeEntity) {
-        ConstantValue cv = (ConstantValue) codeEntity;
-        cv.setType(type);
-    }
 
     // PARAMETER
     @Override
@@ -282,7 +232,7 @@ enum ModelCommands implements IModelCommands {
     }
 
     @Override
-    public void setVariables(Scope scope, Scope scopeVar) {
-        scope.setVariables(scopeVar.getVariablesInMap());
+    public void setVariables(Scope scope, Scope scopeWithVariables) {
+        scope.setVariables(scopeWithVariables.getVariablesInMap());
     }
 }

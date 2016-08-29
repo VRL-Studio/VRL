@@ -47,7 +47,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import java.util.List;
@@ -65,11 +64,18 @@ public interface ClassDeclaration extends Scope {
     IExtends getExtends();
 
     IExtends getImplements();
-    
+
     List<MethodDeclaration> getDeclaredMethods();
 
     MethodDeclaration declareMethod(
             String id, IModifiers modifiers,
             IType returnType, String methodName, IParameters params);
-    
+
+    void setClassModifiers(IModifiers modifiers);
+
+    void setClassType(IType type);
+
+    void setExtends(IExtends extendz);
+
+    void setImplements(IExtends implementz);
 }

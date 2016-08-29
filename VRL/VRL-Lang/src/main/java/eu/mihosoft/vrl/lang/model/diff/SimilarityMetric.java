@@ -6,7 +6,6 @@
 package eu.mihosoft.vrl.lang.model.diff;
 
 //import eu.mihosoft.vrl.lang.VLangUtilsNew;
-import com.sun.org.apache.bcel.internal.classfile.ConstantValue;
 import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ArgumentType;

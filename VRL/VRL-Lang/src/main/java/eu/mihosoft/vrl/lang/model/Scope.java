@@ -47,12 +47,12 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, in press.
  */
-
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.workflow.VFlow;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Consumer;
 import javafx.collections.ObservableList;
@@ -67,16 +67,21 @@ public interface Scope extends CodeEntity {
 
     public String getName();
 
+    public void setName(String name);
+
     public Object[] getScopeArgs();
 
     public Collection<Variable> getVariables();
 
     public Variable getVariable(String name);
 
+    public Map<String, Variable> getVariablesInMap(); // changed Joanna
+
+    public void setVariables(Map<String, Variable> variables); // changed Joanna
+
     public Variable createVariable(IType type, String varName);
 
 //    public Variable createStaticVariable(IType type);
-    
     public BinaryOperatorInvocation assignInvocationResult(String id, String varName, Invocation invocation);
 
     public BinaryOperatorInvocation assignConstant(String id, String varName, Object constant);
@@ -91,7 +96,6 @@ public interface Scope extends CodeEntity {
 
 //    public Variable createVariable(IType type);
 //    public Variable createVariable(Invocation invocation);
-
     public DataFlow getDataFlow();
 
     @Deprecated
@@ -102,37 +106,39 @@ public interface Scope extends CodeEntity {
     public List<Comment> getComments();
 
     public void createComment(String id, ICodeRange range, String comment);
-    
-    public boolean removeScope(Scope s);
-    
-//    public VFlow getFlow();
 
+    public boolean removeScope(Scope s);
+
+//    public VFlow getFlow();
     public DeclarationInvocation declareVariable(String id, IType type, String varName);
-    
+
     public Optional<ScopeInvocation> getInvocation();
-    
+
     public VFlow getFlow();
-    
+
     public void visitScopeAndAllSubElements(Consumer<CodeEntity> consumer);
-    
+
     public List<CodeEntity> collectScopeAndAllsubElements();
 
     public DeclareAndAssignInvocation declareAndAssignVariable(String request, IType type, String varName, Argument assignmentArg);
 
     /**
-     * Used to prevent update collisions in transformation/instrumentation phase.
+     * Used to prevent update collisions in transformation/instrumentation
+     * phase.
+     *
      * @deprecated don't use this in external transformations (as of 29.09.2015)
-     * this method needs to be removed (fix bugs in setParent(), init inside InvocationImpl)
+     * this method needs to be removed (fix bugs in setParent(), init inside
+     * InvocationImpl)
      */
     @Deprecated
     public void disableParentUpdate();
-    
+
     /**
      * Picks the smallest code entity at the specified location.
+     *
      * @param loc location
      * @return the smallest code location or an empty optional if the requested
-     *         code entity does not exist
+     * code entity does not exist
      */
     public Optional<CodeEntity> pick(ICodeLocation loc);
 }
-

@@ -41,4 +41,5 @@ public interface Argument {
     public static Argument nullArg() {
         return NULL;
     }
+    public void setConstType(IType type);
 }

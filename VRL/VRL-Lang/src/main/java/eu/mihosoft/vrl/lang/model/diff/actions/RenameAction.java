@@ -14,6 +14,7 @@ import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.diff.CodeEntityList;
 import eu.mihosoft.vrl.lang.model.diff.SimilarityMetric;
@@ -99,20 +100,21 @@ public class RenameAction extends Action<CodeEntityList> {
 
                 if (nameEntity instanceof CompilationUnitDeclaration && currentCodeEntity instanceof CompilationUnitDeclaration) {
                     CompilationUnitDeclaration cud = (CompilationUnitDeclaration) nameEntity;
-                    IModelCommands.getInstance().setCUDeclPackageName(cud.getPackageName(), currentCodeEntity);
+                    IModelCommands.getInstance().setCUDeclPackageName(cud.getPackageName(), (CompilationUnitDeclaration) currentCodeEntity);
                     s.get(0).updateCodeEntityList(currentCodeEntity);
                 } else if (nameEntity instanceof ClassDeclaration && currentCodeEntity instanceof ClassDeclaration) { // Refactoring Utils 
                     ClassDeclaration cls = (ClassDeclaration) nameEntity;
-                    IModelCommands.getInstance().setClassType(cls.getClassType(), currentCodeEntity);
-                    IModelCommands.getInstance().setScopeName(cls.getName(), currentCodeEntity);
+                    IModelCommands.getInstance().setClassType(cls.getClassType(), (ClassDeclaration) currentCodeEntity);
+                    IModelCommands.getInstance().setScopeName(cls.getName(), (Scope) currentCodeEntity);
                     s.get(0).updateCodeEntityList(currentCodeEntity);
                 } else if (nameEntity instanceof MethodDeclaration && currentCodeEntity instanceof MethodDeclaration) {
                     MethodDeclaration methName = (MethodDeclaration) nameEntity;
-                    IModelCommands.getInstance().setMethodName(methName.getName(), currentCodeEntity);
+                    MethodDeclaration method = (MethodDeclaration) currentCodeEntity;
+                    IModelCommands.getInstance().setMethodName(methName.getName(), method);
                     s.get(0).updateCodeEntityList(currentCodeEntity);
                 } else if (nameEntity instanceof Variable && currentCodeEntity instanceof Variable) {
                     Variable variable = (Variable) nameEntity;
-                    IModelCommands.getInstance().setVariableName(variable.getName(), currentCodeEntity);
+                    IModelCommands.getInstance().setVariableName(variable.getName(), (Variable) currentCodeEntity);
                     s.get(0).updateCodeEntityList(currentCodeEntity);
                 }
             }

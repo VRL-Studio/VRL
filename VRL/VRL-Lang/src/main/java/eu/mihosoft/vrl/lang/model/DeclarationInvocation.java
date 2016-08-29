@@ -14,4 +14,5 @@ public interface DeclarationInvocation extends Invocation, CodeEntity{
 
     Variable getDeclaredVariable();
     
+    void setDeclaredVariable(Variable variable);
 }

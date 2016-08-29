@@ -59,7 +59,7 @@ import java.util.Optional;
 public interface Variable {
 
     public String getName();
-
+    
     public IType getType();
 
     public Object getValue();
@@ -83,14 +83,21 @@ public interface Variable {
     public DeclarationInvocation getDeclaration();
 
 //    public Optional<Invocation> getInvocation();
+    void setName(String name);
+    
+    void setType(IType type);
+    
+    void setDeclaration(DeclarationInvocation declarationInvocation);
+    
+    void setScope(Scope scope);
     
 }
 
 class VariableImpl implements Variable {
 
-    private final Scope scope;
-    private final IType type;
-    private final String varName;
+    private  Scope scope; // final
+    private  IType type; //final
+    private  String varName;//final
     private Object value;
     private boolean constant;
 //    private Invocation invocation;
@@ -243,4 +250,18 @@ class VariableImpl implements Variable {
         return modifiers !=null;
     }
 
+    @Override
+    public void setName(String name) {
+        this.varName = name;
+    }
+
+    @Override
+    public void setType(IType type) {
+        this.type = type;
+    }
+
+    @Override
+    public void setScope(Scope scope) {
+        this.scope = scope;
+    }
 }

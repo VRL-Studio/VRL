@@ -18,7 +18,7 @@ final class Argument_Impl implements Argument {
     private final Variable variable;
     private final Object constant;
     private final Invocation invocation;
-    private final IType constType;
+    private IType constType;
 
     public static final Argument NULL = new Argument_Impl(ArgumentType.NULL, null, null, null, null);
 
@@ -64,10 +64,9 @@ final class Argument_Impl implements Argument {
 
     @Override
     public String toString() {
-        String valueString = ", val='"+getConstant().orElse("?").toString()+"'";
+        String valueString = ", val='" + getConstant().orElse("?").toString() + "'";
         return "[Argument: argType=" + getArgType() + ", type=" + getType() + valueString + "]";
     }
-
 
     @Override
     public int hashCode() {
@@ -106,7 +105,10 @@ final class Argument_Impl implements Argument {
         }
         return true;
     }
-    
-    
+
+    @Override
+    public void setConstType(IType type) {
+        this.constType = type;
+    }
 
 }

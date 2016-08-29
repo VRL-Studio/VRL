@@ -54,66 +54,17 @@ public class MainClass {
                         MainClass.class.getResourceAsStream("TestCase02Target.groovy"))
         );
 
-        
-        
-//        CompilationUnitDeclaration sourceModel = groovy2Model(""
-//                + "package java.lang;\n"
-//                + "class Integer{\n"
-//                + "Integer method(Integer i1){"
-//                + "Integer j1 = i1;\n"
-//                + "return ji;\n"
-//                + "}\n"
-//                //                + "Class1 method(Class1 param){\n"
-//                //                + "}\n"
-//                + "}"
-//        );
-//
-//        CompilationUnitDeclaration targetModel = groovy2Model(""
-//                + "package java.lang;\n"
-//                + "class Double{\n"
-//                + "Double method(Double i1){"
-//                + "Double j1 = i1;\n"
-//                + "return ji;\n"
-//                + "}\n"
-//                //                + "Class2 method(Class2 param){\n"
-//                //                + "}\n"
-//                + "}"
-//        );
-        
-//         sourceModel = groovy2Model(""
-//                + "package java.lang;\n"
-//                + "class Integer{\n"
-//                + "Integer method(Integer i1){"
-//                + "Integer j1 = i1;\n"
-//                + "return null;\n"
-//                + "}\n"
-//                //                + "Class1 method(Class1 param){\n"
-//                //                + "}\n"
-//                + "}"
-//        );
-//
-//         targetModel = groovy2Model(""
-//                + "package java.lang;\n"
-//                + "class Integer{\n"
-//                + "Integer method(Integer i1){"
-//                + "Integer j1 = i1;\n"
-//                + "return null;\n"
-//                + "}\n"
-//                //                + "Class2 method(Class2 param){\n"
-//                //                + "}\n"
-//                + "}"
-//        );
 
         System.out.println("");
         System.out.println("");
         classAStar(sourceModel, targetModel);
 //        classAStar(targetModel, sourceModel);
 
-//        System.out.println("+++++++++++++++ Source Model +++++++++++++++++");
-//        System.out.println(Scope2Code.getCode(sourceModel));
-//
-//        System.out.println("+++++++++++++++ Target Model +++++++++++++++++");
-//        System.out.println(Scope2Code.getCode(targetModel));
+        System.out.println("+++++++++++++++ Source Model +++++++++++++++++");
+        System.out.println(Scope2Code.getCode(sourceModel));
+
+        System.out.println("+++++++++++++++ Target Model +++++++++++++++++");
+        System.out.println(Scope2Code.getCode(targetModel));
 
         // System.out.println("Solution: ");
         // TODO: apply commands to source

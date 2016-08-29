@@ -58,7 +58,7 @@ import eu.mihosoft.vrl.lang.VLangUtils;
  */
 public class Parameter implements IParameter {
 
-    private final IType type;
+    private IType type; // final
     private final String name;
     private final ICodeRange range;
 
@@ -109,4 +109,8 @@ public class Parameter implements IParameter {
         return new Parameter(Type.fromClass(p.getType()), p.getName());
     }
 
+     @Override
+    public void setType(IType type) {
+        this.type = type;
+    }
 }

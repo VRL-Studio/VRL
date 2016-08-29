@@ -65,4 +65,10 @@ public interface MethodDeclaration extends ControlFlowScope {
     
     ClassDeclaration getClassDeclaration();
     
+    void setModifiers(IModifiers modifiers);
+
+    void setParameters(IParameters parameters);
+
+    void setReturnType(IType type);
+    
 }

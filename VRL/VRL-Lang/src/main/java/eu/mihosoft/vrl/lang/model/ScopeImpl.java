@@ -50,11 +50,8 @@
 package eu.mihosoft.vrl.lang.model;
 
 import eu.mihosoft.vrl.workflow.FlowFactory;
-import eu.mihosoft.vrl.workflow.ThruConnector;
 import eu.mihosoft.vrl.workflow.VFlow;
 import eu.mihosoft.vrl.workflow.VNode;
-import eu.mihosoft.vrl.workflow.ValueObject;
-import eu.mihosoft.vrl.workflow.WorkflowUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -76,7 +73,7 @@ class ScopeImpl implements Scope {
     private String id;
     Scope parent;
     ScopeType type;
-    private final String name;
+    private String name; // final
     Object[] scopeArgs;
     Map<String, Variable> variables = new HashMap<>();
     ControlFlow controlFlow;
@@ -197,6 +194,16 @@ class ScopeImpl implements Scope {
     @Override
     public Collection<Variable> getVariables() {
         return variables.values();
+    }
+
+    @Override
+    public void setVariables(Map<String, Variable> variables) {
+        this.variables = variables;
+    }
+
+    @Override
+    public Map<String, Variable> getVariablesInMap() {
+        return variables;
     }
 
     @Override
@@ -395,6 +402,12 @@ class ScopeImpl implements Scope {
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public void setName(String name) {
+        this.name = name;
+
     }
 
     /**
@@ -620,11 +633,11 @@ class ScopeImpl implements Scope {
     public Optional<CodeEntity> pick(ICodeLocation loc) {
         return collectScopeAndAllsubElements().
                 stream().
-                filter(cE -> cE.getRange()!=null).
+                filter(cE -> cE.getRange() != null).
                 filter(cE -> cE.getRange().contains(loc)).
                 sorted((e1, e2) -> Integer.compare(
-                        e1.getRange().size(),
-                        e2.getRange().size())).
+                                e1.getRange().size(),
+                                e2.getRange().size())).
                 findFirst();
     }
 

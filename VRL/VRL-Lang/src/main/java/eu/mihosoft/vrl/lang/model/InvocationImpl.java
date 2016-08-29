@@ -462,4 +462,9 @@ class InvocationImpl implements Invocation {
     public String getMethodName() {
         return methodName;
     }
+
+    @Override
+    public void setReturnType1(IType type) {
+        this.returnType = type;
+    }
 }
