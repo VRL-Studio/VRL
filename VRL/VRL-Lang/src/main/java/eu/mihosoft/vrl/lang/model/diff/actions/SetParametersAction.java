@@ -23,7 +23,7 @@ public class SetParametersAction extends Action<CodeEntityList> {
     int index = 0;
 
     public SetParametersAction(CodeEntity codeEntity) {
-        setName("Set params in " + '"' + SimilarityMetric.getCodeEntityName(codeEntity) + '"');
+        setName("Set Params in " + '"' + SimilarityMetric.getCodeEntityName(codeEntity) + '"');
 
         precond.add(new ConditionPredicate<CodeEntityList>() {
 

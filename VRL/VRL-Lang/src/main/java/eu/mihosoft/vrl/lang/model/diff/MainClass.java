@@ -8,7 +8,7 @@ package eu.mihosoft.vrl.lang.model.diff;
 import eu.mihosoft.ai.astar.AStar;
 import eu.mihosoft.ai.astar.Action;
 import eu.mihosoft.ai.astar.WorldDescription;
-import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupport;
+import eu.mihosoft.vrl.base.IOUtil;
 import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
@@ -16,20 +16,25 @@ import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
+import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.diff.actions.DecreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.DeleteAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.IncreaseIndexAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.InsertAction;
+import eu.mihosoft.vrl.lang.model.diff.actions.RefactoringClassAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.RenameAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.SetParametersAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.SetReturnTypeAction;
 import eu.mihosoft.vrl.lang.model.diff.actions.SetVariablesAction;
+import groovy.lang.GroovyClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import org.codehaus.groovy.control.CompilationUnit;
+import org.codehaus.groovy.control.CompilerConfiguration;
 import org.codehaus.groovy.control.Phases;
 import org.codehaus.groovy.control.SourceUnit;
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 
 /**
  *
@@ -38,40 +43,77 @@ import org.codehaus.groovy.control.SourceUnit;
 public class MainClass {
 
     public static void main(String[] args) throws Exception {
-        CompilationUnitDeclaration sourceModel = groovy2Model(""
-                + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "class Class1{\n"
-                + "double method(double i1){"
-                + "int j1 = i1;\n"
-                + "return null;\n"
-                + "}\n"
-                //                + "Class1 method(Class1 param){\n"
-                //                + "}\n"
-                + "}"
+        
+        CompilationUnitDeclaration sourceModel = groovy2Model(
+                IOUtil.convertStreamToString(
+                        MainClass.class.getResourceAsStream("TestCase02Source.groovy"))
+        );
+        
+                CompilationUnitDeclaration targetModel = groovy2Model(
+                IOUtil.convertStreamToString(
+                        MainClass.class.getResourceAsStream("TestCase02Target.groovy"))
         );
 
-        CompilationUnitDeclaration targetModel = groovy2Model(""
-                + "package eu.mihosoft.vrl.lang.model.diff;\n"
-                + "class Class2{\n"
-                + "int method(int i1){"
-                + "double j1 = i1;\n"
-                + "return null;\n"
-                + "}\n"
-                //                + "Class2 method(Class2 param){\n"
-                //                + "}\n"
-                + "}"
-        );
+        
+        
+//        CompilationUnitDeclaration sourceModel = groovy2Model(""
+//                + "package java.lang;\n"
+//                + "class Integer{\n"
+//                + "Integer method(Integer i1){"
+//                + "Integer j1 = i1;\n"
+//                + "return ji;\n"
+//                + "}\n"
+//                //                + "Class1 method(Class1 param){\n"
+//                //                + "}\n"
+//                + "}"
+//        );
+//
+//        CompilationUnitDeclaration targetModel = groovy2Model(""
+//                + "package java.lang;\n"
+//                + "class Double{\n"
+//                + "Double method(Double i1){"
+//                + "Double j1 = i1;\n"
+//                + "return ji;\n"
+//                + "}\n"
+//                //                + "Class2 method(Class2 param){\n"
+//                //                + "}\n"
+//                + "}"
+//        );
+        
+//         sourceModel = groovy2Model(""
+//                + "package java.lang;\n"
+//                + "class Integer{\n"
+//                + "Integer method(Integer i1){"
+//                + "Integer j1 = i1;\n"
+//                + "return null;\n"
+//                + "}\n"
+//                //                + "Class1 method(Class1 param){\n"
+//                //                + "}\n"
+//                + "}"
+//        );
+//
+//         targetModel = groovy2Model(""
+//                + "package java.lang;\n"
+//                + "class Integer{\n"
+//                + "Integer method(Integer i1){"
+//                + "Integer j1 = i1;\n"
+//                + "return null;\n"
+//                + "}\n"
+//                //                + "Class2 method(Class2 param){\n"
+//                //                + "}\n"
+//                + "}"
+//        );
 
         System.out.println("");
         System.out.println("");
         classAStar(sourceModel, targetModel);
 //        classAStar(targetModel, sourceModel);
 
-        System.out.println("+++++++++++++++ Source Model +++++++++++++++++");
-        System.out.println(Scope2Code.getCode(sourceModel));
-
-        System.out.println("+++++++++++++++ Target Model +++++++++++++++++");
-        System.out.println(Scope2Code.getCode(targetModel));
+//        System.out.println("+++++++++++++++ Source Model +++++++++++++++++");
+//        System.out.println(Scope2Code.getCode(sourceModel));
+//
+//        System.out.println("+++++++++++++++ Target Model +++++++++++++++++");
+//        System.out.println(Scope2Code.getCode(targetModel));
 
         // System.out.println("Solution: ");
         // TODO: apply commands to source
@@ -79,12 +121,27 @@ public class MainClass {
     }
 
     static CompilationUnitDeclaration groovy2Model(String groovyCode) throws Exception {
-        SourceUnit src = fromCode(groovyCode);
-        CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
-                .init(src);
-        visitor.visitModuleNode(src.getAST());
-        CompilationUnitDeclaration model = (CompilationUnitDeclaration) visitor
-                .getRoot().getRootObject();
+//        SourceUnit src = fromCode(groovyCode);
+//        CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
+//                .init(src);
+//        visitor.visitModuleNode(src.getAST());
+//        CompilationUnitDeclaration model = (CompilationUnitDeclaration) visitor
+//                .getRoot().getRootObject();
+        
+        UIBinding.scopes.clear();
+        
+         CompilerConfiguration ccfg = new CompilerConfiguration();
+
+            ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
+                    new VRLVisualizationTransformation()));
+
+            GroovyClassLoader gcl = new GroovyClassLoader(
+                    new GroovyClassLoader(), ccfg);
+            
+            gcl.parseClass(groovyCode);
+            
+           CompilationUnitDeclaration model =
+                   (CompilationUnitDeclaration) UIBinding.scopes.values().iterator().next().get(0);
 
         return model;
     }
@@ -167,11 +224,11 @@ public class MainClass {
             allActions.add(new RenameAction(entity)); // rename
         });
         //++++++++++++++++++++++++++++++++++++++++++++++++++
-
-        //        refactoringList.stream().forEach((entity) -> {
-//            allActions.add(new RefactoringClassAction(entity)); //refactor = retunrType + rename (Class and Type)
-//        });
-        //++++++++++++++++++++++++++++++++++++++++++++++++++
+//
+                refactoringList.stream().forEach((entity) -> {
+            allActions.add(new RefactoringClassAction(entity)); //refactor = retunrType + rename (Class and Type)
+        });
+//        //++++++++++++++++++++++++++++++++++++++++++++++++++
         insertList.stream().forEach((entity) -> {
             allActions.add(new InsertAction(entity)); //insert
         });
@@ -180,11 +237,11 @@ public class MainClass {
         allActions.add(increaseIndex); // ++
         allActions.add(decreaseIndex); // --
 
-        System.out.println("Actions: ");
-
-        for (Action<CodeEntityList> action : allActions) {
-            System.out.println(" -> " + action.getName());
-        }
+//        System.out.println("Actions: ");
+//
+//        for (Action<CodeEntityList> action : allActions) {
+//            System.out.println(" -> " + action.getName());
+//        }
 
         WorldDescription<CodeEntityList> StringListWD
                 = new WorldDescription<>(new CodeEntityListState(source), new CodeEntityListGoal(target),

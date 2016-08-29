@@ -211,7 +211,7 @@ public class CodeEntityList {
         Boolean bool = true;
 
         for (int i = 0; i < this.size(); i++) {
-            if (!compareNamesAndType(this.get(i), other.get(i))) {
+            if (!compareCodeEntities(this.get(i), other.get(i))) {
                 bool = false;
                 break;
             } else {
@@ -224,7 +224,7 @@ public class CodeEntityList {
      *
      * @return list with code entity names
      */
-    public ArrayList<String> getNames() {
+    public List<String> getNames() {
         ArrayList<String> names = new ArrayList<>();
 
         for (CodeEntity codeEntity : this.entities) {
@@ -263,10 +263,9 @@ public class CodeEntityList {
      *
      * @param codeEntity1 code entity
      * @param codeEntity2 code entity
-     * @return true if entity names are equal and the code entities are from the
-     * same type
+     * @return true if entities are equal
      */
-    public static boolean compareNamesAndType(CodeEntity codeEntity1, CodeEntity codeEntity2) {
+    public static boolean compareCodeEntities(CodeEntity codeEntity1, CodeEntity codeEntity2) {
 
         if (codeEntity1 == null || codeEntity2 == null || codeEntity1.getClass() != codeEntity2.getClass()) {
             return false;
@@ -288,7 +287,7 @@ public class CodeEntityList {
                 }
             }
         }
-        
+
         if (codeEntity1 instanceof MethodDeclaration && codeEntity2 instanceof MethodDeclaration) {
             MethodDeclaration meth1 = (MethodDeclaration) codeEntity1;
             MethodDeclaration meth2 = (MethodDeclaration) codeEntity2;
@@ -314,6 +313,20 @@ public class CodeEntityList {
      *
      * @param codeEntity1 code entity
      * @param codeEntity2 code entity
+     * @return true if entities are from the same type and have the same names
+     */
+    public boolean compare(CodeEntity codeEntity1, CodeEntity codeEntity2) {
+        
+        if (codeEntity1 == null || codeEntity2 == null || codeEntity1.getClass() != codeEntity2.getClass()) {
+            return false;
+        }
+        return getEntityName(codeEntity1).equals(getEntityName(codeEntity2));
+    }
+
+    /**
+     *
+     * @param codeEntity1 code entity
+     * @param codeEntity2 code entity
      * @return true if entity names are equal
      */
     public boolean compNames(CodeEntity codeEntity1, CodeEntity codeEntity2) {
@@ -331,10 +344,6 @@ public class CodeEntityList {
             if (e instanceof Scope) {
                 codeEntities.add(e);
             }
-//            if (e instanceof Invocation) {
-//                Invocation inv = (Invocation) e;
-//                codeEntities.addAll(inv.getArguments());
-//            }
         });
 
 //         for (int i = 0; i < codeEntities.size(); i++) {
@@ -393,13 +402,12 @@ public class CodeEntityList {
         }
 
         cudClone.visitScopeAndAllSubElements((CodeEntity e) -> {
-            
-           // System.out.println("Code Entity "+ SimilarityMetric.getCodeEntityName(e));
-            
+
+            // System.out.println("Code Entity "+ SimilarityMetric.getCodeEntityName(e));
             if (e instanceof Scope) {
                 codeEntities.add(e);
             }
-            
+
         });
 //
         System.out.println("Update: ");
@@ -447,6 +455,12 @@ public class CodeEntityList {
         return ce;
     }
 
+    /**
+     * 
+     * @param groovyCode
+     * @return compilation unit declaration as tree root
+     * @throws Exception 
+     */
     public CompilationUnitDeclaration groovy2Model(String groovyCode) throws Exception {
         SourceUnit src = fromCode(groovyCode);
         CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation

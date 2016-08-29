@@ -36,7 +36,6 @@ public class RenameAction extends Action<CodeEntityList> {
     public RenameAction(CodeEntity nameEntity) {
 
         setName("Rename to " + '"' + SimilarityMetric.getCodeEntityName(nameEntity) + '"');
-
         precond.add(new ConditionPredicate<CodeEntityList>() {
 
             @Override

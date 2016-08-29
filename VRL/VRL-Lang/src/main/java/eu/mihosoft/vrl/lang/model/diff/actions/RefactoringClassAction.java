@@ -34,7 +34,6 @@ public class RefactoringClassAction extends Action<CodeEntityList> {
     public RefactoringClassAction(CodeEntity entity) {
 
         setName("Refactoring Class in " + '"' + SimilarityMetric.getCodeEntityName(entity) + '"');
-
         precond.add(new ConditionPredicate<CodeEntityList>() {
 
             @Override
@@ -84,7 +83,6 @@ public class RefactoringClassAction extends Action<CodeEntityList> {
 
                 RefactoringUtils.renameClassRefactoring(classEntityFrom.getClassType(), classEntityTo.getClassType(), (CompilationUnitDeclaration) CodeEntityList.getRoot(classEntityFrom));
 
-                //s.get(0).updateCodeEntityListAllEntities(classEntityFrom);
                 s.get(0).updateCodeEntityList(classEntityFrom);
 
                 System.out.println("XxXXXXxXXXXXXXXXXXXXXXXXXXXxxxXXXXxxxXXXXxxXXXXxx");

@@ -284,9 +284,6 @@ enum ModelCommands implements IModelCommands {
 
     @Override
     public void setVariables(Scope scope, Scope scopeVar) {
-        scope.setVariables(scopeVar.getVariablesAsMap());
+        scope.setVariables(scopeVar.getVariablesInMap());
     }
-    
-    
-    
 }
