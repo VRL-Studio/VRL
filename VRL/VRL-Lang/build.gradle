@@ -44,6 +44,8 @@ dependencies {
 
     compile project(":vrl-base")
     
+    compile 'eu.mihosoft.ai.astar:vastar:0.0.1'
+    
     //compile files("C:\\Users\\miho\\Documents\\GitHub\\VWorkflows\\VWorkflows-Core\\build\\libs\\vworkflows-core-0.1-r2-SNAPSHOT.jar");
 }
 
