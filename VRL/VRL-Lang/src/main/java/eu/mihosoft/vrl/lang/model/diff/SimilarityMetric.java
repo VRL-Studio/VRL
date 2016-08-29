@@ -186,11 +186,9 @@ public class SimilarityMetric {
             }
             codeFragment = name;//argumentEntity.getArgType() + " " + name;
         } else if (codeEntity instanceof ConstantValue) {
-            //System.out.println("Debug - ConstantValue");
             ConstantValue constantValueEntity = (ConstantValue) codeEntity;
             codeFragment = constantValueEntity.getValue(Object.class).toString();
         } else if (codeEntity instanceof Comment) {
-            //System.out.println("Debug - Comment");
             Comment commentEntity = (Comment) codeEntity;
             codeFragment = commentEntity.getComment();
         }
@@ -683,7 +681,6 @@ public class SimilarityMetric {
                     break;
             }
         }
-
         return set;
     }
 

@@ -8,6 +8,8 @@ package eu.mihosoft.vrl.lang.model.diff;
 import eu.mihosoft.ai.astar.ConditionPredicate;
 import eu.mihosoft.ai.astar.EffectPredicate;
 import eu.mihosoft.ai.astar.State;
+import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.model.Scope2Code;
 
 /**
  *
@@ -23,6 +25,12 @@ class CodeEntityListPredicate implements ConditionPredicate<CodeEntityList>, Eff
 
     @Override
     public boolean verify(State<CodeEntityList> state) {
+        if (state.get(0).equals(entities)) {
+            System.out.println("+++ Goal State +++");
+            System.out.println("");
+            System.out.println(Scope2Code.getCode((CompilationUnitDeclaration) state.get(0).get(0)));
+            System.out.println("");
+        }
         return state.get(0).equals(entities);
     }
 

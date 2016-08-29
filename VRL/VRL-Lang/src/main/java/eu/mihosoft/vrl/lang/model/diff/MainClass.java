@@ -44,12 +44,12 @@ public class MainClass {
 
     public static void main(String[] args) throws Exception {
         
-        CompilationUnitDeclaration sourceModel = groovy2Model(
+        CompilationUnitDeclaration sourceModel = CodeEntityList.groovy2Model(
                 IOUtil.convertStreamToString(
                         MainClass.class.getResourceAsStream("TestCase02Source.groovy"))
         );
         
-                CompilationUnitDeclaration targetModel = groovy2Model(
+                CompilationUnitDeclaration targetModel = CodeEntityList.groovy2Model(
                 IOUtil.convertStreamToString(
                         MainClass.class.getResourceAsStream("TestCase02Target.groovy"))
         );

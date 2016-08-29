@@ -5,7 +5,6 @@
  */
 package eu.mihosoft.vrl.lang.model.diff;
 
-import eu.mihosoft.vrl.instrumentation.CompositeTransformingVisitorSupport;
 import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
@@ -13,14 +12,16 @@ import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
+import eu.mihosoft.vrl.lang.model.UIBinding;
 import eu.mihosoft.vrl.lang.model.Variable;
-import static eu.mihosoft.vrl.lang.model.diff.MainClass.fromCode;
+import groovy.lang.GroovyClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.codehaus.groovy.control.SourceUnit;
+import org.codehaus.groovy.control.CompilerConfiguration;
+import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 
 /**
  *
@@ -316,7 +317,7 @@ public class CodeEntityList {
      * @return true if entities are from the same type and have the same names
      */
     public boolean compare(CodeEntity codeEntity1, CodeEntity codeEntity2) {
-        
+
         if (codeEntity1 == null || codeEntity2 == null || codeEntity1.getClass() != codeEntity2.getClass()) {
             return false;
         }
@@ -456,18 +457,26 @@ public class CodeEntityList {
     }
 
     /**
-     * 
+     *
      * @param groovyCode
      * @return compilation unit declaration as tree root
-     * @throws Exception 
+     * @throws Exception
      */
-    public CompilationUnitDeclaration groovy2Model(String groovyCode) throws Exception {
-        SourceUnit src = fromCode(groovyCode);
-        CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
-                .init(src);
-        visitor.visitModuleNode(src.getAST());
-        CompilationUnitDeclaration model = (CompilationUnitDeclaration) visitor
-                .getRoot().getRootObject();
+    public static CompilationUnitDeclaration groovy2Model(String groovyCode) throws Exception {
+        UIBinding.scopes.clear();
+
+        CompilerConfiguration ccfg = new CompilerConfiguration();
+
+        ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
+                new VRLVisualizationTransformation()));
+
+        GroovyClassLoader gcl = new GroovyClassLoader(
+                new GroovyClassLoader(), ccfg);
+
+        gcl.parseClass(groovyCode);
+
+        CompilationUnitDeclaration model
+                = (CompilationUnitDeclaration) UIBinding.scopes.values().iterator().next().get(0);
 
         return model;
     }
