@@ -6,9 +6,10 @@
 package eu.mihosoft.vrl.lang.model.diff;
 
 import eu.mihosoft.vrl.instrumentation.VRLVisualizationTransformation;
+import eu.mihosoft.vrl.lang.VLangUtils;
+import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
-import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
@@ -223,18 +224,36 @@ public class CodeEntityList {
 
     /**
      *
-     * @return list with code entity names
+     * @return list with code entity classes
      */
-    public List<String> getNames() {
-        ArrayList<String> names = new ArrayList<>();
+    public List<String> getClassNames() {
+        ArrayList<String> classes = new ArrayList<>();
 
         for (CodeEntity codeEntity : this.entities) {
-            names.add(getEntityName(codeEntity));
+            if (codeEntity instanceof ClassDeclaration) {
+                ClassDeclaration classDecl = (ClassDeclaration) codeEntity;
+                classes.add(VLangUtils.shortNameFromFullClassName(classDecl.getName()));
+            }
         }
-        return names;
+        return classes;
+    }
+
+    /**
+     *
+     * @return method list
+     */
+    public List<MethodDeclaration> getMethods() {
+        List<MethodDeclaration> methodList = new ArrayList<>();
+        for (CodeEntity codeEntity : this.entities) {
+            if (codeEntity instanceof MethodDeclaration) {
+                methodList.add((MethodDeclaration) codeEntity);
+            }
+        }
+        return methodList;
     }
 
     @Override
+
     public int hashCode() {
         int hash = 5;
         hash = 97 * hash + Objects.hashCode(this.entities);
@@ -314,7 +333,7 @@ public class CodeEntityList {
      *
      * @param codeEntity1 code entity
      * @param codeEntity2 code entity
-     * @return true if entities are from the same type and have the same names
+     * @return true if entities are from the same type and have the same classes
      */
     public boolean compare(CodeEntity codeEntity1, CodeEntity codeEntity2) {
 
@@ -328,7 +347,7 @@ public class CodeEntityList {
      *
      * @param codeEntity1 code entity
      * @param codeEntity2 code entity
-     * @return true if entity names are equal
+     * @return true if entity classes are equal
      */
     public boolean compNames(CodeEntity codeEntity1, CodeEntity codeEntity2) {
         return getEntityName(codeEntity1).equals(getEntityName(codeEntity2));
@@ -377,7 +396,6 @@ public class CodeEntityList {
 ////        }
 //        return codeEntities;
 //    }
-
     /**
      *
      * @param root subtree's root

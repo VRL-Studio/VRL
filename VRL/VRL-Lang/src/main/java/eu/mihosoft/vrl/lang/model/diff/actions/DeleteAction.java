@@ -81,7 +81,7 @@ public class DeleteAction extends Action<CodeEntityList> {
                 if (currentEntity instanceof ClassDeclaration && currentEntity.getParent() instanceof CompilationUnitDeclaration) {
                     CompilationUnitDeclaration cud = (CompilationUnitDeclaration) currentEntity.getParent();
                     ClassDeclaration cd = (ClassDeclaration) currentEntity;
-                    if (cud.getDeclaredClasses().size() > 0) {
+                    if (cud.getDeclaredClasses().size() > 1) {
                         IModelCommands.getInstance().removeScope(cud, cd);
                         s.get(0).updateCodeEntityList(cud);
                     }

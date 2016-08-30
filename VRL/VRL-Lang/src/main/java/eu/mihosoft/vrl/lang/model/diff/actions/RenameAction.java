@@ -44,44 +44,41 @@ public class RenameAction extends Action<CodeEntityList> {
                 s = s.clone();
                 index = s.get(0).getIndex();
 
-                boolean result = false;
-                boolean bool = true;
-
                 if (index > -1 && index < s.get(0).size()) {
-
                     CodeEntity currentElement = s.get(0).get(index);
-
-                    if (nameEntity instanceof ClassDeclaration) {
-                        ClassDeclaration cls = (ClassDeclaration) nameEntity;
-                        String name = VLangUtils.shortNameFromFullClassName(cls.getName());
-                        if (s.get(0).getNames().contains(name)) {
-                            int elemPos = s.get(0).getNames().indexOf(name);
-                            if (s.get(0).get(elemPos) instanceof ClassDeclaration) {
-                                bool = false;
+                    if (currentElement.getClass().equals(nameEntity.getClass())) {
+                        if (s.get(0).compNames(currentElement, nameEntity)) {
+                            return false;
+                        } else {
+                            if (nameEntity instanceof ClassDeclaration) {
+                                ClassDeclaration cls = (ClassDeclaration) nameEntity;
+                                if (s.get(0).getClassNames().contains(VLangUtils.shortNameFromFullClassName(cls.getName()))) {
+                                    return false;
+                                } else if (nameEntity instanceof MethodDeclaration) {
+                                    MethodDeclaration renameMethod = (MethodDeclaration) nameEntity;
+                                    MethodDeclaration currMethod = (MethodDeclaration) currentElement;
+                                    for (MethodDeclaration meth : currMethod.getClassDeclaration().getDeclaredMethods()) {
+                                        if (meth.getReturnType().equals(renameMethod.getReturnType()) && meth.getParameters().getParamenters().size() == renameMethod.getParameters().getParamenters().size()) {
+                                            for (int i = 0; i < meth.getParameters().getParamenters().size(); i++) {
+                                                if (!meth.getParameters().getParamenters().get(i).getType().equals(renameMethod.getParameters().getParamenters().get(i).getType())) {
+                                                    return true;
+                                                }
+                                            }
+                                            return false;
+                                        } else {
+                                            return true;
+                                        }
+                                    }
+                                }
                             }
                         }
-                    } else if (nameEntity instanceof MethodDeclaration) {
-                        MethodDeclaration meth = (MethodDeclaration) nameEntity;
-                        if (meth.getName().equals("this$dist$invoke$1") || meth.getName().equals("this$dist$set$1") || meth.getName().equals("this$dist$get$1")) {
-                            bool = false;
-                        }
+                    } else {
+                        return false;
                     }
-
-//                        if (nameEntity instanceof CompilationUnitDeclaration) {
-//                            similarity = SimilarityMetric.packageSimilarity(currentElement, nameEntity);
-//                        } 
-                    double similarity = 1;
-                    if (nameEntity instanceof MethodDeclaration) {
-                        similarity = SimilarityMetric.nameSimilarity(currentElement, nameEntity);
-                    }
-
-                    result = similarity > 0.6
-                            && !s.get(0).compNames(currentElement, nameEntity)
-                            && currentElement.getClass().equals(nameEntity.getClass()) && bool;
-
+                } else {
+                    return false;
                 }
-
-                return result;
+                return true;
             }
 
             @Override
@@ -127,6 +124,7 @@ public class RenameAction extends Action<CodeEntityList> {
     }
 
     @Override
+
     public double getCosts(State<CodeEntityList> s) {
         return 1;
     }

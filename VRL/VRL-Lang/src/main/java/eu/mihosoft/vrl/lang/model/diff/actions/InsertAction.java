@@ -18,6 +18,7 @@ import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.diff.CodeEntityList;
 import eu.mihosoft.vrl.lang.model.diff.SimilarityMetric;
+import java.util.List;
 
 /**
  *
@@ -45,34 +46,38 @@ public class InsertAction extends Action<CodeEntityList> {
 
                 s = s.clone();
                 index = s.get(0).getIndex();
-                
-                if (entity instanceof Scope) {
-                    Scope scope = (Scope) entity;
-                    cost = s.get(0).subtreeSize(scope)+ scope.getVariables().size();
-                    if (cost == 0) {
-                        cost = 1;
-                    }
-                } 
 
-                boolean bool = true;
-                if (entity instanceof ClassDeclaration) {
-                    ClassDeclaration cls = (ClassDeclaration) entity;
-                    String name = VLangUtils.shortNameFromFullClassName(cls.getName()); 
-                    if (s.get(0).getNames().contains(name)) {
-                        int elemPos = s.get(0).getNames().indexOf(name);
-                        if (s.get(0).get(elemPos) instanceof ClassDeclaration) {
-                            bool = false;
+                if (index < s.get(0).size() + 1 && index > 0) {
+                    CodeEntity preCodeEntity = s.get(0).get(index - 1);
+
+                    if (entity instanceof Scope) {
+                        Scope scope = (Scope) entity;
+                        cost = s.get(0).subtreeSize(scope) + scope.getVariables().size();
+                        if (cost == 0) {
+                            cost = 1;
                         }
                     }
-                } else if (entity instanceof MethodDeclaration) {
-                    MethodDeclaration meth = (MethodDeclaration) entity;
-                    if (meth.getName().equals("this$dist$invoke$1") || meth.getName().equals("this$dist$set$1") || meth.getName().equals("this$dist$get$1")) {
-                        bool = false;
+
+                    if (entity instanceof ClassDeclaration) {
+                        ClassDeclaration cls = (ClassDeclaration) entity;
+                        String name = VLangUtils.shortNameFromFullClassName(cls.getName());
+                        if (s.get(0).getClassNames().contains(name)) {
+                            return false;
+                        }
+                    } else if (entity instanceof MethodDeclaration) {
+                        MethodDeclaration methToInsert = (MethodDeclaration) entity;
+                        if (preCodeEntity instanceof ClassDeclaration) {
+                            ClassDeclaration classDecl = (ClassDeclaration) preCodeEntity;
+                            return checkMethod(classDecl.getDeclaredMethods(), methToInsert);
+                        } else if (preCodeEntity instanceof MethodDeclaration) {
+                            MethodDeclaration preMeth = (MethodDeclaration) preCodeEntity;
+                            return checkMethod(preMeth.getClassDeclaration().getDeclaredMethods(), methToInsert);
+                        }
                     }
+                } else {
+                    return false;
                 }
-                
-                boolean result = bool && index < s.get(0).size() + 1 && index > 0;
-                return result;
+                return true;
             }
 
             @Override
@@ -130,53 +135,6 @@ public class InsertAction extends Action<CodeEntityList> {
                         Variable var = (Variable) entity;
                         IModelCommands.getInstance().insertVariableToScope(meth1, var);
                     }
-                    // VARIABLE
-////                     else if (s.get(0).get(index - 1) instanceof Variable) {
-////                        Variable var = (Variable) s.get(0).get(index - 1);
-////                        if (var.getParent() instanceof MethodDeclaration) {
-////                            MethodDeclaration parent = (MethodDeclaration) var.getParent();
-////                            if (entity instanceof Variable) {
-////                                IModelCommands.getInstance().insertScope(parent, entity);
-////                            } else if (entity instanceof ClassDeclaration) {
-////                                ClassDeclaration class1 = (ClassDeclaration) parent.getParent();
-////                                ClassDeclaration class2 = (ClassDeclaration) entity;
-//////                                CompilationUnitDeclaration class1Parent = (CompilationUnitDeclaration) class1.getParent();
-////
-////                                if (class1Parent.getDeclaredClasses().indexOf(class1) == class1Parent.getDeclaredClasses().size() - 1) {// end of the list
-////                                    IModelCommands.getInstance().insertScope(class1Parent, class2);
-////                                } else {
-////                                    IModelCommands.getInstance().insertScope(class1Parent, class1Parent.getDeclaredClasses().indexOf(class1) + 1, class2);
-////                                }
-////                            } else if (entity instanceof MethodDeclaration) {
-////                                MethodDeclaration meth2 = (MethodDeclaration) entity;
-////                                ClassDeclaration class1 = (ClassDeclaration) meth2.getParent();
-////                                if (class1.getDeclaredMethods().indexOf(parent) == class1.getDeclaredMethods().size() - 1) {// end of the list
-////                                    IModelCommands.getInstance().insertScope(class1, meth2);
-////                                } else {
-////                                    IModelCommands.getInstance().insertScope(class1, class1.getDeclaredMethods().indexOf(parent) + 1, meth2);
-////                                }
-////                            }
-////                        } else if (var.getParent() instanceof ClassDeclaration) {
-////                            ClassDeclaration parent = (ClassDeclaration) var.getParent();
-////                            if (entity instanceof Variable) {
-////                                IModelCommands.getInstance().insertScope(parent, entity);
-////                            } else if (entity instanceof ClassDeclaration) {
-////                                ClassDeclaration class1 = (ClassDeclaration) parent.getParent();
-////                                ClassDeclaration class2 = (ClassDeclaration) entity;
-////                                CompilationUnitDeclaration class1Parent = (CompilationUnitDeclaration) class1.getParent();
-////
-////                                if (class1Parent.getDeclaredClasses().indexOf(class1) == class1Parent.getDeclaredClasses().size() - 1) {// end of the list
-////                                    IModelCommands.getInstance().insertScope(class1Parent, class2);
-////                                } else {
-////                                    IModelCommands.getInstance().insertScope(class1Parent, class1Parent.getDeclaredClasses().indexOf(class1) + 1, class2);
-////                                }
-////                            } else if (entity instanceof MethodDeclaration) {
-////                                MethodDeclaration meth2 = (MethodDeclaration) entity;
-////                                IModelCommands.getInstance().insertScope(parent, 0, meth2);
-////                            }
-////                        }
-////
-//                    }
                     s.get(0).updateCodeEntityList(preCodeEntity);
                 }
             }
@@ -194,4 +152,21 @@ public class InsertAction extends Action<CodeEntityList> {
     public double getCosts(State<CodeEntityList> s) {
         return cost;
     }
+
+    private boolean checkMethod(List<MethodDeclaration> methodList, MethodDeclaration currentMethod) {
+        for (MethodDeclaration meth : methodList) {
+            if (meth.getReturnType().equals(currentMethod.getReturnType()) && meth.getParameters().getParamenters().size() == currentMethod.getParameters().getParamenters().size()) {
+                for (int i = 0; i < meth.getParameters().getParamenters().size(); i++) {
+                    if (!meth.getParameters().getParamenters().get(i).getType().equals(currentMethod.getParameters().getParamenters().get(i).getType())) {
+                        return true;
+                    }
+                }
+                return false;
+            } else {
+                return true;
+            }
+        }
+        return true;
+    }
+
 }

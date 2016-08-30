@@ -43,17 +43,16 @@ import org.codehaus.groovy.control.customizers.ASTTransformationCustomizer;
 public class MainClass {
 
     public static void main(String[] args) throws Exception {
-        
+
         CompilationUnitDeclaration sourceModel = CodeEntityList.groovy2Model(
                 IOUtil.convertStreamToString(
                         MainClass.class.getResourceAsStream("TestCase02Source.groovy"))
         );
-        
-                CompilationUnitDeclaration targetModel = CodeEntityList.groovy2Model(
+
+        CompilationUnitDeclaration targetModel = CodeEntityList.groovy2Model(
                 IOUtil.convertStreamToString(
                         MainClass.class.getResourceAsStream("TestCase02Target.groovy"))
         );
-
 
         System.out.println("");
         System.out.println("");
@@ -72,27 +71,21 @@ public class MainClass {
     }
 
     static CompilationUnitDeclaration groovy2Model(String groovyCode) throws Exception {
-//        SourceUnit src = fromCode(groovyCode);
-//        CompositeTransformingVisitorSupport visitor = VRLVisualizationTransformation
-//                .init(src);
-//        visitor.visitModuleNode(src.getAST());
-//        CompilationUnitDeclaration model = (CompilationUnitDeclaration) visitor
-//                .getRoot().getRootObject();
-        
+
         UIBinding.scopes.clear();
-        
-         CompilerConfiguration ccfg = new CompilerConfiguration();
 
-            ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
-                    new VRLVisualizationTransformation()));
+        CompilerConfiguration ccfg = new CompilerConfiguration();
 
-            GroovyClassLoader gcl = new GroovyClassLoader(
-                    new GroovyClassLoader(), ccfg);
-            
-            gcl.parseClass(groovyCode);
-            
-           CompilationUnitDeclaration model =
-                   (CompilationUnitDeclaration) UIBinding.scopes.values().iterator().next().get(0);
+        ccfg.addCompilationCustomizers(new ASTTransformationCustomizer(
+                new VRLVisualizationTransformation()));
+
+        GroovyClassLoader gcl = new GroovyClassLoader(
+                new GroovyClassLoader(), ccfg);
+
+        gcl.parseClass(groovyCode);
+
+        CompilationUnitDeclaration model
+                = (CompilationUnitDeclaration) UIBinding.scopes.values().iterator().next().get(0);
 
         return model;
     }
@@ -143,11 +136,7 @@ public class MainClass {
             if (target.get(i) instanceof ClassDeclaration) {
                 refactoringList.add(target.get(i));
             } else if (target.get(i) instanceof MethodDeclaration) {
-                MethodDeclaration currentMethod = (MethodDeclaration) target.get(i);
-                if (!currentMethod.getName().equals("this$dist$invoke$1") && !currentMethod.getName().equals("this$dist$set$1") && !currentMethod.getName().equals("this$dist$get$1")) {
-                    methodList.add(target.get(i));
-                    System.out.println("MethodList " + target.getEntityName(i));
-                }
+                methodList.add(target.get(i));
             }
         }
         System.out.println("####################################################");
@@ -176,7 +165,7 @@ public class MainClass {
         });
         //++++++++++++++++++++++++++++++++++++++++++++++++++
 //
-                refactoringList.stream().forEach((entity) -> {
+        refactoringList.stream().forEach((entity) -> {
             allActions.add(new RefactoringClassAction(entity)); //refactor = retunrType + rename (Class and Type)
         });
 //        //++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -187,12 +176,6 @@ public class MainClass {
 
         allActions.add(increaseIndex); // ++
         allActions.add(decreaseIndex); // --
-
-//        System.out.println("Actions: ");
-//
-//        for (Action<CodeEntityList> action : allActions) {
-//            System.out.println(" -> " + action.getName());
-//        }
 
         WorldDescription<CodeEntityList> StringListWD
                 = new WorldDescription<>(new CodeEntityListState(source), new CodeEntityListGoal(target),

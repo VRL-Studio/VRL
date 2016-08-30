@@ -52,14 +52,7 @@ public class RefactoringClassAction extends Action<CodeEntityList> {
                         String name = VLangUtils.shortNameFromFullClassName(classEntityTo.getName());
 
                         if (!classEntityFrom.getName().equals(classEntityTo.getName())) {
-                            if (s.get(0).getNames().contains(name)) {
-                                int elemPos = s.get(0).getNames().indexOf(name);
-                                if (s.get(0).get(elemPos) instanceof ClassDeclaration == false) {
-                                    bool = true;
-                                }
-                            } else {
-                                bool = true;
-                            }
+                            bool = !s.get(0).getClassNames().contains(name);
                         }
                     }
                 }
