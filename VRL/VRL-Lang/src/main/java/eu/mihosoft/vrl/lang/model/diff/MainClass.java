@@ -121,6 +121,7 @@ public class MainClass {
             }
         }
 
+        System.out.println("Rename Map " + renameMap.keySet().toString());
         ArrayList<CodeEntity> renameList = new ArrayList<>(renameMap.values());
 
         System.out.println("");
@@ -154,9 +155,11 @@ public class MainClass {
         });
 
         target.getEntities().stream().forEach((entity) -> {
-            Scope scope = (Scope) entity;
-            if (!scope.getVariables().isEmpty()) {
-                allActions.add(new SetVariablesAction(entity)); // set variables
+            if (entity instanceof Scope) {
+                Scope scope = (Scope) entity;
+                if (!scope.getVariables().isEmpty()) {
+                    allActions.add(new SetVariablesAction(entity)); // set variables
+                }
             }
         });
 

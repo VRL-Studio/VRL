@@ -9,14 +9,17 @@ package eu.mihosoft.vrl.lang.model.diff;
 import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.lang.model.Argument;
 import eu.mihosoft.vrl.lang.model.ArgumentType;
+import eu.mihosoft.vrl.lang.model.BinaryOperatorInvocation;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.Comment;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.model.DeclarationInvocation;
 import eu.mihosoft.vrl.lang.model.ElseIfDeclaration;
 import eu.mihosoft.vrl.lang.model.IfDeclaration;
 import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
+import eu.mihosoft.vrl.lang.model.ReturnStatementInvocation;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
 import eu.mihosoft.vrl.lang.model.ScopeInvocation;
@@ -157,38 +160,39 @@ public class SimilarityMetric {
      */
     public static String getCodeFragment(CodeEntity codeEntity) {
 
-        String codeFragment = "default";
+        String codeFragment = "default invocation";
 
         if (codeEntity instanceof Invocation) {
+
             Invocation invocationEntity = (Invocation) codeEntity;
+            codeFragment = invocationEntity.getMethodName();
             if (invocationEntity instanceof ScopeInvocation == false) { //?
-//                if (invocationEntity instanceof ReturnStatementInvocation) {
-//                    ReturnStatementInvocation rsi = (ReturnStatementInvocation) invocationEntity;
-//                    codeFragment = rsi.getMethodName();
-//                } else if (invocationEntity instanceof DeclarationInvocation) {
-//                    codeFragment = invocationEntity.getMethodName();
-//                } else {
-//                    codeFragment = Scope2Code.getCode(invocationEntity);
-//                }
-                
-                codeFragment = Scope2Code.getCode(invocationEntity);
+                if (invocationEntity instanceof ReturnStatementInvocation) {
+                    ReturnStatementInvocation rsi = (ReturnStatementInvocation) invocationEntity;
+                    codeFragment = rsi.getMethodName();
+                } else if (invocationEntity instanceof DeclarationInvocation) {
+                    codeFragment = invocationEntity.getMethodName();
+                } else if (invocationEntity instanceof BinaryOperatorInvocation) {
+                    BinaryOperatorInvocation binaryOpInv = (BinaryOperatorInvocation) invocationEntity;
+                    codeFragment = Scope2Code.getCode(binaryOpInv);
+                    codeFragment = codeFragment.replaceAll("\n", "");
+                }
+                if (codeFragment.isEmpty()) {
+                    codeFragment = "" + invocationEntity.getMethodName();
+                }
             }
         } else if (codeEntity instanceof Argument) {
-            
+
             Argument argumentEntity = (Argument) codeEntity;
             String name = "default";
             if (argumentEntity.getArgType().equals(ArgumentType.CONSTANT)) {
-                name = argumentEntity.getType().getShortName();
+                name = argumentEntity.getConstant().get().toString();
             } else if (argumentEntity.getArgType().equals(ArgumentType.VARIABLE)) {
                 name = argumentEntity.getVariable().get().getName();
             } else if (argumentEntity.getArgType().equals(ArgumentType.INVOCATION)) {
                 name = argumentEntity.getInvocation().get().getMethodName();
-            } else {
             }
-            codeFragment = name;//argumentEntity.getArgType() + " " + name;
-//        } else if (codeEntity instanceof ConstantValue) {
-//            ConstantValue constantValueEntity = (ConstantValue) codeEntity;
-//            codeFragment = constantValueEntity.getValue(Object.class).toString();
+            codeFragment = name;
         } else if (codeEntity instanceof Comment) {
             Comment commentEntity = (Comment) codeEntity;
             codeFragment = commentEntity.getComment();
@@ -656,25 +660,24 @@ public class SimilarityMetric {
                     break;
 
             }
-        }
-//        else if (entity instanceof Argument) {
-//            Argument argumentEntity = (Argument) entity;
-//            switch (relationType) {
-//                case "parent":
-//                    set = new HashSet();
-//                    set.add(argumentEntity.);
-//                    break;
-//            }
-//
-//        } else if (entity instanceof ConstantValue) {
-//            ConstantValue constantValueEntity = (ConstantValue) entity;
-//            switch (relationType) {
-//                case "parent":
-//                    set = new HashSet();
-//                    set.add(constantValueEntity.getParent());
-//                    break;
-//            }
-//        }
+        } //        else if (entity instanceof Argument) {
+        //            Argument argumentEntity = (Argument) entity;
+        //            switch (relationType) {
+        //                case "parent":
+        //                    set = new HashSet();
+        //                    set.add(argumentEntity.);
+        //                    break;
+        //            }
+        //
+        //        } else if (entity instanceof ConstantValue) {
+        //            ConstantValue constantValueEntity = (ConstantValue) entity;
+        //            switch (relationType) {
+        //                case "parent":
+        //                    set = new HashSet();
+        //                    set.add(constantValueEntity.getParent());
+        //                    break;
+        //            }
+        //        }
         else if (entity instanceof Comment) {
             Comment commentEntity = (Comment) entity;
             switch (relationType) {

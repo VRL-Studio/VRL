@@ -10,6 +10,7 @@ import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
 import eu.mihosoft.vrl.lang.model.Scope2Code;
@@ -325,6 +326,10 @@ public class CodeEntityList {
                 }
             }
         }
+        
+        if (codeEntity1 instanceof Invocation && codeEntity2 instanceof Invocation) {
+            System.out.println("Invocation");
+        }
 
         return getEntityName(codeEntity1).equals(getEntityName(codeEntity2));
     }
@@ -361,7 +366,7 @@ public class CodeEntityList {
     private ArrayList<CodeEntity> convertTreeToList(Scope scope) {
         ArrayList<CodeEntity> codeEntities = new ArrayList();
         scope.visitScopeAndAllSubElements((CodeEntity e) -> {
-            if (e instanceof Scope) {
+            if (e instanceof Scope || e instanceof Invocation) {
                 codeEntities.add(e);
             }
         });
@@ -423,7 +428,7 @@ public class CodeEntityList {
         cudClone.visitScopeAndAllSubElements((CodeEntity e) -> {
 
             // System.out.println("Code Entity "+ SimilarityMetric.getCodeEntityName(e));
-            if (e instanceof Scope) {
+            if (e instanceof Scope || e instanceof Invocation) {
                 codeEntities.add(e);
             }
 

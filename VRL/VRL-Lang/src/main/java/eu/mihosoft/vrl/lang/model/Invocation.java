@@ -62,6 +62,8 @@ public interface Invocation extends CodeEntity {
     public void setObjectProvider(ObjectProvider objProvider);
 
     public String getMethodName();
+    
+    public void setMethodName(String name);
 
     public IType getReturnType();
 

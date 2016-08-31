@@ -13,9 +13,9 @@ import eu.mihosoft.vrl.lang.VLangUtils;
 import eu.mihosoft.vrl.lang.model.ClassDeclaration;
 import eu.mihosoft.vrl.lang.model.CodeEntity;
 import eu.mihosoft.vrl.lang.model.CompilationUnitDeclaration;
+import eu.mihosoft.vrl.lang.model.Invocation;
 import eu.mihosoft.vrl.lang.model.MethodDeclaration;
 import eu.mihosoft.vrl.lang.model.Scope;
-import eu.mihosoft.vrl.lang.model.Variable;
 import eu.mihosoft.vrl.lang.model.diff.CodeEntityList;
 import eu.mihosoft.vrl.lang.model.diff.SimilarityMetric;
 
@@ -109,11 +109,16 @@ public class RenameAction extends Action<CodeEntityList> {
                     MethodDeclaration method = (MethodDeclaration) currentCodeEntity;
                     IModelCommands.getInstance().setMethodName(methName.getName(), method);
                     s.get(0).updateCodeEntityList(currentCodeEntity);
-                } else if (nameEntity instanceof Variable && currentCodeEntity instanceof Variable) {
-                    Variable variable = (Variable) nameEntity;
-                    IModelCommands.getInstance().setVariableName(variable.getName(), (Variable) currentCodeEntity);
-                    s.get(0).updateCodeEntityList(currentCodeEntity);
+                } else if (nameEntity instanceof Invocation && currentCodeEntity instanceof Invocation) {
+                    Invocation renameInv = (Invocation) nameEntity;
+                    Invocation currInv = (Invocation) currentCodeEntity;
+                    IModelCommands.getInstance().setMethodNameInInvocation(renameInv.getMethodName(), currInv);
                 }
+//                } else if (nameEntity instanceof Variable && currentCodeEntity instanceof Variable) {
+//                    Variable variable = (Variable) nameEntity;
+//                    IModelCommands.getInstance().setVariableName(variable.getName(), (Variable) currentCodeEntity);
+//                    s.get(0).updateCodeEntityList(currentCodeEntity);
+//                }
             }
 
             @Override

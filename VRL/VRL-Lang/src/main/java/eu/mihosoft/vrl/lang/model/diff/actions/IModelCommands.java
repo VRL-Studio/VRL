@@ -110,5 +110,7 @@ public interface IModelCommands {
 
     //INVOCATION
     void setReturnTypeInInvocation(IType type, Invocation invocation);
+    
+    void setMethodNameInInvocation(String methodName, Invocation invocation);
 
 }

@@ -31,22 +31,19 @@ public class SetReturnTypeAction extends Action<CodeEntityList> {
             public boolean verify(State<CodeEntityList> s) {
                 s = s.clone();
                 index = s.get(0).getIndex();
-                boolean result = false;
 
                 if (index > -1 && index < s.get(0).size()) {
-
                     CodeEntity currentElement = s.get(0).get(index);
                     if (currentElement instanceof MethodDeclaration && codeEntityType instanceof MethodDeclaration) {
                         MethodDeclaration currentMethod = (MethodDeclaration) currentElement;
                         MethodDeclaration methodType = (MethodDeclaration) codeEntityType;
-                        if (!currentMethod.getName().equals("this$dist$invoke$1") && !currentMethod.getName().equals("this$dist$set$1") && !currentMethod.getName().equals("this$dist$get$1") && !currentMethod.getReturnType().equals(methodType.getReturnType())) {
-                            result = true;
-                        }
-
+                        return !currentMethod.getReturnType().equals(methodType.getReturnType());
+                    } else {
+                        return false;
                     }
+                } else {
+                    return false;
                 }
-
-                return result;
             }
 
             @Override

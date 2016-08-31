@@ -11,5 +11,4 @@ package eu.mihosoft.vrl.lang.model;
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public interface ControlFlowScope extends Scope{
-    
 }

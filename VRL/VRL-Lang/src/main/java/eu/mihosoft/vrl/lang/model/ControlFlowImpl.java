@@ -108,13 +108,13 @@ class ControlFlowImpl implements ControlFlow {
         flow.getConnections(WorkflowUtil.CONTROL_FLOW).getConnections().addListener(
                 new ListChangeListener<Connection>() {
 
-            @Override
-            public void onChanged(ListChangeListener.Change<? extends Connection> c) {
-                if (!currentlyUpdatingConnections) {
-                    updateInvocations();
-                }
-            }
-        });
+                    @Override
+                    public void onChanged(ListChangeListener.Change<? extends Connection> c) {
+                        if (!currentlyUpdatingConnections) {
+                            updateInvocations();
+                        }
+                    }
+                });
 
         flow.getNodes().addListener((ListChangeListener.Change<? extends VNode> c) -> {
             if (c.next()) {

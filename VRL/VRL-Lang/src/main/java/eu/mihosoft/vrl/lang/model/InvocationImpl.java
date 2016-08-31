@@ -70,7 +70,7 @@ class InvocationImpl implements Invocation {
 
     private String id;
     private ObjectProvider objProvider;
-    private final String methodName;
+    private String methodName;
     private final ObservableList<Argument> arguments = FXCollections.observableArrayList();
     private final boolean constructor;
     private boolean Void;
@@ -461,6 +461,11 @@ class InvocationImpl implements Invocation {
     @Override
     public String getMethodName() {
         return methodName;
+    }
+
+    @Override
+    public void setMethodName(String methodName) {
+        this.methodName = methodName;
     }
 
     @Override
