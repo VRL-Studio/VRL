@@ -136,6 +136,7 @@ public class ProjectBuilder {
 
 //        File buildFile = new File("/home/miho/tmp/anttest/build.xml");
         Project p = new Project();
+        p.setUserProperty("file.encoding", "UTF-8");
         p.setUserProperty("ant.project.name", vpc.getProject().getFile().getName());
         p.setUserProperty("ant.file", buildFile.getAbsolutePath());
 
