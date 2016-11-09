@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.annotation.ComponentInfo;
@@ -70,8 +69,10 @@ import java.awt.Point;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -108,8 +109,8 @@ public class ComponentUtil {
             }
         }
 
-        instantiate =
-                instantiate
+        instantiate
+                = instantiate
                 && !compClass.isInterface()
                 && !TypeRepresentationBase.class.isAssignableFrom(compClass);
 
@@ -120,8 +121,8 @@ public class ComponentUtil {
             o = creator.newInstance(compClass);
         }
 
-        boolean addCodeWindowToCanvas =
-                !instantiate
+        boolean addCodeWindowToCanvas
+                = !instantiate
                 || compClass.isInterface()
                 || o instanceof TypeRepresentationBase;
 
@@ -203,7 +204,6 @@ public class ComponentUtil {
             x = location.x - window.getWidth() / 2;
         }
 
-
         window.setLocation(new Point(x, y));
     }
 
@@ -252,8 +252,8 @@ public class ComponentUtil {
 
             for (Object o : instances) {
                 // convert from inspector id to window id
-                Collection<Integer> windowIDs =
-                        mainCanvas.getInspector().
+                Collection<Integer> windowIDs
+                        = mainCanvas.getInspector().
                         getCanvasWindowIDs(o);
 
                 for (Integer winID : windowIDs) {
@@ -268,20 +268,18 @@ public class ComponentUtil {
                     removeByName(componentClass.getName());
 
 //            mainCanvas.getClassLoader().removeClass(componentClass);
-
             mainCanvas.getClassLoader().removeClassByName(
                     componentClass.getName());
 
             controller.removeComponent(componentClass);
 
-
-            Message m =
-                    mainCanvas.getMessageBox().
+            Message m
+                    = mainCanvas.getMessageBox().
                     addMessage("Component Removed:",
-                    ">> component \"<b><tt>" + componentName
-                    + "</tt></b>\" has been successfully removed!",
-                    null,
-                    MessageType.INFO, 5);
+                            ">> component \"<b><tt>" + componentName
+                            + "</tt></b>\" has been successfully removed!",
+                            null,
+                            MessageType.INFO, 5);
             mainCanvas.getMessageBox().messageRead(m);
         }
     }
@@ -310,6 +308,7 @@ public class ComponentUtil {
     /**
      * Returns the category as defined by the
      * {@link eu.annotation.@ComponentInfo}.
+     *
      * @param c component class
      * @return the category as defined by {@link eu.annotation.@ComponentInfo}
      * or an empty string if no category has been defined
@@ -330,10 +329,11 @@ public class ComponentUtil {
     /**
      * Returns the description as defined by the
      * {@link eu.annotation.@ComponentInfo}.
+     *
      * @param c component class
      * @return the description as defined by
-     * {@link eu.annotation.@ComponentInfo} or the * *      * string <code>"no description"</code> if no component info has been
-     * defined
+     * {@link eu.annotation.@ComponentInfo} or the * * * string
+     * <code>"no description"</code> if no component info has been defined
      */
     public static String getComponentDescription(Class<?> c) {
         ComponentInfo info = null;
@@ -352,6 +352,7 @@ public class ComponentUtil {
      * Indicates whether the specified class defines a VRL component, i.e., if a
      * {@link eu.annotation.@ComponentInfo} has been defined for the specified
      * class
+     *
      * @param c component class
      * @return <code>true</code> if a component info has been defined for the
      * specified class;<code>false</code> otherwise
@@ -372,8 +373,8 @@ public class ComponentUtil {
      * {@link eu.annotation.@ComponentInfo}.
      *
      * @param c component class
-     * @return <code>true</code> if the component shall be *
-     * ignored; <code>false</code> otherwise
+     * @return <code>true</code> if the component shall be * ignored;
+     * <code>false</code> otherwise
      */
     public static boolean requestsIgnore(Class<?> c) {
         ComponentInfo cInfo = c.getAnnotation(ComponentInfo.class);
@@ -388,6 +389,7 @@ public class ComponentUtil {
     /**
      * Indicates whether the user may remove the specified component ( as
      * defined in its {@link eu.annotation.@ComponentInfo}).
+     *
      * @param c component class
      * @return <code>true</code> if the user may remove the specified component;
      * <code>false</code> otherwise
@@ -406,8 +408,8 @@ public class ComponentUtil {
     }
 
     /**
-     * Returns the name of the
-     * <code>*.vrlx</code> session of the specified component.
+     * Returns the name of the <code>*.vrlx</code> session of the specified
+     * component.
      *
      * @param c component class
      * @return the name of the <code>*.vrlx</code> session of the specified
@@ -435,8 +437,8 @@ public class ComponentUtil {
     }
 
     /**
-     * Returns the name of the
-     * <code>*.groovy</code> code file of the specified component.
+     * Returns the name of the <code>*.groovy</code> code file of the specified
+     * component.
      *
      * @param c component class
      * @return the name of the <code>*.groovy</code> code file of the specified
@@ -450,7 +452,19 @@ public class ComponentUtil {
         URL url = c.getResource(sessionName);
 
         if (url != null) {
-            File file = new File(url.getFile());
+
+            URLDecoder decoder = new URLDecoder();
+            try {
+                result = decoder.decode(url.getFile(), "UTF-8");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(ComponentUtil.class.getName()).
+                        log(Level.SEVERE, null, ex);
+                
+                // fallback
+                result = decoder.decode(url.getFile());
+            }
+
+            File file = new File(result);
 
             result = file.getAbsolutePath();
 
@@ -466,10 +480,12 @@ public class ComponentUtil {
     }
 
     /**
-     * Indicates whether the specified class is a visually defined session component.
+     * Indicates whether the specified class is a visually defined session
+     * component.
+     *
      * @param c component class
      * @return <code>true</code> if the specified class is a visually defined
-     *         session component; <code>false</code> otherwise
+     * session component; <code>false</code> otherwise
      */
     public static boolean isVisualSessionComponent(Class<?> c) {
         return getSessionName(c) != null;
@@ -477,19 +493,22 @@ public class ComponentUtil {
 
     /**
      * Indicates whether the specified class is a code session component.
+     *
      * @param c component class
-     * @return <code>true</code> if the specified class is a code
-     *         session component; <code>false</code> otherwise
+     * @return <code>true</code> if the specified class is a code session
+     * component; <code>false</code> otherwise
      */
     public static boolean isCodeSessionComponent(Class<?> c) {
         return getSessionName(c) == null && getSessionCodeName(c) != null;
     }
 
     /**
-     * Defines whether serialization is enabled for the specified component class.
+     * Defines whether serialization is enabled for the specified component
+     * class.
+     *
      * @param c component class
      * @return <code>true</code> if serialization is enabled for the specified
-     *         component class; <code>false</code> otherwise
+     * component class; <code>false</code> otherwise
      */
     public static boolean isSerializationEnabled(Class<?> c) {
         ObjectInfo info = null;
@@ -516,21 +535,20 @@ public class ComponentUtil {
             return true;
         }
     }
-    
+
     public static String getComponentCode(Class<?> c) {
-        
+
         String packageName = VLangUtils.dotToSlash(VLangUtils.packageNameFromFullClassName(c.getName()));
-        String classCodeName = VLangUtils.shortNameFromFullClassName(c.getName())+".groovy";
-        
+        String classCodeName = VLangUtils.shortNameFromFullClassName(c.getName()) + ".groovy";
+
         String resourceName = "/" + packageName + "/" + classCodeName;
         InputStream in = c.getResourceAsStream(resourceName);
-        
-        if (in==null) {
+
+        if (in == null) {
             return null;
         }
-        
+
         return IOUtil.convertStreamToString(in);
     }
-    
- 
+
 }
