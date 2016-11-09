@@ -66,7 +66,7 @@ import java.io.Serializable;
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 @ComponentInfo(name = "Stop", category="VRL/Control", allowRemoval=false,
-        description="Stop Controlflow")
+        description="Stop Control-Flow")
 @ObjectInfo(multipleViews = false, name = "Stop", instances = 1,
         controlFlowIn=true, controlFlowOut=false,
         referenceIn=false, referenceOut=false)

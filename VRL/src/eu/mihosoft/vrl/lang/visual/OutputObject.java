@@ -73,7 +73,7 @@ public class OutputObject implements Serializable {
     private String paramInfo;
 
     @MethodInfo(name = " ", interactive = false,
-    valueStyle = "default", valueName = " ", hideCloseIcon=true)
+    valueStyle = "default", valueName = " ", hideCloseIcon=true, num=1)
     public void info(
 //            @ParamInfo(name = "Param-Info:", style = "silent",
 //            options = "hideConnector=true") 

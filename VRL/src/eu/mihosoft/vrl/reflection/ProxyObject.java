@@ -61,8 +61,8 @@ package eu.mihosoft.vrl.reflection;
  * <p>
  * <b>Warning:</b> this class is deprecated. That is, it is fully supported
  * but obsolete. In most cases it is much better to use dynamic Groovy code
- * for GUI generation. It is easier to use and much more powerful. In newer
- * version proxy object suport may be removed.
+ * for GUI generation. It is easier to use and much more powerful. In future
+ * versions proxy object suport may be removed.
  * </p>
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
