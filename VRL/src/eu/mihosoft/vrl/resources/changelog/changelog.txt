@@ -1,4 +1,19 @@
 -----------------------------------------------
+Version:	v0.4.3.0.2
+Date:		Thu, 5 Nov 2015 12:54:47 +0100
+-----------------------------------------------
+
+      Major update:
+    
+    - full support for JDK 8 (tested with JDK 8u66)
+    - JavaFX tools can be integrated as VRL plugins
+    - Groovy 2.4.5 support (+indy)
+    - multiple method invocations per object visualization
+      (yes, we listen to feature requests!)
+    - plugin api improved (InitFailure interface)
+    - ...
+
+-----------------------------------------------
 Version:	v0.4.2.8.6
 Date:		Tue, 29 Apr 2014 10:48:35 +0200
 -----------------------------------------------
