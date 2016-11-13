@@ -34,7 +34,7 @@ To see what is possible with VRL check out [VRL-Studio](http://vrl-studio.mihoso
 
 # Maven Artifacts
 
-Repository: maven central (http://repo1.maven.org/maven2)
+Repository: maven central (http://repo1.maven.org/maven2, see above for latest version)
 
     <dependency>
       <groupId>eu.mihosoft.vrl</groupId>
