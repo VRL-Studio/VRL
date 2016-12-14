@@ -305,7 +305,7 @@ public class MainWindowController implements Initializable {
 
         view.getChildren().add(scrollPane);
 
-        rootPane = canvas.getContent();
+        rootPane = (Pane)canvas.getContent();
 
         //rootPane.setStyle("-fx-background-color: linear-gradient(to bottom, rgb(10,32,60), rgb(42,52,120));");
         flow = FlowFactory.newFlow();
@@ -553,7 +553,7 @@ public class MainWindowController implements Initializable {
                             subcanvas.setMaxScaleY(1);
                             subcanvas.setTranslateToMinNodePos(true);
                             
-                            FXSkinFactory fxSkinFactory = wskin.getSkinFactory().newInstance(subcanvas.getContent(), null);
+                            FXSkinFactory fxSkinFactory = wskin.getSkinFactory().newInstance((Pane)subcanvas.getContent(), null);
                             currsub.addSkinFactories(fxSkinFactory);
                             
                             Scene subscene = new Scene(subcanvas, (int) Math.round(this.view.getWidth()), (int) Math.round(this.view.getHeight()));
