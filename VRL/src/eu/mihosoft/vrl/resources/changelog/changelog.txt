@@ -1,4 +1,17 @@
 -----------------------------------------------
+Version:	v0.4.3.1.0
+Date:		Wed, 9 Nov 2016 18:53:00 +0100
+-----------------------------------------------
+
+      - experimental OpenGL based rendering (optional)
+    - improved support for JDK 8 (tested with JDK 8u102)
+    - projects are finally compiled with JDK8 compatible
+      bytecode (improves indy)
+    - updated to groovy to 2.4.7
+    - updated to ant to 1.9.x
+    - ...
+
+-----------------------------------------------
 Version:	v0.4.3.0.2
 Date:		Thu, 5 Nov 2015 12:54:47 +0100
 -----------------------------------------------
@@ -181,6 +194,14 @@ Date:		Mon, 5 Nov 2012 14:05:50 +0100
     math package improved:
     - groovyfunction types in math package can autogenerate session code
     - var names are validated (session code compilation cannot be broken through incorrect names)
+
+-----------------------------------------------
+Version:	PhDThesisMiHo2016
+Date:		Fri, 5 Aug 2016 16:51:22 +0200
+-----------------------------------------------
+
+ Final version for PhD thesis.
+    ﻿
 
 
 --- [PRE GITHUB] ---
