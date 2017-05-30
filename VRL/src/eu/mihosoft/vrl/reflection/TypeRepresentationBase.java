@@ -752,7 +752,7 @@ public abstract class TypeRepresentationBase extends VComponent
     @Override
     public void setValue(final Object o) {
 
-        if (!skipEmptyViewCallInSetValue&&o!=null) {
+        if (!skipEmptyViewCallInSetValue) {
             VSwingUtil.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -1819,7 +1819,7 @@ public abstract class TypeRepresentationBase extends VComponent
     
     /**
      * Defines whether to skip {@link TypeRepresentation#emptyView()} call in
-     * {@link TypeRepresentation#setValue(java.lang.Object) } if the object to visualize is not null.
+     * {@link TypeRepresentation#setValue(java.lang.Object) }.
      * 
      * @param skip value which determins whether to skip
      */
@@ -1829,7 +1829,7 @@ public abstract class TypeRepresentationBase extends VComponent
 
     /**
      * Indicates whether {@link TypeRepresentation#emptyView()} call is skipped in
-     * {@link TypeRepresentation#setValue(java.lang.Object) } if the object to visualize is not null.
+     * {@link TypeRepresentation#setValue(java.lang.Object) }.
      * 
      * @return {@code true} if skipped; {@code false} otherwise
      */
