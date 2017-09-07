@@ -51,6 +51,7 @@
  */
 package eu.mihosoft.vrl.io;
 
+import eu.mihosoft.vrl.system.VTerminalUtil;
 import eu.mihosoft.vrl.visual.SplashScreenGenerator;
 import java.lang.reflect.InvocationTargetException;
 
@@ -151,6 +152,17 @@ public class ClassPathUpdater {
 
             System.out.println(message);
             SplashScreenGenerator.printBootMessage(message);
+            
+            try {
+                getClassLoader(); // test if urlclassloader is present
+            } catch(RuntimeException ex) {
+                
+                message = ">> ERROR: The system classloader of the current"
+                    + " JRE does not support dynamic classloading at runtime.";
+                
+                System.out.println(VTerminalUtil.red(message));
+                SplashScreenGenerator.printBootMessage(message);
+            }
 
             Method method = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
             method.setAccessible(true);
@@ -169,6 +181,9 @@ public class ClassPathUpdater {
             Logger.getLogger(ClassPathUpdater.class.getName()).
                     log(Level.SEVERE, null, ex);
         } catch (SecurityException ex) {
+            Logger.getLogger(ClassPathUpdater.class.getName()).
+                    log(Level.SEVERE, null, ex);
+        } catch (RuntimeException ex) {
             Logger.getLogger(ClassPathUpdater.class.getName()).
                     log(Level.SEVERE, null, ex);
         }
@@ -210,6 +225,13 @@ public class ClassPathUpdater {
     }
 
     private static URLClassLoader getClassLoader() {
-        return (URLClassLoader) ClassLoader.getSystemClassLoader();
+        
+        if(ClassLoader.getSystemClassLoader() instanceof URLClassLoader) {
+            return (URLClassLoader) ClassLoader.getSystemClassLoader();
+        } else {
+            throw new RuntimeException("The system classloader of the current"
+                    + " JRE does not support dynamic classloading at runtime.");
+        }
+       
     }
 }

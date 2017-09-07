@@ -52,7 +52,7 @@
 package eu.mihosoft.vrl.lang.visual;
 
 import eu.mihosoft.vrl.io.VJarUtil;
-import eu.mihosoft.vrl.system.PluginConfigurator;
+import eu.mihosoft.vrl.system.VTerminalUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -74,13 +74,23 @@ public class CompletionUtil {
             = new ClassCompletionListGroupImpl(completionLists);
 
     static {
-        String[] bootPaths = System.getProperty("sun.boot.class.path").split(":");
-        for (String path : bootPaths) {
 
-            if (path.endsWith("rt.jar") || path.endsWith("classes.jar")) {
-                File f = new File(path);
-                if (f.isFile()) {
-                    registerClassesFromJar(f);
+        if (System.getProperty("sun.boot.class.path") == null) {
+            System.out.println(VTerminalUtil.red(
+                    ">> ERROR: cannot scan boot classpath"
+                    + " (rt.jar and classes.jar are missing)."));
+        } else {
+
+            String[] bootPaths = 
+                    System.getProperty("sun.boot.class.path").split(":");
+
+            for (String path : bootPaths) {
+
+                if (path.endsWith("rt.jar") || path.endsWith("classes.jar")) {
+                    File f = new File(path);
+                    if (f.isFile()) {
+                        registerClassesFromJar(f);
+                    }
                 }
             }
         }

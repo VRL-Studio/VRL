@@ -91,10 +91,11 @@ public class VURLClassLoader extends URLClassLoader {
         super(urls, parent, factory);
     }
 
-    // @Override don't use override for as long as we support java 6
-    public void close() {
+    @Override
+    public void close() throws IOException {
         setJarFileNames2Close.clear();
-        closeClassLoader(this);
+        //closeClassLoader(this);
+        super.close();
         finalizeNativeLibs(this);
         cleanupJarFileFactory();
     }
@@ -230,6 +231,7 @@ public class VURLClassLoader extends URLClassLoader {
      */
     @SuppressWarnings({"nls", "unchecked"})
     public boolean closeClassLoader(ClassLoader cl) {
+
         boolean res = false;
         if (cl == null) {
             return res;
