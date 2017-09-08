@@ -152,21 +152,22 @@ public class ClassPathUpdater {
 
             System.out.println(message);
             SplashScreenGenerator.printBootMessage(message);
-            
+
             try {
-                getClassLoader(); // test if urlclassloader is present
-            } catch(RuntimeException ex) {
-                
+                ClassLoader classLoader = getClassLoader(); // test if urlclassloader is present
+
+                Method method = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
+                method.setAccessible(true);
+                method.invoke(classLoader, new Object[]{url});
+
+            } catch (RuntimeException ex) {
+
                 message = ">> ERROR: The system classloader of the current"
-                    + " JRE does not support dynamic classloading at runtime.";
-                
+                        + " JRE does not support dynamic classloading at runtime.";
+
                 System.out.println(VTerminalUtil.red(message));
                 SplashScreenGenerator.printBootMessage(message);
             }
-
-            Method method = CLASS_LOADER.getDeclaredMethod("addURL", PARAMETERS);
-            method.setAccessible(true);
-            method.invoke(getClassLoader(), new Object[]{url});
 
         } catch (IllegalAccessException ex) {
             Logger.getLogger(ClassPathUpdater.class.getName()).
@@ -225,13 +226,13 @@ public class ClassPathUpdater {
     }
 
     private static URLClassLoader getClassLoader() {
-        
-        if(ClassLoader.getSystemClassLoader() instanceof URLClassLoader) {
+
+        if (ClassLoader.getSystemClassLoader() instanceof URLClassLoader) {
             return (URLClassLoader) ClassLoader.getSystemClassLoader();
         } else {
             throw new RuntimeException("The system classloader of the current"
                     + " JRE does not support dynamic classloading at runtime.");
         }
-       
+
     }
 }
