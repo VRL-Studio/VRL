@@ -79,6 +79,8 @@ package eu.mihosoft.vrl.dialogs;
  * POSSIBILITY OF SUCH DAMAGE.
  */
 import eu.mihosoft.vrl.io.VExtensionFileFilter;
+import eu.mihosoft.vrl.system.VRL;
+import eu.mihosoft.vrl.visual.VSwingUtil;
 import java.awt.Component;
 import java.awt.HeadlessException;
 import java.io.File;
@@ -131,8 +133,30 @@ public class VFileChooser extends JFileChooser {
 
     private static boolean nativeDialogsEnabled = false;
 
+    private static final List<Runnable> preDialogActions = new ArrayList<>();
+    private static final List<Runnable> postDialogActions = new ArrayList<>();
+
+    public static void addPreShowDialogAction(Runnable r) {
+        preDialogActions.add(r);
+    }
+
+    public static void addPostShowDialogAction(Runnable r) {
+        preDialogActions.add(r);
+    }
+
+    public static boolean removePreShowDialogAction(Runnable r) {
+        return preDialogActions.remove(r);
+    }
+
+    public static boolean removePostShowDialogAction(Runnable r) {
+        return preDialogActions.remove(r);
+    }
+
     private boolean nativeDialogsShallBeUsed() {
-        return isNativeDialogsEnabled() && FX_AVAILABLE;
+        return isNativeDialogsEnabled() 
+                && FX_AVAILABLE 
+                /*&& !isDirectorySelectionEnabled()*/ // prepared potential AWT
+                ;
     }
 
     static {
@@ -182,8 +206,11 @@ public class VFileChooser extends JFileChooser {
         if (!nativeDialogsShallBeUsed()) {
             return super.showOpenDialog(parent);
         }
+        preShowDialog();
+        VSwingUtil.deactivateEventFilter();
+        VSwingUtil.activateEventFilter(
+                VRL.getCurrentProjectController().getCurrentCanvas());
         runAndWait(() -> {
-            //                parent.setEnabled(false);
             if (isDirectorySelectionEnabled()) {
                 directoryChooser.setTitle("Open Directory");
                 currentFile = directoryChooser.showDialog(null);
@@ -191,10 +218,13 @@ public class VFileChooser extends JFileChooser {
                 fileChooser.setTitle("Open Files");
                 currentFiles = fileChooser.showOpenMultipleDialog(null);
             } else {
+
                 fileChooser.setTitle("Open File");
                 currentFile = fileChooser.showOpenDialog(null);
             }
         });
+        VSwingUtil.deactivateEventFilter();
+        postShowDialog();
 
         if (isMultiSelectionEnabled()) {
             if (currentFiles != null) {
@@ -227,8 +257,12 @@ public class VFileChooser extends JFileChooser {
             return super.showSaveDialog(parent);
         }
 
+        preShowDialog();
+        VSwingUtil.deactivateEventFilter();
+        VSwingUtil.activateEventFilter(
+                VRL.getCurrentProjectController().getCurrentCanvas());
         runAndWait(() -> {
-            //                parent.setEnabled(false);
+            // parent.setEnabled(false);
             if (isDirectorySelectionEnabled()) {
                 directoryChooser.setTitle("Save Directory");
                 currentFile = directoryChooser.showDialog(null);
@@ -236,8 +270,9 @@ public class VFileChooser extends JFileChooser {
                 fileChooser.setTitle("Save File");
                 currentFile = fileChooser.showSaveDialog(null);
             }
-
         });
+        VSwingUtil.deactivateEventFilter();
+        postShowDialog();
 
         if (currentFile != null) {
             return JFileChooser.APPROVE_OPTION;
@@ -437,6 +472,18 @@ public class VFileChooser extends JFileChooser {
      */
     public static void setNativeDialogsEnabled(boolean nativeDialogsEnabled) {
         VFileChooser.nativeDialogsEnabled = nativeDialogsEnabled;
+    }
+
+    private void preShowDialog() {
+        preDialogActions.stream().forEach((r) -> {
+            r.run();
+        });
+    }
+
+    private void postShowDialog() {
+        postDialogActions.stream().forEach((r) -> {
+            r.run();
+        });
     }
 
 }
