@@ -203,25 +203,25 @@ public class VSysUtil {
 
     public static boolean isWindows() {
         if(fakeWindows) {
-            return getOS().equals(OS_WINDOWS);
-        } else {
             return true;
+        } else {
+            return getOS().equals(OS_WINDOWS);
         }
     }
 
     public static boolean isMacOSX() {
         if(fakeMacOS) {
-            return getOS().equals(OS_MAC);
-        } else {
             return true;
+        } else {
+            return getOS().equals(OS_MAC);
         }
     }
 
     public static boolean isLinux() {
         if(fakeLinux) {
-            return getOS().equals(OS_LINUX);
-        } else {
             return true;
+        } else {
+            return getOS().equals(OS_LINUX);
         }
     }
 
