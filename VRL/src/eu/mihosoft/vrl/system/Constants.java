@@ -83,12 +83,12 @@ public class Constants {
      * Copyright statement.
      */
     public static final String COPYRIGHT =
-            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2016"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer &lt;info@michaelhoffer.de&gt;";
+            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2017"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer &lt;info@michaelhoffer.de&gt;";
     /**
      * Simple copyright statement (usefull for windows titles etc.)
      */
     public static final String COPYRIGHT_SIMPLE =
-            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2016"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer";
+            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2017"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer";
     /**
      * Defines which projects can be processed by this version of VRL.
      */

@@ -84,12 +84,10 @@ import javax.swing.text.Document;
  * <p>
  * Base class for type representations.</p>
  * <p>
- * <b>Note:</b> inherit this class to create a completely new type
- * representation. Additionally, it is possible to customize an already existing
- * type representation. For textfield based type representations,
- * {@link eu.mihosoft.vrl.types.VTextFieldBasedTypeRepresentation} is a good
- * starting point. Image based type representations should inherit
- * {@link eu.mihosoft.vrl.types.BufferedImageType}. </p>
+ * <b>Note:</b> inherit this class to create a completely new type representation. Additionally, it is possible to
+ * customize an already existing type representation. For textfield based type representations,
+ * {@link eu.mihosoft.vrl.types.VTextFieldBasedTypeRepresentation} is a good starting point. Image based type
+ * representations should inherit {@link eu.mihosoft.vrl.types.BufferedImageType}. </p>
  * <p>
  * <b>Example (Groovy code):</b></p>
  * <p>
@@ -171,10 +169,10 @@ import javax.swing.text.Document;
  * <br/> <img src="./doc-files/circlecreator.png"/> <br/>
  *
  * <p>
- * <b>Supported value options:</b><br> <ul> <li>hideConnector (defines whether
- * to hide the connector of this type representation)</li>
- * <li>invokeOnChange (defines whether to invoke the method this type
- * representation belongs to on input change)</li> </ul>
+ * <b>Supported value options:</b><br> <ul> <li>hideConnector (defines whether to hide the connector of this type
+ * representation)</li>
+ * <li>invokeOnChange (defines whether to invoke the method this type representation belongs to on input change)</li>
+ * </ul>
  *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  * @see BufferedImageType
@@ -215,6 +213,7 @@ public abstract class TypeRepresentationBase extends VComponent
     private boolean noGUI = false;
     protected boolean serialization = true;
     private boolean warningIfNoCodeGeneration = true;
+    private boolean skipEmptyViewCallInSetValue = false;
     private ParamInfo paramInfo;
     /**
      * list of action listeners
@@ -298,9 +297,8 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Switches to debug mode. In debug mode the bounding box (rectangular
-     * border) will be drawn to indicate the dimensions of this type
-     * representation.
+     * Switches to debug mode. In debug mode the bounding box (rectangular border) will be drawn to indicate the
+     * dimensions of this type representation.
      */
     public void setDebugMode() {
         setBackground(Color.RED);
@@ -317,9 +315,8 @@ public abstract class TypeRepresentationBase extends VComponent
 //        // want the object to be invisible
 //    }
     /**
-     * Defines the return value as up to date. A return value usually is defined
-     * as up tp date if after the last assignment from method call none of the
-     * input values (their representations) changed.
+     * Defines the return value as up to date. A return value usually is defined as up tp date if after the last
+     * assignment from method call none of the input values (their representations) changed.
      */
     public void setReturnTypeUpToDate() {
         if (parentMethod != null) {
@@ -330,9 +327,8 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Defines the data of this representation as outdated. If the data of a
-     * type representation is outdated a method call will be triggered if data
-     * from the corresponding return type representation is requested.
+     * Defines the data of this representation as outdated. If the data of a type representation is outdated a method
+     * call will be triggered if data from the corresponding return type representation is requested.
      */
     public void setDataOutdated() {
 
@@ -371,9 +367,8 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Defines the value of the return type representation as outdated. It does
-     * forward this information recursively to all methods that are connected as
-     * receiver.
+     * Defines the value of the return type representation as outdated. It does forward this information recursively to
+     * all methods that are connected as receiver.
      */
     public void setReturnTypeOutdated() {
 
@@ -466,12 +461,10 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Indicates wether return value is up to date or not. A return value
-     * usually is defined as up tp date if after the last assignment from method
-     * call none of the input values (their representations) changed.
+     * Indicates wether return value is up to date or not. A return value usually is defined as up tp date if after the
+     * last assignment from method call none of the input values (their representations) changed.
      *
-     * @return <code>true</code> if return value is up to date;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if return value is up to date; <code>false</code> otherwise
      */
     public boolean isReturnTypeUpToDate() {
         boolean result = false;
@@ -486,8 +479,7 @@ public abstract class TypeRepresentationBase extends VComponent
     /**
      * Indikates whether type representation is up to date.
      *
-     * @return <code>true</code> if return value is up to date;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if return value is up to date; <code>false</code> otherwise
      */
     protected boolean isUpToDate() {
         boolean result = this.upToDate;
@@ -500,12 +492,10 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Defines whether the value is up to date or not. A return value usually is
-     * defined as up tp date if after the last assignment from method call none
-     * of the input values (their representations) changed.
+     * Defines whether the value is up to date or not. A return value usually is defined as up tp date if after the last
+     * assignment from method call none of the input values (their representations) changed.
      *
-     * @param upToDate <code>true</code> if return value is to be defined as up
-     * to date; <code>false</code> otherwise
+     * @param upToDate <code>true</code> if return value is to be defined as up to date; <code>false</code> otherwise
      */
     public void setUpToDate(boolean upToDate) {
         this.upToDate = upToDate;
@@ -521,8 +511,7 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Defines the type representation as invalid (because of incorrect or
-     * missing input)
+     * Defines the type representation as invalid (because of incorrect or missing input)
      */
     protected void invalidateValue() {
         if (!isNoValidation()) {
@@ -531,16 +520,14 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Will be called if the type representation is valid (input value is
-     * correct).
+     * Will be called if the type representation is valid (input value is correct).
      */
     protected void valueValidated() {
         // default does not have an effect
     }
 
     /**
-     * Will be called if the type representation is invalid (because of
-     * incorrect or missing input).
+     * Will be called if the type representation is invalid (because of incorrect or missing input).
      */
     protected void valueInvalidated() {
         // default does not have an effect
@@ -667,8 +654,7 @@ public abstract class TypeRepresentationBase extends VComponent
     /**
      * Indicates whether the representation value is valid.
      *
-     * @return <code>true</code> if the representation value is valid;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if the representation value is valid; <code>false</code> otherwise
      */
     public boolean isValidValue() {
         return validValue;
@@ -700,8 +686,7 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Evaluates the contract, e.g., checks for correct data type or range
-     * condition.
+     * Evaluates the contract, e.g., checks for correct data type or range condition.
      */
     protected void evaluateContract() {
         Connector valueConnector = null;
@@ -743,8 +728,7 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Defines the message to show if the input data is invalid. Override this
-     * method to define a custom message.
+     * Defines the message to show if the input data is invalid. Override this method to define a custom message.
      *
      * @return the message to show if the input data is invalid
      */
@@ -755,8 +739,7 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Defines the message to show if the input data is empty. verride this
-     * method to define a custom message
+     * Defines the message to show if the input data is empty. verride this method to define a custom message
      *
      * @return the message to show if the input data is empty
      */
@@ -769,12 +752,14 @@ public abstract class TypeRepresentationBase extends VComponent
     @Override
     public void setValue(final Object o) {
 
-        VSwingUtil.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                emptyView();
-            }
-        });
+        if (!skipEmptyViewCallInSetValue) {
+            VSwingUtil.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    emptyView();
+                }
+            });
+        }
 
         value = o;
 
@@ -1051,9 +1036,8 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Defines the input document and the input component of this
-     * representation. Calling this method will enable layout updating on
-     * document changes for the specified input component.
+     * Defines the input document and the input component of this representation. Calling this method will enable layout
+     * updating on document changes for the specified input component.
      *
      * @param input the input component
      * @param inputDocuments the input documents to set
@@ -1068,27 +1052,27 @@ public abstract class TypeRepresentationBase extends VComponent
 
             d.addDocumentListener(
                     new DocumentListener() {
-                        @Override
-                        public void insertUpdate(DocumentEvent e) {
-                            setDataOutdated();
-                            updateLayout();
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    setDataOutdated();
+                    updateLayout();
 //                        getMainCanvas().getEffectPane().pulse(getConnector(),
 //                                MessageType.INFO_SINGLE);
-                        }
+                }
 
-                        @Override
-                        public void removeUpdate(DocumentEvent e) {
-                            setDataOutdated();
-                            updateLayout();
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    setDataOutdated();
+                    updateLayout();
 //                        getMainCanvas().getEffectPane().pulse(getConnector(),
 //                                MessageType.INFO_SINGLE);
-                        }
+                }
 
-                        @Override
-                        public void changedUpdate(DocumentEvent e) {
-                            //
-                        }
-                    });
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    //
+                }
+            });
         }
     }
 
@@ -1106,42 +1090,40 @@ public abstract class TypeRepresentationBase extends VComponent
 
             d.addDocumentListener(
                     new DocumentListener() {
-                        @Override
-                        public void insertUpdate(DocumentEvent e) {
-                            setDataOutdated();
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    setDataOutdated();
 //                        getMainCanvas().getEffectPane().pulse(getConnector(),
 //                                MessageType.INFO_SINGLE);
-                        }
+                }
 
-                        @Override
-                        public void removeUpdate(DocumentEvent e) {
-                            setDataOutdated();
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    setDataOutdated();
 //                        getMainCanvas().getEffectPane().pulse(getConnector(),
 //                                MessageType.INFO_SINGLE);
-                        }
+                }
 
-                        @Override
-                        public void changedUpdate(DocumentEvent e) {
-                            //
-                        }
-                    });
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    //
+                }
+            });
         }
     }
 
     /**
      * Returns the input component of this type representation.
      *
-     * @return the input component of this type representation or
-     * <code>null</code> if no such component is defined
+     * @return the input component of this type representation or <code>null</code> if no such component is defined
      */
     public JComponent getInputComponent() {
         return inputComponent;
     }
 
     /**
-     * Defines the input component of this representation. Input components can
-     * dynamically change their size. The representation and its parents also
-     * update their size if that is necessary
+     * Defines the input component of this representation. Input components can dynamically change their size. The
+     * representation and its parents also update their size if that is necessary
      *
      * @param inputComponent the input component to set
      */
@@ -1152,8 +1134,7 @@ public abstract class TypeRepresentationBase extends VComponent
     /**
      * Indicates whether <code>null</code> is a valid value.
      *
-     * @return <code>true</code> if <code>null</code> is a valid value;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if <code>null</code> is a valid value; <code>false</code> otherwise
      */
     public boolean isNullValidInput() {
         return nullValidInput;
@@ -1171,8 +1152,7 @@ public abstract class TypeRepresentationBase extends VComponent
     /**
      * Indicates whether are value validation is disabled.
      *
-     * @return <code>true</code> if value valudation is disabled;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if value valudation is disabled; <code>false</code> otherwise
      */
     protected boolean isNoValidation() {
         return noValidation;
@@ -1222,12 +1202,11 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Returns the topmost parent of this representation that is instance of a
-     * given class object.
+     * Returns the topmost parent of this representation that is instance of a given class object.
      *
      * @param cl the class object
-     * @return the topmost parent of this representation that is instance of a
-     * given class object or <code>null</code> if no such parent exists
+     * @return the topmost parent of this representation that is instance of a given class object or <code>null</code>
+     * if no such parent exists
      */
     public Component getParentOfClass(Class cl) {
 
@@ -1368,6 +1347,17 @@ public abstract class TypeRepresentationBase extends VComponent
             if (property != null) {
                 serialization = (boolean) (Boolean) property;
             }
+            
+            property = null;
+            
+            if (getValueOptions().contains("skipEmptyViewCallInSetValue")) {
+                property = getOptionEvaluator().getProperty("skipEmptyViewCallInSetValue");
+            }
+
+            if (property != null) {
+                setSkipEmptyViewCallInSetValue((boolean) (Boolean) property);
+            }
+            
 
         } catch (Exception ex) {
             if (getMainCanvas() != null) {
@@ -1391,15 +1381,12 @@ public abstract class TypeRepresentationBase extends VComponent
 
     /**
      * Requests evaluation of the value options that are usually specified in
-     * {@link eu.mihosoft.vrl.annotation.ParamInfo}. This method should be
-     * overloaded in custom type representations if they depend on custom value
-     * options.
+     * {@link eu.mihosoft.vrl.annotation.ParamInfo}. This method should be overloaded in custom type representations if
+     * they depend on custom value options.
      * <p>
-     * <b>Note:</b> if a custom class does not directly extend
-     * {@link TypeRepresentationBase}, e.g., if it derives
-     * {@link BufferedImageType} it is necessary to call the super method before
-     * performing the custom evaluation as these classes implement this method
-     * as well.</p>
+     * <b>Note:</b> if a custom class does not directly extend {@link TypeRepresentationBase}, e.g., if it derives
+     * {@link BufferedImageType} it is necessary to call the super method before performing the custom evaluation as
+     * these classes implement this method as well.</p>
      *
      * <p>
      * <b>Sample Code:</b></p>
@@ -1430,8 +1417,8 @@ public abstract class TypeRepresentationBase extends VComponent
      * Defines whether to hide the conector of this type representation.
      * </p>
      * <p>
-     * <b>Note:</b> This method does not fire action events etc to notify the
-     * value options about the visibility state. </p>
+     * <b>Note:</b> This method does not fire action events etc to notify the value options about the visibility state.
+     * </p>
      *
      * @param state the state to set
      */
@@ -1446,16 +1433,15 @@ public abstract class TypeRepresentationBase extends VComponent
     /**
      * Indicates whether to hide the connector of this type representation.
      *
-     * @return the <code>true</code> if the connector shall be hidden;
-     * <code>false</code> otherwise
+     * @return the <code>true</code> if the connector shall be hidden; <code>false</code> otherwise
      */
     public boolean isHideConnector() {
         return hideConnector;
     }
 
     /**
-     * Disposes additional resources, e.g., Java 3D render threads. It will be
-     * called when the parent canvas window is closed.
+     * Disposes additional resources, e.g., Java 3D render threads. It will be called when the parent canvas window is
+     * closed.
      */
     @Override
     public void dispose() {
@@ -1514,13 +1500,11 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * This method will be called when custom param data has been loaded from
-     * file. Override this method to handle custom read operations or to convert
-     * the data to custom data structures.
+     * This method will be called when custom param data has been loaded from file. Override this method to handle
+     * custom read operations or to convert the data to custom data structures.
      * <p>
-     * <b>Note:</b> changes to the data other than loading will not trigger this
-     * method. If a change notification is required, a custom solution must be
-     * provided. </p>
+     * <b>Note:</b> changes to the data other than loading will not trigger this method. If a change notification is
+     * required, a custom solution must be provided. </p>
      */
     public void evaluateCustomParamData() {
         //
@@ -1537,8 +1521,8 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * The capability changed listeners of this window. To add listeners use the
-     * null null null null null null null null null null     {@link CanvasWindow#addCapabilityListener(
+     * The capability changed listeners of this window. To add listeners use the null null null null null null null null
+     * null null null     {@link CanvasWindow#addCapabilityListener(
      * eu.mihosoft.vrl.visual.CapabilityChangedListener)} instead.
      *
      * @return the capabilityChangedListeners
@@ -1548,9 +1532,8 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Adds a capability changed listener to the capability manager. The
-     * listener will be removed if the <code>dispose()</code> method of this
-     * window is called.
+     * Adds a capability changed listener to the capability manager. The listener will be removed if the
+     * <code>dispose()</code> method of this window is called.
      *
      * @param listener the listener to add
      */
@@ -1563,9 +1546,8 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * This method is called after this typerepresentation has been added to a
-     * method representation (including setting connector etc.). It may be used
-     * to perform custom initialization based on option evaluation etc.
+     * This method is called after this typerepresentation has been added to a method representation (including setting
+     * connector etc.). It may be used to perform custom initialization based on option evaluation etc.
      */
     public void addedToMethodRepresentation() {
         //
@@ -1616,11 +1598,9 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Indicates whether this type representation is connected via data
-     * connection.
+     * Indicates whether this type representation is connected via data connection.
      *
-     * @return <code>true</code> if this type representation is connected;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if this type representation is connected; <code>false</code> otherwise
      */
     public boolean isConnected() {
         return getMainCanvas().
@@ -1658,27 +1638,22 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Indicates whether to prefer binary serialization over XML encoding.
-     * Sometimes it is very time consuming to encode via XML, e.g. for
-     * Collection types such as {@link java.util.ArrayList} as for each of the
-     * entries in the list an XML tag is used. Thus, a criterion might be the
-     * list size.
+     * Indicates whether to prefer binary serialization over XML encoding. Sometimes it is very time consuming to encode
+     * via XML, e.g. for Collection types such as {@link java.util.ArrayList} as for each of the entries in the list an
+     * XML tag is used. Thus, a criterion might be the list size.
      *
-     * @return <code>true</code> if binary serialization is prefered;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if binary serialization is prefered; <code>false</code> otherwise
      */
     public boolean preferBinarySerialization() {
         return false;
     }
 
     /**
-     * Indicates whether to prevent value serialization. Sometimes the value may
-     * be too big or unimportant to be saved. This property can be controlled
-     * via the variable <code>serialization</code> in the options string of the
-     * param info.
+     * Indicates whether to prevent value serialization. Sometimes the value may be too big or unimportant to be saved.
+     * This property can be controlled via the variable <code>serialization</code> in the options string of the param
+     * info.
      *
-     * @return <code>true</code> if the value shall not be serialized;
-     * <code>false</code> otherwise
+     * @return <code>true</code> if the value shall not be serialized; <code>false</code> otherwise
      */
     public boolean noSerialization() {
 
@@ -1695,17 +1670,15 @@ public abstract class TypeRepresentationBase extends VComponent
     /**
      * Indicates whether this type representation shall be visualized.
      *
-     * @return <code>true</code> if this type representation shall not be
-     * visualized; <code>false</code> otherwise
+     * @return <code>true</code> if this type representation shall not be visualized; <code>false</code> otherwise
      */
     public boolean isNoGUI() {
         return noGUI;
     }
 
     /**
-     * Defines whether this type representation shall be visualized. Usually,
-     * values are visualized. This is the preferred behavior. But there are some
-     * cases where it is preferable to completely hide this type representation
+     * Defines whether this type representation shall be visualized. Usually, values are visualized. This is the
+     * preferred behavior. But there are some cases where it is preferable to completely hide this type representation
      * from the GUI. One use case is {@link GetVisualIDType}.
      *
      * @param noGUI the state to set
@@ -1719,13 +1692,12 @@ public abstract class TypeRepresentationBase extends VComponent
     }
 
     /**
-     * Indicates whether this type representation is compatible to a given type
-     * representation. It is assumed that this type representation (where the
-     * method is called from) is an input type representation.
+     * Indicates whether this type representation is compatible to a given type representation. It is assumed that this
+     * type representation (where the method is called from) is an input type representation.
      *
      * @param tRep the type representation to check
-     * @return <code>true</code> if this type representation is compatible to
-     * the given type representation; <code>false</code> otherwise
+     * @return <code>true</code> if this type representation is compatible to the given type representation;
+     * <code>false</code> otherwise
      */
     protected ConnectionResult compatible(TypeRepresentationBase tRep) {
 
@@ -1830,7 +1802,6 @@ public abstract class TypeRepresentationBase extends VComponent
      * <p>
      * <b>Note:</b>May be overridden by custom param options.</p>
      *
-     * @param serialization the serialization to set
      */
     public void enableSerialization() {
         this.serialization = true;
@@ -1841,9 +1812,30 @@ public abstract class TypeRepresentationBase extends VComponent
      * <p>
      * <b>Note:</b>May be overridden by custom param options.</p>
      *
-     * @param serialization the serialization to set
      */
     public void disableSerialization() {
         this.serialization = false;
     }
+    
+    /**
+     * Defines whether to skip {@link TypeRepresentation#emptyView()} call in
+     * {@link TypeRepresentation#setValue(java.lang.Object) }.
+     * 
+     * @param skip value which determins whether to skip
+     */
+    protected void setSkipEmptyViewCallInSetValue(boolean skip) {
+        this.skipEmptyViewCallInSetValue = skip;
+    }
+
+    /**
+     * Indicates whether {@link TypeRepresentation#emptyView()} call is skipped in
+     * {@link TypeRepresentation#setValue(java.lang.Object) }.
+     * 
+     * @return {@code true} if skipped; {@code false} otherwise
+     */
+    protected boolean isSkipEmptyViewCallInSetValue() {
+        return skipEmptyViewCallInSetValue;
+    }
+    
+    
 }
