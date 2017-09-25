@@ -94,22 +94,22 @@ public class VSysUtil {
         "x86", "i386", "i686", // 32 bit (equivalent)
         "x86_64", "amd64"};    // 64 bit (equivalent)
     
-    private static boolean fakeLinux;
-    private static boolean fakeMacOS;
-    private static boolean fakeWindows;
+    private static Boolean fakeLinux;
+    private static Boolean fakeMacOS;
+    private static Boolean fakeWindows;
     
     @Deprecated
-    public static void setFakeLinux(boolean value) {
+    public static void setFakeLinux(Boolean value) {
         fakeLinux = value;
     }
     
     @Deprecated
-    public static void setFakeWindows(boolean value) {
+    public static void setFakeWindows(Boolean value) {
         fakeWindows = value;
     }
     
     @Deprecated
-    public static void setFakeMacOS(boolean value) {
+    public static void setFakeMacOS(Boolean value) {
         fakeMacOS = value;
     }
     
@@ -202,27 +202,27 @@ public class VSysUtil {
     }
 
     public static boolean isWindows() {
-        if(fakeWindows) {
-            return true;
-        } else {
+        if(fakeWindows==null) {
             return getOS().equals(OS_WINDOWS);
-        }
+        } else {
+            return fakeWindows;
+        } 
     }
 
     public static boolean isMacOSX() {
-        if(fakeMacOS) {
-            return true;
-        } else {
+        if(fakeMacOS==null) {
             return getOS().equals(OS_MAC);
-        }
+        } else {
+            return fakeMacOS;
+        }       
     }
 
     public static boolean isLinux() {
-        if(fakeLinux) {
-            return true;
-        } else {
+        if(fakeLinux==null) {
             return getOS().equals(OS_LINUX);
-        }
+        } else {
+            return fakeLinux;
+        }  
     }
 
     /**

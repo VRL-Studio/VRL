@@ -54,6 +54,7 @@ package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.io.VURLClassLoader;
 import eu.mihosoft.vrl.system.VParamUtil;
+import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -92,7 +93,7 @@ public class VClassLoader extends ClassLoader {
         }
     }
 
-    private void closeIfOpened() {
+    private void closeIfOpened() throws IOException {
         if (loader != null) {
             loader.close();
             loader = null;
@@ -101,7 +102,7 @@ public class VClassLoader extends ClassLoader {
         System.gc();
     }
 
-    public void close() {
+    public void close() throws IOException {
         closeIfOpened();
     }
 
@@ -184,7 +185,11 @@ public class VClassLoader extends ClassLoader {
      */
     public void updateClassLoader() {
 
-        closeIfOpened();
+        try {
+            closeIfOpened();
+        } catch (IOException ex) {
+            Logger.getLogger(VClassLoader.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         loader = new VURLClassLoader(
                 urls.toArray(new URL[urls.size()]), getParent());
@@ -200,7 +205,11 @@ public class VClassLoader extends ClassLoader {
             }
         }
 
-        closeIfOpened();
+        try {
+            closeIfOpened();
+        } catch (IOException ex) {
+            Logger.getLogger(VClassLoader.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void addURL(URL url) {

@@ -1196,7 +1196,12 @@ public class VProjectController {
         }
 
         if (!classNamesFromClassFile.isEmpty()) {
-            getCurrentCanvas().getClassLoader().close();
+            try {
+                getCurrentCanvas().getClassLoader().close();
+            } catch (IOException ex) {
+                Logger.getLogger(VProjectController.class.getName()).
+                        log(Level.SEVERE, null, ex);
+            }
 
             for (String n : classNamesFromClassFile) {
                 File f =

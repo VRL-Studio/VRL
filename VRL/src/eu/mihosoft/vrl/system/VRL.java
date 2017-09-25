@@ -2329,7 +2329,12 @@ public class VRL {
                             @Override
                             public void loaded(PluginConfigurator pC) {
                                 result.add(pC);
-                                clsLoader.close();
+                                try {
+                                    clsLoader.close();
+                                } catch (IOException ex) {
+                                    Logger.getLogger(VRL.class.getName()).
+                                            log(Level.SEVERE, null, ex);
+                                }
                             }
                         },
                         clsLoader);
