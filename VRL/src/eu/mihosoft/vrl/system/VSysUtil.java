@@ -93,7 +93,26 @@ public class VSysUtil {
     public static final String[] SUPPORTED_ARCHITECTURES = {
         "x86", "i386", "i686", // 32 bit (equivalent)
         "x86_64", "amd64"};    // 64 bit (equivalent)
-
+    
+    private static boolean fakeLinux;
+    private static boolean fakeMacOS;
+    private static boolean fakeWindows;
+    
+    @Deprecated
+    public static void setFakeLinux(boolean value) {
+        fakeLinux = value;
+    }
+    
+    @Deprecated
+    public static void setFakeWindows(boolean value) {
+        fakeWindows = value;
+    }
+    
+    @Deprecated
+    public static void setFakeMacOS(boolean value) {
+        fakeMacOS = value;
+    }
+    
     // no instanciation allowed
     private VSysUtil() {
         throw new AssertionError(); // not in this class either!
@@ -183,15 +202,27 @@ public class VSysUtil {
     }
 
     public static boolean isWindows() {
-        return getOS().equals(OS_WINDOWS);
+        if(fakeWindows) {
+            return getOS().equals(OS_WINDOWS);
+        } else {
+            return true;
+        }
     }
 
     public static boolean isMacOSX() {
-        return getOS().equals(OS_MAC);
+        if(fakeMacOS) {
+            return getOS().equals(OS_MAC);
+        } else {
+            return true;
+        }
     }
 
     public static boolean isLinux() {
-        return getOS().equals(OS_LINUX);
+        if(fakeLinux) {
+            return getOS().equals(OS_LINUX);
+        } else {
+            return true;
+        }
     }
 
     /**
