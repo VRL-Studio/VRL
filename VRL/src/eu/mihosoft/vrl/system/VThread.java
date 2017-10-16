@@ -49,7 +49,6 @@
  * A Framework for Declarative GUI Programming on the Java Platform.
  * Computing and Visualization in Science, 2011, in press.
  */
-
 package eu.mihosoft.vrl.system;
 
 import java.util.HashMap;
@@ -59,28 +58,28 @@ import java.util.Set;
 
 /**
  * <p>
- * Thread class for workflow related tasks such as visual method
- * invocation. VThreads may be stopped when closing sessions or when building
- * projects. Do not use it for massive parallel tasks.</p>
+ * Thread class for workflow related tasks such as visual method invocation.
+ * VThreads may be stopped when closing sessions or when building projects. Do
+ * not use it for massive parallel tasks.</p>
  * <p>
- * A possible advantage over Thread objects is that VThreads can be
- * directly accessed from VRL Shell. Distinguishing VThreas from other threads
- * makes it easy to identify and control workflow related tasks.
+ * A possible advantage over Thread objects is that VThreads can be directly
+ * accessed from VRL Shell. Distinguishing VThreas from other threads makes it
+ * easy to identify and control workflow related tasks.
  * </p>
- * 
+ *
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
 public class VThread extends Thread {
 
-    private static final Map<Long, VThread> threads =
-            new HashMap<Long, VThread>();
+    private static final Map<Long, VThread> threads
+            = new HashMap<Long, VThread>();
     private static final Object threadsLock = new Object();
     private long id;
 
     /**
      * Constructor.
-     * 
-     * @see Thread#Thread() 
+     *
+     * @see Thread#Thread()
      */
     public VThread() {
         addToMap(this);
@@ -88,10 +87,10 @@ public class VThread extends Thread {
 
     /**
      * Constructor.
-     * 
+     *
      * @param r Runnable object
-     * 
-     * @see Thread#Thread(java.lang.Runnable) 
+     *
+     * @see Thread#Thread(java.lang.Runnable)
      */
     public VThread(Runnable r) {
         super(r);
@@ -100,6 +99,7 @@ public class VThread extends Thread {
 
     /**
      * Adds a vthread to the map and assigns a unique id.
+     *
      * @param t thread to add
      */
     private static synchronized void addToMap(VThread t) {
@@ -122,11 +122,11 @@ public class VThread extends Thread {
      * @return a copy of the ids of all running VThread instances
      */
     public static Set<Long> getIds() {
-        
+
         updateThreadList();
 
-        Set<Long> result =
-                new HashSet<Long>();
+        Set<Long> result
+                = new HashSet<Long>();
 
         synchronized (threadsLock) {
             result.addAll(threads.keySet());
@@ -134,14 +134,14 @@ public class VThread extends Thread {
 
         return result;
     }
-    
+
     /**
      * Updates the thread list (removes threads that are not alive).
      */
     private static void updateThreadList() {
-        
+
         Map<Long, VThread> threadCopy = getVThreads();
-        
+
         synchronized (threadsLock) {
             for (VThread vt : threadCopy.values()) {
                 if (!vt.isAlive()) {
@@ -151,7 +151,7 @@ public class VThread extends Thread {
                 }
             }
         }
-        
+
     }
 
     /**
@@ -161,8 +161,8 @@ public class VThread extends Thread {
      */
     private static Map<Long, VThread> getVThreads() {
 
-        Map<Long, VThread> result =
-                new HashMap<Long, VThread>();
+        Map<Long, VThread> result
+                = new HashMap<Long, VThread>();
 
         synchronized (threadsLock) {
             result.putAll(threads);
@@ -172,20 +172,21 @@ public class VThread extends Thread {
     }
 
     /**
-     * Stops a vthread specified by id. Stopping a thread is a dangerous 
+     * Stops a vthread specified by id. Stopping a thread is a dangerous
      * operation and may lead to unpredictable application behavior. Use this
      * method with caution.
-     * @see Thread#stop() 
+     *
+     * @see Thread#stop()
      * @param id id of the vthread to stop
      * @return <code>true</code> if stopping was successful; <code>false</code>
      * otherwise
      */
     @SuppressWarnings("deprecation")
     public static boolean stopVThread(Long id) {
-        
+
         updateThreadList();
         Map<Long, VThread> threadCopy = getVThreads();
-        
+
         if (threadCopy.containsKey(id)) {
             threadCopy.get(id).stop();
         } else {
@@ -194,20 +195,21 @@ public class VThread extends Thread {
 
         return true;
     }
-    
+
     /**
      * Interrupts a vthread specified by id. Threads may stop on interruption or
      * may continue to run. This depends on the concrete implementation of the
      * thread or its Runnable object.
+     *
      * @param id id of the vthread to interrupt
-     * @return <code>true</code> if stopping was successful; <code>false</code>
-     * otherwise
+     * @return <code>true</code> if interrupting was successful;
+     * <code>false</code> otherwise
      */
     public static boolean interruptVThread(Long id) {
-        
+
         updateThreadList();
         Map<Long, VThread> threadCopy = getVThreads();
-        
+
         if (threadCopy.containsKey(id)) {
             threadCopy.get(id).interrupt();
         } else {
@@ -222,5 +224,51 @@ public class VThread extends Thread {
      */
     public long getVId() {
         return id;
+    }
+
+    /**
+     * Interrupts all running vthreads. Threads may stop on interruption or may
+     * continue to run. This depends on the concrete implementation of the
+     * thread or its Runnable object.
+     *
+     * @return <code>true</code> if interrupting all vthreads was successful;
+     * <code>false</code> otherwise
+     */
+    public static boolean interruptAll() {
+        updateThreadList();
+
+        boolean result = true;
+
+        for (VThread vt : getVThreads().values()) {
+            if (!interruptVThread(vt.getVId())) {
+                result = false;
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Stops all running vthreads. Stopping a thread is a dangerous operation
+     * and may lead to unpredictable application behavior. Use this method with
+     * caution.
+     *
+     * @see Thread#stop()
+     *
+     * @return <code>true</code> if stopping all vthreads was successful;
+     * <code>false</code> otherwise
+     */
+    public static boolean stopAll() {
+        updateThreadList();
+
+        boolean result = true;
+
+        for (VThread vt : getVThreads().values()) {
+            if (!stopVThread(vt.getVId())) {
+                result = false;
+            }
+        }
+
+        return result;
     }
 }
