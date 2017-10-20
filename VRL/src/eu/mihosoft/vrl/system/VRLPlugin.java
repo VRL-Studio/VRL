@@ -109,9 +109,9 @@ public class VRLPlugin extends VPluginConfigurator {
         setDescription(Message.generateHTMLSpace(20)
                 + "Visual Reflection Library"
                 + Message.generateHTMLSpace(20));
-        setCopyrightInfo("VRL", "(c) 2006-2012 by Michael Hoffer"
+        setCopyrightInfo("VRL", "(c) 2006-2017 by Michael Hoffer"
                 + "<br><br>"
-                + "(c) 2009-2012 Steinbeis Forschungszentrum "
+                + "(c) 2009-2015 Steinbeis Forschungszentrum "
                 + "(STZ Ölbronn)<br>",
                 "http://vrl.mihosoft.eu", "LGPL v3",
                 "This version includes  copyright notice and attribution requirements."
@@ -137,7 +137,7 @@ public class VRLPlugin extends VPluginConfigurator {
                 + "<pre><br>" + readLicense() + "</pre>");
 
         addThirdPartyCopyrightInfo("Groovy",
-                "2003-2012 The Codehaus",
+                "2003-2017 The Codehaus",
                 "http://groovy.codehaus.org",
                 "Apache Software License 2",
                 "http://groovy.codehaus.org/License+Information");
@@ -293,7 +293,6 @@ public class VRLPlugin extends VPluginConfigurator {
 
 
         initTemplateProject(iApi);
-        
         
         
         // completion init       
@@ -777,6 +776,9 @@ class GroovyEditorConfiguration implements EditorConfiguration {
         p2.addCompletion(new VShortHandCompletion(p2, "oinf",
                 "@ObjectInfo(name=\"NAME\")",
                 "@ObjectInfo(name=\"NAME\")"));
+        p2.addCompletion(new VShortHandCompletion(p2, "ouinf",
+                "@OutputInfo(name=\"NAME\", style=\"default\", options=\"\")",
+                "@OutputInfo(name=\"NAME\")"));
         p2.addCompletion(new VShortHandCompletion(p2, "minf",
                 "@MethodInfo(name=\"\", valueName=\"\", valueStyle=\"default\", valueOptions=\"\")",
                 "@MethodInfo(name=\"\", valueName=\"\", valueStyle=\"default\", valueOptions=\"\")"));
