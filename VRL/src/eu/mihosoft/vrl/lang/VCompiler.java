@@ -36,18 +36,21 @@
  * Second, the copyright notice must remain. It must be reproduced in any
  * program that uses VRL.
  *
- * Third, add an additional notice, stating that you modified VRL. In addition
- * you must cite the publications listed below. A suitable notice might read
+ * Third, add an additional notice, stating that you modified VRL. A suitable
+ * notice might read
  * "VRL source code modified by YourName 2012".
  * 
  * Note, that these requirements are in full accordance with the LGPL v3
  * (see 7. Additional Terms, b).
  *
+ * Please cite the publication(s) listed below.
+ *
  * Publications:
  *
- * M. Hoffer, C.Poliwoda, G.Wittum. Visual Reflection Library -
- * A Framework for Declarative GUI Programming on the Java Platform.
- * Computing and Visualization in Science, 2011, in press.
+ * M. Hoffer, C. Poliwoda, & G. Wittum. (2013). Visual reflection library:
+ * a framework for declarative GUI programming on the Java platform.
+ * Computing and Visualization in Science, 2013, 16(4),
+ * 181–192. http://doi.org/10.1007/s00791-014-0230-y
  */
 
 package eu.mihosoft.vrl.lang;
