@@ -13,7 +13,7 @@ sourceCompatibility = '1.8'
 //repairHeaders.licenseHeaderText = new File(projectDir,'./license-template.txt')
 
 task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper to the current directory.') {
-    gradleVersion = '2.11'
+    gradleVersion = '4.2.1'
 }
 
 repositories {
@@ -61,7 +61,7 @@ publishing {
             artifactId 'vrl'
             groupId group
             artifact ('releases/v'+version+'/VRL.jar') {
-            
+
             }
             artifact ('releases/v'+version+'/VRL-src.jar') {
               classifier 'sources'
@@ -69,7 +69,7 @@ publishing {
             artifact ('releases/v'+version+'/VRL-API-doc.jar') {
                classifier 'javadoc'
             }
-          
+
             pom.withXml {
                 def root = asNode()
                 root.appendNode 'description', 'Visual Reflection Library'
