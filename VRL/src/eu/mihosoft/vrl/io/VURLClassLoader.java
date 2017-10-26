@@ -97,7 +97,13 @@ public class VURLClassLoader extends URLClassLoader {
     @Override
     public void close() throws IOException {
         setJarFileNames2Close.clear();
-        //closeClassLoader(this);
+        try {
+          closeClassLoader(this);
+        } catch(Throwable tr) {
+            // won't work with newer jdk's
+            // but super.close() whould be sufficient there since
+            // the implementation has changed a bit
+        }
         super.close();
         finalizeNativeLibs(this);
         cleanupJarFileFactory();

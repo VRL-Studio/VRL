@@ -149,7 +149,7 @@ public class ComponentUtil {
             int x = location.x;
             int y = (int) (location.y
                     - canvas.getStyle().getBaseValues().
-                    getFloat(CanvasWindow.SHADOW_WIDTH_KEY));
+                            getFloat(CanvasWindow.SHADOW_WIDTH_KEY));
 
             if (centered) {
                 x = location.x - window.getWidth() / 2;
@@ -201,7 +201,7 @@ public class ComponentUtil {
         int x = location.x;
         int y = (int) (location.y
                 - canvas.getStyle().getBaseValues().
-                getFloat(CanvasWindow.SHADOW_WIDTH_KEY));
+                        getFloat(CanvasWindow.SHADOW_WIDTH_KEY));
 
         if (centered) {
             x = location.x - window.getWidth() / 2;
@@ -257,7 +257,7 @@ public class ComponentUtil {
                 // convert from inspector id to window id
                 Collection<Integer> windowIDs
                         = mainCanvas.getInspector().
-                        getCanvasWindowIDs(o);
+                                getCanvasWindowIDs(o);
 
                 for (Integer winID : windowIDs) {
                     if (winID != null) {
@@ -278,11 +278,11 @@ public class ComponentUtil {
 
             Message m
                     = mainCanvas.getMessageBox().
-                    addMessage("Component Removed:",
-                            ">> component \"<b><tt>" + componentName
-                            + "</tt></b>\" has been successfully removed!",
-                            null,
-                            MessageType.INFO, 5);
+                            addMessage("Component Removed:",
+                                    ">> component \"<b><tt>" + componentName
+                                    + "</tt></b>\" has been successfully removed!",
+                                    null,
+                                    MessageType.INFO, 5);
             mainCanvas.getMessageBox().messageRead(m);
         }
     }
@@ -421,6 +421,22 @@ public class ComponentUtil {
     public static String getSessionName(Class<?> c) {
         String result = null;
 
+        // 26.10.2017
+        // as of JDK 8u15x we might run into trouble with
+        // loading resources. that's why we try to find it directly
+        try {
+            String componentName = c.getName();
+            File sessionFile
+                    = VRL.getCurrentProjectController().getProject().
+                            getSessionFileByEntryName(componentName);
+            
+            if(sessionFile.exists()) {
+                return sessionFile.getAbsolutePath();
+            }
+        } catch (Exception ex) {
+            // we have to try a different method
+        }
+        
         String sessionName = "/" + VLangUtils.dotToSlash(c.getName()) + ".vrlx";
 
         URL url = c.getResource(sessionName);
@@ -450,21 +466,39 @@ public class ComponentUtil {
     public static String getSessionCodeName(Class<?> c) {
         String result = null;
 
+        
+        
+        // 26.10.2017
+        // as of JDK 8u15x we might run into trouble with
+        // loading resources. that's why we try to find it directly
+        try {
+            String componentName = c.getName();
+            File codeFile
+                    = VRL.getCurrentProjectController().getProject().
+                            getSourceFileByEntryName(componentName);
+            
+            if(codeFile.exists()) {
+                return codeFile.getAbsolutePath();
+            }
+        } catch (Exception ex) {
+            // we have to try a different method
+        }
+        
         String sessionName = "/" + VLangUtils.dotToSlash(c.getName()) + ".groovy";
+        System.out.println("-> DEBUG: session code name: " + sessionName);
 
         URL url = c.getResource(sessionName);
 
         if (url != null) {
 
-            URLDecoder decoder = new URLDecoder();
             try {
-                result = decoder.decode(url.getFile(), "UTF-8");
+                result = URLDecoder.decode(url.getFile(), "UTF-8");
             } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(ComponentUtil.class.getName()).
                         log(Level.SEVERE, null, ex);
-                
+
                 // fallback
-                result = decoder.decode(url.getFile());
+                result = URLDecoder.decode(url.getFile());
             }
 
             File file = new File(result);
@@ -475,9 +509,14 @@ public class ComponentUtil {
             // if not we cannot use the file and return null
             if (!result.contains(
                     VRL.getPropertyFolderManager().getTmpFolder().getAbsolutePath())) {
+
+                System.out.println("-> DEBUG: session code name: cannot use code, since it's outside of our project:" + result);
+
                 result = null;
             }
         }
+
+        System.out.println("-> DEBUG: session code name: -> final code: " + result);
 
         return result;
     }

@@ -55,6 +55,7 @@
 package eu.mihosoft.vrl.reflection;
 
 import eu.mihosoft.vrl.annotation.AskIfCloseMethodInfo;
+import eu.mihosoft.vrl.annotation.ComponentInfo;
 import eu.mihosoft.vrl.annotation.ObjectInfo;
 import eu.mihosoft.vrl.io.TextLoader;
 import eu.mihosoft.vrl.io.vrlx.AbstractCode;
@@ -128,12 +129,12 @@ public class VisualObject extends CanvasWindow {
         CapabilityChangedListener capabilityChangedListener
                 = new CapabilityChangedListener() {
 
-                    @Override
-                    public void capabilityChanged(
-                            CapabilityManager manager, Integer bit) {
-                                defineCapabilities();
-                            }
-                };
+            @Override
+            public void capabilityChanged(
+                    CapabilityManager manager, Integer bit) {
+                defineCapabilities();
+            }
+        };
 
         addCapabilityListener(capabilityChangedListener);
 
@@ -174,8 +175,8 @@ public class VisualObject extends CanvasWindow {
                 try {
                     List<Connection> connections
                             = VisualObject.this.getMainCanvas().
-                            getControlFlowConnections().
-                            getAllWith(VisualObject.this);
+                                    getControlFlowConnections().
+                                    getAllWith(VisualObject.this);
 
                     //
                     // new redraw request for each connection to prevent
@@ -629,9 +630,9 @@ public class VisualObject extends CanvasWindow {
 //                                System.out.println(">> adding source icon: code");
                                 File codeFile
                                         = vCanvas.getProjectController().
-                                        getProject().
-                                        getSourceFileByEntryName(
-                                                componentClass.getName());
+                                                getProject().
+                                                getSourceFileByEntryName(
+                                                        componentClass.getName());
 
                                 TextLoader loader = new TextLoader();
                                 String text = (String) loader.loadFile(codeFile);
@@ -667,19 +668,42 @@ public class VisualObject extends CanvasWindow {
                             }
                         }
 
-                        System.out.println(">> adding source icon: deprecated");
+//                        System.out.println(">> adding source icon: deprecated");
+//
+//                        System.out.println("CODE: " + code);
 
-                        CanvasWindow window
-                                = new GroovyCodeWindow(mainCanvas,
-                                        code.getCode());
-                        getMainCanvas().getWindows().
-                                add(window);
+                        try {
+                            String componentName = componentClass.getName();
+                            File codeFile
+                                    = mainCanvas.getProjectController().getProject().
+                                            getSourceFileByEntryName(componentName);
 
-                        int winPosX = getX()
-                                - (window.getWidth() - getWidth()) / 2;
-                        int winPosY = getY();
+                            TextLoader loader = new TextLoader();
+                            String code = (String) loader.loadFile(codeFile);
 
-                        window.setLocation(winPosX, winPosY);
+                            GroovyCodeEditorComponent editWindow
+                                    = new GroovyCodeEditorComponent(code);
+
+                            CanvasWindow window
+                                    = mainCanvas.addObject(editWindow);
+
+                            int winPosX = getX()
+                                    - (window.getWidth() - getWidth()) / 2;
+                            int winPosY = getY();
+
+                            window.setLocation(winPosX, winPosY);
+
+//                        String title = "Groovy Code: " 
+//                                +tree.canvas.getProjectController().
+//                                getProject().
+//                                getEntryNameWithoutDefaultPackage(componentName);
+//                        
+//                        w.setTitle(title);
+                        } catch (IOException ex) {
+                            Logger.getLogger(
+                                    ComponentCellRenderer.class.getName()).
+                                    log(Level.SEVERE, null, ex);
+                        }
 
 //                        Class<?> componentClass =
 //                                vCanvas.getInspector().
