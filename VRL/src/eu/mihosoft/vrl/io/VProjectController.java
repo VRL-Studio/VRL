@@ -148,7 +148,7 @@ public class VProjectController {
     /**
      * defines the maximum number of repair attempts (project build).
      */
-    private int maxRepairAttempts = 20;
+    private int maxRepairAttempts = 10;
     public static final String ON_CANVAS_CLOSE = "VProjectController:on-canvas-close";
     public static final String ON_CANVAS_OPEN = "VProjectController:on-canvas-open";
     /**
@@ -1258,7 +1258,7 @@ public class VProjectController {
                 = "<b>Broken Entries:</b>"
                 + "<ul>";
 
-        while (!result.isSuccessful() && numberOfRepairAttempts < maxRepairAttempts) {
+        while (!result.isSuccessful() && numberOfRepairAttempts < getMaxRepairAttempts()) {
 
             numberOfRepairAttempts++;
 
@@ -3070,6 +3070,20 @@ public class VProjectController {
      */
     public boolean removeActionListener(ActionListener l) {
         return actionListeners.remove(l);
+    }
+
+    /**
+     * @return the max repair attempts
+     */
+    public int getMaxRepairAttempts() {
+        return maxRepairAttempts;
+    }
+
+    /**
+     * @param maxRepairAttempts max repair attempts to set
+     */
+    public void setMaxRepairAttempts(int maxRepairAttempts) {
+        this.maxRepairAttempts = maxRepairAttempts;
     }
 } // end class VProjectController
 
