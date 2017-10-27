@@ -59,6 +59,7 @@ import eu.mihosoft.vrl.asm.ClassFileDependency;
 import eu.mihosoft.vrl.asm.CompilationUnit;
 import eu.mihosoft.vrl.dialogs.NewComponentDialog;
 import eu.mihosoft.vrl.io.vrlx.*;
+import eu.mihosoft.vrl.lang.InstanceCreator;
 import eu.mihosoft.vrl.lang.ProjectBuilder;
 import eu.mihosoft.vrl.lang.VBuildResult;
 import eu.mihosoft.vrl.lang.VLangUtils;
@@ -153,16 +154,16 @@ public class VProjectController {
     /**
      * list of action listeners
      */
-    private Collection<ActionListener> actionListeners =
-            new ArrayList<ActionListener>();
+    private Collection<ActionListener> actionListeners
+            = new ArrayList<ActionListener>();
     /**
      * Session disposables. (threads and other resources that shall be disposed
      * on session close)
      */
-    HashMap<String, ArrayList<Disposable>> sessionDisposablesByName =
-            new HashMap<String, ArrayList<Disposable>>();
-    private static final String ASK_FOR_SAVE_BEFORE_CLOSE_TEXT =
-            "<p>Closing current Project.<p>"
+    HashMap<String, ArrayList<Disposable>> sessionDisposablesByName
+            = new HashMap<String, ArrayList<Disposable>>();
+    private static final String ASK_FOR_SAVE_BEFORE_CLOSE_TEXT
+            = "<p>Closing current Project.<p>"
             + "<p>Do you want to save the current session?</p><br>"
             + "<p><b>Unsaved changes will be lost!</b></p>";
 
@@ -218,9 +219,10 @@ public class VProjectController {
 
     /**
      * Adds a session thread. Session threads are terminated after the current
-     * session has been closed. <p><b>Note:</b> this method will first try to
-     * interrupt session threads. If this does not work the thread will be
-     * terminated after one second.</p>
+     * session has been closed.
+     * <p>
+     * <b>Note:</b> this method will first try to interrupt session threads. If
+     * this does not work the thread will be terminated after one second.</p>
      *
      * @param t session thread
      * @throws IllegalStateException if no session has been opened before
@@ -232,9 +234,11 @@ public class VProjectController {
 
     /**
      * Adds a session thread. Session threads are terminated after the current
-     * session has been closed. <p><b>Note:</b> this method will first try to
-     * interrupt session threads. If this does not work the thread will be
-     * terminated after the specified timeout/retries.</p>
+     * session has been closed.
+     * <p>
+     * <b>Note:</b> this method will first try to interrupt session threads. If
+     * this does not work the thread will be terminated after the specified
+     * timeout/retries.</p>
      *
      * @param t session thread
      * @param timeout timeout (in milliseconds)
@@ -352,11 +356,10 @@ public class VProjectController {
 //                    "The session is currently open.");
 //            return;
 //        }
-
         if (ask) {
 
-            String displayName =
-                    project.getEntryNameWithoutDefaultPackage(name);
+            String displayName
+                    = project.getEntryNameWithoutDefaultPackage(name);
 
 //            if (VDialog.showConfirmDialog(getCurrentCanvas(),
 //                    "Open Session:",
@@ -369,7 +372,6 @@ public class VProjectController {
 //                    VDialog.DialogType.YES_NO) != VDialog.YES) {
 //                return false;
 //            }
-
             int answer = VDialog.showConfirmDialog(getCurrentCanvas(),
                     "Open Session:",
                     "<html><div align=Center>"
@@ -396,8 +398,8 @@ public class VProjectController {
 
         name = VLangUtils.dotToSlash(name);
 //
-        ArrayList<Component> canvasList =
-                VSwingUtil.getAllChildren(canvasParent, Canvas.class);
+        ArrayList<Component> canvasList
+                = VSwingUtil.getAllChildren(canvasParent, Canvas.class);
 
         for (Component component : canvasList) {
             canvasParent.remove(component);
@@ -424,7 +426,6 @@ public class VProjectController {
         try {
 
             // VisualCanvas canvas = new VisualCanvas();
-
             canvasParent.add(mainCanvas);
 
             // convert used plugins to compatible format
@@ -442,10 +443,13 @@ public class VProjectController {
             // add project classpath
             mainCanvas.getClassLoader().addURL(
                     getProject().getContentLocation().toURI().toURL());
-
+            
             if (compile) {
                 build();
             }
+            
+            // (*) (see below)
+            addComponentClassesToCurrentCanvas();
 
             project.openSessionEntry(mainCanvas, name);
 
@@ -474,7 +478,12 @@ public class VProjectController {
             // studio frame
             mainCanvas.setSessionFileName(project.getFile().getAbsolutePath());
 
-            addComponentClassesToCurrentCanvas();
+            // TODO 27.102017 causes problems on newer JDK versions
+            // referenced classes cannot be found (if one class references 
+            // another class in code)
+            // therefore we call it before objects are deserialized
+            // (see (*) above)
+            // addComponentClassesToCurrentCanvas();
 
             // focus request is highly important because otherwise
             // vshortcut listeners do not work ?!?
@@ -525,11 +534,11 @@ public class VProjectController {
         VisualObject vStart = canvas.addObject(startObj);
         VisualObject vStop = canvas.addObject(stopObject, new Point(200, 0));
 
-        ControlFlowConnector controlflowStart =
-                vStart.getObjectRepresentation().getControlFlowOutput();
+        ControlFlowConnector controlflowStart
+                = vStart.getObjectRepresentation().getControlFlowOutput();
 
-        ControlFlowConnector controlflowStop =
-                vStop.getObjectRepresentation().getControlFlowInput();
+        ControlFlowConnector controlflowStop
+                = vStop.getObjectRepresentation().getControlFlowInput();
 
         canvas.getControlFlowConnections().add(controlflowStart, controlflowStop);
 
@@ -607,7 +616,6 @@ public class VProjectController {
             // be deleted
 //            ProjectBuilder.clean(this);
 //            result = result && ProjectBuilder.build(this);
-
             project.flush();
         }
 
@@ -628,17 +636,16 @@ public class VProjectController {
 
         if (getCurrentCanvas() != null
                 && project.getFullEntryName(name).equals(
-                project.getFullEntryName("Main"))) {
+                        project.getFullEntryName("Main"))) {
             VDialog.showMessageDialog(getCurrentCanvas(),
                     "Cannot delete Session:",
                     "Main session cannot be deleted.");
             return false;
         }
 
-
         if (getCurrentCanvas() != null
                 && project.getFullEntryName(getCurrentSession()).equals(
-                project.getFullEntryName(name))) {
+                        project.getFullEntryName(name))) {
             VDialog.showMessageDialog(getCurrentCanvas(),
                     "Cannot delete Session/Component:",
                     "Close the session before deleting it.");
@@ -647,15 +654,15 @@ public class VProjectController {
 
         ArrayList<String> deps = project.getSessionsDependingOn(name);
 
-        String fullName =
-                VLangUtils.slashToDot(project.getFullEntryName(name)).trim();
+        String fullName
+                = VLangUtils.slashToDot(project.getFullEntryName(name)).trim();
 
         // searches classes that need the session entry that shall be deleted
         // stores these dependencies in a string list
         for (ClassFileDependency clsDep : getNamesOfUsedClasses()) {
 
-            String classFileClassName =
-                    getProject().getClassNameFromFile(clsDep.getFile());
+            String classFileClassName
+                    = getProject().getClassNameFromFile(clsDep.getFile());
 
             classFileClassName = VLangUtils.slashToDot(classFileClassName);
 
@@ -694,7 +701,7 @@ public class VProjectController {
                     + "<p>The following Sessions/Components depend on "
                     + Message.EMPHASIZE_BEGIN
                     + project.getEntryNameWithoutDefaultPackage(
-                    project.getFullEntryName(name))
+                            project.getFullEntryName(name))
                     + Message.EMPHASIZE_END + ":<p>"
                     + depsList
                     + "<p><b>Remove this component in the above listed"
@@ -711,7 +718,7 @@ public class VProjectController {
         if (result) {
             recentSessionManager.removeRecentSession(
                     project.getEntryNameWithoutDefaultPackage(
-                    project.getFullEntryName(name)));
+                            project.getFullEntryName(name)));
             sessionHistoryController.remove(project.getFullEntryName(name));
             build(false, false);
 
@@ -767,7 +774,6 @@ public class VProjectController {
 
                 return false;
             }
-
 
             if (!copyEntry(name, info)) {
 
@@ -833,8 +839,8 @@ public class VProjectController {
         }
 
         // create destination directory if it does not exist
-        File destinationFolder =
-                project.getSessionFileByEntryName(newName).getParentFile();
+        File destinationFolder
+                = project.getSessionFileByEntryName(newName).getParentFile();
         destinationFolder.mkdirs();
 
         // copy session file
@@ -853,10 +859,9 @@ public class VProjectController {
         }
 
         // Modify AbstractSession
-
-        SessionEntryFile sessionEntryFile =
-                model.getFile(file,
-                VRLXAbstractSession.CONTENT_PATH);
+        SessionEntryFile sessionEntryFile
+                = model.getFile(file,
+                        VRLXAbstractSession.CONTENT_PATH);
 
         Object o = model.getFileContent(
                 sessionEntryFile, AbstractSession.class);
@@ -870,7 +875,6 @@ public class VProjectController {
         abstractSession.getInfo().setComponentName(newName);
 
         // Modify AbstractCodes
-
         sessionEntryFile = model.getFile(file, VRLXReflection.CODE_PATH);
 
         o = null;
@@ -897,7 +901,7 @@ public class VProjectController {
 
         String importString = "package "
                 + VLangUtils.slashToDot(
-                VLangUtils.packageNameFromFullClassName(newName)) + "\n\n";
+                        VLangUtils.packageNameFromFullClassName(newName)) + "\n\n";
 
         Iterable<String> imports = new GroovyCompiler().getImports();
         for (String imp : imports) {
@@ -906,14 +910,12 @@ public class VProjectController {
 
         code.setCode(importString + "\n\n" + code.getCode());
 
-
         File codeFile = project.getSourceFileByEntryName(newName);
 
         TextSaver saver = new TextSaver();
         saver.saveFile(code.getCode(), codeFile, ".groovy");
 
         ProjectBuilder.build(this);
-
 
         return true;
     }
@@ -938,11 +940,11 @@ public class VProjectController {
      * reference each other; <code>false</code> otherwie
      */
     public boolean canvasClassesReferenceEachOther() {
-        Collection<CompilationUnit> namesOfClassesOnCanvas =
-                getNamesOfClassesDefinedOnCanvas();
+        Collection<CompilationUnit> namesOfClassesOnCanvas
+                = getNamesOfClassesDefinedOnCanvas();
 
-        Collection<Collection<String>> namesOfClassesUsedOnCanvas =
-                getNamesOfClassesUsedOnCanvas();
+        Collection<Collection<String>> namesOfClassesUsedOnCanvas
+                = getNamesOfClassesUsedOnCanvas();
 
         // check whether intersection occurs
         for (CompilationUnit n : namesOfClassesOnCanvas) {
@@ -974,14 +976,14 @@ public class VProjectController {
     public Collection<String> getNamesOfClassesThatUse(String className) {
         Collection<String> result = new ArrayList<String>();
 
-        Collection<CompilationUnit> namesOfDefinedClasses =
-                getNamesOfDefinedClasses();
+        Collection<CompilationUnit> namesOfDefinedClasses
+                = getNamesOfDefinedClasses();
 
         for (CompilationUnit cu : namesOfDefinedClasses) {
             Set<String> classesUsedBy = null;
             try {
-                classesUsedBy =
-                        ByteCodeUtil.getClassesUsedBy(cu.getFile(), "");
+                classesUsedBy
+                        = ByteCodeUtil.getClassesUsedBy(cu.getFile(), "");
 
             } catch (IOException ex) {
                 System.out.println(
@@ -1010,8 +1012,8 @@ public class VProjectController {
         ArrayList<File> files = IOUtil.listFiles(getProject().
                 getContentLocation(), new String[]{".class"});
 
-        Collection<ClassFileDependency> result =
-                new ArrayList<ClassFileDependency>();
+        Collection<ClassFileDependency> result
+                = new ArrayList<ClassFileDependency>();
 
         for (File f : files) {
 
@@ -1025,8 +1027,8 @@ public class VProjectController {
             }
 
             try {
-                Collection<String> classNames =
-                        ByteCodeUtil.getClassesUsedBy(f, "");
+                Collection<String> classNames
+                        = ByteCodeUtil.getClassesUsedBy(f, "");
 
                 result.add(new ClassFileDependencyImpl(f, classNames));
             } catch (Exception ex) {
@@ -1047,14 +1049,14 @@ public class VProjectController {
      */
     public Collection<Collection<String>> getNamesOfClassesUsedOnCanvas() {
 
-        ArrayList<Collection<String>> result =
-                new ArrayList<Collection<String>>();
+        ArrayList<Collection<String>> result
+                = new ArrayList<Collection<String>>();
 
         for (File f : getClassFilesOfClassesDefinedOnCanvas()) {
 
             try {
-                Collection<String> classNames =
-                        ByteCodeUtil.getClassesUsedBy(f, "");
+                Collection<String> classNames
+                        = ByteCodeUtil.getClassesUsedBy(f, "");
 
                 result.add(classNames);
             } catch (Exception ex) {
@@ -1161,8 +1163,8 @@ public class VProjectController {
     /**
      * Removes classfiles of inner classes. The purpose of this method is to
      * allow removal of associated classfiles if the specified class shall be
-     * changed (recompiled). In many cases no
-     * <code>clean()</code> on the whole project is necessary.
+     * changed (recompiled). In many cases no <code>clean()</code> on the whole
+     * project is necessary.
      *
      * @param clsName class name
      * @param excludeOuterCls defines whether to exclude the class file of the
@@ -1185,8 +1187,8 @@ public class VProjectController {
         Collection<String> classNamesFromClassFile = new ArrayList<String>();
 
         try {
-            classNamesFromClassFile =
-                    ByteCodeUtil.getClassNames(classFile);
+            classNamesFromClassFile
+                    = ByteCodeUtil.getClassNames(classFile);
 
             if (excludeOuterCls) {
                 // remove this class from list.
@@ -1207,9 +1209,9 @@ public class VProjectController {
             }
 
             for (String n : classNamesFromClassFile) {
-                File f =
-                        getProject().
-                        getClassFileByEntryName(n);
+                File f
+                        = getProject().
+                                getClassFileByEntryName(n);
 
                 System.out.println(
                         " --> deleting: " + f + " [" + f.delete() + "]");
@@ -1222,9 +1224,7 @@ public class VProjectController {
     /**
      * Builds the project. To prevent cleaning of the whole project one may
      * consider {@link #removeInnerClassFilesOf(java.lang.String) } instead of
-     * setting the
-     * <code>clean</code> property to
-     * <code>true</code>.
+     * setting the <code>clean</code> property to <code>true</code>.
      *
      * @param clean defines whether to clean the project before building it
      * @param showInfoMsg defines whether to show an info message if the project
@@ -1254,8 +1254,8 @@ public class VProjectController {
             System.out.println(">> Project code does not compile! Repairing:");
         }
 
-        String brokenEntriesMsgString =
-                "<b>Broken Entries:</b>"
+        String brokenEntriesMsgString
+                = "<b>Broken Entries:</b>"
                 + "<ul>";
 
         while (!result.isSuccessful() && numberOfRepairAttempts < maxRepairAttempts) {
@@ -1264,7 +1264,6 @@ public class VProjectController {
 
             String msg = ">> Project code does not compile. Trying to repair (attempt "
                     + numberOfRepairAttempts + ")...<br>";
-
 
             System.out.println(" --> trying to repair (attempt "
                     + numberOfRepairAttempts + ")");
@@ -1330,7 +1329,6 @@ public class VProjectController {
 
             brokenEntriesMsgString += "</ul>";
 
-
             VMessage.warning("Project needs to be repaired:",
                     msg + "<br>" + brokenEntriesMsgString);
 
@@ -1364,7 +1362,6 @@ public class VProjectController {
 //                        ">> project successfully compiled.", MessageType.INFO);
 //                mBox.messageRead(m);
 //            }
-
         if (canvas != null && !result.isSuccessful()) {
 
             String errorMessage = result.getErrorMessage();
@@ -1407,9 +1404,7 @@ public class VProjectController {
         getCurrentCanvas().setActive(true, true);
 
         // repair end
-
         // add updated classes to canvas etc.
-
         addComponentClassesToCurrentCanvas();
 
         VSwingUtil.invokeLater(new Runnable() {
@@ -1455,7 +1450,6 @@ public class VProjectController {
 //                Logger.getLogger(VProjectController.class.getName()).log(Level.SEVERE, null, ex);
 //            }
 //        }
-
         GroovyCodeEditorComponent.updateAllCodeEditorsOnCanvas(getCurrentCanvas());
 
         return result.isSuccessful();
@@ -1471,7 +1465,6 @@ public class VProjectController {
                 project.getContentLocation(), new String[]{".class"});
 
 //        Collection<Class<?>> result = new ArrayList<Class<?>>();
-
         VisualCanvas canvas = getCurrentCanvas();
 
         String currentSessionClassName = VLangUtils.slashToDot(
@@ -1479,7 +1472,6 @@ public class VProjectController {
 
 //        System.out.println("Removing: " + currentSessionClassName);
 //        canvas.getClassLoader().removeClassByName(currentSessionClassName);
-
         canvas.getClassLoader().updateClassLoader();
 
         for (File f : componentClasses) {
@@ -1489,8 +1481,8 @@ public class VProjectController {
             // only allow class files that are defined by a session or groovy
             // code. classes defined by AbstractCode, GroovyWindow etc. are
             // excluded
-            boolean isSessionComponent =
-                    project.getSourceFileByEntryName(className).isFile();
+            boolean isSessionComponent
+                    = project.getSourceFileByEntryName(className).isFile();
 
             if (!isSessionComponent) {
                 continue;
@@ -1505,6 +1497,7 @@ public class VProjectController {
 //                result.add(cls);
 
                 canvas.addClass(cls);
+                
 
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(VProjectController.class.getName()).
@@ -1527,7 +1520,6 @@ public class VProjectController {
 //                        }
 //                    }
 //                }
-
 //        return result;
     }
 
@@ -1625,19 +1617,19 @@ public class VProjectController {
     public boolean newProject(File f, boolean askForClose, boolean askIfOverwriteCurrentProject)
             throws IOException {
 
-        boolean newProjectIsCurrentProject =
-                getProject() != null && getProject().getFile().equals(f);
+        boolean newProjectIsCurrentProject
+                = getProject() != null && getProject().getFile().equals(f);
 
         if (askIfOverwriteCurrentProject) {
             if (newProjectIsCurrentProject
                     && getCurrentCanvas() != null
                     && VDialog.showConfirmDialog(getCurrentCanvas(),
-                    "Overwrite Current Project:",
-                    "<html><div align=Center>"
-                    + "<p>Do you want to overwrite the current project?<p>"
-                    + "<p><b>Current project will be lost!</b></p>"
-                    + "</div></html>",
-                    VDialog.DialogType.YES_NO) != VDialog.YES) {
+                            "Overwrite Current Project:",
+                            "<html><div align=Center>"
+                            + "<p>Do you want to overwrite the current project?<p>"
+                            + "<p><b>Current project will be lost!</b></p>"
+                            + "</div></html>",
+                            VDialog.DialogType.YES_NO) != VDialog.YES) {
                 return false;
             }
         }
@@ -1752,12 +1744,12 @@ public class VProjectController {
             }
         }
 
-        Collection<AbstractPluginDependency> pluginDependencies =
-                new ArrayList<AbstractPluginDependency>();
+        Collection<AbstractPluginDependency> pluginDependencies
+                = new ArrayList<AbstractPluginDependency>();
 
         try {
-            pluginDependencies =
-                    getProject().getProjectInfo().getPluginDependencies();
+            pluginDependencies
+                    = getProject().getProjectInfo().getPluginDependencies();
         } catch (Throwable tr) {
             System.out.println(">> warning: no plugin dependencies in project!");
         }
@@ -1883,7 +1875,6 @@ public class VProjectController {
             deleteProjectPluginPayloadAndFlush(project);
         }
 
-
         // check for required plugins
         PluginDependencyCheck check = VRL.verify(pluginDependencies);
 
@@ -1935,7 +1926,6 @@ public class VProjectController {
             }
         }
 
-
         open("Main", false, false);
 
         return true;
@@ -1946,7 +1936,6 @@ public class VProjectController {
      * project.
      */
     private void includeUsedPlugins() {
-
 
         for (AbstractPluginDependency aPD : getProject().getProjectInfo().getPluginDependencies()) {
             PluginDependency pD = aPD.toPluginDependency();
@@ -2044,10 +2033,11 @@ public class VProjectController {
     }
 
     /**
-     * Saves the current project to a new location. <p><b>Note:</b> the project
-     * location changes permanently to the new location. That is, calling
-     * {@link #saveProject(boolean, boolean) } etc. will save changes to the new
-     * location.</p>
+     * Saves the current project to a new location.
+     * <p>
+     * <b>Note:</b> the project location changes permanently to the new
+     * location. That is, calling {@link #saveProject(boolean, boolean) } etc.
+     * will save changes to the new location.</p>
      *
      * @param commitChanges defines whether to commit changes
      * @param showSaveConfirmMsg defines wether to show a confirmation message
@@ -2060,10 +2050,11 @@ public class VProjectController {
     }
 
     /**
-     * Saves the current project to a new location. <p><b>Note:</b> the project
-     * location changes permanently to the new location. That is, calling
-     * {@link #saveProject(boolean, boolean) } etc. will save changes to the new
-     * location.</p>
+     * Saves the current project to a new location.
+     * <p>
+     * <b>Note:</b> the project location changes permanently to the new
+     * location. That is, calling {@link #saveProject(boolean, boolean) } etc.
+     * will save changes to the new location.</p>
      *
      * @param showSaveConfirmMsg defines wether to show a confirmation message
      * @throws IOException
@@ -2075,10 +2066,11 @@ public class VProjectController {
     }
 
     /**
-     * Saves the current project to a new location. <p><b>Note:</b> the project
-     * location changes permanently to the new location. That is, calling
-     * {@link #saveProject(boolean, boolean) } etc. will save changes to the new
-     * location.</p>
+     * Saves the current project to a new location.
+     * <p>
+     * <b>Note:</b> the project location changes permanently to the new
+     * location. That is, calling {@link #saveProject(boolean, boolean) } etc.
+     * will save changes to the new location.</p>
      *
      * @param commitChanges defines whether to commit changes
      * @param l commit listener that allows to react on commit action (may be
@@ -2092,10 +2084,11 @@ public class VProjectController {
     }
 
     /**
-     * Saves the current project to a new location. <p><b>Note:</b> the project
-     * location changes permanently to the new location. That is, calling
-     * {@link #saveProject(boolean, boolean) } etc. will save changes to the new
-     * location.</p>
+     * Saves the current project to a new location.
+     * <p>
+     * <b>Note:</b> the project location changes permanently to the new
+     * location. That is, calling {@link #saveProject(boolean, boolean) } etc.
+     * will save changes to the new location.</p>
      *
      * @param l commit listener that allows to react on commit action (may be
      * null)
@@ -2133,7 +2126,6 @@ public class VProjectController {
             throws IOException {
 
         name = getProject().getFullEntryName(name);
-
 
         VisualCanvas canvas = getSessionCanvas(name);
 
@@ -2288,10 +2280,9 @@ public class VProjectController {
 
     /**
      * Asks the user whether to save the current project. If the user either
-     * clicks on "save" or "discard" this method will return
-     * <code>true</code>. It returns
-     * <code>false</code> if the user clicks on "cancel" or if saving is not
-     * possible.
+     * clicks on "save" or "discard" this method will return <code>true</code>.
+     * It returns <code>false</code> if the user clicks on "cancel" or if saving
+     * is not possible.
      *
      * @param title title of the question dialog
      * @param the message text (html)
@@ -2325,10 +2316,10 @@ public class VProjectController {
                 }
             }
         } catch (IOException ex) {
-            VDialog.AnswerType result =
-                    VDialog.showConfirmDialog(getCurrentCanvas(),
-                    "Error while saving project!",
-                    "Dou you still want to proceed?", VDialog.YES_NO);
+            VDialog.AnswerType result
+                    = VDialog.showConfirmDialog(getCurrentCanvas(),
+                            "Error while saving project!",
+                            "Dou you still want to proceed?", VDialog.YES_NO);
             if (result != VDialog.YES) {
                 return false;
             }
@@ -2381,7 +2372,6 @@ public class VProjectController {
 
         int sizeAll = getProject().getProjectFile().
                 getUncommittedChanges().size();
-
 
         // if number of changes is different from
         // visual changes and code changes we must have other changes
@@ -2515,8 +2505,9 @@ public class VProjectController {
     /**
      * Saves all opened sessions, flushes the project (writes to archive) and
      * exports the project with all used plugins to the specified destination.
-     * <p> <b>Note:</b> this method will returns immediately. All work is done
-     * in a new thread. </p>
+     * <p>
+     * <b>Note:</b> this method will returns immediately. All work is done in a
+     * new thread. </p>
      *
      * @param dest archive destination
      * @param commitChanges defines whether to commit changes
@@ -2530,8 +2521,9 @@ public class VProjectController {
     /**
      * Saves all opened sessions, flushes the project (writes to archive) and
      * exports the project with all used plugins to the specified destination.
-     * <p> <b>Note:</b> this method will returns immediately. All work is done
-     * in a new thread. </p>
+     * <p>
+     * <b>Note:</b> this method will returns immediately. All work is done in a
+     * new thread. </p>
      *
      * @param dest archive destination
      * @param commitChanges defines whether to commit changes
@@ -2543,8 +2535,8 @@ public class VProjectController {
      */
     public Thread export(final File dst, boolean commitChanges, final boolean eventFiltersAndVisual) throws IOException {
 
-        final boolean visualSaveIndocation =
-                VProjectController.this.isVisualSaveIndication();
+        final boolean visualSaveIndocation
+                = VProjectController.this.isVisualSaveIndication();
 
         VProjectController.this.setVisualSaveIndication(false);
 
@@ -2616,9 +2608,8 @@ public class VProjectController {
     public VisualCanvas getCurrentCanvas() {
         VisualCanvas result = null;
 
-        ArrayList<Component> canvasList =
-                VSwingUtil.getAllChildren(canvasParent, VisualCanvas.class);
-
+        ArrayList<Component> canvasList
+                = VSwingUtil.getAllChildren(canvasParent, VisualCanvas.class);
 
         if (!canvasList.isEmpty()) {
 
@@ -2821,8 +2812,8 @@ public class VProjectController {
     }
 
     private static Collection<PluginConfigurator> getProjectPluginPayload(VProject project) {
-        Collection<PluginConfigurator> projectPlugins =
-                new ArrayList<PluginConfigurator>();
+        Collection<PluginConfigurator> projectPlugins
+                = new ArrayList<PluginConfigurator>();
 
         File pluginPayload = new File(project.getNonVersionedPayloadFolder(), "plugins");
 
@@ -2850,8 +2841,7 @@ public class VProjectController {
      * Exports the project as runnable console application. Therefore, the
      * project must provide a main componen/class that provides a
      * <code>run(..)</code> method that takes either no parameters or a string
-     * array (
-     * <code>String[]</code>) as parameter.
+     * array ( <code>String[]</code>) as parameter.
      *
      * @param dest destination file (must end with zip, existing files will be
      * overwritten)
@@ -2866,8 +2856,8 @@ public class VProjectController {
             throw new IllegalArgumentException("file must end with .zip!");
         }
 
-        final boolean visualSaveIndocation =
-                VProjectController.this.isVisualSaveIndication();
+        final boolean visualSaveIndocation
+                = VProjectController.this.isVisualSaveIndication();
 
         VProjectController.this.setVisualSaveIndication(false);
 
@@ -2937,7 +2927,6 @@ public class VProjectController {
 
                     // delete dest tmp folder
                     IOUtil.deleteDirectory(destFolder);
-                    
 
                     VSwingUtil.deactivateEventFilter();
                     VSwingUtil.invokeLater(new Runnable() {
@@ -2947,7 +2936,6 @@ public class VProjectController {
                         }
                     });
                     VProjectController.this.setVisualSaveIndication(visualSaveIndocation);
-                    
 
                 } catch (IOException ex) {
                     Logger.getLogger(VProjectController.class.getName()).log(Level.SEVERE, null, ex);
@@ -2994,13 +2982,13 @@ public class VProjectController {
             VProject project,
             Collection<PluginConfigurator> projectPlugins) {
 
-        Collection<File> pluginsToInstall =
-                new ArrayList<File>();
+        Collection<File> pluginsToInstall
+                = new ArrayList<File>();
 
         for (PluginConfigurator pC : projectPlugins) {
 
-            PluginConfigurator installedPlugin =
-                    VRL.getPluginConfiguratorByName(pC.getIdentifier().getName());
+            PluginConfigurator installedPlugin
+                    = VRL.getPluginConfiguratorByName(pC.getIdentifier().getName());
 
             // plugin is not available, mark it for install
             if (installedPlugin == null) {
@@ -3335,8 +3323,8 @@ class SessionHistoryImpl implements SessionHistoryController {
     }
 
     /**
-     * Updates the item status, e.g., updates
-     * <code>setEnabled(...)</code> of the corresponding ui elements.
+     * Updates the item status, e.g., updates <code>setEnabled(...)</code> of
+     * the corresponding ui elements.
      */
     private void updateItemStates() {
 

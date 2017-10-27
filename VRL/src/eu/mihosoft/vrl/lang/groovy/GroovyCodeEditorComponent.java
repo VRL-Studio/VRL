@@ -1271,42 +1271,6 @@ public class GroovyCodeEditorComponent implements Serializable {
                 Collection<Object> instances = canvas.getInspector().
                         getObjectsByClassName(cls.getName());
 
-                // try to auto-readd components after they have been removed
-                // due to interface changed
-//                class InstanceEntry {
-//                    private Class<?> cls;
-//                    private int x;
-//                    private int y;
-//
-//                    public InstanceEntry(Class<?> cls, int x, int y) {
-//                        this.cls = cls;
-//                        this.x = x;
-//                        this.y = y;
-//                    }
-//
-//                    /**
-//                     * @return the cls
-//                     */
-//                    public Class<?> getCls() {
-//                        return cls;
-//                    }
-//
-//                    /**
-//                     * @return the x
-//                     */
-//                    public int getX() {
-//                        return x;
-//                    }
-//
-//                    /**
-//                     * @return the y
-//                     */
-//                    public int getY() {
-//                        return y;
-//                    }
-// 
-//                }
-
                 for (Object o : instances) {
                     // convert from inspector id to window id
                     Collection<Integer> windowIDs =
