@@ -63,6 +63,7 @@ import java.io.Serializable;
  * Interface for functions with vector-valued input and output.
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
+@FunctionalInterface
 public interface Function extends Serializable{
 
     /**
