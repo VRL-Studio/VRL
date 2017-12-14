@@ -61,6 +61,7 @@ import java.io.Serializable;
  * Interface for functions with two dimensional input.
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
+@FunctionalInterface
 public interface Function2D extends Serializable{
     /**
      * Returns the function output.
