@@ -91,10 +91,10 @@ public class CanvasStyleManager implements CanvasChild {
 //            DEFAULT_LOOK_AND_FEEL =
 //                    "com.apple.laf.AquaLookAndFeel";
             DEFAULT_LOOK_AND_FEEL
-                    = "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
+                    = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
         } else {
             DEFAULT_LOOK_AND_FEEL
-                    = "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
+                    = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
         }
     }
 

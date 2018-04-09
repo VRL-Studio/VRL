@@ -235,7 +235,7 @@
 //
 //
 ////        getBaseValues().put("LookAndFeel",
-////                "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+////                "javax.swing.plaf.nimbus.NimbusLookAndFeel");
 //
 ////        getBaseValues().put("LookAndFeel",
 ////                "javax.swing.plaf.metal.MetalLookAndFeel");

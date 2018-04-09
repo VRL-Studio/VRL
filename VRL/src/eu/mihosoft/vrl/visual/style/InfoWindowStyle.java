@@ -103,7 +103,7 @@
 //        // ********* new style options (now is pre 0.3.8.11) *********
 //
 ////        getBaseValues().put("LookAndFeel",
-////                "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+////                "javax.swing.plaf.nimbus.NimbusLookAndFeel");
 //
 //        // Nimbus related
 //        getLookAndFeelValues().put("nimbusBase", new Color(24, 24, 24));

@@ -890,6 +890,22 @@ public class DefaultMethodRepresentation extends VComponent
     Object invoke(VisualObjectInspector inspector) throws InvocationTargetException {
         return invoke(inspector, new CallTrace());
     }
+    
+    public static void setDebug(boolean value) {
+        DEBUG = value;
+    } 
+    
+    private static boolean DEBUG = false;
+    
+    public static boolean isDebug() {
+        return DEBUG;
+    }
+    
+    private static void logDebug(String text) {
+        if(isDebug()) {
+            System.out.println(text);
+        }
+    }
 
     /**
      * Receives parameter data from connected type representations.
@@ -897,11 +913,11 @@ public class DefaultMethodRepresentation extends VComponent
      * @param methodDependencies the method dependencies
      */
     private void receiveParamData(CallTrace methodDependencies) {
-        System.out.println("RECEIVE:");
+        logDebug("RECEIVE:");
         try {
             // set ParamValues
             for (VConnector c : this.connectorsMap.values()) {
-                System.out.println("->rec: " + c.getId());
+                logDebug("-> rec: " + c.getId());
                 c.receiveData(true, methodDependencies);
             }
         } catch (Exception ex) {

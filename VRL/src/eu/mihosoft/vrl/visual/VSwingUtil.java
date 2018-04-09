@@ -788,7 +788,7 @@ public class VSwingUtil {
         // force nimbus style for bottom pane as osx style looks very bad
         // we have to get rid of theese crappy apple "enhancements"
 
-        String lookAndFeel = "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel";
+        String lookAndFeel = "javax.swing.plaf.nimbus.NimbusLookAndFeel";
 
         try {
             UIManager.setLookAndFeel(lookAndFeel);

@@ -183,7 +183,7 @@ public class EditSourceIcon extends VComponent
 
         // Nimbus needs a different offset
         if (UIManager.getLookAndFeel().getClass().getName().equals(
-                "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel")) {
+                "javax.swing.plaf.nimbus.NimbusLookAndFeel")) {
             xOffset += 1;
         }
 

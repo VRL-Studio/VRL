@@ -100,6 +100,24 @@ public class VConnector extends Connector {
 //    public void setValueObject(TypeRepresentationContainer valueObject) {
 //        this.valueObject = valueObject;
 //    }
+    
+    
+    public static void setDebug(boolean value) {
+        DEBUG = value;
+    } 
+    
+    private static boolean DEBUG = false;
+    
+    public static boolean isDebug() {
+        return DEBUG;
+    }
+    
+    private static void logDebug(String text) {
+        if(isDebug()) {
+            System.out.println(text);
+        }
+    }
+    
     /**
      * <p> Collects the data from the object that is associated with the senders
      * type representation. </p>
@@ -117,8 +135,8 @@ public class VConnector extends Connector {
      */
     public void receiveData(boolean autoInvoke, CallTrace methodDependencies) {
         
-        System.out.println(" --> receive: " + ((TypeRepresentationContainer)getValueObject()).getMethod().getVisualMethodID() );
-        System.out.println(" --> receive: " + getId() + ", isInput: " + isInput() + ", " + getType());
+        logDebug(" --> receive: " + ((TypeRepresentationContainer)getValueObject()).getMethod().getVisualMethodID() );
+        logDebug(" --> receive: " + getId() + ", isInput: " + isInput() + ", " + getType());
 
         fireAction(new ActionEvent(this, 0, RECEIVE_ACTION));
 
@@ -129,7 +147,7 @@ public class VConnector extends Connector {
 
             for (Connection connection : allConnections.getAllWith(this)) {
 
-                System.out.println("CONN: " + connection);
+                logDebug("CONN: " + connection);
 
                 TypeRepresentationContainer senderValueObject =
                         (TypeRepresentationContainer) connection.getSender().getValueObject();

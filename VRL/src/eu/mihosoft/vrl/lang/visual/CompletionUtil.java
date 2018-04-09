@@ -79,8 +79,8 @@ public class CompletionUtil {
     static {
 
         if (System.getProperty("sun.boot.class.path") == null) {
-            System.out.println(VTerminalUtil.red(
-                    ">> ERROR: cannot scan boot classpath"
+            System.out.println(VTerminalUtil.yellow(
+                    ">> WARNING: cannot scan boot classpath"
                     + " (rt.jar and classes.jar are missing)."));
         } else {
 

@@ -485,7 +485,7 @@ public class ComponentUtil {
         }
         
         String sessionName = "/" + VLangUtils.dotToSlash(c.getName()) + ".groovy";
-        System.out.println("-> DEBUG: session code name: " + sessionName);
+        logDebug("-> DEBUG: session code name: " + sessionName);
 
         URL url = c.getResource(sessionName);
 
@@ -510,13 +510,13 @@ public class ComponentUtil {
             if (!result.contains(
                     VRL.getPropertyFolderManager().getTmpFolder().getAbsolutePath())) {
 
-                System.out.println("-> DEBUG: session code name: cannot use code, since it's outside of our project:" + result);
+                System.out.println("-> WARNING: session code name: cannot use code, since it's outside of our project:" + result);
 
                 result = null;
             }
         }
 
-        System.out.println("-> DEBUG: session code name: -> final code: " + result);
+        logDebug("-> DEBUG: session code name: -> final code: " + result);
 
         return result;
     }
@@ -591,6 +591,24 @@ public class ComponentUtil {
         }
 
         return IOUtil.convertStreamToString(in);
+    }
+    
+    
+    
+        public static void setDebug(boolean value) {
+        DEBUG = value;
+    } 
+    
+    private static boolean DEBUG = false;
+    
+    public static boolean isDebug() {
+        return DEBUG;
+    }
+    
+    private static void logDebug(String text) {
+        if(isDebug()) {
+            System.out.println(text);
+        }
     }
 
 }

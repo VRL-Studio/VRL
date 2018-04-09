@@ -497,7 +497,7 @@ public class ShellView {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(
-                    "com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+                    "javax.swing.plaf.nimbus.NimbusLookAndFeel");
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(ShellView.class.getName()).
                     log(Level.SEVERE, null, ex);

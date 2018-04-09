@@ -165,10 +165,10 @@ public class ClassPathUpdater {
 
             } catch (RuntimeException ex) {
 
-                message = ">> ERROR: The system classloader of the current"
+                message = ">> WARNING: The system classloader of the current"
                         + " JRE does not support dynamic classloading at runtime.";
 
-                System.out.println(VTerminalUtil.red(message));
+                System.out.println(VTerminalUtil.yellow(message));
                 SplashScreenGenerator.printBootMessage(message);
             }
 
