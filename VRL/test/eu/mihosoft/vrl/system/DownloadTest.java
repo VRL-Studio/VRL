@@ -24,12 +24,12 @@ public class DownloadTest {
 
     @Test
     public void dowloadFileTest() {
-        String urlOne = "http://vrl-studio.mihosoft.eu/releases/v0.4.5.7/VRL-Studio-Linux.zip";
+        String urlOne = "https://vrl-studio.mihosoft.eu/releases/v0.4.5.7/VRL-Studio-Linux.zip";
         String sha1One = "17ca58114de926b9b90521defaf180c5bf460618";
 
         createDownloadTest(urlOne, sha1One);
 
-        String urlTwo = "http://vrl-studio.mihosoft.eu/releases/v0.4.5.7/VRL-Studio-Windows.zip";
+        String urlTwo = "https://vrl-studio.mihosoft.eu/releases/v0.4.5.7/VRL-Studio-Windows.zip";
         String sha1Two = "1ccbeee55f818915b3e04c865290eea795806c77";
 
         createDownloadTest(urlTwo, sha1Two);
