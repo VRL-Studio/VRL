@@ -213,7 +213,7 @@ public class Download extends Observable implements Runnable {
                     break;
                 }
                 
-//                System.out.println("read: " +read);
+                System.out.println("read: " +read);
 
                 // Write buffer to file.
                 file.write(buffer, 0, read);
@@ -299,12 +299,10 @@ public class Download extends Observable implements Runnable {
      * <code>false</code> otherwise
      */
     public boolean verifySHA1(String checksum) {
-        //if (getStatus() != COMPLETE) {
-        //    throw new IllegalStateException(
-        //            "verification impossible. This download is incomplete!");
-        //}
-
-        System.out.println("STATUS: " + getStatus());
+        if (getStatus() != COMPLETE) {
+            throw new IllegalStateException(
+                    "verification impossible. This download is incomplete!");
+        }
         
         return IOUtil.verifyFileSHA1(getTargetFile(), checksum);
     }
