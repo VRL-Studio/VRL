@@ -299,11 +299,13 @@ public class Download extends Observable implements Runnable {
      * <code>false</code> otherwise
      */
     public boolean verifySHA1(String checksum) {
-        if (getStatus() != COMPLETE) {
-            throw new IllegalStateException(
-                    "verification impossible. This download is incomplete!");
-        }
+        //if (getStatus() != COMPLETE) {
+        //    throw new IllegalStateException(
+        //            "verification impossible. This download is incomplete!");
+        //}
 
+        System.out.println("STATUS: getStatus()");
+        
         return IOUtil.verifyFileSHA1(getTargetFile(), checksum);
     }
 }
