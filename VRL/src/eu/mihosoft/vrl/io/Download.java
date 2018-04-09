@@ -177,7 +177,7 @@ public class Download extends Observable implements Runnable {
             connection.connect();
 
             // Make sure response code is in the 200 range.
-            if (connection.getResponseCode() / 100 != 2 && connection.getResponseCode() != 301) {
+            if (connection.getResponseCode() / 100 != 2) {
                 System.err.println(">> Download: ERROR: response-code: " + connection.getResponseCode());
                 error();
             }
@@ -213,7 +213,7 @@ public class Download extends Observable implements Runnable {
                     break;
                 }
                 
-                System.out.println("read: " +read);
+                // System.out.println("read: " +read);
 
                 // Write buffer to file.
                 file.write(buffer, 0, read);
