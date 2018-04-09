@@ -177,7 +177,7 @@ public class Download extends Observable implements Runnable {
             connection.connect();
 
             // Make sure response code is in the 200 range.
-            if (connection.getResponseCode() / 100 != 2) {
+            if (connection.getResponseCode() / 100 != 2 && connection.getResponseCode() != 301) {
                 System.err.println(">> Download: ERROR: response-code: " + connection.getResponseCode());
                 error();
             }
@@ -304,7 +304,7 @@ public class Download extends Observable implements Runnable {
         //            "verification impossible. This download is incomplete!");
         //}
 
-        System.out.println("STATUS: getStatus()");
+        System.out.println("STATUS: " + getStatus());
         
         return IOUtil.verifyFileSHA1(getTargetFile(), checksum);
     }
