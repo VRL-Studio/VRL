@@ -57,12 +57,20 @@ package eu.mihosoft.vrl.lang.visual;
 import eu.mihosoft.vrl.annotation.ComponentInfo;
 import eu.mihosoft.vrl.annotation.MethodInfo;
 import eu.mihosoft.vrl.annotation.ObjectInfo;
+import eu.mihosoft.vrl.annotation.ParamGroupInfo;
+import eu.mihosoft.vrl.annotation.ParamInfo;
+import eu.mihosoft.vrl.lang.InstanceCreator;
 import eu.mihosoft.vrl.reflection.DefaultMethodRepresentation;
+import eu.mihosoft.vrl.reflection.InterfaceChangedException;
 import eu.mihosoft.vrl.reflection.VisualCanvas;
+import eu.mihosoft.vrl.reflection.VisualObjectInspector;
 import eu.mihosoft.vrl.reflection.WorkflowEvent;
 import eu.mihosoft.vrl.types.CanvasRequest;
 import eu.mihosoft.vrl.types.MethodRequest;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  *
@@ -81,8 +89,14 @@ public class StartObject implements Serializable {
     private transient DefaultMethodRepresentation mRep;
 
     @MethodInfo(name = " ", buttonText = "start", hideCloseIcon = true, num = 1)
-    public void start(CanvasRequest cReq, MethodRequest mReq) {
+    public void start(CanvasRequest cReq, MethodRequest mReq,
+            @ParamGroupInfo(group = "Settings|false|Control-Flow Settings")
+            @ParamInfo(name = "reset instances", options = "value=true;hideConnector=true") boolean resetInstances) throws InterfaceChangedException {
 
+        if(resetInstances) {
+            resetInstances(cReq);
+        }
+        
         mRep = mReq.getMethod();
 
         if (invocation == null) {
@@ -106,5 +120,32 @@ public class StartObject implements Serializable {
     void invocationStopped(VisualCanvas canvas) {
         canvas.fireWorkflowEvent(WorkflowEvent.STOP_WORKFLOW);
         mRep.changeInvokeButtonTextIfButtonIsPresent("start");
+    }
+
+    void resetInstances(CanvasRequest cReq) throws InterfaceChangedException {
+        // get current inspector
+        VisualCanvas canvas = cReq.getCanvas();
+        VisualObjectInspector inspector = canvas.getInspector();
+
+        // get object classes
+        Collection<Object> objects = inspector.getObjects();
+        List<Class<?>> classesOld = new ArrayList<>();
+        for (Object o : objects) {
+            if (!(o instanceof eu.mihosoft.vrl.lang.groovy.GroovyCodeEditorComponent)) {
+                classesOld.add(o.getClass());
+            }
+        }
+
+        // reload classes
+        List<Class<?>> classesNew = new ArrayList<>();
+        for (Class<?> cls : classesOld) {
+            classesNew.add(canvas.getClassLoader().reloadClass(cls));
+        }
+
+        // new instances
+        for (Class<?> cls : classesNew) {
+            canvas.getInspector().replaceAllObjects(cls,
+                    new InstanceCreator(canvas)).getFirst();
+        }
     }
 }
