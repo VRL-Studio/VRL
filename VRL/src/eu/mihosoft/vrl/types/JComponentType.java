@@ -131,6 +131,8 @@ public class JComponentType extends TypeRepresentationBase implements java.io.Se
         if (jComponent != null) {
             componentContainer.remove(jComponent);
         }
+        
+        componentContainer.removeAll();
 
         componentContainer.add(panel);
 
@@ -176,6 +178,8 @@ public class JComponentType extends TypeRepresentationBase implements java.io.Se
         if (jComponent != null) {
             componentContainer.remove(jComponent);
         }
+        
+        componentContainer.removeAll();
     }
 
     @Override
