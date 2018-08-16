@@ -3,7 +3,7 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009–2017 Steinbeis Forschungszentrum (STZ Ölbronn),
+ * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn),
  * Copyright (c) 2006–2017 by Michael Hoffer
  * 
  * This file is part of Visual Reflection Library (VRL).
