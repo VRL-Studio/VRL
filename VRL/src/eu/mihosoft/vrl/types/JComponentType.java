@@ -1,5 +1,5 @@
 /* 
- * JFXPlotContainerType.java
+ * JComponentType.java
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
