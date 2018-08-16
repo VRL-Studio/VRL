@@ -75,9 +75,9 @@ public class Constants {
     /**
      * VRL version number that indicates major and minor changes.
      */
-    public static final String VERSION_BASE = VERSION_MAJOR + ".2.4";
+    public static final String VERSION_BASE = VERSION_MAJOR + ".2.5";
     // "-HEAD" or "-unstable" or "" for release etc.
-    public static final String VERSION_SUFFIX = "";
+    public static final String VERSION_SUFFIX = "HEAD";
     // full version (base+suffix+date)
     public static final String VERSION =
             VERSION_BASE + VERSION_SUFFIX
@@ -86,12 +86,12 @@ public class Constants {
      * Copyright statement.
      */
     public static final String COPYRIGHT =
-            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2017"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer &lt;info@michaelhoffer.de&gt;";
+            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2018"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer &lt;info@michaelhoffer.de&gt;";
     /**
      * Simple copyright statement (usefull for windows titles etc.)
      */
     public static final String COPYRIGHT_SIMPLE =
-            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2017"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer";
+            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2018"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer";
     /**
      * Defines which projects can be processed by this version of VRL.
      */
