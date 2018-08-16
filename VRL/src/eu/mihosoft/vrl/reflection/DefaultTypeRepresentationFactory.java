@@ -184,6 +184,7 @@ final class DefaultTypeRepresentationFactory implements
         defaultSupportedTypes.add(ColorArrayType.class);
         
         defaultSupportedTypes.add(JComponentType.class);
+        defaultSupportedTypes.add(SilentJComponentType.class);
 
         //
         defaultSupportedTypes.add(AddToCanvasType.class);

@@ -73,7 +73,7 @@ import java.awt.event.ComponentEvent;
  * 
  * @author Michael Hoffer <info@michaelhoffer.de>
  */
-@TypeInfo(type = JComponent.class, input = false, output = true, style = "default")
+@TypeInfo(type = JComponent.class, input = true, output = true, style = "default")
 public class JComponentType extends TypeRepresentationBase implements java.io.Serializable {
 
     private static final long serialVersionUID = 1;
