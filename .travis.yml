@@ -15,7 +15,7 @@ jdk:
   - oraclejdk8
   - openjdk9
   - oraclejdk10
-  - oraclejdk11
+  - openjdk11
   
 before_install:
   # OUTDATED - "sudo apt-get install wput ncftp"
