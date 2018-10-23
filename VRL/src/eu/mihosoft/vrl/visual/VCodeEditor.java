@@ -77,6 +77,7 @@ import org.fife.ui.rsyntaxtextarea.CodeTemplateManager;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextAreaUI;
 import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rsyntaxtextarea.SyntaxScheme;
 import org.fife.ui.rsyntaxtextarea.folding.Fold;
 import org.fife.ui.rsyntaxtextarea.templates.CodeTemplate;
 import org.fife.ui.rsyntaxtextarea.templates.StaticCodeTemplate;
@@ -148,6 +149,12 @@ public class VCodeEditor extends JPanel implements CanvasChild {
     public static final String EDITOR_HIGHLIGHTED_LINE_KEY
             = "VCodeEditor:HighlightedLine:Color";
 
+    /**
+     *
+     */
+    public static final String FONT_SIZE_KEY
+            = "VCodeEditor:Font:Size";
+
     static {
         // enable code templates
         RSyntaxTextArea.setTemplatesEnabled(true);
@@ -212,8 +219,7 @@ public class VCodeEditor extends JPanel implements CanvasChild {
             }
 
             /**
-             * Updates layout on fold toggle. TODO improve design, use standard
-             * listener/events!
+             * Updates layout on fold toggle. TODO improve design, use standard listener/events!
              */
             @Override
             public void foldToggled(Fold fold) {
@@ -291,6 +297,28 @@ public class VCodeEditor extends JPanel implements CanvasChild {
             }
         }, findAndReplace, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
+        KeyStroke incFontSize
+                = KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK);
+
+        editor.registerKeyboardAction(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                incFontSize(1f);
+            }
+        }, incFontSize, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
+        KeyStroke decFontSize
+                = KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, KeyEvent.CTRL_DOWN_MASK | KeyEvent.ALT_DOWN_MASK);
+
+        editor.registerKeyboardAction(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent ae) {
+                decFontSize(1f);
+            }
+        }, decFontSize, JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+
         // remove code folding menu due to several bugs
         JMenu delMenu = null;
 
@@ -320,6 +348,40 @@ public class VCodeEditor extends JPanel implements CanvasChild {
         });
 
         editor.getPopupMenu().add(findAndReplaceItem);
+        
+        editor.getPopupMenu().add(new JPopupMenu.Separator());
+
+        // add INC font size menu entry
+        JMenuItem fontSizeItemInc = new JMenuItem("Increase Font Size");
+
+        fontSizeItemInc.addActionListener((ActionEvent ae) -> {
+            incFontSize(1f);
+        });
+
+        editor.getPopupMenu().add(fontSizeItemInc);
+        
+        // add DEC font size menu entry
+        JMenuItem fontSizeItemDec = new JMenuItem("Decrease Font Size");
+
+        fontSizeItemDec.addActionListener((ActionEvent ae) -> {
+            decFontSize(1f);
+        });
+
+        editor.getPopupMenu().add(fontSizeItemDec);
+        
+        JMenu fontSizeMenu = new JMenu("Set Font Size");
+        
+        float[] fSizes = {8,10,12,14,16,18,20,22,24,26,28,30,32};
+        for(float fSize : fSizes) {
+            JMenuItem item  = new JMenuItem(fSize+"pt");
+            item.addActionListener((ActionEvent e) -> {
+                Font font1 = editor.getFont().deriveFont(fSize);
+                editor.setFont(font1);
+            });
+            fontSizeMenu.add(item);
+        }
+        
+        editor.getPopupMenu().add(fontSizeMenu);
 
         // finally add the editor to a scrollpane which is added to this
         scrollPane = new VRTextScrollPane(editor);
@@ -421,6 +483,16 @@ public class VCodeEditor extends JPanel implements CanvasChild {
 
             editor.setBackground(VSwingUtil.TRANSPARENT_COLOR);
 
+            SyntaxScheme scheme = style.getBaseValues().getEditorStyle(EDITOR_STYLE_KEY);
+
+            Font baseFont = RSyntaxTextArea.getDefaultFont().deriveFont(style.getBaseValues().getFloat(FONT_SIZE_KEY));
+            // set default font
+            for (int i = 0; i < scheme.getStyleCount(); i++) {
+                if (scheme.getStyle(i) != null) {
+                    scheme.getStyle(i).font = baseFont;
+                }
+            }
+
             editor.setSyntaxScheme(
                     style.getBaseValues().getEditorStyle(EDITOR_STYLE_KEY));
         }
@@ -495,6 +567,24 @@ public class VCodeEditor extends JPanel implements CanvasChild {
     public VRTextScrollPane getScrollPane() {
         return scrollPane;
     }
+
+    public void decFontSize(float delta) {
+        float size = (float)editor.getFont().getSize() - delta;
+
+        if (size > 8) {
+            editor.setFont(editor.getFont().deriveFont(size));
+            System.out.println(size);
+        }
+    }
+    
+    public void incFontSize(float delta) {
+        float size = (float)editor.getFont().getSize() + delta;
+
+        if (size < 32) {
+            editor.setFont(editor.getFont().deriveFont(size));
+            System.out.println(size);
+        }
+    }
 }
 
 /**
@@ -527,8 +617,7 @@ class ErrorNotifier extends TransparentPanel implements CanvasChild {
     }
 
     /**
-     * This method does nothing as the main canvas from the parent vcomponent is
-     * used instead
+     * This method does nothing as the main canvas from the parent vcomponent is used instead
      */
     @Override
     public void setMainCanvas(Canvas mainCanvas) {
@@ -693,8 +782,7 @@ class LineNumberView extends TransparentPanel {
     }
 
     /**
-     * Returns the string width (depending on font metrics of the current
-     * graphics context.)
+     * Returns the string width (depending on font metrics of the current graphics context.)
      *
      * @param s the string
      * @return the width of the string

@@ -229,6 +229,7 @@ public final class Style {
                 new Color(100, 100, 100, 200));
         getBaseValues().set(VCodeEditor.BORDER_COLOR_KEY, Color.BLACK);
         getBaseValues().set(VCodeEditor.BORDER_THICKNESS_KEY, 1.f);
+        getBaseValues().set(VCodeEditor.FONT_SIZE_KEY,12.f);
 
         getBaseValues().set("LookAndFeel", null);
 
@@ -272,9 +273,17 @@ public final class Style {
                         Canvas.TEXT_COLOR_KEY);
             }
         }
+        
+        Font baseFont = RSyntaxTextArea.getDefaultFont().deriveFont(getBaseValues().getFloat(VCodeEditor.FONT_SIZE_KEY));
+        
+        
+        // set default font
+        for (int i = 0; i < scheme.getStyleCount(); i++) {
+            if (scheme.getStyle(i) != null) {
+                scheme.getStyle(i).font = baseFont;
+            }
+        }
 
-//        StyleContext sc = StyleContext.getDefaultStyleContext();
-        Font baseFont = RSyntaxTextArea.getDefaultFont();
         Font boldFont = baseFont.deriveFont(Font.BOLD);
         Font italicFont = baseFont.deriveFont(Font.ITALIC);
 
@@ -360,5 +369,68 @@ public final class Style {
      */
     public void setName(String name) {
         this.name = name;
+    }
+    
+    /**
+     * Returns a new style with the specified font size.
+     * 
+     * @param styleName name of the style (as shown in the style menu)
+     * @param editorFontSize font size 
+     * @return style with the specified editor font size
+     */
+    public static Style newStyleWithFontSize(String styleName, float editorFontSize) {
+        
+        Style s = new Style(styleName);
+        // EDITOR STYLE
+        SyntaxScheme scheme = new SyntaxScheme(true);
+
+        // set default color to text color
+        for (int i = 0; i < scheme.getStyleCount(); i++) {
+            if (scheme.getStyle(i) != null) {
+                scheme.getStyle(i).foreground = s.getBaseValues().getColor(
+                        Canvas.TEXT_COLOR_KEY);
+            }
+        }
+
+        Font baseFont = RSyntaxTextArea.getDefaultFont().deriveFont(editorFontSize);
+        
+        
+        // set default font
+        for (int i = 0; i < scheme.getStyleCount(); i++) {
+            if (scheme.getStyle(i) != null) {
+                scheme.getStyle(i).font = baseFont;
+            }
+        }
+
+        Font boldFont = baseFont.deriveFont(Font.BOLD);
+        Font italicFont = baseFont.deriveFont(Font.ITALIC);
+
+
+        scheme.getStyle(Token.COMMENT_DOCUMENTATION).foreground = Color.gray;
+        scheme.getStyle(Token.COMMENT_DOCUMENTATION).font = italicFont;
+        scheme.getStyle(Token.COMMENT_MULTILINE).foreground = Color.gray;
+        scheme.getStyle(Token.COMMENT_MULTILINE).font = italicFont;
+        scheme.getStyle(Token.COMMENT_EOL).foreground = Color.gray;
+        scheme.getStyle(Token.COMMENT_EOL).font = italicFont;
+
+        scheme.getStyle(Token.RESERVED_WORD).font = baseFont;
+        scheme.getStyle(Token.RESERVED_WORD).foreground = new Color(60, 60, 240);
+        scheme.getStyle(Token.DATA_TYPE).foreground = new Color(60, 60, 240);
+
+        scheme.getStyle(Token.LITERAL_STRING_DOUBLE_QUOTE).foreground = new Color(170, 110, 30);
+        scheme.getStyle(Token.LITERAL_CHAR).foreground = new Color(170, 110, 30);
+
+        scheme.getStyle(Token.LITERAL_NUMBER_DECIMAL_INT).foreground = new Color(40, 120, 220);
+        scheme.getStyle(Token.LITERAL_NUMBER_FLOAT).foreground = new Color(40, 120, 220);
+        scheme.getStyle(Token.LITERAL_NUMBER_HEXADECIMAL).foreground = new Color(40, 120, 220);
+
+        scheme.getStyle(Token.ERROR_STRING_DOUBLE).foreground = new Color(230, 0, 30);
+        scheme.getStyle(Token.ERROR_CHAR).foreground = new Color(230, 0, 30);
+        scheme.getStyle(Token.ERROR_NUMBER_FORMAT).foreground = new Color(230, 0, 30);
+
+        s.getBaseValues().setEditorStyle(VCodeEditor.EDITOR_STYLE_KEY, scheme);
+        s.getBaseValues().set(VCodeEditor.EDITOR_HIGHLIGHTED_LINE_KEY, new Color(140,140,140,60));
+        
+        return s;
     }
 }
