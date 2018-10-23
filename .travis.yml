@@ -14,8 +14,8 @@ language: java
 jdk:
   - oraclejdk8
   - oraclejdk9
-  - openjdk10
-  - openjdk11
+  #- openjdk10
+  #- openjdk11
   
 before_install:
   # OUTDATED - "sudo apt-get install wput ncftp"
