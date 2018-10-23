@@ -213,6 +213,9 @@ public class EditSourceIcon extends VComponent
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
+        if(isActive) {
+            fireAction(new ActionEvent(this, 0, "clicked"));
+        }
     }
 
     @Override

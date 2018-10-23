@@ -94,6 +94,7 @@ public class CloseIcon extends VComponent implements CanvasChild, Serializable,
      */
     private boolean active = false;
 //    private boolean clicked = false;
+   
 
     /**
      * Constructor.
@@ -195,6 +196,11 @@ public class CloseIcon extends VComponent implements CanvasChild, Serializable,
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
+        
+        if(active) {
+            fireAction(new ActionEvent(this, 0, "clicked"));
+        }
+        
     }
 
     @Override
