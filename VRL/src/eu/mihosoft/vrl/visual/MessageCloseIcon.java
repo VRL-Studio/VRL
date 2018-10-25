@@ -55,6 +55,7 @@
 
 package eu.mihosoft.vrl.visual;
 
+import static eu.mihosoft.vrl.visual.DockApplet.CLICKED_ACTION;
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -156,7 +157,7 @@ class MessageCloseIcon extends VComponent implements Serializable,
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
-        fireAction(new ActionEvent(this, 0, "clicked"));
+        
     }
 
     @Override
@@ -165,6 +166,9 @@ class MessageCloseIcon extends VComponent implements Serializable,
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
+        if(isActive) {
+            fireAction(new ActionEvent(this, 0, "clicked"));
+        }
     }
 
     @Override

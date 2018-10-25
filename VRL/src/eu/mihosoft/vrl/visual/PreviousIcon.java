@@ -188,7 +188,6 @@ public class PreviousIcon extends JPanel implements CanvasChild, Serializable,
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
-        fireAction(new ActionEvent(this, 0, "clicked"));
         lockState = true;
     }
 
@@ -198,6 +197,9 @@ public class PreviousIcon extends JPanel implements CanvasChild, Serializable,
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
+        if(isActive) {
+            fireAction(new ActionEvent(this, 0, "clicked"));
+        }
     }
 
     @Override
