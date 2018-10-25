@@ -2256,7 +2256,10 @@ public class VRL {
             // use the first configurator in the file as identifier 
             // // (order is defined alphabetically)
             String pName = pluginConfigs.get(0).
-                    getIdentifier().getName().toLowerCase();
+                    getIdentifier().getName();
+            
+            // TODO 25.10.2018 think about introducing toLowerCase() for 
+            // folders and plugin files
             
             return pName;
     }
