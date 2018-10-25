@@ -2162,7 +2162,8 @@ public class VRL {
         }
 
         File src = f;
-        File finalDest = new File(Constants.PLUGIN_DIR + "/" + f.getName());
+        String pName = loadPluginBaseFileName(f);
+        File finalDest = new File(Constants.PLUGIN_DIR + "/" + pName+".jar");
 
         boolean install = true;
 
@@ -2176,8 +2177,6 @@ public class VRL {
             installAction.analyzeStop(f);
             return;
         }
-        
-        String pName = loadPluginBaseFileName(f);
 
         File dest = new File(
                 getPropertyFolderManager().getPluginUpdatesFolder().
