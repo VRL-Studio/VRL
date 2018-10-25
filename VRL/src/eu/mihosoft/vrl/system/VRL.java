@@ -1500,7 +1500,8 @@ public class VRL {
      */
     private static void loadPlugin(File f, PluginLoadAction pA,
             ClassLoader searchClassLoader) {
-        if (f.isFile() && f.getName().toLowerCase().endsWith(".jar")) {
+        if (f.isFile() && (f.getName().toLowerCase().endsWith(".jar")
+                ||f.getName().toLowerCase().endsWith(".vrlplugin"))) {
 
             String message = ">> searching for plugins in \""
                     + f.getAbsolutePath() + "\".";
@@ -2175,11 +2176,13 @@ public class VRL {
             installAction.analyzeStop(f);
             return;
         }
+        
+        String pName = loadPluginBaseFileName(f);
 
         File dest = new File(
                 getPropertyFolderManager().getPluginUpdatesFolder().
                 getAbsoluteFile(),
-                f.getName());
+                pName+".jar");
 
         if (!checkIfIsPluginAndCreateCacheFile(f)) {
             if (installAction == null) {
@@ -2197,12 +2200,12 @@ public class VRL {
         File cacheFileSrc = new File(
                 getPropertyFolderManager().getPluginFolder().
                 getAbsoluteFile(),
-                f.getName() + ".xml");
+                pName + ".jar.xml");
 
         File cacheFileDst = new File(
                 getPropertyFolderManager().getPluginUpdatesFolder().
                 getAbsoluteFile(),
-                f.getName() + ".xml");
+                pName + ".jar.xml");
         try {
             IOUtil.copyFile(cacheFileSrc, cacheFileDst);
         } catch (FileNotFoundException ex) {
@@ -2236,6 +2239,40 @@ public class VRL {
             }
         }
     }
+    
+    /**
+     * Returns the base file name of the specified plugin (name of first config 
+     * will be returned, input is sorted in alphabecital order).
+     * @param pluginConfigs plugin configurations found in file
+     * @return the base file name (lowercase version of plugin identifier)
+     */
+    public static String getPluginBaseFileNameFromFileConfigs(
+            List<PluginConfigurator> pluginConfigs) {
+        Collections.sort(pluginConfigs, (pC1, pC2) -> {
+                return pC1.getIdentifier().getName().
+                        compareTo(pC2.getIdentifier().getName());
+            });
+            
+            // use the first configurator in the file as identifier 
+            // // (order is defined alphabetically)
+            String pName = pluginConfigs.get(0).
+                    getIdentifier().getName().toLowerCase();
+            
+            return pName;
+    }
+    
+    /**
+     * Returns the base file name of the specified plugin.
+     * @param f plugin file
+     * @return the base file name (lowercase version of plugin identifier)
+     */
+    public static String loadPluginBaseFileName(File f) {
+        // find destination plugin name
+            // // (order is defined alphabetically)
+            List<PluginConfigurator> pluginConfigs = new ArrayList<>(loadPlugins(f));
+            
+            return getPluginBaseFileNameFromFileConfigs(pluginConfigs);
+    }
 
     /**
      * Installs plugin updates.
@@ -2246,7 +2283,7 @@ public class VRL {
 
         ArrayList<File> pluginFiles = IOUtil.listFiles(
                 getPropertyFolderManager().getPluginUpdatesFolder(),
-                new String[]{".jar"});
+                new String[]{".jar", ".vrlplugin"});
 
         if (!pluginFiles.isEmpty()) {
             SplashScreenGenerator.printBootMessage(">> updating plugins...");
@@ -2260,9 +2297,11 @@ public class VRL {
 
             System.out.println(" --> " + msg);
 
+            String pName = loadPluginBaseFileName(f);
+            
             File destination = new File(
                     getPropertyFolderManager().getPluginFolder(),
-                    f.getName());
+                    pName+".jar");
 
             // delete previous cache if it does not provide chache file:
             File cacheFileDst = new File(destination.getAbsolutePath() + ".xml");
@@ -2276,7 +2315,7 @@ public class VRL {
             File cacheFileSrc = new File(
                     getPropertyFolderManager().getPluginUpdatesFolder().
                     getAbsoluteFile(),
-                    f.getName() + ".xml");
+                    pName + ".jar.xml");
 
             if (!IOUtil.move(f, destination)) {
 

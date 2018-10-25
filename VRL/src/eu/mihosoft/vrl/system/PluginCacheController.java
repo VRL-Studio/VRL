@@ -69,7 +69,9 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -416,8 +418,14 @@ public class PluginCacheController {
 
         VParamUtil.validate(VParamUtil.VALIDATOR_EXISTING_FOLDER, destFolder);
 
+        // TODO 25.10.2018 Fix getCacheFile
         File cacheFile = getCacheFile(destFolder, f);
-
+        
+        cacheFile = new File(destFolder,
+                VRL.getPluginBaseFileNameFromFileConfigs(
+                        new ArrayList<>(pluginConfigs))+".jar.xml");
+        
+       
         PluginCache cache = new PluginCache();
 
 
@@ -427,8 +435,15 @@ public class PluginCacheController {
             boolean ignore = pConf.getClass().getName().
                     equals(VRLPlugin.class.getName());
             if (!ignore) {
-                cache.add(pConf.getClass().getName(),
-                        new PluginCacheEntry(pConf));
+                PluginCacheEntry pCE = new PluginCacheEntry(pConf);
+                
+                // replace the file name to match the actual plugin file name
+                // in the destination folder
+                pCE.setJarFile(
+                        VRL.getPluginBaseFileNameFromFileConfigs(
+                                Collections.singletonList(pConf))+".jar");
+                        
+                cache.add(pConf.getClass().getName(),pCE);
             }
         }
 

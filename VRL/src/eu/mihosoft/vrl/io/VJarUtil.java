@@ -393,14 +393,21 @@ public class VJarUtil {
         
         urlString = urlString.replace("file:", "");
 
+        // check for regular .jar file
         int location = urlString.indexOf(".jar!");
-
         if (location > 0) {
             urlString = urlString.substring(0, location) + ".jar";
-        } else {
-            //System.err.println("No Jar File found: " + cls.getName());
+            return new File(urlString);
         }
-
+        
+        // check for .vrlplugin
+        location = urlString.indexOf(".vrlplugin!");
+        if (location > 0) {
+            urlString = urlString.substring(0, location) + ".vrlplugin";
+            return new File(urlString);
+        }
+        
+        // return anyway (will include class file name instead)
         return new File(urlString);
     }
 
