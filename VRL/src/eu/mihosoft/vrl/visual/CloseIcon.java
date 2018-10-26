@@ -187,7 +187,7 @@ public class CloseIcon extends VComponent implements CanvasChild, Serializable,
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
-        fireAction(new ActionEvent(this, 0, "clicked"));
+        
     }
 
     @Override

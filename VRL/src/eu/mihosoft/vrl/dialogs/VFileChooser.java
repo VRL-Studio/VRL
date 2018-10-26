@@ -83,10 +83,15 @@ package eu.mihosoft.vrl.dialogs;
  */
 import eu.mihosoft.vrl.io.VExtensionFileFilter;
 import eu.mihosoft.vrl.system.VRL;
+import eu.mihosoft.vrl.system.VSysUtil;
 import eu.mihosoft.vrl.visual.VSwingUtil;
 import java.awt.Component;
+import java.awt.FileDialog;
+import java.awt.Frame;
 import java.awt.HeadlessException;
+import java.awt.Window;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -95,12 +100,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.FileChooser;
 import javax.swing.JFileChooser;
 import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
+import javax.swing.JFrame;
+import javax.swing.LookAndFeel;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
@@ -128,12 +133,10 @@ import javax.swing.filechooser.FileSystemView;
  */
 public class VFileChooser extends JFileChooser {
 
-    public static final boolean FX_AVAILABLE;
-    private List<File> currentFiles;
-    private FileChooser fileChooser;
-    private File currentFile;
-    private DirectoryChooser directoryChooser;
-
+//    public static final boolean FX_AVAILABLE;
+//    private List<File> currentFiles;
+//    private File currentFile;
+//    private FileDialog fileDialog;
     private static boolean nativeDialogsEnabled = false;
 
     private static final List<Runnable> preDialogActions = new ArrayList<>();
@@ -156,52 +159,52 @@ public class VFileChooser extends JFileChooser {
     }
 
     private boolean nativeDialogsShallBeUsed() {
-        return isNativeDialogsEnabled() 
-                && FX_AVAILABLE 
-                /*&& !isDirectorySelectionEnabled()*/ // prepared potential AWT
-                ;
+        return isNativeDialogsEnabled();
+
+//                && FX_AVAILABLE /*&& !isDirectorySelectionEnabled()*/ // prepared potential AWT
+//                ;
     }
 
     static {
-        boolean isFx;
-        try {
-            Class.forName("javafx.stage.FileChooser");
-            isFx = true;
-            JFXPanel jfxPanel = new JFXPanel(); // initializes JavaFX environment
-        } catch (ClassNotFoundException e) {
-            isFx = false;
-        }
+//        boolean isFx;
+//        try {
+//            Class.forName("javafx.stage.FileChooser");
+//            isFx = true;
+//            //JFXPanel jfxPanel = new JFXPanel(); // initializes JavaFX environment
+//        } catch (ClassNotFoundException e) {
+//            isFx = false;
+//        }
 
-        FX_AVAILABLE = isFx;
+//        FX_AVAILABLE = isFx;
     }
 
     public VFileChooser() {
-        initFxFileChooser(null);
+//        initFxFileChooser(null);
     }
 
     public VFileChooser(String currentDirectoryPath) {
         super(currentDirectoryPath);
-        initFxFileChooser(new File(currentDirectoryPath));
+//        initFxFileChooser(new File(currentDirectoryPath));
     }
 
     public VFileChooser(File currentDirectory) {
         super(currentDirectory);
-        initFxFileChooser(currentDirectory);
+//        initFxFileChooser(currentDirectory);
     }
 
     public VFileChooser(FileSystemView fsv) {
         super(fsv);
-        initFxFileChooser(fsv.getDefaultDirectory());
+//        initFxFileChooser(fsv.getDefaultDirectory());
     }
 
     public VFileChooser(File currentDirectory, FileSystemView fsv) {
         super(currentDirectory, fsv);
-        initFxFileChooser(currentDirectory);
+//        initFxFileChooser(currentDirectory);
     }
 
     public VFileChooser(String currentDirectoryPath, FileSystemView fsv) {
         super(currentDirectoryPath, fsv);
-        initFxFileChooser(new File(currentDirectoryPath));
+//        initFxFileChooser(new File(currentDirectoryPath));
     }
 
     @Override
@@ -213,29 +216,147 @@ public class VFileChooser extends JFileChooser {
         VSwingUtil.deactivateEventFilter();
         VSwingUtil.activateEventFilter(
                 VRL.getCurrentProjectController().getCurrentCanvas());
-        runAndWait(() -> {
-            if (isDirectorySelectionEnabled()) {
-                directoryChooser.setTitle("Open Directory");
-                currentFile = directoryChooser.showDialog(null);
-            } else if (isMultiSelectionEnabled()) {
-                fileChooser.setTitle("Open Files");
-                currentFiles = fileChooser.showOpenMultipleDialog(null);
-            } else {
 
-                fileChooser.setTitle("Open File");
-                currentFile = fileChooser.showOpenDialog(null);
+        if (isDirectorySelectionEnabled()) {
+
+            // on macOS the filedialog supports directory selection
+            // but we hae to set a system property to make it really work
+            if (VSysUtil.isMacOSX()) {
+                FileDialog fd = new FileDialog((JFrame) VSwingUtil.
+                        getTopmostParent(parent), "Open Directory", FileDialog.LOAD);
+
+                System.setProperty("apple.awt.fileDialogForDirectories", "true");
+
+                File cd = getCurrentDirectory();
+                if (cd != null) {
+                    fd.setDirectory(cd.getAbsolutePath());
+                }
+
+                if (getSelectedFile() != null) {
+                    fd.setFile(getSelectedFile().getName());
+                }
+
+                fd.setFilenameFilter((File dir, String name1) -> {
+                    if (getFileFilter() != null) {
+                        File f = new File(dir, name1);
+                        return getFileFilter().accept(f) && f.isDirectory();
+                    }
+                    return true;
+                });
+
+                fd.setVisible(true);
+
+                String fileName = fd.getFile();
+                if (fileName != null) {
+                    setSelectedFile(new File(fd.getDirectory(), fileName));
+                }
+            } else {
+                
+                // otherwise we set the system default LAF and use the
+                // JFileDialog
+                
+                LookAndFeel prevLAF = UIManager.getLookAndFeel();
+
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InstantiationException ex) {
+                    Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (UnsupportedLookAndFeelException ex) {
+                    Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+                }
+               
+                super.showOpenDialog(parent);
+                
+                try {
+                    UIManager.setLookAndFeel(prevLAF);
+                } catch (UnsupportedLookAndFeelException ex) {
+                    Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        });
+
+        } else if (isMultiSelectionEnabled()) {
+            FileDialog fd = new FileDialog((JFrame) VSwingUtil.
+                    getTopmostParent(parent), "Open Files", FileDialog.LOAD);
+            fd.setMultipleMode(true);
+            System.setProperty("apple.awt.fileDialogForDirectories", "false");
+
+            File cd = getCurrentDirectory();
+            if (cd != null) {
+                fd.setDirectory(cd.getAbsolutePath());
+            }
+
+            fd.setFilenameFilter((File dir, String name1) -> {
+                if (getFileFilter() != null) {
+                    return getFileFilter().accept(new File(dir, name1));
+                }
+                return true;
+            });
+
+            fd.setVisible(true);
+
+            File[] files = fd.getFiles();
+            if (files != null) {
+                setSelectedFiles(files);
+            }
+
+        } else {
+            FileDialog fd = new FileDialog((JFrame) VSwingUtil.
+                    getTopmostParent(parent), "Open File", FileDialog.LOAD);
+            System.setProperty("apple.awt.fileDialogForDirectories", "false");
+            File cd = getCurrentDirectory();
+            if (cd != null) {
+                fd.setDirectory(cd.getAbsolutePath());
+            }
+
+            if (getSelectedFile() != null) {
+                fd.setFile(getSelectedFile().getName());
+            }
+
+            fd.setFilenameFilter((File dir, String name1) -> {
+                if (getFileFilter() != null) {
+                    return getFileFilter().accept(new File(dir, name1));
+                }
+                return true;
+            });
+
+            fd.setVisible(true);
+
+            String fileName = fd.getFile();
+            if (fileName != null) {
+                setSelectedFile(new File(fd.getDirectory(), fileName));
+                System.out.println("FILE: " + getSelectedFile().getAbsolutePath());
+
+            }
+        }
+
+//        runAndWait(() -> {
+//            if (isDirectorySelectionEnabled()) {
+//                directoryChooser.setTitle("Open Directory");
+//                currentFile = directoryChooser.showDialog(null);
+//            } else if (isMultiSelectionEnabled()) {
+//                fileChooser.setTitle("Open Files");
+//                currentFiles = fileChooser.showOpenMultipleDialog(null);
+//            } else {
+//                fileChooser.setTitle("Open File");
+//                currentFile = fileChooser.showOpenDialog(null);
+//            }
+//            
+//            w.setEnabled(true);
+//        });
         VSwingUtil.deactivateEventFilter();
         postShowDialog();
 
         if (isMultiSelectionEnabled()) {
-            if (currentFiles != null) {
+            if (getSelectedFile() != null) {
                 return JFileChooser.APPROVE_OPTION;
             } else {
                 return JFileChooser.CANCEL_OPTION;
             }
-        } else if (currentFile != null) {
+        } else if (getSelectedFile() != null) {
             return JFileChooser.APPROVE_OPTION;
         } else {
             return JFileChooser.CANCEL_OPTION;
@@ -243,17 +364,16 @@ public class VFileChooser extends JFileChooser {
 
     }
 
-    // taken from here: http://www.guigarage.com/2013/01/invokeandwait-for-javafx/
-    static void runAndWait(Runnable runnable) {
-        FutureTask future = new FutureTask(runnable, null);
-        Platform.runLater(future);
-        try {
-            future.get();
-        } catch (InterruptedException | ExecutionException ex) {
-            Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
+//    // taken from here: http://www.guigarage.com/2013/01/invokeandwait-for-javafx/
+//    static void runAndWait(Runnable runnable) {
+//        FutureTask future = new FutureTask(runnable, null);
+//        Platform.runLater(future);
+//        try {
+//            future.get();
+//        } catch (InterruptedException | ExecutionException ex) {
+//            Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//    }
     @Override
     public int showSaveDialog(Component parent) throws HeadlessException {
         if (!nativeDialogsShallBeUsed()) {
@@ -264,20 +384,111 @@ public class VFileChooser extends JFileChooser {
         VSwingUtil.deactivateEventFilter();
         VSwingUtil.activateEventFilter(
                 VRL.getCurrentProjectController().getCurrentCanvas());
-        runAndWait(() -> {
-            // parent.setEnabled(false);
-            if (isDirectorySelectionEnabled()) {
-                directoryChooser.setTitle("Save Directory");
-                currentFile = directoryChooser.showDialog(null);
+        
+        if (isDirectorySelectionEnabled()) {
+            // on macOS the filedialog supports directory selection
+            // but we hae to set a system property to make it really work
+            if (VSysUtil.isMacOSX()) {
+                FileDialog fd = new FileDialog((JFrame) VSwingUtil.
+                        getTopmostParent(parent), "Save Directory", FileDialog.SAVE);
+
+                System.setProperty("apple.awt.fileDialogForDirectories", "true");
+
+                File cd = getCurrentDirectory();
+                if (cd != null) {
+                    fd.setDirectory(cd.getAbsolutePath());
+                }
+
+                if (getSelectedFile() != null) {
+                    fd.setFile(getSelectedFile().getName());
+                }
+
+                fd.setFilenameFilter((File dir, String name1) -> {
+                    if (getFileFilter() != null) {
+                        File f = new File(dir, name1);
+                        return getFileFilter().accept(f) && f.isDirectory();
+                    }
+                    return true;
+                });
+
+                fd.setVisible(true);
+
+                String fileName = fd.getFile();
+                if (fileName != null) {
+                    setSelectedFile(new File(fd.getDirectory(), fileName));
+                }
             } else {
-                fileChooser.setTitle("Save File");
-                currentFile = fileChooser.showSaveDialog(null);
+                
+                // otherwise we set the system default LAF and use the
+                // JFileDialog
+                LookAndFeel prevLAF = UIManager.getLookAndFeel();
+
+                try {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (InstantiationException ex) {
+                    Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (UnsupportedLookAndFeelException ex) {
+                    Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+                }
+               
+                super.showOpenDialog(parent);
+                
+                try {
+                    UIManager.setLookAndFeel(prevLAF);
+                } catch (UnsupportedLookAndFeelException ex) {
+                    Logger.getLogger(VFileChooser.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        });
+        } else {
+            FileDialog fd = new FileDialog((JFrame) VSwingUtil.
+                        getTopmostParent(parent), "Save File", FileDialog.SAVE);
+
+                System.setProperty("apple.awt.fileDialogForDirectories", "false");
+
+                File cd = getCurrentDirectory();
+                if (cd != null) {
+                    fd.setDirectory(cd.getAbsolutePath());
+                }
+
+                if (getSelectedFile() != null) {
+                    fd.setFile(getSelectedFile().getName());
+                }
+
+                fd.setFilenameFilter((File dir, String name1) -> {
+                    if (getFileFilter() != null) {
+                        File f = new File(dir, name1);
+                        return getFileFilter().accept(f) && f.isDirectory();
+                    }
+                    return true;
+                });
+
+                fd.setVisible(true);
+
+                String fileName = fd.getFile();
+                if (fileName != null) {
+                    setSelectedFile(new File(fd.getDirectory(), fileName));
+                }
+        }
+
+//        runAndWait(() -> {
+//            // parent.setEnabled(false);
+//            if (isDirectorySelectionEnabled()) {
+//                directoryChooser.setTitle("Save Directory");
+//                currentFile = directoryChooser.showDialog(null);
+//            } else {
+//                fileChooser.setTitle("Save File");
+//                currentFile = fileChooser.showSaveDialog(null);
+//            }
+//            w.setEnabled(true);
+//        });
         VSwingUtil.deactivateEventFilter();
         postShowDialog();
 
-        if (currentFile != null) {
+        if (getSelectedFile() != null) {
             return JFileChooser.APPROVE_OPTION;
         } else {
             return JFileChooser.CANCEL_OPTION;
@@ -294,61 +505,55 @@ public class VFileChooser extends JFileChooser {
 
     @Override
     public File[] getSelectedFiles() {
-        if (!nativeDialogsShallBeUsed()) {
-            return super.getSelectedFiles();
-        }
-        if (currentFiles == null) {
-            return null;
-        }
-        return currentFiles.toArray(new File[currentFiles.size()]);
+
+        return super.getSelectedFiles();
+
+//        if (!nativeDialogsShallBeUsed()) {
+//            return super.getSelectedFiles();
+//        }
+//        if (currentFiles == null) {
+//            return null;
+//        }
+//        return currentFiles.toArray(new File[currentFiles.size()]);
     }
 
     @Override
     public File getSelectedFile() {
-        if (!nativeDialogsShallBeUsed()) {
-            return super.getSelectedFile();
-        }
-        return currentFile;
+
+        return super.getSelectedFile();
+
+//        if (!nativeDialogsShallBeUsed()) {
+//            return super.getSelectedFile();
+//        }
+//        return currentFile;
     }
 
     @Override
     public void setSelectedFiles(File[] selectedFiles) {
-        if (!nativeDialogsShallBeUsed()) {
-            super.setSelectedFiles(selectedFiles);
-            return;
-        }
-        if (selectedFiles == null || selectedFiles.length == 0) {
-            currentFiles = null;
-        } else {
-            setSelectedFile(selectedFiles[0]);
-            currentFiles = new ArrayList<>(Arrays.asList(selectedFiles));
-        }
+
+        super.setSelectedFiles(selectedFiles);
+
+//        if (!nativeDialogsShallBeUsed()) {
+//            super.setSelectedFiles(selectedFiles);
+//            return;
+//        }
+//        if (selectedFiles == null || selectedFiles.length == 0) {
+//            currentFiles = null;
+//        } else {
+//            setSelectedFile(selectedFiles[0]);
+//            currentFiles = new ArrayList<>(Arrays.asList(selectedFiles));
+//        }
     }
 
     @Override
     public void setSelectedFile(File file) {
-        if (!nativeDialogsShallBeUsed()) {
-            super.setSelectedFile(file);
-            return;
-        }
-        currentFile = file;
-        if (file != null) {
-            if (file.isDirectory()) {
-                fileChooser.setInitialDirectory(file.getAbsoluteFile());
 
-                if (directoryChooser != null) {
-                    directoryChooser.setInitialDirectory(file.getAbsoluteFile());
-                }
-            } else if (file.isFile()) {
-                fileChooser.setInitialDirectory(file.getParentFile());
-                fileChooser.setInitialFileName(file.getName());
+        super.setSelectedFile(file);
 
-                if (directoryChooser != null) {
-                    directoryChooser.setInitialDirectory(file.getParentFile());
-                }
-            }
-
-        }
+//        if (nativeDialogsShallBeUsed()) {
+//            return;
+//        }
+//        currentFile = file;
     }
 
     @Override
@@ -357,48 +562,27 @@ public class VFileChooser extends JFileChooser {
         if (!nativeDialogsShallBeUsed()) {
             return;
         }
+
         if (mode == DIRECTORIES_ONLY) {
-            if (directoryChooser == null) {
-                directoryChooser = new DirectoryChooser();
-            }
-            setSelectedFile(currentFile); // Set file again, so directory chooser will be affected by it
+//            setSelectedFile(currentFile); // Set file again, so directory chooser will be affected by it
             setDialogTitle(getDialogTitle());
         }
     }
 
     @Override
     public void setDialogTitle(String dialogTitle) {
-        if (!nativeDialogsShallBeUsed()) {
-            super.setDialogTitle(dialogTitle);
-            return;
-        }
-        fileChooser.setTitle(dialogTitle);
-        if (directoryChooser != null) {
-            directoryChooser.setTitle(dialogTitle);
-        }
+
+        super.setDialogTitle(dialogTitle);
     }
 
     @Override
     public String getDialogTitle() {
-        if (!nativeDialogsShallBeUsed()) {
-            return super.getDialogTitle();
-        }
-        return fileChooser.getTitle();
+        return super.getDialogTitle();
     }
 
     @Override
     public void changeToParentDirectory() {
-        if (!nativeDialogsShallBeUsed()) {
-            super.changeToParentDirectory();
-            return;
-        }
-        File parentDir = fileChooser.getInitialDirectory().getParentFile();
-        if (parentDir.isDirectory()) {
-            fileChooser.setInitialDirectory(parentDir);
-            if (directoryChooser != null) {
-                directoryChooser.setInitialDirectory(parentDir);
-            }
-        }
+        super.changeToParentDirectory();
     }
 
     @Override
@@ -414,9 +598,9 @@ public class VFileChooser extends JFileChooser {
             for (String extension : f.getExtensions()) {
                 ext.add(extension.replaceAll("^\\*?\\.?(.*)$", "*.$1"));
             }
-            if (!ext.isEmpty()) {
-                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(f.getDescription(), ext));
-            }
+//            if (!ext.isEmpty()) {
+//                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(f.getDescription(), ext));
+//            }
         } else if (filter instanceof VExtensionFileFilter) {
             VExtensionFileFilter f = (VExtensionFileFilter) filter;
 
@@ -424,9 +608,9 @@ public class VFileChooser extends JFileChooser {
             for (String extension : f.getExtensions()) {
                 ext.add(extension.replaceAll("^\\*?\\.?(.*)$", "*.$1"));
             }
-            if (!ext.isEmpty()) {
-                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(f.getDescription(), ext));
-            }
+//            if (!ext.isEmpty()) {
+//                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(f.getDescription(), ext));
+//            }
         }
     }
 
@@ -434,31 +618,30 @@ public class VFileChooser extends JFileChooser {
     public void setAcceptAllFileFilterUsed(boolean bool) {
         boolean differs = isAcceptAllFileFilterUsed() ^ bool;
         super.setAcceptAllFileFilterUsed(bool);
-        if (!nativeDialogsShallBeUsed()) {
-            return;
-        }
-        if (differs) {
-            if (bool) {
-                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All files", "*.*"));
-            } else {
-                for (Iterator<FileChooser.ExtensionFilter> it = fileChooser.getExtensionFilters().iterator(); it.hasNext();) {
-                    FileChooser.ExtensionFilter filter = it.next();
-                    if (filter.getExtensions().contains("*.*")) {
-                        it.remove();
-                    }
-                }
-            }
-        }
+//        if (!nativeDialogsShallBeUsed()) {
+//            return;
+//        }
+//        if (differs) {
+//            if (bool) {
+//                fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("All files", "*.*"));
+//            } else {
+//                for (Iterator<FileChooser.ExtensionFilter> it = fileChooser.getExtensionFilters().iterator(); it.hasNext();) {
+//                    FileChooser.ExtensionFilter filter = it.next();
+//                    if (filter.getExtensions().contains("*.*")) {
+//                        it.remove();
+//                    }
+//                }
+//            }
+//        }
     }
 
-    private void initFxFileChooser(File currentFile) {
-        if (nativeDialogsShallBeUsed()) {
-            fileChooser = new FileChooser();
-            this.currentFile = currentFile;
-            setSelectedFile(currentFile);
-        }
-    }
-
+//    private void initFxFileChooser(File currentFile) {
+//        if (nativeDialogsShallBeUsed()) {
+//            fileChooser = new FileChooser();
+//            this.currentFile = currentFile;
+//            setSelectedFile(currentFile);
+//        }
+//    }
     /**
      *
      * @return {@code true} if native dialogs shall be preferred;{@code false}

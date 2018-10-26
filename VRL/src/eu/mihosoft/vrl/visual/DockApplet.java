@@ -531,15 +531,13 @@ public class DockApplet extends EffectPanel implements CanvasChild,
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
-        if (mouseEvent.getButton() == MouseEvent.BUTTON1) {
-            fireAction(new ActionEvent(this, 0, CLICKED_ACTION));
-        }
+
     }
 
     @Override
     public void mousePressed(MouseEvent ev) {
         if(isActive) {
-            fireAction(new ActionEvent(this, 0, "clicked"));
+            fireAction(new ActionEvent(this, 0, CLICKED_ACTION));
         }
     }
 
