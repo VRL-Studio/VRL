@@ -1309,16 +1309,15 @@ public class VRL {
                         log(Level.SEVERE, null, ex);
             }
             
-            try  (URLClassLoader classLoader = new URLClassLoader(urls)){
-                if (PluginCacheController.needsUpdate(f)) {
-                    loadPlugin(f, classLoader);
-                    PluginCacheController.saveCache(f);
-                } else {
-                    PluginCacheController.addPluginsFromCache(f);
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(VRL.class.getName()).log(Level.SEVERE, null, ex);
+            URLClassLoader classLoader = new URLClassLoader(urls);
+            
+            if (PluginCacheController.needsUpdate(f)) {
+                loadPlugin(f, classLoader);
+                PluginCacheController.saveCache(f);
+            } else {
+                PluginCacheController.addPluginsFromCache(f);
             }
+
         }
 
 //        if (!file.exists()) {
