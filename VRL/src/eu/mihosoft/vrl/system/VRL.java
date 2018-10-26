@@ -1296,7 +1296,7 @@ public class VRL {
     public static void addPlugins() {
 
         ArrayList<File> jarFiles = IOUtil.listFiles(
-                new File(Constants.PLUGIN_DIR), new String[]{".jar"});
+                new File(Constants.PLUGIN_DIR), new String[]{".jar",".vrlplugin"});
 
         for (File f : jarFiles) {
 
@@ -1308,14 +1308,16 @@ public class VRL {
                 Logger.getLogger(VRL.class.getName()).
                         log(Level.SEVERE, null, ex);
             }
-
-            URLClassLoader classLoader = new URLClassLoader(urls);
-
-            if (PluginCacheController.needsUpdate(f)) {
-                loadPlugin(f, classLoader);
-                PluginCacheController.saveCache(f);
-            } else {
-                PluginCacheController.addPluginsFromCache(f);
+            
+            try  (URLClassLoader classLoader = new URLClassLoader(urls)){
+                if (PluginCacheController.needsUpdate(f)) {
+                    loadPlugin(f, classLoader);
+                    PluginCacheController.saveCache(f);
+                } else {
+                    PluginCacheController.addPluginsFromCache(f);
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(VRL.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
@@ -2321,29 +2323,31 @@ public class VRL {
 
             if (!IOUtil.move(f, destination)) {
 
-                IOException ex = new IIOException(
+                IOException ex = new IOException(
                         "Cannot move file: " + f + " to plugin folder!");
 
                 if (action != null) {
                     action.updateFailed(ex);
-                } else {
-                    Logger.getLogger(VRL.class.getName()).
-                            log(Level.SEVERE, null, ex);
-                }
+                } 
+                
+                Logger.getLogger(VRL.class.getName()).
+                        log(Level.SEVERE, null, ex);
+                
             }
 
             if (cacheFileSrc.exists()) {
                 if (!IOUtil.move(cacheFileSrc, cacheFileDst)) {
 
-                    IOException ex = new IIOException(
+                    IOException ex = new IOException(
                             "Cannot move file: " + cacheFileSrc + " to plugin folder!");
 
                     if (action != null) {
                         action.updateFailed(ex);
-                    } else {
-                        Logger.getLogger(VRL.class.getName()).
-                                log(Level.SEVERE, null, ex);
                     }
+                    
+                    Logger.getLogger(VRL.class.getName()).
+                        log(Level.SEVERE, null, ex);
+                    
                 }
             }
         }
@@ -2358,7 +2362,7 @@ public class VRL {
     public static Collection<PluginConfigurator> getUpdates() {
         ArrayList<File> jarFiles = IOUtil.listFiles(
                 getPropertyFolderManager().getPluginUpdatesFolder(),
-                new String[]{".jar"});
+                new String[]{".jar",".vrlplugin"});
 
         final ArrayList<PluginConfigurator> result
                 = new ArrayList<PluginConfigurator>();
@@ -2401,7 +2405,7 @@ public class VRL {
         final ArrayList<PluginConfigurator> result
                 = new ArrayList<PluginConfigurator>();
 
-        try {
+        try (URLClassLoader classLoader = new URLClassLoader(new URL[]{f.toURI().toURL()})){
             loadPlugin(
                     f, new PluginLoadAction() {
                         @Override
@@ -2409,10 +2413,12 @@ public class VRL {
                             result.add(pC);
                         }
                     },
-                    new URLClassLoader(new URL[]{f.toURI().toURL()}));
+                    classLoader);
         } catch (MalformedURLException ex) {
             Logger.getLogger(VRL.class.getName()).
                     log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(VRL.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         return result;

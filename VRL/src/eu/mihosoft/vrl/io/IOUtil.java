@@ -970,13 +970,13 @@ public class IOUtil {
     public static boolean move(File src, File dest) {
 
         if (VSysUtil.isWindows() && dest.exists()) {
-            if (dest.isDirectory()) {
+            if (dest.isDirectory()) {               
                 return false;
             } else {
                 deleteDirectory(dest);
             }
         }
-
+        
         return src.renameTo(dest);
     }
 
