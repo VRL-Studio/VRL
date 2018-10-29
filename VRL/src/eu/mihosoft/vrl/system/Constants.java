@@ -3,8 +3,9 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn),
- * Copyright (c) 2007–2017 by Michael Hoffer
+ * Copyright (c) 2007–2018 by Michael Hoffer,
+ * Copyright (c) 2015–2018 G-CSC, Uni Frankfurt,
+ * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn)
  * 
  * This file is part of Visual Reflection Library (VRL).
  *
@@ -71,11 +72,11 @@ public class Constants {
      * variable indicate incompatible versions. Thus, for each major version, a
      * custom property folder will be generated.
      */
-    public static final String VERSION_MAJOR = "0.4.3";
+    public static final String VERSION_MAJOR = "0.4.4";
     /**
      * VRL version number that indicates major and minor changes.
      */
-    public static final String VERSION_BASE = VERSION_MAJOR + ".2.4";
+    public static final String VERSION_BASE = VERSION_MAJOR + ".0.0";
     // "-HEAD" or "-unstable" or "" for release etc.
     public static final String VERSION_SUFFIX = "";
     // full version (base+suffix+date)
