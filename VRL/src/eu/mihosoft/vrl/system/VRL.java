@@ -675,7 +675,7 @@ public class VRL {
         for (PluginConfigurator pC : plugins.values()) {
 
             String pluginIdentifier = pC.getIdentifier().toString();
-            String pluginName = pC.getIdentifier().getName();
+            String pluginName = pC.getIdentifier().getName().toLowerCase();
 
             menuGenerator.addMenuEntry(pluginIdentifier,
                     "../../" + pluginName + "/" + PluginDataController.HELP + "/index.html");
