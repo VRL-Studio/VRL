@@ -3,8 +3,9 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn),
- * Copyright (c) 2007–2017 by Michael Hoffer
+ * Copyright (c) 2007–2018 by Michael Hoffer,
+ * Copyright (c) 2015–2018 G-CSC, Uni Frankfurt,
+ * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn)
  * 
  * This file is part of Visual Reflection Library (VRL).
  *
@@ -144,7 +145,7 @@ public class Patterns {
      * Regular expression to match plugin names.
      */
 //    public static final String PLUGIN_NAME_STRING = "[A-Za-z0-9-+_\\s]+";
-    public static final String PLUGIN_NAME_STRING = "[A-Za-z0-9-+_]+"; // we dont want spaces anymore
+    public static final String PLUGIN_NAME_STRING = "[A-Za-z][A-Za-z0-9-+_]*"; // we dont want spaces anymore
     /**
      * Pattern to match plugin names.
      */

@@ -3,8 +3,9 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn),
- * Copyright (c) 2007–2017 by Michael Hoffer
+ * Copyright (c) 2007–2018 by Michael Hoffer,
+ * Copyright (c) 2015–2018 G-CSC, Uni Frankfurt,
+ * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn)
  * 
  * This file is part of Visual Reflection Library (VRL).
  *
@@ -634,6 +635,66 @@ public class CanvasWindow extends VComponent
         viewMenu.add(item);
 
         getPopup().add(viewMenu);
+        
+        JMenu alignmentMenu = new JMenu("Alignment");
+        
+        JMenuItem hAlignItem = new JMenuItem("Align Horizontally");
+        
+        hAlignItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<CanvasWindow> windows =
+                        new ArrayList<CanvasWindow>();
+                int y = 0;
+                for (Selectable s : getMainCanvas().getClipBoard()) {
+                    if (s instanceof CanvasWindow) {
+                        CanvasWindow w = (CanvasWindow) s;
+                        windows.add(w);
+                        y += w.getWindowLocation().y;
+                    }
+                }
+
+                if (!windows.isEmpty()) {
+                    y /= windows.size();
+
+                    for (CanvasWindow w : windows) {
+                        w.setWindowLocation(w.getWindowLocation().x, y);
+                    }
+                }
+            }
+        });
+        
+        alignmentMenu.add(hAlignItem);
+        
+        JMenuItem vAlignItem = new JMenuItem("Align Vertically");
+        
+        vAlignItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ArrayList<CanvasWindow> windows =
+                        new ArrayList<CanvasWindow>();
+                int x = 0;
+                for (Selectable s : getMainCanvas().getClipBoard()) {
+                    if (s instanceof CanvasWindow) {
+                        CanvasWindow w = (CanvasWindow) s;
+                        windows.add(w);
+                        x += w.getWindowLocation().x;
+                    }
+                }
+
+                if (!windows.isEmpty()) {
+                    x /= windows.size();
+
+                    for (CanvasWindow w : windows) {
+                        w.setWindowLocation(x, w.getWindowLocation().y);
+                    }
+                }
+            }
+        });
+        
+        alignmentMenu.add(vAlignItem);
+       
+        getPopup().add(alignmentMenu);
 
         getMainCanvas().getWindowMenuController().
                 buildMenu(new MenuAdapter(getPopup()), this);

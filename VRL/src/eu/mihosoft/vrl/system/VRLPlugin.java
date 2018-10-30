@@ -3,8 +3,9 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn),
- * Copyright (c) 2007–2017 by Michael Hoffer
+ * Copyright (c) 2007–2018 by Michael Hoffer,
+ * Copyright (c) 2015–2018 G-CSC, Uni Frankfurt,
+ * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn)
  * 
  * This file is part of Visual Reflection Library (VRL).
  *
@@ -112,8 +113,9 @@ public class VRLPlugin extends VPluginConfigurator {
         setDescription(Message.generateHTMLSpace(20)
                 + "Visual Reflection Library"
                 + Message.generateHTMLSpace(20));
-        setCopyrightInfo("VRL", "(c) 2006-2017 by Michael Hoffer"
+        setCopyrightInfo("VRL", "(c) 2006-2018 by Michael Hoffer"
                 + "<br><br>"
+                + "(c) 2015-2018 G-CSC, Uni Frankfurt<br><br>"
                 + "(c) 2009-2015 Steinbeis Forschungszentrum "
                 + "(STZ Ölbronn)<br>",
                 "http://vrl.mihosoft.eu", "LGPL v3",

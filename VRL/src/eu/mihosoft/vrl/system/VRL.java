@@ -3,8 +3,9 @@
  * 
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
  *
- * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn),
- * Copyright (c) 2007–2017 by Michael Hoffer
+ * Copyright (c) 2007–2018 by Michael Hoffer,
+ * Copyright (c) 2015–2018 G-CSC, Uni Frankfurt,
+ * Copyright (c) 2009–2015 Steinbeis Forschungszentrum (STZ Ölbronn)
  * 
  * This file is part of Visual Reflection Library (VRL).
  *
@@ -2256,10 +2257,7 @@ public class VRL {
             // use the first configurator in the file as identifier 
             // // (order is defined alphabetically)
             String pName = pluginConfigs.get(0).
-                    getIdentifier().getName();
-            
-            // TODO 25.10.2018 think about introducing toLowerCase() for 
-            // folders and plugin files
+                    getIdentifier().getName().toLowerCase();
             
             return pName;
     }
