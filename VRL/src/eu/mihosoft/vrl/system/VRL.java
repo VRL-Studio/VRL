@@ -662,7 +662,7 @@ public class VRL {
     static void updateHelpIndex() {
         File helpindex = new File(
                 getPropertyFolderManager().getPluginFolder(),
-                "VRL/help/plugin-index.html");
+                "vrl/help/plugin-index.html");
 
         TextSaver textSaver = new TextSaver();
 
