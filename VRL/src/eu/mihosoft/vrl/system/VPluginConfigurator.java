@@ -159,6 +159,8 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
 
     private BooleanSupplier failureCondition = () -> false;
     private String failureReason = "";
+    
+    private File jarFileLocation;
 
     public VPluginConfigurator() {
     }
@@ -537,6 +539,17 @@ public abstract class VPluginConfigurator implements PluginConfigurator {
         failureCondition = condition;
         failureReason = message;
     }
+    
+    @Override
+    public File getJarFileLocation() {
+        return this.jarFileLocation;
+    }
+    
+
+    @Override
+    public void setJarFileLocation(File f) {
+        this.jarFileLocation = f;
+    }
 }
 
 class AccessPolicyImpl implements AccessPolicy {
@@ -632,4 +645,5 @@ class AccessPolicyImpl implements AccessPolicy {
     public void addClass(String className) {
         classNames.add(className);
     }
+    
 }

@@ -57,6 +57,7 @@ package eu.mihosoft.vrl.system;
 
 import eu.mihosoft.vrl.reflection.VisualCanvas;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -67,7 +68,7 @@ import java.util.function.BooleanSupplier;
  * @see eu.mihosoft.vrl.reflection.TypeRepresentationFactory
  * @author Michael Hoffer &lt;info@michaelhoffer.de&gt;
  */
-public interface PluginConfigurator {
+public interface PluginConfigurator extends WithJarFileLocationInfo {
 
     /**
      * Key for accessing the "installed" property of the plugin config.
@@ -205,5 +206,6 @@ public interface PluginConfigurator {
      * @param message message/reason
      */
     public void failsInitIf(BooleanSupplier condition, String message);
+    
 
 }

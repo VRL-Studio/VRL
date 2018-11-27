@@ -663,7 +663,7 @@ public class VRL {
     static void updateHelpIndex() {
         File helpindex = new File(
                 getPropertyFolderManager().getPluginFolder(),
-                "VRL/help/plugin-index.html");
+                "vrl/help/plugin-index.html");
 
         TextSaver textSaver = new TextSaver();
 
@@ -675,7 +675,7 @@ public class VRL {
         for (PluginConfigurator pC : plugins.values()) {
 
             String pluginIdentifier = pC.getIdentifier().toString();
-            String pluginName = pC.getIdentifier().getName();
+            String pluginName = pC.getIdentifier().getName().toLowerCase();
 
             menuGenerator.addMenuEntry(pluginIdentifier,
                     "../../" + pluginName + "/" + PluginDataController.HELP + "/index.html");
@@ -743,7 +743,7 @@ public class VRL {
         String installedTimestamp = config.getProperty(
                 PluginConfigurator.TIMESTAMP_KEY);
 
-        File pluginLocation = VJarUtil.getClassLocation(p.getClass());
+        File pluginLocation = getPluginJarFileLocation(p);
 
         String currentTimestamp = "" + pluginLocation.lastModified();
 
@@ -759,6 +759,27 @@ public class VRL {
         }
 
         return needsInstall;
+    }
+
+    /**
+     * Returns the jar file locatino of the specified plugin. First, this 
+     * method tries to locate the plugin via {@code p.getJarFileLocation()}. If
+     * that doesn't work, the class is used to locate the jar file via
+     * {@code VJarUtil.getClassLocation(p.getClass)}.
+     * 
+     * @param p plugin
+     * @return plugin location or {@code null} if the location cannot be found
+     */
+    public static File getPluginJarFileLocation(PluginConfigurator p){
+        File pluginLocation = p.getJarFileLocation();
+        if(pluginLocation==null) {
+            try {
+                pluginLocation = VJarUtil.getClassLocation(p.getClass());
+            } catch(Exception ex) {
+                ex.printStackTrace(System.err);
+            }
+        }
+        return pluginLocation;
     }
 
     /**
@@ -779,7 +800,7 @@ public class VRL {
                 = " --> " + p.getIdentifier().getName()
                 + ": installing/updating:";
 
-        File pluginLocation = VJarUtil.getClassLocation(p.getClass());
+        File pluginLocation = getPluginJarFileLocation(p);
 
         System.out.println(msg);
 
@@ -869,7 +890,7 @@ public class VRL {
         String archiveName = contentName + ".zip";
         File contentFolder = pD.getContentFolderByName(contentName);
 
-        File pluginLocation = VJarUtil.getClassLocation(p.getClass());
+        File pluginLocation = getPluginJarFileLocation(p);
 
         // native install
         if (needsInstall(p, pD)
@@ -1364,9 +1385,12 @@ public class VRL {
         allPlugins.add(plugin);
 
         if (registeredPlugin != null) {
+            
+            File regPFile = getPluginJarFileLocation(registeredPlugin);
+            File pFile = getPluginJarFileLocation(plugin);
 
-            String regPluginPath = VJarUtil.getClassLocation(registeredPlugin.getClass()).getAbsolutePath();
-            String pluginPath = VJarUtil.getClassLocation(plugin.getClass()).getAbsolutePath();
+            String regPluginPath = regPFile==null?"<path not found>":regPFile.getAbsolutePath();
+            String pluginPath = pFile==null?"<pasth not found>":pFile.getAbsolutePath();
 
             if (regPluginPath.equals(pluginPath)) {
 //              TODO
@@ -1387,9 +1411,9 @@ public class VRL {
                         + registeredPlugin.getIdentifier()
                         + "\". <br>"
                         + "Please see <br>\""
-                        + VJarUtil.getClassLocation(plugin.getClass()).getAbsolutePath()
+                        + pluginPath
                         + "\" and <br> \""
-                        + VJarUtil.getClassLocation(registeredPlugin.getClass()).getAbsolutePath()
+                        + regPluginPath
                         + "\".";
 
                 if (registrationError != null) {
@@ -1535,6 +1559,13 @@ public class VRL {
 
                             PluginConfigurator pC
                                     = (PluginConfigurator) cls.newInstance();
+                            
+                            try {
+                                // File jarfoileLocation = VJarUtil.getClassLocation(cls);
+                                pC.setJarFileLocation(f);
+                            } catch (Exception ex) {
+                                throw new RuntimeException("Cannot locate jar file", ex);
+                            }
 
                             if (platformSupported) {
                                 pA.loaded(pC);
@@ -1715,8 +1746,9 @@ public class VRL {
             PluginConfigurator p,
             PluginDataController dC,
             boolean disableLibLoad) {
+        
 
-        File f = VJarUtil.getClassLocation(p.getClass());
+        File f = getPluginJarFileLocation(p);
 
         if (!providesContent(PluginDataController.NATIVELIB, f)) {
             return null;

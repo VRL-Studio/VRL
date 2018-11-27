@@ -3,7 +3,7 @@ plugins {
     id 'java'
     id 'maven-publish'
     id 'net.nemerosa.versioning' version '1.5.0'
-    id 'com.jfrog.bintray' version '1.6'
+    id 'com.jfrog.bintray' version '1.8.4'
 }
 
 sourceCompatibility = '1.8'
@@ -13,7 +13,7 @@ sourceCompatibility = '1.8'
 //repairHeaders.licenseHeaderText = new File(projectDir,'./license-template.txt')
 
 task wrapper(type: Wrapper, description: 'Creates and deploys the Gradle wrapper to the current directory.') {
-    gradleVersion = '4.2.1'
+    gradleVersion = '4.10'
 }
 
 repositories {
