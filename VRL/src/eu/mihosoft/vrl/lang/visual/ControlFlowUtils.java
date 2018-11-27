@@ -593,10 +593,10 @@ class ControlFlowUtils {
         ControlFlowConnector stopConnector =
                 ControlFlowUtils.getStopConnector(canvas);
 
-        Collection<ControlFlowConnection> connectios =
+        Collection<ControlFlowConnection> connections =
                 getPath(startConnector, stopConnector);
 
-        return getPathAsMethodList(connectios);
+        return getPathAsMethodList(connections);
     }
 
     /**

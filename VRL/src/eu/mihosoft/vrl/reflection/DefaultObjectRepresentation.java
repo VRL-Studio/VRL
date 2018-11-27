@@ -1312,7 +1312,7 @@ public class DefaultObjectRepresentation extends JPanel
     }
 
     /**
-     * Used for visual invocation.
+     * Returns the visually defined invocation list.
      *
      * @return
      */

@@ -498,10 +498,8 @@ public class VisualObjectInspector extends ObjectInspector {
 
             // get param value of reference method
             if (hasNonCustomReferenceMethod) {
-//                returnValue = oRep.getReferenceMethod().
-//                        getDescription().getReturnValue();
-
-                returnValue = null;
+                returnValue = oRep.getReferenceMethod().
+                        getDescription().getReturnValue();
             }
 
             oRep.setDescription(oDesc);

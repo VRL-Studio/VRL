@@ -804,6 +804,7 @@ public class DefaultMethodRepresentation extends VComponent
      *
      * @param enableAlreadyRunningMessages defines whether to show error
      * messages if the method is already running
+     * @throws java.lang.reflect.InvocationTargetException
      */
     public Object invokeAsCallParentNoNewThread(
             boolean enableAlreadyRunningMessages)
