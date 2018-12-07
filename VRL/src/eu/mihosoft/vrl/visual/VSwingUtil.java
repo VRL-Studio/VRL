@@ -85,7 +85,6 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.text.DefaultEditorKit;
-import org.omg.CORBA.INTERNAL;
 
 /**
  *
