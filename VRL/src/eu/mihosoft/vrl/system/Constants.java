@@ -72,11 +72,11 @@ public class Constants {
      * variable indicate incompatible versions. Thus, for each major version, a
      * custom property folder will be generated.
      */
-    public static final String VERSION_MAJOR = "0.4.4";
+    public static final String VERSION_MAJOR = "0.4.5";
     /**
      * VRL version number that indicates major and minor changes.
      */
-    public static final String VERSION_BASE = VERSION_MAJOR + ".0.3";
+    public static final String VERSION_BASE = VERSION_MAJOR + ".0.0";
     // "-HEAD" or "-unstable" or "" for release etc.
     public static final String VERSION_SUFFIX = "";
     // full version (base+suffix+date)
@@ -87,12 +87,12 @@ public class Constants {
      * Copyright statement.
      */
     public static final String COPYRIGHT =
-            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2018"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer &lt;info@michaelhoffer.de&gt;";
+            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2020"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer &lt;info@michaelhoffer.de&gt;";
     /**
      * Simple copyright statement (usefull for windows titles etc.)
      */
     public static final String COPYRIGHT_SIMPLE =
-            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2018"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer";
+            "2006-" + /*<VRL_COMPILE_DATE_YEAR>*/"2020"/*</VRL_COMPILE_DATE_YEAR>*/ + " by Michael Hoffer";
     /**
      * Defines which projects can be processed by this version of VRL.
      */
