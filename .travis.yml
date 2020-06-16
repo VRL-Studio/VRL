@@ -13,7 +13,6 @@ addons:
 language: java
 jdk:
   - oraclejdk8
-  - oraclejdk9
   #- openjdk10
   #- openjdk11
   
