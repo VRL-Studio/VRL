@@ -1,7 +1,7 @@
 VRL (Visual Reflection Library)
 ===============================
 
-[![Build Status](https://travis-ci.org/VRL-Studio/VRL.svg?branch=master)](https://travis-ci.org/VRL-Studio/VRL) [ ![Download](https://api.bintray.com/packages/miho/VRL/vrl/images/download.svg) ](https://bintray.com/miho/VRL/vrl/_latestVersion)
+[![Build Status](https://travis-ci.org/VRL-Studio/VRL.svg?branch=master)](https://travis-ci.org/VRL-Studio/VRL) [ ![Download](https://api.bintray.com/packages/miho/VRL/vrl/images/download.svg) ](https://bintray.com/miho/VRL/vrl/_latestVersion) [![javadoc](https://javadoc.io/badge2/eu.mihosoft.vrl/vrl/javadoc.svg)](https://javadoc.io/doc/eu.mihosoft.vrl/vrl)
 
 Webpage: http://vrl-studio.mihosoft.eu
 
@@ -26,7 +26,7 @@ To see what is possible with VRL check out [VRL-Studio](http://vrl-studio.mihoso
 
 - Release Builds: http://vrl.mihosoft.eu/builds/releases/
 - Latest Builds: http://vrl.mihosoft.eu/builds/latest
-- Latest API-Doc: http://vrl.mihosoft.eu/api-doc/latest
+- Latest API-Doc: https://javadoc.io/doc/eu.mihosoft.vrl/vrl/latest/index.html
 
 ### For 0.5 (Playground)
 
