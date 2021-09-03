@@ -1,7 +1,12 @@
 VRL (Visual Reflection Library)
 ===============================
 
-[![Build Status](https://travis-ci.org/VRL-Studio/VRL.svg?branch=master)](https://travis-ci.org/VRL-Studio/VRL) [ ![Download](https://api.bintray.com/packages/miho/VRL/vrl/images/download.svg) ](https://bintray.com/miho/VRL/vrl/_latestVersion) [![javadoc](https://javadoc.io/badge2/eu.mihosoft.vrl/vrl/javadoc.svg)](https://javadoc.io/doc/eu.mihosoft.vrl/vrl)
+[![Build Status](https://travis-ci.org/VRL-Studio/VRL.svg?branch=master)](https://travis-ci.org/VRL-Studio/VRL) [ ![Download](https://javadoc.io/badge2/eu.mihosoft.vrl/vrl/javadoc.svg)](https://javadoc.io/doc/eu.mihosoft.vrl/vrl)
+<a href="https://foojay.io/today/works-with-openjdk">
+   <img align="right" 
+        src="https://github.com/foojayio/badges/raw/main/works_with_openjdk/Works-with-OpenJDK.png"   
+        width="100">
+</a>
 
 Webpage: http://vrl-studio.mihosoft.eu
 
