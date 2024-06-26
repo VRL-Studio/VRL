@@ -390,7 +390,7 @@ public class LibraryPluginCreator implements Serializable {
 
         } catch (IOException ex) {
             Logger.getLogger(
-                    Compiler.class.getName()).log(Level.SEVERE, null, ex);
+                    LibraryPluginCreator.class.getName()).log(Level.SEVERE, null, ex);
 
             if (action != null) {
                 action.cannotCreate(ex);
